@@ -258,32 +258,34 @@ namespace DelegateDecompiller
             }
 
             var instance = m.IsStatic ? null : stack.Pop();
+            stack.Push(BuildExpression(m, instance, mArgs));
+        }
+
+        static Expression BuildExpression(MethodInfo m, Expression instance, Expression[] arguments)
+        {
             if (m.IsSpecialName && m.IsHideBySig)
             {
                 if (m.Name.StartsWith("get_"))
                 {
-                    stack.Push(Expression.Property(instance, m));
-                    return;
+                    return Expression.Property(instance, m);
                 }
                 if (m.Name.StartsWith("op_"))
                 {
                     ExpressionType type;
                     if (Enum.TryParse(m.Name.Substring(3), out type))
                     {
-                        switch (mArgs.Length)
+                        switch (arguments.Length)
                         {
                             case 1:
-                                stack.Push(Expression.MakeUnary(type, mArgs[0], mArgs[0].Type));
-                                return;
+                                return Expression.MakeUnary(type, arguments[0], arguments[0].Type);
                             case 2:
-                                stack.Push(Expression.MakeBinary(type, mArgs[0], mArgs[1]));
-                                return;
+                                return Expression.MakeBinary(type, arguments[0], arguments[1]);
                         }
                     }
                 }
             }
-            
-            stack.Push(Expression.Call(instance, m, mArgs));
+
+            return Expression.Call(instance, m, arguments);
         }
 
         void LdLoc(int index)
