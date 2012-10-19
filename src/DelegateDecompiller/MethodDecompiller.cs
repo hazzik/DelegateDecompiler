@@ -95,6 +95,12 @@ namespace DelegateDecompiller
                 {
                     StLoc((int) instruction.Operand);
                 }
+                else if (instruction.OpCode == OpCodes.Stelem_I4)
+                {
+                    var value = (ConstantExpression) stack.Pop();
+                    var index = (ConstantExpression) stack.Pop();
+                    var array = (NewArrayExpression) stack.Pop();
+                }
                 else if (instruction.OpCode == OpCodes.Ldloc_0)
                 {
                     LdLoc(0);
@@ -360,7 +366,12 @@ namespace DelegateDecompiller
                 else if (instruction.OpCode == OpCodes.Newarr)
                 {
                     var operand = (Type) instruction.Operand;
-                    stack.Push(Expression.NewArrayInit(operand));
+                    var expression = stack.Pop();
+                    var size = expression as ConstantExpression;
+                    if (size != null && (int) size.Value == 0) // optimization
+                        stack.Push(Expression.NewArrayInit(operand));
+                    else
+                        stack.Push(Expression.NewArrayBounds(operand, expression));
                 }
                 else if (instruction.OpCode == OpCodes.Box)
                 {

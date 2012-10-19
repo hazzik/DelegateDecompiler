@@ -272,11 +272,59 @@ namespace DelegateDecompiller.Tests
         }
 
         [Fact]
-        public void NewArray()
+        public void TestNewArray0()
         {
             Expression<Func<int[]>> expression = () => new int[0];
 
             var compiled = GetType().GetMethod("NewArray0");
+
+            var decompilled = compiled.Decompile();
+
+            Assert.Equal(expression.ToString(), decompilled.ToString());
+        }
+
+        [Fact]
+        public void TestNewArray1()
+        {
+            Expression<Func<int[]>> expression = () => new int[1];
+
+            var compiled = GetType().GetMethod("NewArray1");
+
+            var decompilled = compiled.Decompile();
+
+            Assert.Equal(expression.ToString(), decompilled.ToString());
+        }
+
+        [Fact]
+        public void TestNewArrayX()
+        {
+            Expression<Func<int, int[]>> expression = x => new int[x];
+
+            var compiled = GetType().GetMethod("NewArrayX");
+
+            var decompilled = compiled.Decompile();
+
+            Assert.Equal(expression.ToString(), decompilled.ToString());
+        }
+
+        [Fact(Skip = "Not Implemented yet")]
+        public void TestNewArrayInit1()
+        {
+            Expression<Func<int[]>> expression = () => new[] { 1 };
+
+            var compiled = GetType().GetMethod("NewArrayInit1");
+
+            var decompilled = compiled.Decompile();
+
+            Assert.Equal(expression.ToString(), decompilled.ToString());
+        }
+
+        [Fact(Skip = "Not Implemented yet")]
+        public void TestNewArrayInit2()
+        {
+            Expression<Func<int[]>> expression = () => new[] { 1 };
+
+            var compiled = GetType().GetMethod("NewArrayInit2");
 
             var decompilled = compiled.Decompile();
 
@@ -396,6 +444,26 @@ namespace DelegateDecompiller.Tests
         public static int[] NewArray0()
         {
             return new int[0];
+        }
+
+        public static int[] NewArray1()
+        {
+            return new int[1];
+        }
+
+        public static int[] NewArrayX(int x)
+        {
+            return new int[x];
+        }
+
+        public static int[] NewArrayInit1()
+        {
+            return new[] { 1 };
+        }
+
+        public static int[] NewArrayInit2()
+        {
+            return new[] { 1, 2 };
         }
     }
 
