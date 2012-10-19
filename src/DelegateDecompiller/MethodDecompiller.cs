@@ -172,6 +172,18 @@ namespace DelegateDecompiller
                 {
                     LdC((int) instruction.Operand);
                 }
+                else if (instruction.OpCode == OpCodes.Ldc_I8)
+                {
+                    LdC((long) instruction.Operand);
+                }
+                else if (instruction.OpCode == OpCodes.Ldc_R4)
+                {
+                    LdC((float) instruction.Operand);
+                }
+                else if (instruction.OpCode == OpCodes.Ldc_R8)
+                {
+                    LdC((double) instruction.Operand);
+                }
                 else if (instruction.OpCode == OpCodes.Br_S)
                 {
                     //not implemented yet
@@ -218,6 +230,116 @@ namespace DelegateDecompiller
                     var val2 = stack.Pop();
                     stack.Push(Expression.Divide(val2, val1));
                 }
+                else if (instruction.OpCode == OpCodes.Conv_I)
+                {
+                    var val1 = stack.Pop();
+                    stack.Push(Expression.Convert(val1, typeof(int))); // Suppot x64?
+                }
+                else if (instruction.OpCode == OpCodes.Conv_I1)
+                {
+                    var val1 = stack.Pop();
+                    stack.Push(Expression.Convert(val1, typeof(sbyte)));
+                }
+                else if (instruction.OpCode == OpCodes.Conv_I2)
+                {
+                    var val1 = stack.Pop();
+                    stack.Push(Expression.Convert(val1, typeof(short)));
+                }
+                else if (instruction.OpCode == OpCodes.Conv_I4)
+                {
+                    var val1 = stack.Pop();
+                    stack.Push(Expression.Convert(val1, typeof(int)));
+                }
+                else if (instruction.OpCode == OpCodes.Conv_I8)
+                {
+                    var val1 = stack.Pop();
+                    stack.Push(Expression.Convert(val1, typeof(long)));
+                }
+                else if (instruction.OpCode == OpCodes.Conv_U)
+                {
+                    var val1 = stack.Pop();
+                    stack.Push(Expression.Convert(val1, typeof(uint))); // Suppot x64?
+                }
+                else if (instruction.OpCode == OpCodes.Conv_U1)
+                {
+                    var val1 = stack.Pop();
+                    stack.Push(Expression.Convert(val1, typeof(byte)));
+                }
+                else if (instruction.OpCode == OpCodes.Conv_U2)
+                {
+                    var val1 = stack.Pop();
+                    stack.Push(Expression.Convert(val1, typeof(ushort)));
+                }
+                else if (instruction.OpCode == OpCodes.Conv_U4)
+                {
+                    var val1 = stack.Pop();
+                    stack.Push(Expression.Convert(val1, typeof(uint)));
+                }
+                else if (instruction.OpCode == OpCodes.Conv_U8)
+                {
+                    var val1 = stack.Pop();
+                    stack.Push(Expression.Convert(val1, typeof(ulong)));
+                }
+                else if (instruction.OpCode == OpCodes.Conv_Ovf_I || instruction.OpCode == OpCodes.Conv_Ovf_I_Un)
+                {
+                    var val1 = stack.Pop();
+                    stack.Push(Expression.ConvertChecked(val1, typeof (int))); // Suppot x64?
+                }
+                else if (instruction.OpCode == OpCodes.Conv_Ovf_I1 || instruction.OpCode == OpCodes.Conv_Ovf_I1_Un)
+                {
+                    var val1 = stack.Pop();
+                    stack.Push(Expression.ConvertChecked(val1, typeof (sbyte)));
+                }
+                else if (instruction.OpCode == OpCodes.Conv_Ovf_I2 || instruction.OpCode == OpCodes.Conv_Ovf_I2_Un)
+                {
+                    var val1 = stack.Pop();
+                    stack.Push(Expression.ConvertChecked(val1, typeof (short)));
+                }
+                else if (instruction.OpCode == OpCodes.Conv_Ovf_I4 || instruction.OpCode == OpCodes.Conv_Ovf_I4_Un)
+                {
+                    var val1 = stack.Pop();
+                    stack.Push(Expression.ConvertChecked(val1, typeof (int)));
+                }
+                else if (instruction.OpCode == OpCodes.Conv_Ovf_I8 || instruction.OpCode == OpCodes.Conv_Ovf_I8_Un)
+                {
+                    var val1 = stack.Pop();
+                    stack.Push(Expression.ConvertChecked(val1, typeof (long)));
+                }
+                else if (instruction.OpCode == OpCodes.Conv_Ovf_U || instruction.OpCode == OpCodes.Conv_Ovf_U_Un)
+                {
+                    var val1 = stack.Pop();
+                    stack.Push(Expression.ConvertChecked(val1, typeof (uint))); // Suppot x64?
+                }
+                else if (instruction.OpCode == OpCodes.Conv_Ovf_U1 || instruction.OpCode == OpCodes.Conv_Ovf_U1_Un)
+                {
+                    var val1 = stack.Pop();
+                    stack.Push(Expression.ConvertChecked(val1, typeof (byte)));
+                }
+                else if (instruction.OpCode == OpCodes.Conv_Ovf_U2 || instruction.OpCode == OpCodes.Conv_Ovf_U2_Un)
+                {
+                    var val1 = stack.Pop();
+                    stack.Push(Expression.ConvertChecked(val1, typeof (ushort)));
+                }
+                else if (instruction.OpCode == OpCodes.Conv_Ovf_U4 || instruction.OpCode == OpCodes.Conv_Ovf_U4_Un)
+                {
+                    var val1 = stack.Pop();
+                    stack.Push(Expression.ConvertChecked(val1, typeof (uint)));
+                }
+                else if (instruction.OpCode == OpCodes.Conv_Ovf_U8 || instruction.OpCode == OpCodes.Conv_Ovf_U8_Un)
+                {
+                    var val1 = stack.Pop();
+                    stack.Push(Expression.ConvertChecked(val1, typeof (ulong)));
+                }
+                else if (instruction.OpCode == OpCodes.Conv_R4 || instruction.OpCode == OpCodes.Conv_R_Un)
+                {
+                    var val1 = stack.Pop();
+                    stack.Push(Expression.ConvertChecked(val1, typeof (float)));
+                }
+                else if (instruction.OpCode == OpCodes.Conv_R8)
+                {
+                    var val1 = stack.Pop();
+                    stack.Push(Expression.ConvertChecked(val1, typeof (double)));
+                }
                 else if (instruction.OpCode == OpCodes.And)
                 {
                     var val1 = stack.Pop();
@@ -250,6 +372,21 @@ namespace DelegateDecompiller
         }
 
         void LdC(int i)
+        {
+            stack.Push(Expression.Constant(i));
+        }
+
+        void LdC(long i)
+        {
+            stack.Push(Expression.Constant(i));
+        }
+        
+        void LdC(float i)
+        {
+            stack.Push(Expression.Constant(i));
+        }
+
+        void LdC(double i)
         {
             stack.Push(Expression.Constant(i));
         }

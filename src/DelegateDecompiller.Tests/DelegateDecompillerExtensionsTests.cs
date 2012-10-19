@@ -212,6 +212,30 @@ namespace DelegateDecompiller.Tests
         }
 
         [Fact]
+        public void ShouldBeAbleToDecompileExpressionWithCastIntToLong()
+        {
+            Expression<Func<int, long>> expression = x => x;
+
+            var compiled = GetType().GetMethod("CastIntToLong");
+
+            var decompilled = compiled.Decompile();
+
+            Assert.Equal(expression.ToString(), decompilled.ToString());
+        }
+
+        [Fact]
+        public void ShouldBeAbleToDecompileExpressionWithCastIntToSbyte()
+        {
+            Expression<Func<sbyte, int>> expression = x => x;
+
+            var compiled = GetType().GetMethod("CastIntToSbyte");
+
+            var decompilled = compiled.Decompile();
+
+            Assert.Equal(expression.ToString(), decompilled.ToString());
+        }
+
+        [Fact]
         public void DateGeDateTimeNow()
         {
             Expression<Func<TestClass, bool>> expression = x => x.StartDate >= DateTime.Now;
@@ -328,6 +352,16 @@ namespace DelegateDecompiller.Tests
         public static object Boxing(int x)
         {
             return x;
+        }
+
+        public static long CastIntToLong(int x)
+        {
+            return x;
+        }
+
+        public static sbyte CastIntToSbyte(int x)
+        {
+            return (sbyte) x;
         }
     }
 
