@@ -5,7 +5,7 @@ using System.Reflection;
 
 namespace DelegateDecompiller
 {
-    public static class DecompilleExtensions
+    public static class DecompileExtensions
     {
         public static LambdaExpression Decompile(this Delegate @delegate)
         {
@@ -14,7 +14,7 @@ namespace DelegateDecompiller
 
         public static LambdaExpression Decompile(this MethodBase method)
         {
-            return new MethodDecompiller(method).Decompile();
+            return new MethodDecompiler(method).Decompile();
         }
 
         public static IQueryable<T> Decompile<T>(this IQueryable<T> self)

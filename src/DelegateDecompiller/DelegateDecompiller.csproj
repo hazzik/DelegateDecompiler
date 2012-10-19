@@ -46,8 +46,8 @@
   <ItemGroup>
     <Compile Include="DecompileAttribute.cs" />
     <Compile Include="DecompileExpressionVisitor.cs" />
-    <Compile Include="DecompilleExtensions.cs" />
-    <Compile Include="MethodDecompiller.cs" />
+    <Compile Include="DecompileExtensions.cs" />
+    <Compile Include="MethodDecompiler.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ReplaceExpressionVisitor.cs" />
   </ItemGroup>

@@ -5,7 +5,7 @@ using Xunit;
 
 namespace DelegateDecompiller.Tests
 {
-    public class DelegateDecompillerExtensionsTests
+    public class DecompileExtensionsTests
     {
         [Fact]
         public void ShouldBeAbleToDecompileExpression()

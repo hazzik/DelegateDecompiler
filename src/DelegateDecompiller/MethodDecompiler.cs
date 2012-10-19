@@ -8,7 +8,7 @@ using Mono.Reflection;
 
 namespace DelegateDecompiller
 {
-    public class MethodDecompiller
+    public class MethodDecompiler
     {
         readonly IList<ParameterExpression> args;
         readonly Expression[] locals;
@@ -18,7 +18,7 @@ namespace DelegateDecompiller
         Expression ex;
         static readonly MethodInfo stringConcat = typeof (string).GetMethod("Concat", new[] { typeof (string), typeof (string) });
 
-        public MethodDecompiller(MethodBase method)
+        public MethodDecompiler(MethodBase method)
         {
             stack = new Stack<Expression>();
             locals = new Expression[0];
