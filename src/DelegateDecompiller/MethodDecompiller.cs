@@ -16,6 +16,7 @@ namespace DelegateDecompiller
         readonly Stack<Expression> stack;
 
         Expression ex;
+        static readonly MethodInfo stringConcat = typeof (string).GetMethod("Concat", new[] { typeof (string), typeof (string) });
 
         public MethodDecompiller(MethodBase method)
         {
@@ -464,6 +465,15 @@ namespace DelegateDecompiller
                         }
                     }
                 }
+            }
+            if (m.Name == "Concat" && m.DeclaringType == typeof (string))
+            {
+                var expression = arguments[0];
+                for (var i = 1; i < arguments.Length; i++)
+                {
+                    expression = Expression.Add(expression, arguments[i], stringConcat);
+                }
+                return expression;
             }
 
             return Expression.Call(instance, m, arguments);

@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Linq.Expressions;
-using System.Reflection;
 
 namespace DelegateDecompiller
 {
@@ -25,6 +24,5 @@ namespace DelegateDecompiller
             }
             return base.Visit(node);
         }
-
     }
 }

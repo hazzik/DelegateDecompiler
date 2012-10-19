@@ -6,7 +6,7 @@ namespace DelegateDecompiller.Tests
 {
     public class QueryableExtensionsTests
     {
-        [Fact/*(Skip = "Not fully implemented yet")*/]
+        [Fact]
         public void InlineProperty()
         {
             var employees = new[] { new Employee { FirstName = "Test", LastName = "User" } };

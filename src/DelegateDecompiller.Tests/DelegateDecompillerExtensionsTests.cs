@@ -331,6 +331,30 @@ namespace DelegateDecompiller.Tests
             Assert.Equal(expression.ToString(), decompilled.ToString());
         }
 
+        [Fact]
+        public void ShouldBeAbleToDecompileStringConcat2()
+        {
+            Expression<Func<string, string, string>> expression = (x, y) => x + y;
+
+            var compiled = GetType().GetMethod("StringConcat2");
+
+            var decompilled = compiled.Decompile();
+
+            Assert.Equal(expression.ToString(), decompilled.ToString());
+        }
+
+        [Fact]
+        public void ShouldBeAbleToDecompileStringConcat3()
+        {
+            Expression<Func<string, string, string, string>> expression = (x, y, z) => x + y + z;
+
+            var compiled = GetType().GetMethod("StringConcat3");
+
+            var decompilled = compiled.Decompile();
+
+            Assert.Equal(expression.ToString(), decompilled.ToString());
+        }
+
         public static object Id(object o)
         {
             return o;
@@ -464,6 +488,16 @@ namespace DelegateDecompiller.Tests
         public static int[] NewArrayInit2()
         {
             return new[] { 1, 2 };
+        }
+
+        public static string StringConcat2(string x, string y)
+        {
+            return x + y;
+        }
+
+        public static string StringConcat3(string x, string y, string z)
+        {
+            return x + y + z;
         }
     }
 
