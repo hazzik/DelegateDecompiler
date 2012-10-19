@@ -127,11 +127,23 @@ namespace DelegateDecompiller
                     var val2 = stack.Pop();
                     stack.Push(Expression.Add(val2, val1));
                 }
+                else if (instruction.OpCode == OpCodes.Add_Ovf || instruction.OpCode == OpCodes.Add_Ovf_Un)
+                {
+                    var val1 = stack.Pop();
+                    var val2 = stack.Pop();
+                    stack.Push(Expression.AddChecked(val2, val1));
+                }
                 else if (instruction.OpCode == OpCodes.Sub)
                 {
                     var val1 = stack.Pop();
                     var val2 = stack.Pop();
                     stack.Push(Expression.Subtract(val2, val1));
+                }
+                else if (instruction.OpCode == OpCodes.Sub_Ovf || instruction.OpCode == OpCodes.Sub_Ovf_Un)
+                {
+                    var val1 = stack.Pop();
+                    var val2 = stack.Pop();
+                    stack.Push(Expression.SubtractChecked(val2, val1));
                 }
                 else if (instruction.OpCode == OpCodes.Mul)
                 {
@@ -139,7 +151,13 @@ namespace DelegateDecompiller
                     var val2 = stack.Pop();
                     stack.Push(Expression.Multiply(val2, val1));
                 }
-                else if (instruction.OpCode == OpCodes.Div)
+                else if (instruction.OpCode == OpCodes.Mul_Ovf || instruction.OpCode == OpCodes.Mul_Ovf_Un)
+                {
+                    var val1 = stack.Pop();
+                    var val2 = stack.Pop();
+                    stack.Push(Expression.MultiplyChecked(val2, val1));
+                }
+                else if (instruction.OpCode == OpCodes.Div || instruction.OpCode == OpCodes.Div_Un)
                 {
                     var val1 = stack.Pop();
                     var val2 = stack.Pop();
