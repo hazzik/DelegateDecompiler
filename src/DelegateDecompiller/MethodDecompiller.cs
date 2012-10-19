@@ -24,9 +24,16 @@ namespace DelegateDecompiller
             ex = Expression.Empty();
             this.method = method;
             var parameters = method.GetParameters();
-            args = parameters
-                .Select(p => Expression.Parameter(p.ParameterType, p.Name))
-                .ToList();
+            if (method.IsStatic)
+                args = parameters
+                    .Select(p => Expression.Parameter(p.ParameterType, p.Name))
+                    .ToList();
+            else
+                args = new[] { Expression.Parameter(method.DeclaringType) }.Union(
+                    parameters
+                        .Select(p => Expression.Parameter(p.ParameterType, p.Name)))
+                                                                           .ToList();
+
             var body = method.GetMethodBody();
             locals = new Expression[body.LocalVariables.Count];
         }
@@ -129,6 +136,10 @@ namespace DelegateDecompiller
                 {
                     var operand = (LocalVariableInfo)instruction.Operand;
                     LdLoc(operand.LocalIndex);
+                }
+                else if (instruction.OpCode == OpCodes.Ldstr)
+                {
+                    stack.Push(Expression.Constant((string) instruction.Operand));
                 }
                 else if (instruction.OpCode == OpCodes.Ldc_I4_0)
                 {
