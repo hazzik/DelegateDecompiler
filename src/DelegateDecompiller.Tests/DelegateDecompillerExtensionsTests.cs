@@ -44,11 +44,35 @@ namespace DelegateDecompiller.Tests
         }
 
         [Fact]
+        public void ShouldBeAbleToDecompileExpressionWithAddConstant127()
+        {
+            Expression<Func<int, int>> expression = x => x + 127;
+
+            var compiled = GetType().GetMethod("AddConstant127");
+
+            var decompilled = compiled.Decompile();
+
+            Assert.Equal(expression.ToString(), decompilled.ToString());
+        }
+
+        [Fact]
         public void ShouldBeAbleToDecompileExpressionWithAddConstant128()
         {
             Expression<Func<int, int>> expression = x => x + 128;
 
-            var compiled = GetType().GetMethod("AddConstant2");
+            var compiled = GetType().GetMethod("AddConstant128");
+
+            var decompilled = compiled.Decompile();
+
+            Assert.Equal(expression.ToString(), decompilled.ToString());
+        }
+
+        [Fact]
+        public void ShouldBeAbleToDecompileExpressionWithAddConstant65535()
+        {
+            Expression<Func<int, int>> expression = x => x + 65535;
+
+            var compiled = GetType().GetMethod("AddConstant65535");
 
             var decompilled = compiled.Decompile();
 
@@ -202,9 +226,19 @@ namespace DelegateDecompiller.Tests
             return x + 1;
         }
 
-        public static int AddConstant2(int x)
+        public static int AddConstant127(int x)
+        {
+            return x + 127;
+        }
+
+        public static int AddConstant128(int x)
         {
             return x + 128;
+        }
+
+        public static int AddConstant65535(int x)
+        {
+            return x + 65535;
         }
 
         public static int Substract(int x, int y)

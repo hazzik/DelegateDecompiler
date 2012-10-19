@@ -151,7 +151,7 @@ namespace DelegateDecompiller
                 }
                 else if (instruction.OpCode == OpCodes.Ldc_I4_S)
                 {
-                    LdC((short) instruction.Operand);
+                    LdC((sbyte) instruction.Operand);
                 }
                 else if (instruction.OpCode == OpCodes.Ldc_I4_M1)
                 {
