@@ -168,7 +168,11 @@ namespace DelegateDecompiller
 
         void Call(MethodInfo m)
         {
-            if (m.IsStatic)
+            if (m.IsSpecialName && m.IsHideBySig && m.Name.StartsWith("get_"))
+            {
+                stack.Push(Expression.Property(null, m));
+            }
+            else if (m.IsStatic)
             {
                 var parameterInfos = m.GetParameters();
                 var mArgs = new Expression[parameterInfos.Length];

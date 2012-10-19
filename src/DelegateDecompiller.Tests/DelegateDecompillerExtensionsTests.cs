@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using System.Linq.Expressions;
 using Xunit;
 
@@ -102,6 +103,30 @@ namespace DelegateDecompiller.Tests
             Assert.Equal(expression.ToString(), decompilled.ToString());
         }
 
+        [Fact]
+        public void ShouldBeAbleToDecompileExpressionWithInstanceMethodCallWithArguments()
+        {
+            Expression<Func<int, CultureInfo, string>> expression = (x, culture) => x.ToString(culture);
+
+            var compiled = GetType().GetMethod("ToString2");
+
+            var decompilled = compiled.Decompile();
+
+            Assert.Equal(expression.ToString(), decompilled.ToString());
+        }
+
+        [Fact]
+        public void ShouldBeAbleToDecompileExpressionWithInstanceMethodCallWithArguments2()
+        {
+            Expression<Func<int, string>> expression = x => x.ToString(CultureInfo.InvariantCulture);
+
+            var compiled = GetType().GetMethod("ToString3");
+
+            var decompilled = compiled.Decompile();
+
+            Assert.Equal(expression.ToString(), decompilled.ToString());
+        }
+
         public static object Id(object o)
         {
             return o;
@@ -135,6 +160,16 @@ namespace DelegateDecompiller.Tests
         public static string ToString1(int x)
         {
             return x.ToString();
+        }
+
+        public static string ToString2(int x, CultureInfo culture)
+        {
+            return x.ToString(culture);
+        }
+
+        public static string ToString3(int x)
+        {
+            return x.ToString(CultureInfo.InvariantCulture);
         }
 
         public static object Boxing(int x)
