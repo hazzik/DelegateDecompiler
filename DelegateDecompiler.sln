@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DelegateDecompiller", "src\DelegateDecompiller\DelegateDecompiller.csproj", "{11F42698-BB34-4175-9DA8-80BD62171D02}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DelegateDecompiler", "src\DelegateDecompiler\DelegateDecompiler.csproj", "{11F42698-BB34-4175-9DA8-80BD62171D02}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{55BEEC36-1525-49DA-A596-4D0D76576430}"
 	ProjectSection(SolutionItems) = preProject
@@ -10,7 +10,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{55BEEC
 		.nuget\NuGet.targets = .nuget\NuGet.targets
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DelegateDecompiller.Tests", "src\DelegateDecompiller.Tests\DelegateDecompiller.Tests.csproj", "{9531F38F-9E2C-4487-B76E-1EEA3AAB5B83}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DelegateDecompiler.Tests", "src\DelegateDecompiler.Tests\DelegateDecompiler.Tests.csproj", "{9531F38F-9E2C-4487-B76E-1EEA3AAB5B83}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
