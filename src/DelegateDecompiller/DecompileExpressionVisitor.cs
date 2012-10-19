@@ -1,48 +1,64 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 
 namespace DelegateDecompiller
 {
-    public class DecompileExpressionVisitor :ExpressionVisitor
+    public class DecompileExpressionVisitor : ExpressionVisitor
     {
-        protected override Expression VisitMethodCall(MethodCallExpression node)
+        public static Expression Decompile(Expression expression)
         {
-            var decompileAttributes = node.Method.GetCustomAttributes(typeof(DecompileAttribute), true);
-            if (decompileAttributes.Length > 0)
-            {
-                var expression = node.Method.Decompile();
-            }
-
-            return base.VisitMethodCall(node);
+            return new DecompileExpressionVisitor().Visit(expression);
         }
 
         protected override Expression VisitMember(MemberExpression node)
         {
-            var decompileAttributes = node.Member.GetCustomAttributes(typeof(DecompileAttribute), true);
+            var decompileAttributes = node.Member.GetCustomAttributes(typeof (DecompileAttribute), true);
             if (decompileAttributes.Length > 0)
             {
                 var info = node.Member as PropertyInfo;
                 if (info != null)
                 {
                     var method = info.GetGetMethod();
-                    var expression = method.Decompile();
-
-                    var expressions = new Dictionary<Expression, Expression>();
-                    for (int index = 0; index < expression.Parameters.Count; index++)
-                    {
-                        var parameter = expression.Parameters[index];
-                        if (index == 0 && method.IsStatic == false)
-                        {
-                            expressions.Add(parameter, node.Expression);
-                        }
-                    }
-
-                    var visitor = new ReplaceExpressionVisitor(expressions).Visit(expression.Body);
-                    return visitor;
+                    return Decompile(method, node.Expression, new List<Expression>());
                 }
             }
             return base.VisitMember(node);
+        }
+
+        protected override Expression VisitMethodCall(MethodCallExpression node)
+        {
+            var decompileAttributes = node.Method.GetCustomAttributes(typeof (DecompileAttribute), true);
+            if (decompileAttributes.Length > 0)
+            {
+                return Decompile(node.Method, node.Object, node.Arguments);
+            }
+
+            return base.VisitMethodCall(node);
+        }
+
+        static Expression Decompile(MethodBase method, Expression instance, IList<Expression> arguments)
+        {
+            var expression = method.Decompile();
+
+            var expressions = new Dictionary<Expression, Expression>();
+            var argIndex = 0;
+            for (var index = 0; index < expression.Parameters.Count; index++)
+            {
+                var parameter = expression.Parameters[index];
+                if (index == 0 && method.IsStatic == false)
+                {
+                    expressions.Add(parameter, instance);
+                }
+                else
+                {
+                    expressions.Add(parameter, arguments[argIndex++]);
+                }
+            }
+
+            var visitor = new ReplaceExpressionVisitor(expressions).Visit(expression.Body);
+            return visitor;
         }
     }
 }
