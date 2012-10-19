@@ -57,8 +57,7 @@ namespace DelegateDecompiller
                 }
             }
 
-            var visitor = new ReplaceExpressionVisitor(expressions).Visit(expression.Body);
-            return visitor;
+            return new ReplaceExpressionVisitor(expressions).Visit(expression.Body);
         }
     }
 }
