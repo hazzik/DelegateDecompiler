@@ -163,6 +163,18 @@ namespace DelegateDecompiller
                     var val2 = stack.Pop();
                     stack.Push(Expression.Divide(val2, val1));
                 }
+                else if (instruction.OpCode == OpCodes.And)
+                {
+                    var val1 = stack.Pop();
+                    var val2 = stack.Pop();
+                    stack.Push(Expression.And(val2, val1));
+                }
+                else if (instruction.OpCode == OpCodes.Or)
+                {
+                    var val1 = stack.Pop();
+                    var val2 = stack.Pop();
+                    stack.Push(Expression.Or(val2, val1));
+                }
                 else if (instruction.OpCode == OpCodes.Box)
                 {
                     stack.Push(Expression.Convert(stack.Pop(), typeof (object)));

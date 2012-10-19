@@ -68,6 +68,30 @@ namespace DelegateDecompiller.Tests
         }
 
         [Fact]
+        public void ShouldBeAbleToDecompileExpressionWithBitwiseAnd()
+        {
+            Expression<Func<int, int, int>> expression = (x, y) => x & y;
+
+            var compiled = GetType().GetMethod("BitwiseAnd");
+
+            var decompilled = compiled.Decompile();
+
+            Assert.Equal(expression.ToString(), decompilled.ToString());
+        }
+
+        [Fact]
+        public void ShouldBeAbleToDecompileExpressionWithBitwiseOr()
+        {
+            Expression<Func<int, int, int>> expression = (x, y) => x | y;
+
+            var compiled = GetType().GetMethod("BitwiseOr");
+
+            var decompilled = compiled.Decompile();
+
+            Assert.Equal(expression.ToString(), decompilled.ToString());
+        }
+
+        [Fact]
         public void ShouldBeAbleToDecompileExpressionWithBoxing()
         {
             Expression<Func<int, object>> expression = x => x;
@@ -162,6 +186,16 @@ namespace DelegateDecompiller.Tests
         public static int Divade(int x, int y)
         {
             return x / y;
+        }
+
+        public static int BitwiseAnd(int x, int y)
+        {
+            return x & y;
+        }
+
+        public static int BitwiseOr(int x, int y)
+        {
+            return x | y;
         }
 
         public static int MehtodCall(int x, int y)
