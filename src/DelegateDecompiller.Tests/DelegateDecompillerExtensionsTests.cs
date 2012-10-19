@@ -127,6 +127,18 @@ namespace DelegateDecompiller.Tests
             Assert.Equal(expression.ToString(), decompilled.ToString());
         }
 
+        [Fact]
+        public void ShouldBeAbleToDecompileExpressionWithInstancePropertyCall()
+        {
+            Expression<Func<int?, bool>> expression = x => x.HasValue;
+
+            var compiled = GetType().GetMethod("NullableHasValue");
+
+            var decompilled = compiled.Decompile();
+
+            Assert.Equal(expression.ToString(), decompilled.ToString());
+        }
+
         public static object Id(object o)
         {
             return o;
@@ -170,6 +182,11 @@ namespace DelegateDecompiller.Tests
         public static string ToString3(int x)
         {
             return x.ToString(CultureInfo.InvariantCulture);
+        }
+
+        public static bool NullableHasValue(int? x)
+        {
+            return x.HasValue;
         }
 
         public static object Boxing(int x)
