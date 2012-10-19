@@ -11,11 +11,16 @@ namespace DelegateDecompiller.Tests
         {
             Expression<Func<object, object>> expression = o => o;
 
-            var compiled = expression.Compile();
+            var compiled = GetType().GetMethod("Id");
 
             var decompilled = compiled.Decompile();
 
             Assert.Equal(expression.ToString(), decompilled.ToString());
+        }
+
+        public static object Id(object o)
+        {
+            return o;
         }
     }
 }
