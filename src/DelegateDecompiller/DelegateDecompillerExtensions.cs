@@ -19,7 +19,7 @@ namespace DelegateDecompiller
         {
             var parameters = method.GetParameters();
 
-            var parameterExpressions = parameters
+            var args = parameters
                 .Select(p => Expression.Parameter(p.ParameterType, p.Name))
                 .ToList();
 
@@ -35,12 +35,16 @@ namespace DelegateDecompiller
                 }
                 else if (instruction.OpCode == OpCodes.Ldarg_0)
                 {
-                    stack.Push(parameterExpressions[0]);
+                    stack.Push(args[0]);
+                } 
+                if (instruction.OpCode == OpCodes.Ldarg_1)
+                {
+                    stack.Push(args[1]);
                 }
                 else if (instruction.OpCode == OpCodes.Stloc_0)
                 {
                     locals[0] = stack.Pop();
-                }
+                } 
                 else if (instruction.OpCode == OpCodes.Br_S)
                 {
                     //do nothing yet
@@ -53,11 +57,20 @@ namespace DelegateDecompiller
                 {
                     ex = stack.Pop();
                 }
-
+                else if (instruction.OpCode == OpCodes.Add)
+                {
+                    var val1 = stack.Pop();
+                    var val2 = stack.Pop();
+                    stack.Push(Expression.Add(val2, val1));
+                }
+                else if (instruction.OpCode == OpCodes.Box)
+                {
+                    //do nothing for now
+                } 
                 Console.WriteLine(instruction);
             }
 
-            return Expression.Lambda(ex, parameterExpressions[0]);
+            return Expression.Lambda(ex, args);
         }
     }
 }
