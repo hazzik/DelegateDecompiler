@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq.Expressions;
 
-namespace DelegateDecompiller
+namespace DelegateDecompiler
 {
     public class ReplaceExpressionVisitor :ExpressionVisitor
     {

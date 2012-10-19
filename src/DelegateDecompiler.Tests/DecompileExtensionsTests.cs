@@ -3,7 +3,7 @@ using System.Globalization;
 using System.Linq.Expressions;
 using Xunit;
 
-namespace DelegateDecompiller.Tests
+namespace DelegateDecompiler.Tests
 {
     public class DecompileExtensionsTests
     {

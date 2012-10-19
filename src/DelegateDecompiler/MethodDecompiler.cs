@@ -6,7 +6,7 @@ using System.Reflection;
 using System.Reflection.Emit;
 using Mono.Reflection;
 
-namespace DelegateDecompiller
+namespace DelegateDecompiler
 {
     public class MethodDecompiler
     {

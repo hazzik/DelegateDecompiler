@@ -1,7 +1,7 @@
 ﻿using System.Linq;
 using Xunit;
 
-namespace DelegateDecompiller.Tests
+namespace DelegateDecompiler.Tests
 {
     public class QueryableExtensionsTests
     {

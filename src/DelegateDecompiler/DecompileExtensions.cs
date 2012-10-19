@@ -3,7 +3,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 
-namespace DelegateDecompiller
+namespace DelegateDecompiler
 {
     public static class DecompileExtensions
     {
