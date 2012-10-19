@@ -87,7 +87,7 @@ namespace DelegateDecompiller
                 }
                 else if (instruction.OpCode == OpCodes.Stloc_S)
                 {
-                    StLoc((short) instruction.Operand);
+                    StLoc((byte)instruction.Operand);
                 }
                 else if (instruction.OpCode == OpCodes.Stloc)
                 {
@@ -111,7 +111,11 @@ namespace DelegateDecompiller
                 }
                 else if (instruction.OpCode == OpCodes.Ldloc_S)
                 {
-                    LdLoc((short) instruction.Operand);
+                    LdLoc((byte) instruction.Operand);
+                }
+                else if (instruction.OpCode == OpCodes.Ldloc)
+                {
+                    LdLoc((int)instruction.Operand);
                 }
                 else if (instruction.OpCode == OpCodes.Ldc_I4_0)
                 {
@@ -160,10 +164,6 @@ namespace DelegateDecompiller
                 else if (instruction.OpCode == OpCodes.Ldc_I4)
                 {
                     LdC((int) instruction.Operand);
-                }
-                else if (instruction.OpCode == OpCodes.Ldloc)
-                {
-                    LdLoc((int) instruction.Operand);
                 }
                 else if (instruction.OpCode == OpCodes.Br_S)
                 {
