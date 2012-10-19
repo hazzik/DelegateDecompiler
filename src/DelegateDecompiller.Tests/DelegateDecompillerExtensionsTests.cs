@@ -223,6 +223,18 @@ namespace DelegateDecompiller.Tests
             Assert.Equal(expression.ToString(), decompilled.ToString());
         }
 
+        [Fact]
+        public void DateLeDateTimeNow()
+        {
+            Expression<Func<TestClass, bool>> expression = x => x.EndDate.GetValueOrDefault() <= DateTime.Now;
+
+            var compiled = GetType().GetMethod("EndDateLeDateTimeNow");
+
+            var decompilled = compiled.Decompile();
+
+            Assert.Equal(expression.ToString(), decompilled.ToString());
+        }
+
         public static object Id(object o)
         {
             return o;
@@ -308,6 +320,11 @@ namespace DelegateDecompiller.Tests
             return x.StartDate >= DateTime.Now;
         }
 
+        public static bool EndDateLeDateTimeNow(TestClass x)
+        {
+            return x.EndDate.GetValueOrDefault() <= DateTime.Now;
+        }
+
         public static object Boxing(int x)
         {
             return x;
@@ -317,5 +334,6 @@ namespace DelegateDecompiller.Tests
     public class TestClass
     {
         public DateTime StartDate { get; set; }
+        public DateTime? EndDate { get; set; }
     }
 }

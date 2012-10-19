@@ -36,6 +36,8 @@ namespace DelegateDecompiller
             var instructions = method.GetInstructions();
             foreach (var instruction in instructions)
             {
+                Console.WriteLine(instruction);
+
                 if (instruction.OpCode == OpCodes.Nop)
                 {
                     //do nothing;
@@ -116,6 +118,11 @@ namespace DelegateDecompiller
                 else if (instruction.OpCode == OpCodes.Ldloc)
                 {
                     LdLoc((int)instruction.Operand);
+                }
+                else if (instruction.OpCode == OpCodes.Ldloca || instruction.OpCode == OpCodes.Ldloca_S)
+                {
+                    var operand = (LocalVariableInfo)instruction.Operand;
+                    LdLoc(operand.LocalIndex);
                 }
                 else if (instruction.OpCode == OpCodes.Ldc_I4_0)
                 {
@@ -237,7 +244,6 @@ namespace DelegateDecompiller
                         ex = Expression.Empty();
                     ex = stack.Pop();
                 }
-                Console.WriteLine(instruction);
             }
 
             return Expression.Lambda(ex, args);
