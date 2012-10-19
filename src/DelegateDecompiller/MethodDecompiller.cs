@@ -113,6 +113,54 @@ namespace DelegateDecompiller
                 {
                     LdLoc((short) instruction.Operand);
                 }
+                else if (instruction.OpCode == OpCodes.Ldc_I4_0)
+                {
+                    LdC(0);
+                }
+                else if (instruction.OpCode == OpCodes.Ldc_I4_1)
+                {
+                    LdC(1);
+                }
+                else if (instruction.OpCode == OpCodes.Ldc_I4_2)
+                {
+                    LdC(2);
+                }
+                else if (instruction.OpCode == OpCodes.Ldc_I4_3)
+                {
+                    LdC(3);
+                }
+                else if (instruction.OpCode == OpCodes.Ldc_I4_4)
+                {
+                    LdC(4);
+                }
+                else if (instruction.OpCode == OpCodes.Ldc_I4_5)
+                {
+                    LdC(5);
+                }
+                else if (instruction.OpCode == OpCodes.Ldc_I4_6)
+                {
+                    LdC(6);
+                }
+                else if (instruction.OpCode == OpCodes.Ldc_I4_7)
+                {
+                    LdC(7);
+                }
+                else if (instruction.OpCode == OpCodes.Ldc_I4_8)
+                {
+                    LdC(8);
+                }
+                else if (instruction.OpCode == OpCodes.Ldc_I4_S)
+                {
+                    LdC((short) instruction.Operand);
+                }
+                else if (instruction.OpCode == OpCodes.Ldc_I4_M1)
+                {
+                    LdC(-1);
+                }
+                else if (instruction.OpCode == OpCodes.Ldc_I4)
+                {
+                    LdC((int) instruction.Operand);
+                }
                 else if (instruction.OpCode == OpCodes.Ldloc)
                 {
                     LdLoc((int) instruction.Operand);
@@ -194,6 +242,11 @@ namespace DelegateDecompiller
             }
 
             return Expression.Lambda(ex, args);
+        }
+
+        void LdC(int i)
+        {
+            stack.Push(Expression.Constant(i));
         }
 
         void Call(MethodInfo m)

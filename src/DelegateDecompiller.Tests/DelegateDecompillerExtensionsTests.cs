@@ -20,11 +20,35 @@ namespace DelegateDecompiller.Tests
         }
 
         [Fact]
-        public void ShouldBeAbleToDecompileExpressionWithSum()
+        public void ShouldBeAbleToDecompileExpressionWithAdd()
         {
             Expression<Func<int, int, int>> expression = (x, y) => x + y;
 
-            var compiled = GetType().GetMethod("Sum");
+            var compiled = GetType().GetMethod("Add");
+
+            var decompilled = compiled.Decompile();
+
+            Assert.Equal(expression.ToString(), decompilled.ToString());
+        }
+
+        [Fact]
+        public void ShouldBeAbleToDecompileExpressionWithAddConstant()
+        {
+            Expression<Func<int, int>> expression = x => x + 1;
+
+            var compiled = GetType().GetMethod("AddConstant");
+
+            var decompilled = compiled.Decompile();
+
+            Assert.Equal(expression.ToString(), decompilled.ToString());
+        }
+
+        [Fact]
+        public void ShouldBeAbleToDecompileExpressionWithAddConstant128()
+        {
+            Expression<Func<int, int>> expression = x => x + 128;
+
+            var compiled = GetType().GetMethod("AddConstant2");
 
             var decompilled = compiled.Decompile();
 
@@ -106,7 +130,7 @@ namespace DelegateDecompiller.Tests
         [Fact]
         public void ShouldBeAbleToDecompileExpressionWithMethodCall()
         {
-            Expression<Func<int, int, int>> expression = (x, y) => Sum(x, y);
+            Expression<Func<int, int, int>> expression = (x, y) => Add(x, y);
 
             var compiled = GetType().GetMethod("MehtodCall");
 
@@ -168,9 +192,19 @@ namespace DelegateDecompiller.Tests
             return o;
         }
 
-        public static int Sum(int x, int y)
+        public static int Add(int x, int y)
         {
             return x + y;
+        }
+
+        public static int AddConstant(int x)
+        {
+            return x + 1;
+        }
+
+        public static int AddConstant2(int x)
+        {
+            return x + 128;
         }
 
         public static int Substract(int x, int y)
@@ -200,7 +234,7 @@ namespace DelegateDecompiller.Tests
 
         public static int MehtodCall(int x, int y)
         {
-            return Sum(x, y);
+            return Add(x, y);
         }
 
         public static string ToString1(int x)
