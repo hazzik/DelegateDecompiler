@@ -30,6 +30,18 @@ namespace DelegateDecompiller.Tests
             Assert.Equal(expression.ToString(), decompilled.ToString());
         }
 
+        [Fact]
+        public void ShouldBeAbleToDecompileExpressionWithSubstract()
+        {
+            Expression<Func<int, int, int>> expression = (x, y) => x - y;
+
+            var compiled = GetType().GetMethod("Substract");
+
+            var decompilled = compiled.Decompile();
+
+            Assert.Equal(expression.ToString(), decompilled.ToString());
+        }
+
         public static object Id(object o)
         {
             return o;
@@ -38,6 +50,11 @@ namespace DelegateDecompiller.Tests
         public static object Sum(int x, int y)
         {
             return x + y;
+        }
+
+        public static object Substract(int x, int y)
+        {
+            return x - y;
         }
     }
 }

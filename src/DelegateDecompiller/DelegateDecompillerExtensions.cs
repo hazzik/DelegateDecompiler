@@ -63,6 +63,12 @@ namespace DelegateDecompiller
                     var val2 = stack.Pop();
                     stack.Push(Expression.Add(val2, val1));
                 }
+                else if (instruction.OpCode == OpCodes.Sub)
+                {
+                    var val1 = stack.Pop();
+                    var val2 = stack.Pop();
+                    stack.Push(Expression.Subtract(val2, val1));
+                }
                 else if (instruction.OpCode == OpCodes.Box)
                 {
                     //do nothing for now
