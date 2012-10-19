@@ -116,12 +116,6 @@ namespace DelegateDecompiller
                 {
                     //not implemented yet
                 }
-                else if (instruction.OpCode == OpCodes.Ret)
-                {
-                    if (stack.Count == 0)
-                        ex = Expression.Empty();
-                    ex = stack.Pop();
-                }
                 else if (instruction.OpCode == OpCodes.Add)
                 {
                     var val1 = stack.Pop();
@@ -140,27 +134,43 @@ namespace DelegateDecompiller
                     var val2 = stack.Pop();
                     stack.Push(Expression.Multiply(val2, val1));
                 }
+                else if (instruction.OpCode == OpCodes.Div)
+                {
+                    var val1 = stack.Pop();
+                    var val2 = stack.Pop();
+                    stack.Push(Expression.Divide(val2, val1));
+                }
                 else if (instruction.OpCode == OpCodes.Box)
                 {
                     stack.Push(Expression.Convert(stack.Pop(), typeof (object)));
                 }
                 else if (instruction.OpCode == OpCodes.Call)
                 {
-                    var m = (MethodInfo) instruction.Operand;
-
-                    var parameterInfos = m.GetParameters();
-                    var mArgs = new Expression[parameterInfos.Length];
-                    for (var i = parameterInfos.Length - 1; i >= 0; i--)
-                    {
-                        mArgs[i] = stack.Pop();
-                    }
-                    stack.Push(Expression.Call(m, mArgs));
+                    Call((MethodInfo) instruction.Operand);
                     //do nothing for now
+                }
+                else if (instruction.OpCode == OpCodes.Ret)
+                {
+                    if (stack.Count == 0)
+                        ex = Expression.Empty();
+                    ex = stack.Pop();
                 }
                 Console.WriteLine(instruction);
             }
 
             return Expression.Lambda(ex, args);
+        }
+
+        void Call(MethodInfo m)
+        {
+            var parameterInfos = m.GetParameters();
+            var mArgs = new Expression[parameterInfos.Length];
+            for (var i = parameterInfos.Length - 1; i >= 0; i--)
+            {
+                mArgs[i] = stack.Pop();
+            }
+
+            stack.Push(Expression.Call(m, mArgs));
         }
 
         void LdLoc(int index)

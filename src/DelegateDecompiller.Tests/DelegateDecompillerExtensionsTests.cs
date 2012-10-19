@@ -55,6 +55,18 @@ namespace DelegateDecompiller.Tests
         }
 
         [Fact]
+        public void ShouldBeAbleToDecompileExpressionWithDiv()
+        {
+            Expression<Func<int, int, int>> expression = (x, y) => x / y;
+
+            var compiled = GetType().GetMethod("Divade");
+
+            var decompilled = compiled.Decompile();
+
+            Assert.Equal(expression.ToString(), decompilled.ToString());
+        }
+
+        [Fact]
         public void ShouldBeAbleToDecompileExpressionWithBoxing()
         {
             Expression<Func<int, object>> expression = x => x;
@@ -96,6 +108,11 @@ namespace DelegateDecompiller.Tests
         public static int Multiply(int x, int y)
         {
             return x * y;
+        }
+
+        public static int Divade(int x, int y)
+        {
+            return x / y;
         }
 
         public static int MehtodCall(int x, int y)
