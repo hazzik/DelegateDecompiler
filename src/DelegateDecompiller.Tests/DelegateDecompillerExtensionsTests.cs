@@ -89,6 +89,18 @@ namespace DelegateDecompiller.Tests
 
             Assert.Equal(expression.ToString(), decompilled.ToString());
         }
+        
+        [Fact]
+        public void ShouldBeAbleToDecompileExpressionWithInstanceMethodCall()
+        {
+            Expression<Func<int, string>> expression = x => x.ToString();
+
+            var compiled = GetType().GetMethod("ToString1");
+
+            var decompilled = compiled.Decompile();
+
+            Assert.Equal(expression.ToString(), decompilled.ToString());
+        }
 
         public static object Id(object o)
         {
@@ -118,6 +130,11 @@ namespace DelegateDecompiller.Tests
         public static int MehtodCall(int x, int y)
         {
             return Sum(x, y);
+        }
+
+        public static string ToString1(int x)
+        {
+            return x.ToString();
         }
 
         public static object Boxing(int x)

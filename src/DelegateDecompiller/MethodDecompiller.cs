@@ -64,6 +64,11 @@ namespace DelegateDecompiller
                 {
                     LdArg((int) instruction.Operand);
                 }
+                else if (instruction.OpCode == OpCodes.Ldarga_S || instruction.OpCode == OpCodes.Ldarga)
+                {
+                    var operand = (ParameterInfo) instruction.Operand;
+                    stack.Push(args.Single(x => x.Name == operand.Name));
+                }
                 else if (instruction.OpCode == OpCodes.Stloc_0)
                 {
                     StLoc(0);
@@ -163,14 +168,28 @@ namespace DelegateDecompiller
 
         void Call(MethodInfo m)
         {
-            var parameterInfos = m.GetParameters();
-            var mArgs = new Expression[parameterInfos.Length];
-            for (var i = parameterInfos.Length - 1; i >= 0; i--)
+            if (m.IsStatic)
             {
-                mArgs[i] = stack.Pop();
-            }
+                var parameterInfos = m.GetParameters();
+                var mArgs = new Expression[parameterInfos.Length];
+                for (var i = parameterInfos.Length - 1; i >= 0; i--)
+                {
+                    mArgs[i] = stack.Pop();
+                }
 
-            stack.Push(Expression.Call(m, mArgs));
+                stack.Push(Expression.Call(m, mArgs));
+            }
+            else
+            {
+                var parameterInfos = m.GetParameters();
+                var mArgs = new Expression[parameterInfos.Length];
+                for (var i = parameterInfos.Length - 1; i >= 0; i--)
+                {
+                    mArgs[i] = stack.Pop();
+                }
+
+                stack.Push(Expression.Call(stack.Pop(), m, mArgs));
+            }
         }
 
         void LdLoc(int index)
