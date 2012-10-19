@@ -42,19 +42,36 @@ namespace DelegateDecompiller.Tests
             Assert.Equal(expression.ToString(), decompilled.ToString());
         }
 
+        [Fact]
+        public void ShouldBeAbleToDecompileExpressionWithMethodCall()
+        {
+            Expression<Func<int, int, int>> expression = (x, y) => Sum(x, y);
+
+            var compiled = GetType().GetMethod("MehtodCall");
+
+            var decompilled = compiled.Decompile();
+
+            Assert.Equal(expression.ToString(), decompilled.ToString());
+        }
+
         public static object Id(object o)
         {
             return o;
         }
 
-        public static object Sum(int x, int y)
+        public static int Sum(int x, int y)
         {
             return x + y;
         }
 
-        public static object Substract(int x, int y)
+        public static int Substract(int x, int y)
         {
             return x - y;
+        }
+
+        public static object MehtodCall(int x, int y)
+        {
+            return Sum(x, y);
         }
     }
 }

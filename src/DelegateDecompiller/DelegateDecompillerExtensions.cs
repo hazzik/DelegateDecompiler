@@ -72,7 +72,20 @@ namespace DelegateDecompiller
                 else if (instruction.OpCode == OpCodes.Box)
                 {
                     //do nothing for now
-                } 
+                }
+                else if (instruction.OpCode == OpCodes.Call)
+                {
+                    var m = (MethodInfo) instruction.Operand;
+
+                    var parameterInfos = m.GetParameters();
+                    var mArgs = new Expression[parameterInfos.Length];
+                    for (var i = parameterInfos.Length - 1; i >= 0; i--)
+                    {
+                        mArgs[i] = stack.Pop();
+                    }
+                    stack.Push(Expression.Call(m, mArgs));
+                    //do nothing for now
+                }
                 Console.WriteLine(instruction);
             }
 
