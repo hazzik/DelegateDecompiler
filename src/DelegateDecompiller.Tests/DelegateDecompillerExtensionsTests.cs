@@ -43,6 +43,18 @@ namespace DelegateDecompiller.Tests
         }
 
         [Fact]
+        public void ShouldBeAbleToDecompileExpressionWithMul()
+        {
+            Expression<Func<int, int, int>> expression = (x, y) => x * y;
+
+            var compiled = GetType().GetMethod("Multiply");
+
+            var decompilled = compiled.Decompile();
+
+            Assert.Equal(expression.ToString(), decompilled.ToString());
+        }
+
+        [Fact]
         public void ShouldBeAbleToDecompileExpressionWithMethodCall()
         {
             Expression<Func<int, int, int>> expression = (x, y) => Sum(x, y);
@@ -67,6 +79,11 @@ namespace DelegateDecompiller.Tests
         public static int Substract(int x, int y)
         {
             return x - y;
+        }
+
+        public static int Multiply(int x, int y)
+        {
+            return x * y;
         }
 
         public static object MehtodCall(int x, int y)
