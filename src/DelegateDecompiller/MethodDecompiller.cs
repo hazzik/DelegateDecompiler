@@ -142,7 +142,7 @@ namespace DelegateDecompiller
                 }
                 else if (instruction.OpCode == OpCodes.Box)
                 {
-                    //do nothing for now
+                    stack.Push(Expression.Convert(stack.Pop(), typeof (object)));
                 }
                 else if (instruction.OpCode == OpCodes.Call)
                 {

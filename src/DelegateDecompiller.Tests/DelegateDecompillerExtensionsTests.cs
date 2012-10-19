@@ -55,6 +55,18 @@ namespace DelegateDecompiller.Tests
         }
 
         [Fact]
+        public void ShouldBeAbleToDecompileExpressionWithBoxing()
+        {
+            Expression<Func<int, object>> expression = x => x;
+
+            var compiled = GetType().GetMethod("Boxing");
+
+            var decompilled = compiled.Decompile();
+
+            Assert.Equal(expression.ToString(), decompilled.ToString());
+        }
+
+        [Fact]
         public void ShouldBeAbleToDecompileExpressionWithMethodCall()
         {
             Expression<Func<int, int, int>> expression = (x, y) => Sum(x, y);
@@ -86,9 +98,14 @@ namespace DelegateDecompiller.Tests
             return x * y;
         }
 
-        public static object MehtodCall(int x, int y)
+        public static int MehtodCall(int x, int y)
         {
             return Sum(x, y);
+        }
+
+        public static object Boxing(int x)
+        {
+            return x;
         }
     }
 }
