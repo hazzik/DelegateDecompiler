@@ -227,10 +227,9 @@ namespace DelegateDecompiller
                 {
                     stack.Push(Expression.Convert(stack.Pop(), typeof (object)));
                 }
-                else if (instruction.OpCode == OpCodes.Call)
+                else if (instruction.OpCode == OpCodes.Call || instruction.OpCode == OpCodes.Callvirt)
                 {
                     Call((MethodInfo) instruction.Operand);
-                    //do nothing for now
                 }
                 else if (instruction.OpCode == OpCodes.Ret)
                 {
@@ -259,14 +258,32 @@ namespace DelegateDecompiller
             }
 
             var instance = m.IsStatic ? null : stack.Pop();
-            if (m.IsSpecialName && m.IsHideBySig && m.Name.StartsWith("get_"))
+            if (m.IsSpecialName && m.IsHideBySig)
             {
-                stack.Push(Expression.Property(instance, m));
+                if (m.Name.StartsWith("get_"))
+                {
+                    stack.Push(Expression.Property(instance, m));
+                    return;
+                }
+                if (m.Name.StartsWith("op_"))
+                {
+                    ExpressionType type;
+                    if (Enum.TryParse(m.Name.Substring(3), out type))
+                    {
+                        switch (mArgs.Length)
+                        {
+                            case 1:
+                                stack.Push(Expression.MakeUnary(type, mArgs[0], mArgs[0].Type));
+                                return;
+                            case 2:
+                                stack.Push(Expression.MakeBinary(type, mArgs[0], mArgs[1]));
+                                return;
+                        }
+                    }
+                }
             }
-            else 
-            {
-                stack.Push(Expression.Call(instance, m, mArgs));
-            }
+            
+            stack.Push(Expression.Call(instance, m, mArgs));
         }
 
         void LdLoc(int index)
