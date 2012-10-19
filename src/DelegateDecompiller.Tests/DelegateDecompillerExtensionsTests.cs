@@ -259,6 +259,30 @@ namespace DelegateDecompiller.Tests
             Assert.Equal(expression.ToString(), decompilled.ToString());
         }
 
+        [Fact]
+        public void NewObject()
+        {
+            Expression<Func<TestClass>> expression = () => new TestClass();
+
+            var compiled = GetType().GetMethod("NewTestClass");
+
+            var decompilled = compiled.Decompile();
+
+            Assert.Equal(expression.ToString(), decompilled.ToString());
+        }
+
+        [Fact]
+        public void NewArray()
+        {
+            Expression<Func<int[]>> expression = () => new int[0];
+
+            var compiled = GetType().GetMethod("NewArray0");
+
+            var decompilled = compiled.Decompile();
+
+            Assert.Equal(expression.ToString(), decompilled.ToString());
+        }
+
         public static object Id(object o)
         {
             return o;
@@ -362,6 +386,16 @@ namespace DelegateDecompiller.Tests
         public static sbyte CastIntToSbyte(int x)
         {
             return (sbyte) x;
+        }
+
+        public static TestClass NewTestClass()
+        {
+            return new TestClass();
+        }
+
+        public static int[] NewArray0()
+        {
+            return new int[0];
         }
     }
 

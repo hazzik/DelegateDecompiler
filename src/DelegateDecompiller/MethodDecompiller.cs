@@ -352,6 +352,16 @@ namespace DelegateDecompiller
                     var val2 = stack.Pop();
                     stack.Push(Expression.Or(val2, val1));
                 }
+                else if (instruction.OpCode == OpCodes.Newobj)
+                {
+                    var operand = (ConstructorInfo) instruction.Operand;
+                    stack.Push(Expression.New(operand, GetArguments(operand)));
+                }
+                else if (instruction.OpCode == OpCodes.Newarr)
+                {
+                    var operand = (Type) instruction.Operand;
+                    stack.Push(Expression.NewArrayInit(operand));
+                }
                 else if (instruction.OpCode == OpCodes.Box)
                 {
                     stack.Push(Expression.Convert(stack.Pop(), typeof (object)));
@@ -393,15 +403,21 @@ namespace DelegateDecompiller
 
         void Call(MethodInfo m)
         {
+            var mArgs = GetArguments(m);
+
+            var instance = m.IsStatic ? null : stack.Pop();
+            stack.Push(BuildExpression(m, instance, mArgs));
+        }
+
+        Expression[] GetArguments(MethodBase m)
+        {
             var parameterInfos = m.GetParameters();
             var mArgs = new Expression[parameterInfos.Length];
             for (var i = parameterInfos.Length - 1; i >= 0; i--)
             {
                 mArgs[i] = stack.Pop();
             }
-
-            var instance = m.IsStatic ? null : stack.Pop();
-            stack.Push(BuildExpression(m, instance, mArgs));
+            return mArgs;
         }
 
         static Expression BuildExpression(MethodInfo m, Expression instance, Expression[] arguments)
