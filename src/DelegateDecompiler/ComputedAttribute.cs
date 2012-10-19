@@ -3,7 +3,7 @@
 namespace DelegateDecompiller
 {
     [AttributeUsage(AttributeTargets.Property | AttributeTargets.Method, Inherited = false, AllowMultiple = false)]
-    public sealed class DecompileAttribute : Attribute
+    public sealed class ComputedAttribute : Attribute
     {
     }
 }

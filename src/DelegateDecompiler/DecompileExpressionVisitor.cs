@@ -14,8 +14,7 @@ namespace DelegateDecompiller
 
         protected override Expression VisitMember(MemberExpression node)
         {
-            var decompileAttributes = node.Member.GetCustomAttributes(typeof (DecompileAttribute), true);
-            if (decompileAttributes.Length > 0)
+            if (ShouldDecompile(node.Member))
             {
                 var info = node.Member as PropertyInfo;
                 if (info != null)
@@ -24,18 +23,24 @@ namespace DelegateDecompiller
                     return Decompile(method, node.Expression, new List<Expression>());
                 }
             }
+
             return base.VisitMember(node);
         }
 
         protected override Expression VisitMethodCall(MethodCallExpression node)
         {
-            var decompileAttributes = node.Method.GetCustomAttributes(typeof (DecompileAttribute), true);
-            if (decompileAttributes.Length > 0)
+            if (ShouldDecompile(node.Method))
             {
                 return Decompile(node.Method, node.Object, node.Arguments);
             }
 
             return base.VisitMethodCall(node);
+        }
+
+        static bool ShouldDecompile(ICustomAttributeProvider methodInfo)
+        {
+            return methodInfo.GetCustomAttributes(typeof (DecompileAttribute), true).Length > 0 ||
+                   methodInfo.GetCustomAttributes(typeof (ComputedAttribute), true).Length > 0;
         }
 
         static Expression Decompile(MethodBase method, Expression instance, IList<Expression> arguments)

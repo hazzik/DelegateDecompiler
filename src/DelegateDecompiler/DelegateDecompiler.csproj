@@ -46,6 +46,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ComputedAttribute.cs" />
     <Compile Include="DecompileAttribute.cs" />
     <Compile Include="DecompileExpressionVisitor.cs" />
     <Compile Include="DecompileExtensions.cs" />
@@ -54,7 +55,9 @@
     <Compile Include="ReplaceExpressionVisitor.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="DelegateDecompiler.nuspec" />
+    <None Include="DelegateDecompiler.nuspec">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
