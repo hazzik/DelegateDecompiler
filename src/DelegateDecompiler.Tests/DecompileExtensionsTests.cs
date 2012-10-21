@@ -155,12 +155,8 @@ namespace DelegateDecompiler.Tests
         public void ShouldBeAbleToDecompileExpressionWithCastIntToSbyte()
         {
             Expression<Func<sbyte, int>> expected = x => x;
-            Test(expected, IntToSbyte);
-        }
-
-        static int IntToSbyte(sbyte x)
-        {
-            return x;
+            Func<sbyte, int> compiled = x => x;
+            Test(expected, compiled);
         }
 
         [Fact]

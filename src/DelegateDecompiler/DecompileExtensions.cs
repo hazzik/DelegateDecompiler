@@ -12,7 +12,7 @@ namespace DelegateDecompiler
             return Decompile(@delegate.Method);
         }
 
-        public static LambdaExpression Decompile(this MethodBase method)
+        public static LambdaExpression Decompile(this MethodInfo method)
         {
             return new MethodDecompiler(method).Decompile();
         }

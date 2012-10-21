@@ -12,13 +12,13 @@ namespace DelegateDecompiler
     {
         readonly IList<ParameterExpression> args;
         readonly Expression[] locals;
-        readonly MethodBase method;
+        readonly MethodInfo method;
         readonly Stack<Expression> stack;
 
         Expression ex;
         static readonly MethodInfo stringConcat = typeof (string).GetMethod("Concat", new[] { typeof (string), typeof (string) });
 
-        public MethodDecompiler(MethodBase method)
+        public MethodDecompiler(MethodInfo method)
         {
             stack = new Stack<Expression>();
             locals = new Expression[0];
@@ -400,6 +400,9 @@ namespace DelegateDecompiler
                     ex = stack.Pop();
                 }
             }
+
+            if (ex.Type != method.ReturnType && method.ReturnType != typeof(void))
+                ex = Expression.Convert(ex, method.ReturnType);
 
             return Expression.Lambda(ex, args);
         }

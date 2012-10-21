@@ -42,7 +42,7 @@ namespace DelegateDecompiler
                    methodInfo.GetCustomAttributes(typeof (ComputedAttribute), true).Length > 0;
         }
 
-        static Expression Decompile(MethodBase method, Expression instance, IList<Expression> arguments)
+        static Expression Decompile(MethodInfo method, Expression instance, IList<Expression> arguments)
         {
             var expression = method.Decompile();
 
