@@ -60,7 +60,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ArrayTests.cs" />
     <Compile Include="DecompileExtensionsTests.cs" />
+    <Compile Include="DecompilerTestsBase.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="QueryableExtensionsTests.cs" />
   </ItemGroup>
