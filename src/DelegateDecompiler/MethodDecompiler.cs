@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -45,7 +46,7 @@ namespace DelegateDecompiler
             var instructions = method.GetInstructions();
             foreach (var instruction in instructions)
             {
-                Console.WriteLine(instruction);
+                Debug.WriteLine(instruction);
 
                 if (instruction.OpCode == OpCodes.Nop)
                 {
