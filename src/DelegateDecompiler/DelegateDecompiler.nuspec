@@ -15,6 +15,6 @@
     </description>
     <releaseNotes></releaseNotes>
     <copyright>Copyright (c) hazzik 2012</copyright>
-    <tags></tags>
+    <tags>LINQ, computed properties, computedproperties, decompiler</tags>
   </metadata>
 </package>
