@@ -62,8 +62,10 @@
   <ItemGroup>
     <Compile Include="ArrayTests.cs" />
     <Compile Include="ClosuresTest.cs" />
+    <Compile Include="ConditionalTests.cs" />
     <Compile Include="DecompileExtensionsTests.cs" />
     <Compile Include="DecompilerTestsBase.cs" />
+    <Compile Include="Employee.cs" />
     <Compile Include="ListInitTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="QueryableExtensionsTests.cs" />

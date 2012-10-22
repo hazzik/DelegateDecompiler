@@ -10,41 +10,34 @@ using Mono.Reflection;
 
 namespace DelegateDecompiler
 {
-    public class MethodDecompiler
+    public class Processor 
     {
-        readonly IList<ParameterExpression> args;
-        readonly Expression[] locals;
-        readonly MethodInfo method;
-        readonly Stack<Expression> stack;
-
-        Expression ex;
-        static readonly MethodInfo stringConcat = typeof (string).GetMethod("Concat", new[] { typeof (object), typeof (object) });
-       
-        public MethodDecompiler(MethodInfo method)
+        public static Processor Create(Expression[] locals, IList<ParameterExpression> args)
         {
-            stack = new Stack<Expression>();
-            locals = new Expression[0];
-            ex = Expression.Empty();
-            this.method = method;
-            var parameters = method.GetParameters();
-            if (method.IsStatic)
-                args = parameters
-                    .Select(p => Expression.Parameter(p.ParameterType, p.Name))
-                    .ToList();
-            else
-                args = new[] { Expression.Parameter(method.DeclaringType, "this") }.Union(
-                    parameters
-                        .Select(p => Expression.Parameter(p.ParameterType, p.Name)))
-                                                                           .ToList();
-
-            var body = method.GetMethodBody();
-            locals = new Expression[body.LocalVariables.Count];
+            return new Processor(new Stack<Expression>(), locals, args);
         }
 
-        public LambdaExpression Decompile()
+        Processor Clone()
         {
-            var instructions = method.GetInstructions();
-            foreach (var instruction in instructions)
+            return new Processor(new Stack<Expression>(stack), locals.ToArray(), args.ToArray());
+        }
+
+        static readonly MethodInfo stringConcat = typeof(string).GetMethod("Concat", new[] { typeof(object), typeof(object) });
+
+        readonly Stack<Expression> stack;
+        readonly Expression[] locals;
+        readonly IList<ParameterExpression> args;
+
+        Processor(Stack<Expression> stack, Expression[] locals, IList<ParameterExpression> args)
+        {
+            this.stack = stack;
+            this.locals = locals;
+            this.args = args;
+        }
+
+        public Expression Process(Instruction instruction)
+        {
+            while(true)
             {
                 Debug.WriteLine(instruction);
 
@@ -99,7 +92,7 @@ namespace DelegateDecompiler
                 }
                 else if (instruction.OpCode == OpCodes.Stloc_S)
                 {
-                    StLoc((byte)instruction.Operand);
+                    StLoc((byte) instruction.Operand);
                 }
                 else if (instruction.OpCode == OpCodes.Stloc)
                 {
@@ -219,9 +212,48 @@ namespace DelegateDecompiler
                 {
                     LdC((double) instruction.Operand);
                 }
-                else if (instruction.OpCode == OpCodes.Br_S)
+                else if (instruction.OpCode == OpCodes.Br_S || instruction.OpCode == OpCodes.Br)
                 {
-                    //not implemented yet
+                    instruction = (Instruction) instruction.Operand;
+                    continue;
+                }
+                else if (instruction.OpCode == OpCodes.Brfalse_S || instruction.OpCode == OpCodes.Brfalse)
+                {
+                    var val1 = stack.Pop();
+                    var test = Expression.NotEqual(val1, Expression.Default(val1.Type));
+
+                    var left = instruction.Next;
+                    var right = (Instruction) instruction.Operand;
+
+                    var leftExpression = Clone().Process(left);
+                    var rightExpression = AdjustType(Clone().Process(right), leftExpression.Type);
+
+                    stack.Push(Expression.Condition(test, leftExpression, rightExpression));
+
+                    break;
+                }
+                else if (instruction.OpCode == OpCodes.Brtrue || instruction.OpCode == OpCodes.Brtrue_S)
+                {
+                    var val1 = stack.Pop();
+                    var test = Expression.Equal(val1, Expression.Default(val1.Type));
+
+                    var right = (Instruction)instruction.Operand;
+                    var left = instruction.Next;
+
+                    var leftExpression = /*AdjustBool*/(Clone().Process(left));
+                    var rightExpression = /*AdjustBool*/(Clone().Process(right));
+
+                    stack.Push(Expression.Condition(test, leftExpression, rightExpression));
+
+                    break;
+                }
+                else if (instruction.OpCode == OpCodes.Dup)
+                {
+                    stack.Push(stack.Peek());
+                }
+                else if (instruction.OpCode == OpCodes.Pop)
+                {
+                    stack.Pop();
                 }
                 else if (instruction.OpCode == OpCodes.Add)
                 {
@@ -412,22 +444,30 @@ namespace DelegateDecompiler
                 }
                 else if (instruction.OpCode == OpCodes.Ret)
                 {
-                    if (stack.Count == 0)
-                        ex = Expression.Empty();
-                    ex = stack.Pop();
+                    break;
                 }
+
+                instruction = instruction.Next;
             }
 
-            if (ex.Type != method.ReturnType && method.ReturnType != typeof(void))
-                ex = Expression.Convert(ex, method.ReturnType);
+            return stack.Count == 0
+                       ? Expression.Empty()
+                       : stack.Pop();
+        }
 
-            return Expression.Lambda(ex, args);
+        Expression AdjustType(Expression expression, Type type)
+        {
+            if (expression.Type == typeof(int) && type == typeof(bool))
+            {
+                return Expression.NotEqual(expression, Expression.Constant(0));
+            }
+            return expression;
         }
 
         void StElem()
         {
             var value = stack.Pop();
-            var index = stack.Pop(); 
+            var index = stack.Pop();
             var array = stack.Pop();
 
             var newArray = array as NewArrayExpression;
@@ -461,7 +501,7 @@ namespace DelegateDecompiler
         {
             stack.Push(Expression.Constant(i));
         }
-        
+
         void LdC(float i)
         {
             stack.Push(Expression.Constant(i));
@@ -533,7 +573,7 @@ namespace DelegateDecompiler
                     }
                 }
             }
-            if (m.Name == "Concat" && m.DeclaringType == typeof (string))
+            if (m.Name == "Concat" && m.DeclaringType == typeof(string))
             {
                 var expression = arguments[0];
                 for (var i = 1; i < arguments.Length; i++)
