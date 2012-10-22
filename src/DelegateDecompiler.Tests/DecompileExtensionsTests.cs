@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Linq.Expressions;
 using Xunit;
@@ -243,11 +244,5 @@ namespace DelegateDecompiler.Tests
         {
             return x + y;
         }
-    }
-
-    public class TestClass
-    {
-        public DateTime StartDate { get; set; }
-        public DateTime? EndDate { get; set; }
     }
 }

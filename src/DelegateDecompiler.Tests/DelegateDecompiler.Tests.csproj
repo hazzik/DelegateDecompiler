@@ -63,8 +63,10 @@
     <Compile Include="ArrayTests.cs" />
     <Compile Include="DecompileExtensionsTests.cs" />
     <Compile Include="DecompilerTestsBase.cs" />
+    <Compile Include="ListInitTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="QueryableExtensionsTests.cs" />
+    <Compile Include="TestClass.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

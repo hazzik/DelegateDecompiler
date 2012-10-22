@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -432,7 +434,7 @@ namespace DelegateDecompiler
             var mArgs = GetArguments(m);
 
             var instance = m.IsStatic ? null : stack.Pop();
-            stack.Push(BuildExpression(m, instance, mArgs));
+            stack.Push(BuildMethodCallExpression(m, instance, mArgs));
         }
 
         Expression[] GetArguments(MethodBase m)
@@ -446,8 +448,27 @@ namespace DelegateDecompiler
             return mArgs;
         }
 
-        static Expression BuildExpression(MethodInfo m, Expression instance, Expression[] arguments)
+        Expression BuildMethodCallExpression(MethodInfo m, Expression instance, Expression[] arguments)
         {
+            if (m.Name == "Add" && typeof(IEnumerable).IsAssignableFrom(instance.Type))
+            {
+                var newExpression = instance as NewExpression;
+                if (newExpression != null)
+                {
+                    var init = Expression.ListInit(newExpression, Expression.ElementInit(m, arguments));
+                    UpdateLocals(newExpression, init);
+                    return init;
+                }
+                var initExpression = instance as ListInitExpression;
+                if (initExpression != null)
+                {
+                    var initializers = initExpression.Initializers.ToList();
+                    initializers.Add(Expression.ElementInit(m, arguments));
+                    var init = Expression.ListInit(initExpression.NewExpression, initializers);
+                    UpdateLocals(initExpression, init);
+                    return init;
+                }
+            }
             if (m.IsSpecialName && m.IsHideBySig)
             {
                 if (m.Name.StartsWith("get_"))
@@ -480,6 +501,18 @@ namespace DelegateDecompiler
             }
 
             return Expression.Call(instance, m, arguments);
+        }
+
+        void UpdateLocals(Expression oldExpression, Expression newExpression)
+        {
+            for (var i = 0; i < locals.Length; i++)
+            {
+                var local = locals[i];
+                if (local == oldExpression)
+                {
+                    locals[i] = newExpression;
+                }
+            }
         }
 
         void LdLoc(int index)
