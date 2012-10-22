@@ -23,6 +23,22 @@ namespace DelegateDecompiler.Tests
         }
 
         [Fact]
+        public void InlineTooDeepProperty()
+        {
+            var employees = new[] { new Employee { FirstName = "Test", LastName = "User" } };
+
+            var expected = (from employee in employees.AsQueryable()
+                            where (employee.FirstName + " " + employee.LastName) == "Test User"
+                            select employee);
+
+            var actual = (from employee in employees.AsQueryable()
+                          where employee.TooDeepName == "Test User"
+                          select employee).Decompile();
+
+            Assert.Equal(expected.Expression.ToString(), actual.Expression.ToString());
+        }
+
+        [Fact]
         public void InlinePropertyWithVariableClosure()
         {
             var employees = new[] { new Employee { FirstName = "Test", LastName = "User" } };
@@ -98,6 +114,12 @@ namespace DelegateDecompiler.Tests
             public string FullName
             {
                 get { return FirstName + " " + LastName; }
+            }
+
+            [Computed]
+            public string TooDeepName
+            {
+                get { return FullName; }
             }
 
             [Decompile]

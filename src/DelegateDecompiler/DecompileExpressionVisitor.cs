@@ -42,7 +42,7 @@ namespace DelegateDecompiler
                    methodInfo.GetCustomAttributes(typeof (ComputedAttribute), true).Length > 0;
         }
 
-        static Expression Decompile(MethodInfo method, Expression instance, IList<Expression> arguments)
+        Expression Decompile(MethodInfo method, Expression instance, IList<Expression> arguments)
         {
             var expression = method.Decompile();
 
@@ -61,7 +61,7 @@ namespace DelegateDecompiler
                 }
             }
 
-            return new ReplaceExpressionVisitor(expressions).Visit(expression.Body);
+            return Visit(new ReplaceExpressionVisitor(expressions).Visit(expression.Body));
         }
     }
 }
