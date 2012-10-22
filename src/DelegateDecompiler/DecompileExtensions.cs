@@ -7,6 +7,8 @@ namespace DelegateDecompiler
 {
     public static class DecompileExtensions
     {
+        private static readonly Cache<MethodInfo, LambdaExpression> cache = new Cache<MethodInfo, LambdaExpression>(); 
+        
         public static LambdaExpression Decompile(this Delegate @delegate)
         {
             return Decompile(@delegate.Method);
@@ -14,7 +16,7 @@ namespace DelegateDecompiler
 
         public static LambdaExpression Decompile(this MethodInfo method)
         {
-            return new MethodDecompiler(method).Decompile();
+            return cache.GetOrAdd(method, m => new MethodDecompiler(method).Decompile());
         }
 
         public static IQueryable<T> Decompile<T>(this IQueryable<T> self)

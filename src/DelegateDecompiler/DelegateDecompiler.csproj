@@ -46,6 +46,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Cache.cs" />
     <Compile Include="ComputedAttribute.cs" />
     <Compile Include="DecompileAttribute.cs" />
     <Compile Include="DecompileExpressionVisitor.cs" />
