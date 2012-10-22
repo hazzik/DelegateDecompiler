@@ -450,7 +450,7 @@ namespace DelegateDecompiler
 
         Expression BuildMethodCallExpression(MethodInfo m, Expression instance, Expression[] arguments)
         {
-            if (m.Name == "Add" && typeof(IEnumerable).IsAssignableFrom(instance.Type))
+            if (m.Name == "Add" && instance != null && typeof(IEnumerable).IsAssignableFrom(instance.Type))
             {
                 var newExpression = instance as NewExpression;
                 if (newExpression != null)
