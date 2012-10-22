@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using Xunit;
 
 namespace DelegateDecompiler.Tests
@@ -18,6 +19,24 @@ namespace DelegateDecompiler.Tests
                           where employee.FullName == "Test User"
                           select employee).Decompile();
 
+            Assert.Equal(expected.Expression.ToString(), actual.Expression.ToString());
+        }
+
+        [Fact]
+        public void InlinePropertyWithVariableClosure()
+        {
+            var employees = new[] { new Employee { FirstName = "Test", LastName = "User" } };
+
+            string fullname = "Test User";
+            var expected = (from employee in employees.AsQueryable()
+                            where (employee.FirstName + " " + employee.LastName) == fullname
+                            select employee);
+
+            var actual = (from employee in employees.AsQueryable()
+                          where employee.FullName == fullname
+                          select employee).Decompile();
+
+            Console.WriteLine(expected);
             Assert.Equal(expected.Expression.ToString(), actual.Expression.ToString());
         }
 

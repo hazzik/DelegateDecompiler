@@ -17,8 +17,8 @@ namespace DelegateDecompiler
         readonly Stack<Expression> stack;
 
         Expression ex;
-        static readonly MethodInfo stringConcat = typeof (string).GetMethod("Concat", new[] { typeof (string), typeof (string) });
-
+        static readonly MethodInfo stringConcat = typeof (string).GetMethod("Concat", new[] { typeof (object), typeof (object) });
+       
         public MethodDecompiler(MethodInfo method)
         {
             stack = new Stack<Expression>();
@@ -31,7 +31,7 @@ namespace DelegateDecompiler
                     .Select(p => Expression.Parameter(p.ParameterType, p.Name))
                     .ToList();
             else
-                args = new[] { Expression.Parameter(method.DeclaringType) }.Union(
+                args = new[] { Expression.Parameter(method.DeclaringType, "this") }.Union(
                     parameters
                         .Select(p => Expression.Parameter(p.ParameterType, p.Name)))
                                                                            .ToList();
@@ -115,6 +115,15 @@ namespace DelegateDecompiler
                          instruction.OpCode == OpCodes.Stelem_Ref)
                 {
                     StElem();
+                }
+                else if (instruction.OpCode == OpCodes.Ldfld)
+                {
+                    var instance = stack.Pop();
+                    stack.Push(Expression.Field(instance, (FieldInfo) instruction.Operand));
+                }
+                else if (instruction.OpCode == OpCodes.Ldsfld)
+                {
+                    stack.Push(Expression.Field(null, (FieldInfo) instruction.Operand));
                 }
                 else if (instruction.OpCode == OpCodes.Ldloc_0)
                 {
