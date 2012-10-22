@@ -185,46 +185,6 @@ namespace DelegateDecompiler.Tests
         }
 
         [Fact]
-        public void TestNewArray0()
-        {
-            Expression<Func<int[]>> expected = () => new int[0];
-            Func<int[]> compiled = () => new int[0];
-            Test(expected, compiled);
-        }
-
-        [Fact]
-        public void TestNewArray1()
-        {
-            Expression<Func<int[]>> expected = () => new int[1];
-            Func<int[]> compiled = () => new int[1];
-            Test(expected, compiled);
-        }
-
-        [Fact]
-        public void TestNewArrayX()
-        {
-            Expression<Func<int, int[]>> expected = x => new int[x];
-            Func<int, int[]> compiled = x => new int[x];
-            Test(expected, compiled);
-        }
-
-        [Fact(Skip = "Not Implemented yet")]
-        public void TestNewArrayInit1()
-        {
-            Expression<Func<int[]>> expected = () => new[] { 1 };
-            Func<int[]> compiled = () => new[] { 1 };
-            Test(expected, compiled);
-        }
-
-        [Fact(Skip = "Not Implemented yet")]
-        public void TestNewArrayInit2()
-        {
-            Expression<Func<int[]>> expected = () => new[] { 1 };
-            Func<int[]> compiled = () => new[] { 1 };
-            Test(expected, compiled);
-        }
-
-        [Fact]
         public void ShouldBeAbleToDecompileStringConcat2()
         {
             Expression<Func<string, string, string>> expression = (x, y) => x + y;

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -105,11 +104,17 @@ namespace DelegateDecompiler
                 {
                     StLoc((int) instruction.Operand);
                 }
-                else if (instruction.OpCode == OpCodes.Stelem_I4)
+                else if (instruction.OpCode == OpCodes.Stelem ||
+                         instruction.OpCode == OpCodes.Stelem_I ||
+                         instruction.OpCode == OpCodes.Stelem_I1 ||
+                         instruction.OpCode == OpCodes.Stelem_I2 ||
+                         instruction.OpCode == OpCodes.Stelem_I4 ||
+                         instruction.OpCode == OpCodes.Stelem_I8 ||
+                         instruction.OpCode == OpCodes.Stelem_R4 ||
+                         instruction.OpCode == OpCodes.Stelem_R8 ||
+                         instruction.OpCode == OpCodes.Stelem_Ref)
                 {
-                    var value = (ConstantExpression) stack.Pop();
-                    var index = (ConstantExpression) stack.Pop();
-                    var array = (NewArrayExpression) stack.Pop();
+                    StElem();
                 }
                 else if (instruction.OpCode == OpCodes.Ldloc_0)
                 {
@@ -133,11 +138,11 @@ namespace DelegateDecompiler
                 }
                 else if (instruction.OpCode == OpCodes.Ldloc)
                 {
-                    LdLoc((int)instruction.Operand);
+                    LdLoc((int) instruction.Operand);
                 }
                 else if (instruction.OpCode == OpCodes.Ldloca || instruction.OpCode == OpCodes.Ldloca_S)
                 {
-                    var operand = (LocalVariableInfo)instruction.Operand;
+                    var operand = (LocalVariableInfo) instruction.Operand;
                     LdLoc(operand.LocalIndex);
                 }
                 else if (instruction.OpCode == OpCodes.Ldstr)
@@ -253,52 +258,52 @@ namespace DelegateDecompiler
                 else if (instruction.OpCode == OpCodes.Conv_I)
                 {
                     var val1 = stack.Pop();
-                    stack.Push(Expression.Convert(val1, typeof(int))); // Suppot x64?
+                    stack.Push(Expression.Convert(val1, typeof (int))); // Suppot x64?
                 }
                 else if (instruction.OpCode == OpCodes.Conv_I1)
                 {
                     var val1 = stack.Pop();
-                    stack.Push(Expression.Convert(val1, typeof(sbyte)));
+                    stack.Push(Expression.Convert(val1, typeof (sbyte)));
                 }
                 else if (instruction.OpCode == OpCodes.Conv_I2)
                 {
                     var val1 = stack.Pop();
-                    stack.Push(Expression.Convert(val1, typeof(short)));
+                    stack.Push(Expression.Convert(val1, typeof (short)));
                 }
                 else if (instruction.OpCode == OpCodes.Conv_I4)
                 {
                     var val1 = stack.Pop();
-                    stack.Push(Expression.Convert(val1, typeof(int)));
+                    stack.Push(Expression.Convert(val1, typeof (int)));
                 }
                 else if (instruction.OpCode == OpCodes.Conv_I8)
                 {
                     var val1 = stack.Pop();
-                    stack.Push(Expression.Convert(val1, typeof(long)));
+                    stack.Push(Expression.Convert(val1, typeof (long)));
                 }
                 else if (instruction.OpCode == OpCodes.Conv_U)
                 {
                     var val1 = stack.Pop();
-                    stack.Push(Expression.Convert(val1, typeof(uint))); // Suppot x64?
+                    stack.Push(Expression.Convert(val1, typeof (uint))); // Suppot x64?
                 }
                 else if (instruction.OpCode == OpCodes.Conv_U1)
                 {
                     var val1 = stack.Pop();
-                    stack.Push(Expression.Convert(val1, typeof(byte)));
+                    stack.Push(Expression.Convert(val1, typeof (byte)));
                 }
                 else if (instruction.OpCode == OpCodes.Conv_U2)
                 {
                     var val1 = stack.Pop();
-                    stack.Push(Expression.Convert(val1, typeof(ushort)));
+                    stack.Push(Expression.Convert(val1, typeof (ushort)));
                 }
                 else if (instruction.OpCode == OpCodes.Conv_U4)
                 {
                     var val1 = stack.Pop();
-                    stack.Push(Expression.Convert(val1, typeof(uint)));
+                    stack.Push(Expression.Convert(val1, typeof (uint)));
                 }
                 else if (instruction.OpCode == OpCodes.Conv_U8)
                 {
                     var val1 = stack.Pop();
-                    stack.Push(Expression.Convert(val1, typeof(ulong)));
+                    stack.Push(Expression.Convert(val1, typeof (ulong)));
                 }
                 else if (instruction.OpCode == OpCodes.Conv_Ovf_I || instruction.OpCode == OpCodes.Conv_Ovf_I_Un)
                 {
@@ -407,6 +412,34 @@ namespace DelegateDecompiler
                 ex = Expression.Convert(ex, method.ReturnType);
 
             return Expression.Lambda(ex, args);
+        }
+
+        void StElem()
+        {
+            var value = stack.Pop();
+            var index = stack.Pop(); 
+            var array = stack.Pop();
+
+            var newArray = array as NewArrayExpression;
+            if (newArray != null)
+            {
+                var expressions = CreateArrayInitExpressions(newArray, value);
+                UpdateLocals(newArray, Expression.NewArrayInit(array.Type.GetElementType(), expressions));
+                return;
+            }
+
+            throw new NotImplementedException();
+        }
+
+        static IEnumerable<Expression> CreateArrayInitExpressions(NewArrayExpression newArray, Expression value)
+        {
+            if (newArray.NodeType == ExpressionType.NewArrayInit)
+            {
+                var expressions = newArray.Expressions.ToList();
+                expressions.Add(value);
+                return expressions;
+            }
+            return new[] { value };
         }
 
         void LdC(int i)
