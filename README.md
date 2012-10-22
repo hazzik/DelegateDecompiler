@@ -34,3 +34,7 @@ When you call `.Decompile` method it decompiles your computed properties to thei
     var employees = (from employee in db.Employees
                      where (employee.FirstName + " " + employee.LastName)  == "Test User"
                      select employee).ToList();
+
+# Installation
+
+Available on [NuGet](https://nuget.org/packages/DelegateDecompiler)
