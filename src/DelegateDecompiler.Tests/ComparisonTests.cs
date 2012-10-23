@@ -22,6 +22,14 @@ namespace DelegateDecompiler.Tests
             Test(expected, compiled);
         }
 
+        [Fact]
+        public void Bgt()
+        {
+            Expression<Func<int, int, int>> expected = (x, y) => x > y ? x : y;
+            Func<int, int, int> compiled = (x, y) => x > y ? x : y;
+            Test(expected, compiled);
+        }
+
         [Fact(Skip = "Need optimization")]
         public void Cge()
         {
@@ -35,6 +43,14 @@ namespace DelegateDecompiler.Tests
         {
             Expression<Func<int, int, bool>> expected = (x, y) => x < y;
             Func<int, int, bool> compiled = (x, y) => x < y;
+            Test(expected, compiled);
+        }
+
+        [Fact]
+        public void Blt()
+        {
+            Expression<Func<int, int, int>> expected = (x, y) => x < y ? x : y;
+            Func<int, int, int> compiled = (x, y) => x < y ? x : y;
             Test(expected, compiled);
         }
 

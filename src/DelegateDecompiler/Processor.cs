@@ -227,6 +227,24 @@ namespace DelegateDecompiler
                     instruction = ConditionalBranch(instruction, val => Expression.NotEqual(val, Default(val.Type)));
                     continue;
                 }
+                else if (instruction.OpCode == OpCodes.Bgt ||
+                         instruction.OpCode == OpCodes.Bgt_S ||
+                         instruction.OpCode == OpCodes.Bgt_Un ||
+                         instruction.OpCode == OpCodes.Bgt_Un_S)
+                {
+                    var val1 = stack.Pop();
+                    instruction = ConditionalBranch(instruction, val => Expression.GreaterThan(val, val1));
+                    continue;
+                }
+                else if (instruction.OpCode == OpCodes.Blt ||
+                         instruction.OpCode == OpCodes.Blt_S ||
+                         instruction.OpCode == OpCodes.Blt_Un ||
+                         instruction.OpCode == OpCodes.Blt_Un_S)
+                {
+                    var val1 = stack.Pop();
+                    instruction = ConditionalBranch(instruction, val => Expression.LessThan(val, val1));
+                    continue;
+                }
                 else if (instruction.OpCode == OpCodes.Dup)
                 {
                     stack.Push(stack.Peek());
