@@ -6,8 +6,6 @@ namespace DelegateDecompiler.Tests
 {
     public class ConditionalTests : DecompilerTestsBase
     {
-        const string Skip = "Compiler inverts branches";
-
         [Fact]
         public void SimpleAndAlso()
         {
@@ -53,6 +51,14 @@ namespace DelegateDecompiler.Tests
         {
             Expression<Func<Employee, bool>> expected = e => (e.FirstName ?? string.Empty).Contains("Test");
             Func<Employee, bool> compiled = e => (e.FirstName ?? string.Empty).Contains("Test");
+            Test(expected, compiled);
+        }
+
+        [Fact(Skip = "Need IIF optimization for Nullable<>")]
+        public void NullableCoalesce()
+        {
+            Expression<Func<int?, bool>> expected = e => (e ?? 100) == 100;
+            Func<int?, bool> compiled = e => (e ?? 100) == 100;
             Test(expected, compiled);
         }
     }
