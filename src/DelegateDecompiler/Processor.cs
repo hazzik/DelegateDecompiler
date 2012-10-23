@@ -236,6 +236,15 @@ namespace DelegateDecompiler
                     instruction = ConditionalBranch(instruction, val => Expression.GreaterThan(val, val1));
                     continue;
                 }
+                else if (instruction.OpCode == OpCodes.Bge ||
+                         instruction.OpCode == OpCodes.Bge_S ||
+                         instruction.OpCode == OpCodes.Bge_Un ||
+                         instruction.OpCode == OpCodes.Bge_Un_S)
+                {
+                    var val1 = stack.Pop();
+                    instruction = ConditionalBranch(instruction, val => Expression.GreaterThanOrEqual(val, val1));
+                    continue;
+                }
                 else if (instruction.OpCode == OpCodes.Blt ||
                          instruction.OpCode == OpCodes.Blt_S ||
                          instruction.OpCode == OpCodes.Blt_Un ||
@@ -243,6 +252,15 @@ namespace DelegateDecompiler
                 {
                     var val1 = stack.Pop();
                     instruction = ConditionalBranch(instruction, val => Expression.LessThan(val, val1));
+                    continue;
+                }
+                else if (instruction.OpCode == OpCodes.Ble ||
+                         instruction.OpCode == OpCodes.Ble_S ||
+                         instruction.OpCode == OpCodes.Ble_Un ||
+                         instruction.OpCode == OpCodes.Ble_Un_S)
+                {
+                    var val1 = stack.Pop();
+                    instruction = ConditionalBranch(instruction, val => Expression.LessThanOrEqual(val, val1));
                     continue;
                 }
                 else if (instruction.OpCode == OpCodes.Dup)
