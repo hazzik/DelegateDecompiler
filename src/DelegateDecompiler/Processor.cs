@@ -219,12 +219,12 @@ namespace DelegateDecompiler
                 }
                 else if (instruction.OpCode == OpCodes.Brfalse_S || instruction.OpCode == OpCodes.Brfalse)
                 {
-                    instruction = ConditionalBranch(instruction, val => Expression.NotEqual(val, Expression.Default(val.Type)));
+                    instruction = ConditionalBranch(instruction, val => Expression.Equal(val, Default(val.Type)));
                     continue;
                 }
                 else if (instruction.OpCode == OpCodes.Brtrue || instruction.OpCode == OpCodes.Brtrue_S)
                 {
-                    instruction = ConditionalBranch(instruction, val => Expression.Equal(val, Expression.Default(val.Type)));
+                    instruction = ConditionalBranch(instruction, val => Expression.NotEqual(val, Default(val.Type)));
                     continue;
                 }
                 else if (instruction.OpCode == OpCodes.Dup)
@@ -456,19 +456,53 @@ namespace DelegateDecompiler
                        : stack.Pop();
         }
 
-        Instruction ConditionalBranch(Instruction instruction, Func<Expression, Expression> condition)
+        static Expression Default(Type type)
+        {
+            if (type.IsValueType)
+                return Expression.Default(type);
+            return Expression.Constant(null, type);
+        }
+
+        Instruction ConditionalBranch(Instruction instruction, Func<Expression, BinaryExpression> condition)
         {
             var val1 = stack.Pop();
             var test = condition(val1);
 
-            var left = instruction.Next;
-            var right = (Instruction) instruction.Operand;
+            var left = (Instruction)instruction.Operand;
+            var right = instruction.Next;
 
-            var common = GetJoinPoint(right, left);
+            var common = GetJoinPoint(left, right);
 
-            var leftExpression = Clone().Process(left, common);
-            var rightExpression = AdjustType(Clone().Process(right, common), leftExpression.Type);
+            var rightExpression = Clone().Process(right, common);
+            var leftExpression = AdjustType(Clone().Process(left, common), rightExpression.Type);
 
+            if (test.NodeType == ExpressionType.NotEqual)
+            {
+                if (val1 == leftExpression && (test.Right is DefaultExpression || (test.Right is ConstantExpression && ((ConstantExpression)test.Right).Value == null)))
+                {
+                    stack.Push(Expression.Coalesce(val1, rightExpression));
+                    return common;
+                }
+            }
+            else if (test.NodeType == ExpressionType.Equal)
+            {
+                var leftConstant = leftExpression as ConstantExpression;
+                if (leftConstant != null)
+                {
+                    if (leftConstant.Value is bool)
+                    {
+                        if ((bool) leftConstant.Value)
+                        {
+                            stack.Push(Expression.OrElse(test, rightExpression));
+                        }
+                        else
+                        {
+                            stack.Push(Expression.AndAlso(Expression.NotEqual(test.Left, test.Right), rightExpression));
+                        }
+                        return common;
+                    }
+                }
+            }
             stack.Push(Expression.Condition(test, leftExpression, rightExpression));
             return common;
         }
@@ -510,7 +544,7 @@ namespace DelegateDecompiler
                 var constant = expression as ConstantExpression;
                 if (constant != null)
                 {
-                    return Expression.Constant(!Equals(constant.Value, 0));
+                    return Expression.Constant(!Equals(constant.Value , 0));
                 }
                 return Expression.NotEqual(expression, Expression.Constant(0));
             }
