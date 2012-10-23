@@ -489,7 +489,7 @@ namespace DelegateDecompiler
                 var constant = expression as ConstantExpression;
                 if (constant != null)
                 {
-                    return Expression.Constant(constant.Value != (object) 0);
+                    return Expression.Constant(!Equals(constant.Value, 0));
                 }
                 return Expression.NotEqual(expression, Expression.Constant(0));
             }
