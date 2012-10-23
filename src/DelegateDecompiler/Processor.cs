@@ -263,6 +263,13 @@ namespace DelegateDecompiler
                     instruction = ConditionalBranch(instruction, val => Expression.LessThanOrEqual(val, val1));
                     continue;
                 }
+                else if (instruction.OpCode == OpCodes.Beq ||
+                         instruction.OpCode == OpCodes.Beq_S)
+                {
+                    var val1 = stack.Pop();
+                    instruction = ConditionalBranch(instruction, val => Expression.Equal(val, val1));
+                    continue;
+                }
                 else if (instruction.OpCode == OpCodes.Bne_Un ||
                          instruction.OpCode == OpCodes.Bne_Un_S)
                 {
