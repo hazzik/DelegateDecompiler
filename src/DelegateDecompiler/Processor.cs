@@ -35,9 +35,9 @@ namespace DelegateDecompiler
             this.args = args;
         }
 
-        public Expression Process(Instruction instruction)
+        public Expression Process(Instruction instruction, Instruction last = null)
         {
-            while(true)
+            while(instruction != null && instruction != last)
             {
                 Debug.WriteLine(instruction);
 
@@ -219,33 +219,13 @@ namespace DelegateDecompiler
                 }
                 else if (instruction.OpCode == OpCodes.Brfalse_S || instruction.OpCode == OpCodes.Brfalse)
                 {
-                    var val1 = stack.Pop();
-                    var test = Expression.NotEqual(val1, Expression.Default(val1.Type));
-
-                    var left = instruction.Next;
-                    var right = (Instruction) instruction.Operand;
-
-                    var leftExpression = Clone().Process(left);
-                    var rightExpression = AdjustType(Clone().Process(right), leftExpression.Type);
-
-                    stack.Push(Expression.Condition(test, leftExpression, rightExpression));
-
-                    break;
+                    instruction = ConditionalBranch(instruction, val => Expression.NotEqual(val, Expression.Default(val.Type)));
+                    continue;
                 }
                 else if (instruction.OpCode == OpCodes.Brtrue || instruction.OpCode == OpCodes.Brtrue_S)
                 {
-                    var val1 = stack.Pop();
-                    var test = Expression.Equal(val1, Expression.Default(val1.Type));
-
-                    var right = (Instruction)instruction.Operand;
-                    var left = instruction.Next;
-
-                    var leftExpression = /*AdjustBool*/(Clone().Process(left));
-                    var rightExpression = /*AdjustBool*/(Clone().Process(right));
-
-                    stack.Push(Expression.Condition(test, leftExpression, rightExpression));
-
-                    break;
+                    instruction = ConditionalBranch(instruction, val => Expression.Equal(val, Expression.Default(val.Type)));
+                    continue;
                 }
                 else if (instruction.OpCode == OpCodes.Dup)
                 {
@@ -455,10 +435,62 @@ namespace DelegateDecompiler
                        : stack.Pop();
         }
 
-        Expression AdjustType(Expression expression, Type type)
+        Instruction ConditionalBranch(Instruction instruction, Func<Expression, Expression> condition)
+        {
+            var val1 = stack.Pop();
+            var test = condition(val1);
+
+            var left = instruction.Next;
+            var right = (Instruction) instruction.Operand;
+
+            var common = GetJoinPoint(right, left);
+
+            var leftExpression = Clone().Process(left, common);
+            var rightExpression = AdjustType(Clone().Process(right, common), leftExpression.Type);
+
+            stack.Push(Expression.Condition(test, leftExpression, rightExpression));
+            return common;
+        }
+
+        static Instruction GetJoinPoint(Instruction left, Instruction right)
+        {
+            var processed = new HashSet<Instruction>();
+            while (left != null)
+            {
+                processed.Add(left);
+                if (left.OpCode == OpCodes.Br_S || left.OpCode == OpCodes.Br)
+                {
+                    left = (Instruction) left.Operand;
+                }
+                else
+                {
+                    left = left.Next;
+                }
+            }
+            while (right != null && !processed.Contains(right))
+            {
+                processed.Add(right);
+                if (right.OpCode == OpCodes.Br_S || right.OpCode == OpCodes.Br)
+                {
+                    right = (Instruction)right.Operand;
+                }
+                else
+                {
+                    right = right.Next;
+                }
+            }
+            return right;
+        }
+
+        static Expression AdjustType(Expression expression, Type type)
         {
             if (expression.Type == typeof(int) && type == typeof(bool))
             {
+                var constant = expression as ConstantExpression;
+                if (constant != null)
+                {
+                    return Expression.Constant(constant.Value != (object) 0);
+                }
                 return Expression.NotEqual(expression, Expression.Constant(0));
             }
             return expression;
