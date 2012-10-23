@@ -508,6 +508,8 @@ namespace DelegateDecompiler
 
         static Expression Default(Type type)
         {
+            if (type == typeof (bool))
+                return Expression.Constant(false);
             if (type.IsValueType)
                 return Expression.Default(type);
             return Expression.Constant(null, type);
@@ -547,7 +549,15 @@ namespace DelegateDecompiler
                         }
                         else
                         {
-                            stack.Push(Expression.AndAlso(Expression.NotEqual(test.Left, test.Right), rightExpression));
+                            var constantExpression = test.Right as ConstantExpression;
+                            if (constantExpression != null && constantExpression.Value is bool && !((bool) constantExpression.Value))
+                            {
+                                stack.Push(Expression.AndAlso(test.Left, rightExpression));
+                            }
+                            else
+                            {
+                                stack.Push(Expression.AndAlso(Expression.NotEqual(test.Left, test.Right), rightExpression));
+                            }
                         }
                         return common;
                     }

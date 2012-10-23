@@ -35,5 +35,7 @@
         {
             return prefix + FirstName + " " + LastName + postfix;
         }
+
+        public bool IsBlocked { get; set; }
     }
 }

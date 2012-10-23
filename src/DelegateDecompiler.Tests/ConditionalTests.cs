@@ -61,5 +61,13 @@ namespace DelegateDecompiler.Tests
             Func<int?, bool> compiled = e => (e ?? 100) == 100;
             Test(expected, compiled);
         }
+
+        [Fact(Skip = "Compiler makes flows in another order")]
+        public void TwoIifs()
+        {
+            Expression<Func<Employee, bool>> expected = e => e.FirstName != null && e.FirstName.Contains("Test") && !e.IsBlocked;
+            Func<Employee, bool> compiled = e => e.FirstName != null && e.FirstName.Contains("Test") && !e.IsBlocked;
+            Test(expected, compiled);
+        }
     }
 }
