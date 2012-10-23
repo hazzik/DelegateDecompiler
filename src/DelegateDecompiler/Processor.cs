@@ -422,6 +422,27 @@ namespace DelegateDecompiler
                 {
                     Call((MethodInfo) instruction.Operand);
                 }
+                else if (instruction.OpCode == OpCodes.Ceq)
+                {
+                    var val1 = stack.Pop();
+                    var val2 = stack.Pop();
+
+                    stack.Push(Expression.Equal(val2, AdjustType(val1, val2.Type)));
+                }
+                else if (instruction.OpCode == OpCodes.Cgt || instruction.OpCode == OpCodes.Cgt_Un)
+                {
+                    var val1 = stack.Pop();
+                    var val2 = stack.Pop();
+
+                    stack.Push(Expression.GreaterThan(val2, AdjustType(val1, val2.Type)));
+                }
+                else if (instruction.OpCode == OpCodes.Clt || instruction.OpCode == OpCodes.Clt_Un)
+                {
+                    var val1 = stack.Pop();
+                    var val2 = stack.Pop();
+
+                    stack.Push(Expression.LessThan(val2, AdjustType(val1, val2.Type)));
+                }
                 else if (instruction.OpCode == OpCodes.Ret)
                 {
                     break;
