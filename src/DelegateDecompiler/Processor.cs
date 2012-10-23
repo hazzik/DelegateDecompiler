@@ -523,7 +523,7 @@ namespace DelegateDecompiler
             var left = (Instruction)instruction.Operand;
             var right = instruction.Next;
 
-            var common = GetJoinPoint(left, right);
+            Instruction common = null;// GetJoinPoint(left, right);
 
             var rightExpression = Clone().Process(right, common);
             var leftExpression = AdjustType(Clone().Process(left, common), rightExpression.Type);
