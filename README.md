@@ -38,3 +38,7 @@ When you call `.Decompile` method it decompiles your computed properties to thei
 # Installation
 
 Available on [NuGet](https://nuget.org/packages/DelegateDecompiler)
+
+# License
+
+MIT license - http://opensource.org/licenses/mit
