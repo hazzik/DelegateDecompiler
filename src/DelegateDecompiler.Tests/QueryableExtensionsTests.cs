@@ -88,7 +88,7 @@ namespace DelegateDecompiler.Tests
             Assert.Equal(expected.Expression.ToString(), actual.Expression.ToString());
         }
 
-        [Fact(Skip = "Compiller uses Concat(string[]) overload")]
+        [Fact]
         public void InlineMethodWithTwoArgs()
         {
             var employees = new[] { new Employee { FirstName = "Test", LastName = "User" } };

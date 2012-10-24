@@ -722,15 +722,35 @@ namespace DelegateDecompiler
             }
             if (m.Name == "Concat" && m.DeclaringType == typeof(string))
             {
-                var expression = arguments[0];
-                for (var i = 1; i < arguments.Length; i++)
+                var expressions = GetExpressionsForStringConcat(arguments);
+                if (expressions.Count > 1)
                 {
-                    expression = Expression.Add(expression, arguments[i], stringConcat);
+                    var expression = expressions[0];
+                    for (var i = 1; i < expressions.Count; i++)
+                    {
+                        expression = Expression.Add(expression, expressions[i], stringConcat);
+                    }
+                    return expression;
                 }
-                return expression;
             }
 
             return Expression.Call(instance, m, arguments);
+        }
+
+        static IList<Expression> GetExpressionsForStringConcat(Expression[] arguments)
+        {
+            if (arguments.Length == 1)
+            {
+                var array = arguments[0] as NewArrayExpression;
+                if (array != null)
+                {
+                    if (array.NodeType == ExpressionType.NewArrayInit)
+                    {
+                        return array.Expressions;
+                    }
+                }
+            }
+            return arguments;
         }
 
         void UpdateLocals(Expression oldExpression, Expression newExpression)
