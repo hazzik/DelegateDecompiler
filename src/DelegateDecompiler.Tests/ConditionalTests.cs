@@ -46,7 +46,7 @@ namespace DelegateDecompiler.Tests
             Test(expected, compiled);
         }
 
-        [Fact(Skip = "Need optimization for coalesce in this case")]
+        [Fact]
         public void SimpleCoalesce()
         {
             Expression<Func<Employee, bool>> expected = e => (e.FirstName ?? string.Empty).Contains("Test");
@@ -62,7 +62,7 @@ namespace DelegateDecompiler.Tests
             Test(expected, compiled);
         }
 
-        [Fact(Skip = "Compiler makes flows in another order")]
+        [Fact(Skip = "Need optimization for Boolean")]
         public void TwoIifs()
         {
             Expression<Func<Employee, bool>> expected = e => e.FirstName != null && e.FirstName.Contains("Test") && !e.IsBlocked;
@@ -70,7 +70,7 @@ namespace DelegateDecompiler.Tests
             Test(expected, compiled);
         }
 
-        [Fact(Skip = "Compiler makes flows in another order")]
+        [Fact(Skip = "Need optimization for Boolean")]
         public void TwoIifs2()
         {
             Expression<Func<Employee, string, bool>> expected = (u, term) => (u.FirstName != null && (u.FirstName.Contains(term) || term.Contains(u.FirstName))) && !u.IsBlocked;

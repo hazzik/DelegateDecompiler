@@ -523,7 +523,7 @@ namespace DelegateDecompiler
             var left = (Instruction)instruction.Operand;
             var right = instruction.Next;
 
-            Instruction common = null;// GetJoinPoint(left, right);
+            Instruction common = GetJoinPoint(left, right);
 
             var rightExpression = Clone().Process(right, common);
             var leftExpression = AdjustType(Clone().Process(left, common), rightExpression.Type);
@@ -569,32 +569,38 @@ namespace DelegateDecompiler
 
         static Instruction GetJoinPoint(Instruction left, Instruction right)
         {
-            var processed = new HashSet<Instruction>();
-            while (left != null)
+            return GetCommon(GetFlow(left), GetFlow(right));
+        }
+
+        static Instruction GetCommon(IEnumerable<Instruction> leftFlow, Stack<Instruction> rightFlow)
+        {
+            Instruction instruction = null;
+            foreach (var left in leftFlow)
             {
-                processed.Add(left);
-                if (left.OpCode == OpCodes.Br_S || left.OpCode == OpCodes.Br)
+                if (rightFlow.Count <= 0 || left != rightFlow.Pop())
+                    break;
+                
+                instruction = left;
+            }
+            return instruction;
+        }
+
+        static Stack<Instruction> GetFlow(Instruction instruction)
+        {
+            var instructions = new Stack<Instruction>();
+            while (instruction != null)
+            {
+                instructions.Push(instruction);
+                if (instruction.OpCode.FlowControl == FlowControl.Branch || instruction.OpCode.FlowControl == FlowControl.Cond_Branch)
                 {
-                    left = (Instruction) left.Operand;
+                    instruction = GetJoinPoint((Instruction) instruction.Operand, instruction.Next);
                 }
                 else
                 {
-                    left = left.Next;
+                    instruction = instruction.Next;
                 }
             }
-            while (right != null && !processed.Contains(right))
-            {
-                processed.Add(right);
-                if (right.OpCode == OpCodes.Br_S || right.OpCode == OpCodes.Br)
-                {
-                    right = (Instruction)right.Operand;
-                }
-                else
-                {
-                    right = right.Next;
-                }
-            }
-            return right;
+            return instructions;
         }
 
         static Expression AdjustType(Expression expression, Type type)
