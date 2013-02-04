@@ -591,7 +591,11 @@ namespace DelegateDecompiler
             while (instruction != null)
             {
                 instructions.Push(instruction);
-                if (instruction.OpCode.FlowControl == FlowControl.Branch || instruction.OpCode.FlowControl == FlowControl.Cond_Branch)
+                if (instruction.OpCode.FlowControl == FlowControl.Branch)
+                {
+                    instruction = (Instruction) instruction.Operand;
+                }
+                else if (instruction.OpCode.FlowControl == FlowControl.Cond_Branch)
                 {
                     instruction = GetJoinPoint((Instruction) instruction.Operand, instruction.Next);
                 }
