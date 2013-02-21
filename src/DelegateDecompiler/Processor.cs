@@ -466,7 +466,7 @@ namespace DelegateDecompiler
                 }
                 else if (instruction.OpCode == OpCodes.Box)
                 {
-                    stack.Push(Expression.Convert(stack.Pop(), typeof (object)));
+                    stack.Push(Box(stack.Pop(), (Type) instruction.Operand));
                 }
                 else if (instruction.OpCode == OpCodes.Call || instruction.OpCode == OpCodes.Callvirt)
                 {
@@ -508,6 +508,21 @@ namespace DelegateDecompiler
             return stack.Count == 0
                        ? Expression.Empty()
                        : stack.Pop();
+        }
+
+        private static Expression Box(Expression expression, Type type)
+        {
+            var constantExpression = expression as ConstantExpression;
+            if (constantExpression != null)
+            {
+                if (type.IsEnum)
+                    return Expression.Convert(Expression.Constant(Enum.ToObject(type, constantExpression.Value)), typeof (Enum));
+            }
+
+            if (expression.Type.IsEnum)
+                return Expression.Convert(expression, typeof (Enum));
+
+            return Expression.Convert(expression, typeof (object));
         }
 
         private static Expression ConvertEnumExpressionToUnderlyingType(Expression expression)
@@ -742,7 +757,7 @@ namespace DelegateDecompiler
                     }
                 }
             }
-            if (m.Name == "Concat" && m.DeclaringType == typeof(string))
+            if (m.Name == "Concat" && m.DeclaringType == typeof (string))
             {
                 var expressions = GetExpressionsForStringConcat(arguments);
                 if (expressions.Count > 1)
@@ -753,6 +768,22 @@ namespace DelegateDecompiler
                         expression = Expression.Add(expression, expressions[i], stringConcat);
                     }
                     return expression;
+                }
+            }
+
+            var parameters = m.GetParameters();
+            for (int i = 0; i < parameters.Length; i++)
+            {
+                var parameter = parameters[i];
+                var argument = arguments[i];
+                var parameterType = parameter.ParameterType;
+                var argumentType = argument.Type;
+                if (!parameterType.IsAssignableFrom(argumentType))
+                {
+                    if (argumentType.IsEnum && argumentType.GetEnumUnderlyingType() == parameterType)
+                    {
+                        arguments[i] = Expression.Convert(argument, parameterType);
+                    }
                 }
             }
 
