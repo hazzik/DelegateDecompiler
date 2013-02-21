@@ -555,12 +555,18 @@ namespace DelegateDecompiler
             var rightExpression = Clone().Process(right, common);
             var leftExpression = AdjustType(Clone().Process(left, common), rightExpression.Type);
 
+            var expression = BuildConditionalBranch(test, val1, leftExpression, rightExpression);
+            stack.Push(expression);
+            return common;
+        }
+
+        private static Expression BuildConditionalBranch(BinaryExpression test, Expression val1, Expression leftExpression, Expression rightExpression)
+        {
             if (test.NodeType == ExpressionType.NotEqual)
             {
-                if (val1 == leftExpression && (test.Right is DefaultExpression || (test.Right is ConstantExpression && ((ConstantExpression)test.Right).Value == null)))
+                if (val1 == leftExpression && (test.Right is DefaultExpression || (test.Right is ConstantExpression && ((ConstantExpression) test.Right).Value == null)))
                 {
-                    stack.Push(Expression.Coalesce(val1, rightExpression));
-                    return common;
+                    return Expression.Coalesce(val1, rightExpression);
                 }
             }
             else if (test.NodeType == ExpressionType.Equal)
@@ -572,26 +578,21 @@ namespace DelegateDecompiler
                     {
                         if ((bool) leftConstant.Value)
                         {
-                            stack.Push(Expression.OrElse(test, rightExpression));
+                            return Expression.OrElse(test, rightExpression);
+                        }
+                        var constantExpression = test.Right as ConstantExpression;
+                        if (constantExpression != null && constantExpression.Value is bool && !((bool) constantExpression.Value))
+                        {
+                            return Expression.AndAlso(test.Left, rightExpression);
                         }
                         else
                         {
-                            var constantExpression = test.Right as ConstantExpression;
-                            if (constantExpression != null && constantExpression.Value is bool && !((bool) constantExpression.Value))
-                            {
-                                stack.Push(Expression.AndAlso(test.Left, rightExpression));
-                            }
-                            else
-                            {
-                                stack.Push(Expression.AndAlso(Expression.NotEqual(test.Left, test.Right), rightExpression));
-                            }
+                            return Expression.AndAlso(Expression.NotEqual(test.Left, test.Right), rightExpression);
                         }
-                        return common;
                     }
                 }
             }
-            stack.Push(Expression.Condition(test, leftExpression, rightExpression));
-            return common;
+            return Expression.Condition(test, leftExpression, rightExpression);
         }
 
         static Instruction GetJoinPoint(Instruction left, Instruction right)
