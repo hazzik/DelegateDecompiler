@@ -478,7 +478,8 @@ namespace DelegateDecompiler
                     var val2 = stack.Pop();
 
                     // Handle enum type comparison
-                    ConvertEnumExpressionToUnderlyingTypeForComparison(ref val1, ref val2);
+                    val1 = ConvertEnumExpressionToUnderlyingType(val1);
+                    val2 = ConvertEnumExpressionToUnderlyingType(val2);
 
                     stack.Push(Expression.Equal(val2, AdjustType(val1, val2.Type)));
                 }
@@ -509,12 +510,12 @@ namespace DelegateDecompiler
                        : stack.Pop();
         }
 
-        private void ConvertEnumExpressionToUnderlyingTypeForComparison(ref Expression val1, ref Expression val2)
+        private static Expression ConvertEnumExpressionToUnderlyingType(Expression expression)
         {
-            if (val1.Type.IsEnum)
-                val1 = Expression.Convert(val1, val1.Type.GetEnumUnderlyingType());
-            if (val2.Type.IsEnum)
-                val2 = Expression.Convert(val2, val2.Type.GetEnumUnderlyingType());
+            if (expression.Type.IsEnum)
+                return Expression.Convert(expression, expression.Type.GetEnumUnderlyingType());
+
+            return expression;
         }
 
         static Expression Default(Type type)
