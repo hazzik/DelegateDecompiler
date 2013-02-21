@@ -67,6 +67,7 @@
     <Compile Include="DecompileExtensionsTests.cs" />
     <Compile Include="DecompilerTestsBase.cs" />
     <Compile Include="Employee.cs" />
+    <Compile Include="EnumTests.cs" />
     <Compile Include="ListInitTests.cs" />
     <Compile Include="StringConcatTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

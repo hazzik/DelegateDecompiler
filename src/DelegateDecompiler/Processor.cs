@@ -477,6 +477,9 @@ namespace DelegateDecompiler
                     var val1 = stack.Pop();
                     var val2 = stack.Pop();
 
+                    // Handle enum type comparison
+                    ConvertEnumExpressionToUnderlyingTypeForComparison(ref val1, ref val2);
+
                     stack.Push(Expression.Equal(val2, AdjustType(val1, val2.Type)));
                 }
                 else if (instruction.OpCode == OpCodes.Cgt || instruction.OpCode == OpCodes.Cgt_Un)
@@ -504,6 +507,14 @@ namespace DelegateDecompiler
             return stack.Count == 0
                        ? Expression.Empty()
                        : stack.Pop();
+        }
+
+        private void ConvertEnumExpressionToUnderlyingTypeForComparison(ref Expression val1, ref Expression val2)
+        {
+            if (val1.Type.IsEnum)
+                val1 = Expression.Convert(val1, val1.Type.GetEnumUnderlyingType());
+            if (val2.Type.IsEnum)
+                val2 = Expression.Convert(val2, val2.Type.GetEnumUnderlyingType());
         }
 
         static Expression Default(Type type)
