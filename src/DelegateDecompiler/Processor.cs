@@ -267,14 +267,14 @@ namespace DelegateDecompiler
                          instruction.OpCode == OpCodes.Beq_S)
                 {
                     var val1 = stack.Pop();
-                    instruction = ConditionalBranch(instruction, val => Expression.Equal(val, val1));
+                    instruction = ConditionalBranch(instruction, val => AdjustedBinaryExpression(val, val1, ExpressionType.Equal));
                     continue;
                 }
                 else if (instruction.OpCode == OpCodes.Bne_Un ||
                          instruction.OpCode == OpCodes.Bne_Un_S)
                 {
                     var val1 = stack.Pop();
-                    instruction = ConditionalBranch(instruction, val => Expression.NotEqual(val, val1));
+                    instruction = ConditionalBranch(instruction, val => AdjustedBinaryExpression(val, val1, ExpressionType.NotEqual));
                     continue;
                 }
                 else if (instruction.OpCode == OpCodes.Dup)
@@ -477,11 +477,7 @@ namespace DelegateDecompiler
                     var val1 = stack.Pop();
                     var val2 = stack.Pop();
 
-                    // Handle enum type comparison
-                    val1 = ConvertEnumExpressionToUnderlyingType(val1);
-                    val2 = ConvertEnumExpressionToUnderlyingType(val2);
-
-                    stack.Push(Expression.Equal(val2, AdjustType(val1, val2.Type)));
+                    stack.Push(AdjustedBinaryExpression(val2, AdjustType(val1, val2.Type), ExpressionType.Equal));
                 }
                 else if (instruction.OpCode == OpCodes.Cgt || instruction.OpCode == OpCodes.Cgt_Un)
                 {
@@ -508,6 +504,14 @@ namespace DelegateDecompiler
             return stack.Count == 0
                        ? Expression.Empty()
                        : stack.Pop();
+        }
+
+        private static BinaryExpression AdjustedBinaryExpression(Expression left, Expression right, ExpressionType expressionType)
+        {
+            left = ConvertEnumExpressionToUnderlyingType(left);
+            right = ConvertEnumExpressionToUnderlyingType(right);
+
+            return Expression.MakeBinary(expressionType, left, right);
         }
 
         private static Expression Box(Expression expression, Type type)
