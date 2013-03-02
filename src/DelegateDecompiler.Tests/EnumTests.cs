@@ -36,6 +36,25 @@ namespace DelegateDecompiler.Tests
             Test(expected, compiled);
         }
 
+        [Fact(Skip = "Need optimization")]
+        public void TestEnumPropertyNotEqualsFooOrElseEnumPropertyEqualsBar()
+        {
+            // Original expected expression:
+            // Expression<Func<TestEnum, bool>> expected = x => (x != TestEnum.Bar) || (x == TestEnum.Foo);
+            // Expected expression before optimization:
+            Expression<Func<TestEnum, bool>> expected = x => (x != TestEnum.Bar) ? true : (x == TestEnum.Foo);
+            Func<TestEnum, bool> compiled = x => (x != TestEnum.Bar) || (x == TestEnum.Foo);
+            Test(expected, compiled);
+        }
+
+        [Fact]
+        public void TestEnumPropertyEqualsFooOrElseEnumPropertyEqualsBar()
+        {
+            Expression<Func<TestEnum, bool>> expected = x => (x == TestEnum.Bar) || (x == TestEnum.Foo);
+            Func<TestEnum, bool> compiled = x => (x == TestEnum.Bar) || (x == TestEnum.Foo);
+            Test(expected, compiled);
+        }
+
         [Fact]
         public void TestEnumParametersEqual()
         {
