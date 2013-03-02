@@ -572,6 +572,17 @@ namespace DelegateDecompiler
                 {
                     return Expression.Coalesce(val1, rightExpression);
                 }
+                var leftConstant = leftExpression as ConstantExpression;
+                if (leftConstant != null)
+                {
+                    if (leftConstant.Value is bool)
+                    {
+                        if ((bool) leftConstant.Value)
+                        {
+                            return Expression.OrElse(test, rightExpression);
+                        }
+                    }
+                }
             }
             else if (test.NodeType == ExpressionType.Equal)
             {
