@@ -6,10 +6,16 @@
 
         public string LastName { get; set; }
 
-        [Decompile]
+        [Computed]
         public string FullName
         {
             get { return FirstName + " " + LastName; }
+        }
+
+        [Computed]
+        public bool IsActive
+        {
+            get { return true; }
         }
 
         [Computed]
@@ -18,19 +24,19 @@
             get { return FullName; }
         }
 
-        [Decompile]
+        [Computed]
         public string FullNameMethod()
         {
             return FirstName + " " + LastName;
         }
 
-        [Decompile]
+        [Computed]
         public string FullNameMethod(string prefix)
         {
             return prefix + FirstName + " " + LastName;
         }
 
-        [Decompile]
+        [Computed]
         public string FullNameMethod(string prefix, string postfix)
         {
             return prefix + FirstName + " " + LastName + postfix;

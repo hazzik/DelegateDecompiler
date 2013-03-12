@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -22,10 +23,9 @@ namespace DelegateDecompiler
                     .Select(p => Expression.Parameter(p.ParameterType, p.Name))
                     .ToList();
             else
-                args = new[] { Expression.Parameter(method.DeclaringType, "this") }.Union(
-                    parameters
-                        .Select(p => Expression.Parameter(p.ParameterType, p.Name)))
-                                                                           .ToList();
+                args = new[] { Expression.Parameter(method.DeclaringType, "this") }
+                    .Union(parameters.Select(p => Expression.Parameter(p.ParameterType, p.Name)))
+                    .ToList();
 
             var body = method.GetMethodBody();
             locals = new Expression[body.LocalVariables.Count];
@@ -34,10 +34,7 @@ namespace DelegateDecompiler
         public LambdaExpression Decompile()
         {
             var instructions = method.GetInstructions();
-            var ex = Processor.Create(locals, args).Process(instructions.First());
-
-            if (ex.Type != method.ReturnType && method.ReturnType != typeof(void))
-                ex = Expression.Convert(ex, method.ReturnType);
+            var ex = Processor.Create(locals, args).Process(instructions.First(), method.ReturnType);
 
             return Expression.Lambda(ex, args);
         }

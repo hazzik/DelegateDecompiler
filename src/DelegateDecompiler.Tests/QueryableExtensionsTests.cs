@@ -21,6 +21,22 @@ namespace DelegateDecompiler.Tests
 
             Assert.Equal(expected.Expression.ToString(), actual.Expression.ToString());
         }
+       
+        [Fact]
+        public void InlineBooleanProperty()
+        {
+            var employees = new[] { new Employee { FirstName = "Test", LastName = "User" } };
+
+            var expected = (from employee in employees.AsQueryable()
+                            where true
+                            select employee);
+
+            var actual = (from employee in employees.AsQueryable()
+                          where employee.IsActive
+                          select employee).Decompile();
+
+            Assert.Equal(expected.Expression.ToString(), actual.Expression.ToString());
+        }
 
         [Fact]
         public void InlineTooDeepProperty()

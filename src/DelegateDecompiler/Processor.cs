@@ -35,6 +35,18 @@ namespace DelegateDecompiler
             this.args = args;
         }
 
+        public Expression Process(Instruction instruction, Type returnType)
+        {
+            var ex = AdjustType(Process(instruction), returnType);
+
+            if (ex.Type != returnType && returnType != typeof(void))
+            {
+                return Expression.Convert(ex, returnType);
+            }
+
+            return ex;
+        }
+
         public Expression Process(Instruction instruction, Instruction last = null)
         {
             while(instruction != null && instruction != last)
