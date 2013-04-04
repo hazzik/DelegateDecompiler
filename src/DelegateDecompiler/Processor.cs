@@ -7,6 +7,7 @@ using System.Linq.Expressions;
 using System.Reflection;
 using System.Reflection.Emit;
 using Mono.Reflection;
+using System.Runtime.CompilerServices;
 
 namespace DelegateDecompiler
 {
@@ -129,7 +130,18 @@ namespace DelegateDecompiler
                 }
                 else if (instruction.OpCode == OpCodes.Ldsfld)
                 {
-                    stack.Push(Expression.Field(null, (FieldInfo) instruction.Operand));
+                    var targetField = instruction.Operand as FieldInfo;
+
+                    if (targetField != null
+                        && targetField.Name.Contains("<>9__CachedAnonymousMethodDelegate")
+                        && targetField.GetCustomAttributes(typeof(CompilerGeneratedAttribute), false).Any())
+                    {
+                        // do nothing.
+                    }
+                    else
+                    {
+                        stack.Push(Expression.Field(null, (FieldInfo)instruction.Operand));
+                    }
                 }
                 else if (instruction.OpCode == OpCodes.Ldloc_0)
                 {
@@ -224,6 +236,10 @@ namespace DelegateDecompiler
                 {
                     LdC((double) instruction.Operand);
                 }
+                else if (instruction.OpCode == OpCodes.Ldnull)
+                {
+                    stack.Push(Expression.Constant(null));
+                }
                 else if (instruction.OpCode == OpCodes.Br_S || instruction.OpCode == OpCodes.Br)
                 {
                     instruction = (Instruction) instruction.Operand;
@@ -236,7 +252,20 @@ namespace DelegateDecompiler
                 }
                 else if (instruction.OpCode == OpCodes.Brtrue || instruction.OpCode == OpCodes.Brtrue_S)
                 {
-                    instruction = ConditionalBranch(instruction, val => Expression.NotEqual(val, Default(val.Type)));
+                    var target = ((Instruction)instruction.Operand);
+
+                    if (target.OpCode == OpCodes.Ldsfld
+                        && ((FieldInfo)target.Operand).Name.Contains("<>9__CachedAnonymousMethodDelegate")
+                        && ((FieldInfo)target.Operand).GetCustomAttributes(typeof(CompilerGeneratedAttribute), false).Any())
+                    {
+                        stack.Push(((MethodInfo)instruction.Next.Next.Operand).Decompile());
+                        instruction = (Instruction)instruction.Operand;
+                    }
+                    else
+                    {
+                        instruction = ConditionalBranch(instruction, val => Expression.NotEqual(val, Default(val.Type)));
+                    }
+
                     continue;
                 }
                 else if (instruction.OpCode == OpCodes.Bgt ||
@@ -811,6 +840,13 @@ namespace DelegateDecompiler
                     if (argumentType.IsEnum && argumentType.GetEnumUnderlyingType() == parameterType)
                     {
                         arguments[i] = Expression.Convert(argument, parameterType);
+                    }
+
+                    else if (argument.NodeType == ExpressionType.Constant &&
+                                ((ConstantExpression)argument).Value == null)
+                    {
+                        Debug.Assert(Expression.Lambda<Func<object>>(Expression.Convert(Expression.Default(argumentType), typeof(object))).Compile()() == null);
+                        arguments[i] = Expression.Constant(null, parameterType);
                     }
                 }
             }
