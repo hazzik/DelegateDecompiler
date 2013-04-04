@@ -69,6 +69,7 @@
     <Compile Include="DecompilerTestsBase.cs" />
     <Compile Include="Employee.cs" />
     <Compile Include="EnumTests.cs" />
+    <Compile Include="LambdaTests.cs" />
     <Compile Include="ListInitTests.cs" />
     <Compile Include="NullTests.cs" />
     <Compile Include="StringConcatTests.cs" />
