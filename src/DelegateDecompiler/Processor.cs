@@ -236,6 +236,10 @@ namespace DelegateDecompiler
                 {
                     LdC((double) instruction.Operand);
                 }
+                else if (instruction.OpCode == OpCodes.Ldnull)
+                {
+                    stack.Push(Expression.Constant(null));
+                }
                 else if (instruction.OpCode == OpCodes.Br_S || instruction.OpCode == OpCodes.Br)
                 {
                     instruction = (Instruction) instruction.Operand;
@@ -836,6 +840,13 @@ namespace DelegateDecompiler
                     if (argumentType.IsEnum && argumentType.GetEnumUnderlyingType() == parameterType)
                     {
                         arguments[i] = Expression.Convert(argument, parameterType);
+                    }
+
+                    else if (argument.NodeType == ExpressionType.Constant &&
+                                ((ConstantExpression)argument).Value == null)
+                    {
+                        Debug.Assert(Expression.Lambda<Func<object>>(Expression.Convert(Expression.Default(argumentType), typeof(object))).Compile()() == null);
+                        arguments[i] = Expression.Constant(null, parameterType);
                     }
                 }
             }

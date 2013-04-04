@@ -49,5 +49,13 @@ namespace DelegateDecompiler.Tests
                 () => Enumerable.Range(1, 10).Select(x => Enumerable.Range(0, x).Aggregate(0, (acc, i) => acc + i));
             Test(expected, compiled);
         }
+
+        [Fact]
+        public void CanUseLambdaAndNullParameter()
+        {
+            Expression<Func<IOrderedEnumerable<int>>> expected = () => Enumerable.Range(1, 10).OrderBy(x => x, null);
+            Func<IOrderedEnumerable<int>> compiled = () => Enumerable.Range(1, 10).OrderBy(x => x, null);
+            Test(expected, compiled);
+        }
     }
 }
