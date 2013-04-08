@@ -668,18 +668,28 @@ namespace DelegateDecompiler
 
         static Expression AdjustType(Expression expression, Type type)
         {
-            var constant = expression as ConstantExpression;
-            if (expression.Type == typeof (int) && type == typeof (bool))
+            var constantExpression = expression as ConstantExpression;
+            if (constantExpression != null)
             {
-                if (constant != null)
+                if (constantExpression.Value == null)
                 {
-                    return Expression.Constant(!Equals(constant.Value, 0));
+                    return Expression.Constant(null, type);
                 }
-                return Expression.NotEqual(expression, Expression.Constant(0));
+                if (expression.Type == typeof (int) && type == typeof (bool))
+                {
+                    return Expression.Constant(!Equals(constantExpression.Value, 0));
+                }
             }
-            if (constant != null && constant.Value == null)
+            else
             {
-                return Expression.Constant(null, type);
+                if (expression.Type == typeof (int) && type == typeof (bool))
+                {
+                    return Expression.NotEqual(expression, Expression.Constant(0));
+                }
+            }
+            if (!type.IsAssignableFrom(expression.Type) && expression.Type.IsEnum && expression.Type.GetEnumUnderlyingType() == type)
+            {
+                return Expression.Convert(expression, type);
             }
             return expression;
         }
@@ -813,22 +823,13 @@ namespace DelegateDecompiler
                 var parameter = parameters[i];
                 var argument = arguments[i];
                 var parameterType = parameter.ParameterType;
-                var argumentType = argument.Type;
-                if (!parameterType.IsAssignableFrom(argumentType))
-                {
-                    if (argumentType.IsEnum && argumentType.GetEnumUnderlyingType() == parameterType)
-                    {
-                        arguments[i] = Expression.Convert(argument, parameterType);
-                    }
-                    var constant = argument as ConstantExpression;
-                    if (constant != null && constant.Value == null)
-                    {
-                        arguments[i] = Expression.Constant(null, parameterType);
-                    }
-                }
+                arguments[i] = AdjustType(argument, parameterType);
             }
 
-            return Expression.Call(instance, m, arguments);
+            if (instance != null)
+                return Expression.Call(AdjustType(instance, m.DeclaringType), m, arguments);
+
+            return Expression.Call(null, m, arguments);
         }
 
         static IList<Expression> GetExpressionsForStringConcat(Expression[] arguments)
