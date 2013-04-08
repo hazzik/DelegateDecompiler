@@ -122,6 +122,10 @@ namespace DelegateDecompiler
                 {
                     StElem();
                 }
+                else if (instruction.OpCode == OpCodes.Ldnull)
+                {
+                    stack.Push(Expression.Constant(null));
+                }
                 else if (instruction.OpCode == OpCodes.Ldfld)
                 {
                     var instance = stack.Pop();
@@ -664,14 +668,18 @@ namespace DelegateDecompiler
 
         static Expression AdjustType(Expression expression, Type type)
         {
-            if (expression.Type == typeof(int) && type == typeof(bool))
+            var constant = expression as ConstantExpression;
+            if (expression.Type == typeof (int) && type == typeof (bool))
             {
-                var constant = expression as ConstantExpression;
                 if (constant != null)
                 {
-                    return Expression.Constant(!Equals(constant.Value , 0));
+                    return Expression.Constant(!Equals(constant.Value, 0));
                 }
                 return Expression.NotEqual(expression, Expression.Constant(0));
+            }
+            if (constant != null && constant.Value == null)
+            {
+                return Expression.Constant(null, type);
             }
             return expression;
         }
@@ -811,6 +819,11 @@ namespace DelegateDecompiler
                     if (argumentType.IsEnum && argumentType.GetEnumUnderlyingType() == parameterType)
                     {
                         arguments[i] = Expression.Convert(argument, parameterType);
+                    }
+                    var constant = argument as ConstantExpression;
+                    if (constant != null && constant.Value == null)
+                    {
+                        arguments[i] = Expression.Constant(null, parameterType);
                     }
                 }
             }

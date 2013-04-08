@@ -69,6 +69,7 @@
     <Compile Include="Employee.cs" />
     <Compile Include="EnumTests.cs" />
     <Compile Include="ListInitTests.cs" />
+    <Compile Include="NullTests.cs" />
     <Compile Include="StringConcatTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="QueryableExtensionsTests.cs" />
