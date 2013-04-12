@@ -13,6 +13,8 @@ namespace DelegateDecompiler
 {
     public class Processor 
     {
+        private const string cachedAnonymousMethodDelegate = "<>9__CachedAnonymousMethodDelegate";
+
         public static Processor Create(Expression[] locals, IList<ParameterExpression> args)
         {
             return new Processor(new Stack<Expression>(), locals, args);
@@ -136,9 +138,7 @@ namespace DelegateDecompiler
                 {
                     var targetField = instruction.Operand as FieldInfo;
 
-                    if (targetField != null
-                        && targetField.Name.Contains("<>9__CachedAnonymousMethodDelegate")
-                        && targetField.GetCustomAttributes(typeof(CompilerGeneratedAttribute), false).Any())
+                    if (IsCachedAnonymousMethodDelegate(targetField))
                     {
                         // do nothing.
                     }
@@ -254,12 +254,10 @@ namespace DelegateDecompiler
                 {
                     var target = ((Instruction)instruction.Operand);
 
-                    if (target.OpCode == OpCodes.Ldsfld
-                        && ((FieldInfo)target.Operand).Name.Contains("<>9__CachedAnonymousMethodDelegate")
-                        && ((FieldInfo)target.Operand).GetCustomAttributes(typeof(CompilerGeneratedAttribute), false).Any())
+                    if (target.OpCode == OpCodes.Ldsfld && IsCachedAnonymousMethodDelegate(target.Operand as FieldInfo))
                     {
-                        stack.Push(((MethodInfo)instruction.Next.Next.Operand).Decompile());
-                        instruction = (Instruction)instruction.Operand;
+                        stack.Push(((MethodInfo) instruction.Next.Next.Operand).Decompile());
+                        instruction = (Instruction) instruction.Operand;
                     }
                     else
                     {
@@ -545,6 +543,13 @@ namespace DelegateDecompiler
             return stack.Count == 0
                        ? Expression.Empty()
                        : stack.Pop();
+        }
+
+        private static bool IsCachedAnonymousMethodDelegate(FieldInfo field)
+        {
+            return field != null &&
+                field.Name.Contains(cachedAnonymousMethodDelegate) &&
+                Attribute.IsDefined(field, typeof (CompilerGeneratedAttribute), false);
         }
 
         private static BinaryExpression AdjustedBinaryExpression(Expression left, Expression right, ExpressionType expressionType)
