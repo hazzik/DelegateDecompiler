@@ -1,1 +1,1 @@
-.nuget\NuGet.exe push src\DelegateDecompiler\bin\Release\*.nupkg -ApiKey %1
+for /r %%x in (src\DelegateDecompiler\bin\Release\*.nupkg) do .nuget\NuGet.exe push %%x -ApiKey %1
