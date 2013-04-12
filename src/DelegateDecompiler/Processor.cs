@@ -346,7 +346,7 @@ namespace DelegateDecompiler
                 else if (instruction.OpCode == OpCodes.Conv_I)
                 {
                     var val1 = stack.Pop();
-                    stack.Push(Expression.Convert(val1, typeof (int))); // Suppot x64?
+                    stack.Push(Expression.Convert(val1, typeof (int))); // Support x64?
                 }
                 else if (instruction.OpCode == OpCodes.Conv_I1)
                 {
