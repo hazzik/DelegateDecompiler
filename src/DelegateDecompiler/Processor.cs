@@ -680,6 +680,10 @@ namespace DelegateDecompiler
             while (instruction != null)
             {
                 instructions.Push(instruction);
+
+                if (instruction.OpCode.FlowControl == FlowControl.Return)
+                    break;
+
                 if (instruction.OpCode.FlowControl == FlowControl.Branch)
                 {
                     instruction = (Instruction) instruction.Operand;
