@@ -129,7 +129,7 @@ namespace DelegateDecompiler
                 {
                     stack.Push(Expression.Constant(null));
                 }
-                else if (instruction.OpCode == OpCodes.Ldfld)
+                else if (instruction.OpCode == OpCodes.Ldfld || instruction.OpCode == OpCodes.Ldflda)
                 {
                     var instance = stack.Pop();
                     stack.Push(Expression.Field(instance, (FieldInfo) instruction.Operand));

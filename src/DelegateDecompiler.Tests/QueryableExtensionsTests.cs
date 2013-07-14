@@ -39,6 +39,22 @@ namespace DelegateDecompiler.Tests
         }
 
         [Fact]
+        public void TestLdflda()
+        {
+            var employees = new[] { new Employee { FirstName = "Test", LastName = "User" } };
+
+            var expected = (from employee in employees.AsQueryable()
+                where employee.Reference.Count == 0
+                select employee);
+
+            var actual = (from employee in employees.AsQueryable()
+                where employee.Count == 0
+                select employee).Decompile();
+
+            Assert.Equal(expected.Expression.ToString(), actual.Expression.ToString());
+        }
+
+        [Fact]
         public void InlineTooDeepProperty()
         {
             var employees = new[] { new Employee { FirstName = "Test", LastName = "User" } };

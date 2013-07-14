@@ -1,7 +1,14 @@
 ﻿namespace DelegateDecompiler.Tests
 {
+    public struct Reference
+    {
+        public int Count;
+    }
+
     public class Employee
     {
+        public Reference Reference;
+
         public string FirstName { get; set; }
 
         public string LastName { get; set; }
@@ -16,6 +23,12 @@
         public bool IsActive
         {
             get { return true; }
+        }
+
+        [Computed]
+        public int Count
+        {
+            get { return Reference.Count; }
         }
 
         [Computed]
