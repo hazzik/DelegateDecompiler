@@ -38,6 +38,14 @@ namespace DelegateDecompiler.Tests
             Func<int, int, int> compiled = (x, y) => x ^ y;
             Test(expected, compiled);
         }
+        
+        [Fact]
+        public void ShouldBeAbleToDecompileExpressionWithShl()
+        {
+            Expression<Func<int, int, int>> expected = (x, y) => x << (y & 31);
+            Func<int, int, int> compiled = (x, y) => x << y;
+            Test(expected, compiled);
+        }
 
         [Fact]
         public void ShouldBeAbleToDecompileExpressionWithAddConstant()
