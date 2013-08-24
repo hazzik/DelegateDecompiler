@@ -374,6 +374,12 @@ namespace DelegateDecompiler
                     var val2 = stack.Pop();
                     stack.Push(Expression.Modulo(val2, val1));
                 }
+                else if (instruction.OpCode == OpCodes.Xor)
+                {
+                    var val1 = stack.Pop();
+                    var val2 = stack.Pop();
+                    stack.Push(Expression.ExclusiveOr(val2, val1));
+                }
                 else if (instruction.OpCode == OpCodes.Conv_I)
                 {
                     var val1 = stack.Pop();

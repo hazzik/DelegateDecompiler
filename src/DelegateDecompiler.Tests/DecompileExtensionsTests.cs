@@ -30,6 +30,14 @@ namespace DelegateDecompiler.Tests
             Func<int, int, int> compiled = (x, y) => x % y;
             Test(expected, compiled);
         }
+        
+        [Fact]
+        public void ShouldBeAbleToDecompileExpressionWithXor()
+        {
+            Expression<Func<int, int, int>> expected = (x, y) => x ^ y;
+            Func<int, int, int> compiled = (x, y) => x ^ y;
+            Test(expected, compiled);
+        }
 
         [Fact]
         public void ShouldBeAbleToDecompileExpressionWithAddConstant()
