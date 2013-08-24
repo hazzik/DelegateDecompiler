@@ -24,6 +24,14 @@ namespace DelegateDecompiler.Tests
         }
 
         [Fact]
+        public void ShouldBeAbleToDecompileExpressionWithRem()
+        {
+            Expression<Func<int, int, int>> expected = (x, y) => x % y;
+            Func<int, int, int> compiled = (x, y) => x % y;
+            Test(expected, compiled);
+        }
+
+        [Fact]
         public void ShouldBeAbleToDecompileExpressionWithAddConstant()
         {
             Expression<Func<int, int>> expected = x => x + 1;

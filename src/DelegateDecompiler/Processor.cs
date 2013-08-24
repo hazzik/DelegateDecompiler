@@ -84,7 +84,7 @@ namespace DelegateDecompiler
                 {
                     LdArg((int) instruction.Operand);
                 }
-                else if (instruction.OpCode == OpCodes.Ldarga_S || instruction.OpCode == OpCodes.Ldarga)
+                else if (instruction.OpCode == OpCodes.Ldarga || instruction.OpCode == OpCodes.Ldarga_S)
                 {
                     var operand = (ParameterInfo) instruction.Operand;
                     stack.Push(args.Single(x => x.Name == operand.Name));
@@ -245,12 +245,14 @@ namespace DelegateDecompiler
                     instruction = (Instruction) instruction.Operand;
                     continue;
                 }
-                else if (instruction.OpCode == OpCodes.Brfalse_S || instruction.OpCode == OpCodes.Brfalse)
+                else if (instruction.OpCode == OpCodes.Brfalse ||
+                         instruction.OpCode == OpCodes.Brfalse_S)
                 {
                     instruction = ConditionalBranch(instruction, val => Expression.Equal(val, Default(val.Type)));
                     continue;
                 }
-                else if (instruction.OpCode == OpCodes.Brtrue || instruction.OpCode == OpCodes.Brtrue_S)
+                else if (instruction.OpCode == OpCodes.Brtrue || 
+                         instruction.OpCode == OpCodes.Brtrue_S)
                 {
                     var target = ((Instruction)instruction.Operand);
 
@@ -365,6 +367,12 @@ namespace DelegateDecompiler
                     var val1 = stack.Pop();
                     var val2 = stack.Pop();
                     stack.Push(Expression.Divide(val2, val1));
+                }
+                else if (instruction.OpCode == OpCodes.Rem || instruction.OpCode == OpCodes.Rem_Un)
+                {
+                    var val1 = stack.Pop();
+                    var val2 = stack.Pop();
+                    stack.Push(Expression.Modulo(val2, val1));
                 }
                 else if (instruction.OpCode == OpCodes.Conv_I)
                 {
