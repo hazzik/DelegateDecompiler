@@ -56,6 +56,14 @@ namespace DelegateDecompiler.Tests
         }
 
         [Fact]
+        public void ShouldBeAbleToDecompileExpressionWithNeg()
+        {
+            Expression<Func<int, int>> expected = x => -x;
+            Func<int, int> compiled = x => -x;
+            Test(expected, compiled);
+        }
+
+        [Fact]
         public void ShouldBeAbleToDecompileExpressionWithAddConstant()
         {
             Expression<Func<int, int>> expected = x => x + 1;

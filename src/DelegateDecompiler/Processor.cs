@@ -392,6 +392,11 @@ namespace DelegateDecompiler
                     var val2 = stack.Pop();
                     stack.Push(Expression.RightShift(val2, val1));
                 }
+                else if (instruction.OpCode == OpCodes.Neg)
+                {
+                    var val = stack.Pop();
+                    stack.Push(Expression.Negate(val));
+                }
                 else if (instruction.OpCode == OpCodes.Conv_I)
                 {
                     var val1 = stack.Pop();
