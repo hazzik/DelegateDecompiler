@@ -91,8 +91,25 @@ namespace DelegateDecompiler
                 }
                 else if (instruction.OpCode == OpCodes.Ldlen)
                 {
-                    var val = stack.Pop();
-                    stack.Push(Expression.ArrayLength(val));
+                    var array = stack.Pop();
+                    stack.Push(Expression.ArrayLength(array));
+                }
+                else if (instruction.OpCode == OpCodes.Ldelem ||
+                         instruction.OpCode == OpCodes.Ldelem_I ||
+                         instruction.OpCode == OpCodes.Ldelem_I1 ||
+                         instruction.OpCode == OpCodes.Ldelem_I2 ||
+                         instruction.OpCode == OpCodes.Ldelem_I4 ||
+                         instruction.OpCode == OpCodes.Ldelem_I8 ||
+                         instruction.OpCode == OpCodes.Ldelem_U1 ||
+                         instruction.OpCode == OpCodes.Ldelem_U2 ||
+                         instruction.OpCode == OpCodes.Ldelem_U4 ||
+                         instruction.OpCode == OpCodes.Ldelem_R4 ||
+                         instruction.OpCode == OpCodes.Ldelem_R8 ||
+                         instruction.OpCode == OpCodes.Ldelem_Ref)
+                {
+                    var index = stack.Pop();
+                    var array = stack.Pop();
+                    stack.Push(Expression.ArrayIndex(array, index));
                 }
                 else if (instruction.OpCode == OpCodes.Stloc_0)
                 {
@@ -149,7 +166,7 @@ namespace DelegateDecompiler
                     }
                     else
                     {
-                        stack.Push(Expression.Field(null, (FieldInfo)instruction.Operand));
+                        stack.Push(Expression.Field(null, (FieldInfo) instruction.Operand));
                     }
                 }
                 else if (instruction.OpCode == OpCodes.Ldloc_0)
@@ -256,10 +273,10 @@ namespace DelegateDecompiler
                     instruction = ConditionalBranch(instruction, val => Expression.Equal(val, Default(val.Type)));
                     continue;
                 }
-                else if (instruction.OpCode == OpCodes.Brtrue || 
+                else if (instruction.OpCode == OpCodes.Brtrue ||
                          instruction.OpCode == OpCodes.Brtrue_S)
                 {
-                    var target = ((Instruction)instruction.Operand);
+                    var target = ((Instruction) instruction.Operand);
 
                     if (target.OpCode == OpCodes.Ldsfld && IsCachedAnonymousMethodDelegate(target.Operand as FieldInfo))
                     {

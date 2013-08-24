@@ -88,6 +88,30 @@ namespace DelegateDecompiler.Tests
         }
 
         [Fact]
+        public void ShouldBeAbleToDecompileExpressionWithLdElemI4()
+        {
+            Expression<Func<int[], int>> expected = x => x[0];
+            Func<int[], int> compiled = x => x[0];
+            Test(expected, compiled);
+        }
+
+        [Fact]
+        public void ShouldBeAbleToDecompileExpressionWithLdElemU1()
+        {
+            Expression<Func<byte[], int>> expected = x => x[0];
+            Func<byte[], int> compiled = x => x[0];
+            Test(expected, compiled);
+        }
+
+        [Fact]
+        public void ShouldBeAbleToDecompileExpressionWithLdElemRef()
+        {
+            Expression<Func<object[], object>> expected = x => x[0];
+            Func<object[], object> compiled = x => x[0];
+            Test(expected, compiled);
+        }
+
+        [Fact]
         public void ShouldBeAbleToDecompileExpressionWithAddConstant()
         {
             Expression<Func<int, int>> expected = x => x + 1;
