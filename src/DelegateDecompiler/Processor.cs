@@ -512,6 +512,11 @@ namespace DelegateDecompiler
                     var val1 = stack.Pop();
                     stack.Push(Expression.ConvertChecked(val1, typeof (double)));
                 }
+                else if (instruction.OpCode == OpCodes.Castclass)
+                {
+                    var val1 = stack.Pop();
+                    stack.Push(Expression.Convert(val1, (Type) instruction.Operand));
+                }
                 else if (instruction.OpCode == OpCodes.And)
                 {
                     var val1 = stack.Pop();

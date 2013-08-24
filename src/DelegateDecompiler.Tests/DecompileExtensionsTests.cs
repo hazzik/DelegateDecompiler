@@ -72,6 +72,14 @@ namespace DelegateDecompiler.Tests
         }
 
         [Fact]
+        public void ShouldBeAbleToDecompileExpressionWithCastClass()
+        {
+            Expression<Func<object, DecompileExtensionsTests>> expected = x => (DecompileExtensionsTests) x;
+            Func<object, DecompileExtensionsTests> compiled = x => (DecompileExtensionsTests)x;
+            Test(expected, compiled);
+        }
+
+        [Fact]
         public void ShouldBeAbleToDecompileExpressionWithAddConstant()
         {
             Expression<Func<int, int>> expected = x => x + 1;
