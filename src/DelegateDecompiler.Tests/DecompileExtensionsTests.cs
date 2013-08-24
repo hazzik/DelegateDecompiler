@@ -63,6 +63,14 @@ namespace DelegateDecompiler.Tests
             Test(expected, compiled);
         }
 
+        [Fact(Skip = "Code is optimized")]
+        public void ShouldBeAbleToDecompileExpressionWithNot()
+        {
+            Expression<Func<bool, bool>> expected = x => !x;
+            Func<bool, bool> compiled = x => !x;
+            Test(expected, compiled);
+        }
+
         [Fact]
         public void ShouldBeAbleToDecompileExpressionWithAddConstant()
         {
