@@ -56,7 +56,7 @@ namespace DelegateDecompiler
             {
                 Debug.WriteLine(instruction);
 
-                if (instruction.OpCode == OpCodes.Nop)
+                if (instruction.OpCode == OpCodes.Nop || instruction.OpCode == OpCodes.Break)
                 {
                     //do nothing;
                 }
