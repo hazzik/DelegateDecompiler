@@ -386,6 +386,12 @@ namespace DelegateDecompiler
                     var val2 = stack.Pop();
                     stack.Push(Expression.LeftShift(val2, val1));
                 }
+                else if (instruction.OpCode == OpCodes.Shr || instruction.OpCode == OpCodes.Shr_Un)
+                {
+                    var val1 = stack.Pop();
+                    var val2 = stack.Pop();
+                    stack.Push(Expression.RightShift(val2, val1));
+                }
                 else if (instruction.OpCode == OpCodes.Conv_I)
                 {
                     var val1 = stack.Pop();

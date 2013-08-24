@@ -48,6 +48,14 @@ namespace DelegateDecompiler.Tests
         }
 
         [Fact]
+        public void ShouldBeAbleToDecompileExpressionWithShr()
+        {
+            Expression<Func<int, int, int>> expected = (x, y) => x >> (y & 31);
+            Func<int, int, int> compiled = (x, y) => x >> y;
+            Test(expected, compiled);
+        }
+
+        [Fact]
         public void ShouldBeAbleToDecompileExpressionWithAddConstant()
         {
             Expression<Func<int, int>> expected = x => x + 1;
