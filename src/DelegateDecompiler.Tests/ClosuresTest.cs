@@ -12,7 +12,7 @@ namespace DelegateDecompiler.Tests
         static int z = 0;
 
         readonly TestClass instanceTestClass = new TestClass();
-        readonly TestClass staticTestClass = new TestClass();
+        readonly static TestClass staticTestClass = new TestClass();
 
         [Fact(Skip = Skip)]
         public void CanUseVariableClosure()

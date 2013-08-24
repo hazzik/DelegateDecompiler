@@ -80,6 +80,14 @@ namespace DelegateDecompiler.Tests
         }
 
         [Fact]
+        public void ShouldBeAbleToDecompileExpressionWithLdLen()
+        {
+            Expression<Func<int[], int>> expected = x => (int) x.Length;
+            Func<int[], int> compiled = x => (int) x.Length;
+            Test(expected, compiled);
+        }
+
+        [Fact]
         public void ShouldBeAbleToDecompileExpressionWithAddConstant()
         {
             Expression<Func<int, int>> expected = x => x + 1;

@@ -89,6 +89,11 @@ namespace DelegateDecompiler
                     var operand = (ParameterInfo) instruction.Operand;
                     stack.Push(args.Single(x => x.Name == operand.Name));
                 }
+                else if (instruction.OpCode == OpCodes.Ldlen)
+                {
+                    var val = stack.Pop();
+                    stack.Push(Expression.ArrayLength(val));
+                }
                 else if (instruction.OpCode == OpCodes.Stloc_0)
                 {
                     StLoc(0);
