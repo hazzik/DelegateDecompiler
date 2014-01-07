@@ -42,3 +42,6 @@ Available on [NuGet](https://nuget.org/packages/DelegateDecompiler)
 # License
 
 MIT license - http://opensource.org/licenses/mit
+
+[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/hazzik/delegatedecompiler/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
+
