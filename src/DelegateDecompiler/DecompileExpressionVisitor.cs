@@ -36,7 +36,7 @@ namespace DelegateDecompiler
             return base.VisitMethodCall(node);
         }
 
-        static bool ShouldDecompile(ICustomAttributeProvider methodInfo)
+        protected virtual bool ShouldDecompile(MemberInfo methodInfo)
         {
             return methodInfo.GetCustomAttributes(typeof (DecompileAttribute), true).Length > 0 ||
                    methodInfo.GetCustomAttributes(typeof (ComputedAttribute), true).Length > 0;
