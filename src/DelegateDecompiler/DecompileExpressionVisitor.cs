@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Reflection;
 
@@ -38,8 +39,7 @@ namespace DelegateDecompiler
 
         protected virtual bool ShouldDecompile(MemberInfo methodInfo)
         {
-            return methodInfo.GetCustomAttributes(typeof (DecompileAttribute), true).Length > 0 ||
-                   methodInfo.GetCustomAttributes(typeof (ComputedAttribute), true).Length > 0;
+            return Configuration.Instance.ShouldDecompile(methodInfo);
         }
 
         Expression Decompile(MethodInfo method, Expression instance, IList<Expression> arguments)

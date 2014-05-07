@@ -37,7 +37,7 @@
     <SignAssembly>true</SignAssembly>
   </PropertyGroup>
   <PropertyGroup>
-    <AssemblyOriginatorKeyFile>DelegateDecompiler.snk</AssemblyOriginatorKeyFile>
+    <AssemblyOriginatorKeyFile>..\..\DelegateDecompiler.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Mono.Reflection">
@@ -54,19 +54,23 @@
   <ItemGroup>
     <Compile Include="Cache.cs" />
     <Compile Include="ComputedAttribute.cs" />
+    <Compile Include="Configuration.cs" />
     <Compile Include="DecompileAttribute.cs" />
     <Compile Include="DecompileExpressionVisitor.cs" />
     <Compile Include="DecompileExtensions.cs" />
+    <Compile Include="DefaultConfiguration.cs" />
     <Compile Include="MethodBodyDecompiler.cs" />
     <Compile Include="Processor.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ReplaceExpressionVisitor.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\..\DelegateDecompiler.snk">
+      <Link>DelegateDecompiler.snk</Link>
+    </None>
     <None Include="DelegateDecompiler.nuspec">
       <SubType>Designer</SubType>
     </None>
-    <None Include="DelegateDecompiler.snk" />
     <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -32,6 +32,12 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup>
+    <SignAssembly>true</SignAssembly>
+  </PropertyGroup>
+  <PropertyGroup>
+    <AssemblyOriginatorKeyFile>..\..\DelegateDecompiler.snk</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Mono.Reflection">
       <HintPath>..\..\packages\Mono.Reflection.1.0.0.0\lib\Mono.Reflection.dll</HintPath>
@@ -65,6 +71,7 @@
     <Compile Include="ClosuresTest.cs" />
     <Compile Include="ComparisonTests.cs" />
     <Compile Include="ConditionalTests.cs" />
+    <Compile Include="ConfigurationTests.cs" />
     <Compile Include="DecompileExtensionsTests.cs" />
     <Compile Include="DecompilerTestsBase.cs" />
     <Compile Include="Employee.cs" />
@@ -78,6 +85,9 @@
     <Compile Include="TestClass.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\..\DelegateDecompiler.snk">
+      <Link>DelegateDecompiler.snk</Link>
+    </None>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
