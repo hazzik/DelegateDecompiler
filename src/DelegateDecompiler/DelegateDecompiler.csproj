@@ -52,6 +52,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BinaryInstructionProcessor.cs" />
     <Compile Include="Cache.cs" />
     <Compile Include="ComputedAttribute.cs" />
     <Compile Include="Configuration.cs" />
