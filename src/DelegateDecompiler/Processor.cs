@@ -43,6 +43,7 @@ namespace DelegateDecompiler
                 new LdCInstructionProcessor(),
                 new StLocInstructionProcessor(locals),
                 new ConvInstructionProcessor(), 
+                new ConvOvfInstructionProcessor(),
             };
             this.stack = stack;
             this.locals = locals;
@@ -286,56 +287,6 @@ namespace DelegateDecompiler
                 {
                     var val = stack.Pop();
                     stack.Push(Expression.Not(val));
-                }
-                else if (instruction.OpCode == OpCodes.Conv_Ovf_I || instruction.OpCode == OpCodes.Conv_Ovf_I_Un)
-                {
-                    var val1 = stack.Pop();
-                    stack.Push(Expression.ConvertChecked(val1, typeof (int))); // Suppot x64?
-                }
-                else if (instruction.OpCode == OpCodes.Conv_Ovf_I1 || instruction.OpCode == OpCodes.Conv_Ovf_I1_Un)
-                {
-                    var val1 = stack.Pop();
-                    stack.Push(Expression.ConvertChecked(val1, typeof (sbyte)));
-                }
-                else if (instruction.OpCode == OpCodes.Conv_Ovf_I2 || instruction.OpCode == OpCodes.Conv_Ovf_I2_Un)
-                {
-                    var val1 = stack.Pop();
-                    stack.Push(Expression.ConvertChecked(val1, typeof (short)));
-                }
-                else if (instruction.OpCode == OpCodes.Conv_Ovf_I4 || instruction.OpCode == OpCodes.Conv_Ovf_I4_Un)
-                {
-                    var val1 = stack.Pop();
-                    stack.Push(Expression.ConvertChecked(val1, typeof (int)));
-                }
-                else if (instruction.OpCode == OpCodes.Conv_Ovf_I8 || instruction.OpCode == OpCodes.Conv_Ovf_I8_Un)
-                {
-                    var val1 = stack.Pop();
-                    stack.Push(Expression.ConvertChecked(val1, typeof (long)));
-                }
-                else if (instruction.OpCode == OpCodes.Conv_Ovf_U || instruction.OpCode == OpCodes.Conv_Ovf_U_Un)
-                {
-                    var val1 = stack.Pop();
-                    stack.Push(Expression.ConvertChecked(val1, typeof (uint))); // Suppot x64?
-                }
-                else if (instruction.OpCode == OpCodes.Conv_Ovf_U1 || instruction.OpCode == OpCodes.Conv_Ovf_U1_Un)
-                {
-                    var val1 = stack.Pop();
-                    stack.Push(Expression.ConvertChecked(val1, typeof (byte)));
-                }
-                else if (instruction.OpCode == OpCodes.Conv_Ovf_U2 || instruction.OpCode == OpCodes.Conv_Ovf_U2_Un)
-                {
-                    var val1 = stack.Pop();
-                    stack.Push(Expression.ConvertChecked(val1, typeof (ushort)));
-                }
-                else if (instruction.OpCode == OpCodes.Conv_Ovf_U4 || instruction.OpCode == OpCodes.Conv_Ovf_U4_Un)
-                {
-                    var val1 = stack.Pop();
-                    stack.Push(Expression.ConvertChecked(val1, typeof (uint)));
-                }
-                else if (instruction.OpCode == OpCodes.Conv_Ovf_U8 || instruction.OpCode == OpCodes.Conv_Ovf_U8_Un)
-                {
-                    var val1 = stack.Pop();
-                    stack.Push(Expression.ConvertChecked(val1, typeof (ulong)));
                 }
                 else if (instruction.OpCode == OpCodes.And)
                 {
