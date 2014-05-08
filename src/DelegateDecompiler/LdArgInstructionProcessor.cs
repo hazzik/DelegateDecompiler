@@ -1,23 +1,27 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
+using System.Reflection;
 using System.Reflection.Emit;
 using Mono.Reflection;
 
 namespace DelegateDecompiler
 {
-    class LdArgInstructionProcessor : IInstructionProcessor
+    internal class LdArgInstructionProcessor : IInstructionProcessor
     {
         private readonly IList<ParameterExpression> args;
 
-        private readonly IDictionary<OpCode, Func<Instruction, int>> indexes = new Dictionary<OpCode, Func<Instruction, int>>()
+        private static readonly IDictionary<OpCode, Func<IList<ParameterExpression>, Instruction, ParameterExpression>> indexes = new Dictionary<OpCode, Func<IList<ParameterExpression>, Instruction, ParameterExpression>>
         {
-            { OpCodes.Ldarg_0, i => 0 },
-            { OpCodes.Ldarg_1, i => 1 },
-            { OpCodes.Ldarg_2, i => 2 },
-            { OpCodes.Ldarg_3, i => 3 },
-            { OpCodes.Ldarg_S, i => (byte) i.Operand },
-            { OpCodes.Ldarg, i => (int) i.Operand },
+            { OpCodes.Ldarg_0, (args, i) => args[0] },
+            { OpCodes.Ldarg_1, (args, i) => args[1] },
+            { OpCodes.Ldarg_2, (args, i) => args[2] },
+            { OpCodes.Ldarg_3, (args, i) => args[3] },
+            { OpCodes.Ldarg_S, (args, i) => args[(byte) i.Operand] },
+            { OpCodes.Ldarg, (args, i) => args[(int) i.Operand] },
+            { OpCodes.Ldarga_S, (args, i) => args.Single(x => x.Name == ((ParameterInfo) i.Operand).Name) },
+            { OpCodes.Ldarga, (args, i) => args.Single(x => x.Name == ((ParameterInfo) i.Operand).Name) },
         };
 
         public LdArgInstructionProcessor(IList<ParameterExpression> args)
@@ -27,10 +31,10 @@ namespace DelegateDecompiler
 
         public bool Process(Instruction instruction, Stack<Expression> stack)
         {
-            Func<Instruction, int> index;
+            Func<IList<ParameterExpression>, Instruction, ParameterExpression> index;
             if (!indexes.TryGetValue(instruction.OpCode, out index))
                 return false;
-            stack.Push(args[index(instruction)]);
+            stack.Push(index(args, instruction));
             return true;
         }
     }

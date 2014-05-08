@@ -68,11 +68,6 @@ namespace DelegateDecompiler
                 if (processors.Any(x => x.Process(instruction, stack)))
                 {
                 } 
-                else if (instruction.OpCode == OpCodes.Ldarga || instruction.OpCode == OpCodes.Ldarga_S)
-                {
-                    var operand = (ParameterInfo) instruction.Operand;
-                    stack.Push(args.Single(x => x.Name == operand.Name));
-                }
                 else if (instruction.OpCode == OpCodes.Ldlen)
                 {
                     var array = stack.Pop();

@@ -8,7 +8,7 @@ namespace DelegateDecompiler
 {
     internal class LdCInstructionProcessor : IInstructionProcessor
     {
-        private readonly IDictionary<OpCode, Func<Instruction, object>> factories = new Dictionary<OpCode, Func<Instruction, object>>
+        private static readonly IDictionary<OpCode, Func<Instruction, object>> factories = new Dictionary<OpCode, Func<Instruction, object>>
         {
             { OpCodes.Ldc_I4_0, i => 0 },
             { OpCodes.Ldc_I4_1, i => 1 },

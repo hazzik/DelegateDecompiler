@@ -11,7 +11,7 @@ namespace DelegateDecompiler
     {
         private readonly Expression[] locals;
 
-        private readonly IDictionary<OpCode, Func<Instruction, int>> indexes = new Dictionary<OpCode, Func<Instruction, int>>
+        private static readonly IDictionary<OpCode, Func<Instruction, int>> indexes = new Dictionary<OpCode, Func<Instruction, int>>
         {
             { OpCodes.Ldloc_0,  i => 0 },
             { OpCodes.Ldloc_1,  i => 1 },
