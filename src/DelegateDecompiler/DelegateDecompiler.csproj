@@ -55,6 +55,7 @@
     <Compile Include="Cache.cs" />
     <Compile Include="ComputedAttribute.cs" />
     <Compile Include="Configuration.cs" />
+    <Compile Include="ConvInstructionProcessor.cs" />
     <Compile Include="DecompileAttribute.cs" />
     <Compile Include="DecompileExpressionVisitor.cs" />
     <Compile Include="DecompileExtensions.cs" />

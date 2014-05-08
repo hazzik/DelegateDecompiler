@@ -41,7 +41,8 @@ namespace DelegateDecompiler
                 new LdArgInstructionProcessor(args),
                 new LdLocInstructionProcessor(locals),
                 new LdCInstructionProcessor(),
-                new StLocInstructionProcessor(locals), 
+                new StLocInstructionProcessor(locals),
+                new ConvInstructionProcessor(), 
             };
             this.stack = stack;
             this.locals = locals;
@@ -286,56 +287,6 @@ namespace DelegateDecompiler
                     var val = stack.Pop();
                     stack.Push(Expression.Not(val));
                 }
-                else if (instruction.OpCode == OpCodes.Conv_I)
-                {
-                    var val1 = stack.Pop();
-                    stack.Push(Expression.Convert(val1, typeof (int))); // Support x64?
-                }
-                else if (instruction.OpCode == OpCodes.Conv_I1)
-                {
-                    var val1 = stack.Pop();
-                    stack.Push(Expression.Convert(val1, typeof (sbyte)));
-                }
-                else if (instruction.OpCode == OpCodes.Conv_I2)
-                {
-                    var val1 = stack.Pop();
-                    stack.Push(Expression.Convert(val1, typeof (short)));
-                }
-                else if (instruction.OpCode == OpCodes.Conv_I4)
-                {
-                    var val1 = stack.Pop();
-                    stack.Push(Expression.Convert(val1, typeof (int)));
-                }
-                else if (instruction.OpCode == OpCodes.Conv_I8)
-                {
-                    var val1 = stack.Pop();
-                    stack.Push(Expression.Convert(val1, typeof (long)));
-                }
-                else if (instruction.OpCode == OpCodes.Conv_U)
-                {
-                    var val1 = stack.Pop();
-                    stack.Push(Expression.Convert(val1, typeof (uint))); // Suppot x64?
-                }
-                else if (instruction.OpCode == OpCodes.Conv_U1)
-                {
-                    var val1 = stack.Pop();
-                    stack.Push(Expression.Convert(val1, typeof (byte)));
-                }
-                else if (instruction.OpCode == OpCodes.Conv_U2)
-                {
-                    var val1 = stack.Pop();
-                    stack.Push(Expression.Convert(val1, typeof (ushort)));
-                }
-                else if (instruction.OpCode == OpCodes.Conv_U4)
-                {
-                    var val1 = stack.Pop();
-                    stack.Push(Expression.Convert(val1, typeof (uint)));
-                }
-                else if (instruction.OpCode == OpCodes.Conv_U8)
-                {
-                    var val1 = stack.Pop();
-                    stack.Push(Expression.Convert(val1, typeof (ulong)));
-                }
                 else if (instruction.OpCode == OpCodes.Conv_Ovf_I || instruction.OpCode == OpCodes.Conv_Ovf_I_Un)
                 {
                     var val1 = stack.Pop();
@@ -385,21 +336,6 @@ namespace DelegateDecompiler
                 {
                     var val1 = stack.Pop();
                     stack.Push(Expression.ConvertChecked(val1, typeof (ulong)));
-                }
-                else if (instruction.OpCode == OpCodes.Conv_R4 || instruction.OpCode == OpCodes.Conv_R_Un)
-                {
-                    var val1 = stack.Pop();
-                    stack.Push(Expression.ConvertChecked(val1, typeof (float)));
-                }
-                else if (instruction.OpCode == OpCodes.Conv_R8)
-                {
-                    var val1 = stack.Pop();
-                    stack.Push(Expression.ConvertChecked(val1, typeof (double)));
-                }
-                else if (instruction.OpCode == OpCodes.Castclass)
-                {
-                    var val1 = stack.Pop();
-                    stack.Push(Expression.Convert(val1, (Type) instruction.Operand));
                 }
                 else if (instruction.OpCode == OpCodes.And)
                 {
