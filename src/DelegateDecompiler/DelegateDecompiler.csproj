@@ -61,6 +61,7 @@
     <Compile Include="DefaultConfiguration.cs" />
     <Compile Include="IInstructionProcessor.cs" />
     <Compile Include="LdArgInstructionProcessor.cs" />
+    <Compile Include="LdLocInstructionProcessor.cs" />
     <Compile Include="MethodBodyDecompiler.cs" />
     <Compile Include="Processor.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

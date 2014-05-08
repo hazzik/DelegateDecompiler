@@ -38,6 +38,7 @@ namespace DelegateDecompiler
             processors = new IInstructionProcessor[]
             {
                 new LdArgInstructionProcessor(args),
+                new LdLocInstructionProcessor(locals),
                 new StLocInstructionProcessor(locals), 
             };
             this.stack = stack;
@@ -129,35 +130,6 @@ namespace DelegateDecompiler
                     {
                         stack.Push(Expression.Field(null, (FieldInfo) instruction.Operand));
                     }
-                }
-                else if (instruction.OpCode == OpCodes.Ldloc_0)
-                {
-                    LdLoc(0);
-                }
-                else if (instruction.OpCode == OpCodes.Ldloc_1)
-                {
-                    LdLoc(1);
-                }
-                else if (instruction.OpCode == OpCodes.Ldloc_2)
-                {
-                    LdLoc(2);
-                }
-                else if (instruction.OpCode == OpCodes.Ldloc_3)
-                {
-                    LdLoc(3);
-                }
-                else if (instruction.OpCode == OpCodes.Ldloc_S)
-                {
-                    LdLoc((byte) instruction.Operand);
-                }
-                else if (instruction.OpCode == OpCodes.Ldloc)
-                {
-                    LdLoc((int) instruction.Operand);
-                }
-                else if (instruction.OpCode == OpCodes.Ldloca || instruction.OpCode == OpCodes.Ldloca_S)
-                {
-                    var operand = (LocalVariableInfo) instruction.Operand;
-                    LdLoc(operand.LocalIndex);
                 }
                 else if (instruction.OpCode == OpCodes.Ldstr)
                 {
@@ -916,11 +888,6 @@ namespace DelegateDecompiler
                     locals[i] = newExpression;
                 }
             }
-        }
-
-        void LdLoc(int index)
-        {
-            stack.Push(locals[index]);
         }
     }
 }
