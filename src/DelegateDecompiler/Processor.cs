@@ -37,7 +37,8 @@ namespace DelegateDecompiler
         {
             processors = new IInstructionProcessor[]
             {
-                new LdArgInstructionProcessor(args), 
+                new LdArgInstructionProcessor(args),
+                new StLocInstructionProcessor(locals), 
             };
             this.stack = stack;
             this.locals = locals;
@@ -94,30 +95,6 @@ namespace DelegateDecompiler
                     var index = stack.Pop();
                     var array = stack.Pop();
                     stack.Push(Expression.ArrayIndex(array, index));
-                }
-                else if (instruction.OpCode == OpCodes.Stloc_0)
-                {
-                    StLoc(0);
-                }
-                else if (instruction.OpCode == OpCodes.Stloc_1)
-                {
-                    StLoc(1);
-                }
-                else if (instruction.OpCode == OpCodes.Stloc_2)
-                {
-                    StLoc(2);
-                }
-                else if (instruction.OpCode == OpCodes.Stloc_3)
-                {
-                    StLoc(3);
-                }
-                else if (instruction.OpCode == OpCodes.Stloc_S)
-                {
-                    StLoc((byte) instruction.Operand);
-                }
-                else if (instruction.OpCode == OpCodes.Stloc)
-                {
-                    StLoc((int) instruction.Operand);
                 }
                 else if (instruction.OpCode == OpCodes.Stelem ||
                          instruction.OpCode == OpCodes.Stelem_I ||
@@ -944,16 +921,6 @@ namespace DelegateDecompiler
         void LdLoc(int index)
         {
             stack.Push(locals[index]);
-        }
-
-        void StLoc(int index)
-        {
-            locals[index] = stack.Pop();
-        }
-
-        void LdArg(int index)
-        {
-            stack.Push(args[index]);
         }
     }
 }

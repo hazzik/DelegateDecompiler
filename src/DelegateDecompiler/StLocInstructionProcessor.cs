@@ -6,23 +6,23 @@ using Mono.Reflection;
 
 namespace DelegateDecompiler
 {
-    class LdArgInstructionProcessor : IInstructionProcessor
+    class StLocInstructionProcessor : IInstructionProcessor
     {
-        private readonly IList<ParameterExpression> args;
+        private readonly Expression[] locals;
 
         private readonly IDictionary<OpCode, Func<Instruction, int>> indexes = new Dictionary<OpCode, Func<Instruction, int>>()
         {
-            { OpCodes.Ldarg_0, i => 0 },
-            { OpCodes.Ldarg_1, i => 1 },
-            { OpCodes.Ldarg_2, i => 2 },
-            { OpCodes.Ldarg_3, i => 3 },
-            { OpCodes.Ldarg_S, i => (byte) i.Operand },
-            { OpCodes.Ldarg, i => (int) i.Operand },
+            { OpCodes.Stloc_0, i => 0 },
+            { OpCodes.Stloc_1, i => 1 },
+            { OpCodes.Stloc_2, i => 2 },
+            { OpCodes.Stloc_3, i => 3 },
+            { OpCodes.Stloc_S, i => (byte) i.Operand },
+            { OpCodes.Stloc, i => (int) i.Operand },
         };
 
-        public LdArgInstructionProcessor(IList<ParameterExpression> args)
+        public StLocInstructionProcessor(Expression[] locals)
         {
-            this.args = args;
+            this.locals = locals;
         }
 
         public bool Process(Instruction instruction, Stack<Expression> stack)
@@ -30,7 +30,7 @@ namespace DelegateDecompiler
             Func<Instruction, int> index;
             if (!indexes.TryGetValue(instruction.OpCode, out index))
                 return false;
-            stack.Push(args[index(instruction)]);
+            locals[index(instruction)] = stack.Pop();
             return true;
         }
     }
