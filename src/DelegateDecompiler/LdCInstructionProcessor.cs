@@ -26,6 +26,7 @@ namespace DelegateDecompiler
             { OpCodes.Ldc_R4, i => (float) i.Operand },
             { OpCodes.Ldc_R8, i => (double) i.Operand },
             { OpCodes.Ldstr, i => (string) i.Operand },
+            { OpCodes.Ldnull, i => null },
         };
 
         public bool Process(Instruction instruction, Stack<Expression> stack)
