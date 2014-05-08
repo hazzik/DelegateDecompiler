@@ -59,6 +59,8 @@
     <Compile Include="DecompileExpressionVisitor.cs" />
     <Compile Include="DecompileExtensions.cs" />
     <Compile Include="DefaultConfiguration.cs" />
+    <Compile Include="IInstructionProcessor.cs" />
+    <Compile Include="LdArgInstructionProcessor.cs" />
     <Compile Include="MethodBodyDecompiler.cs" />
     <Compile Include="Processor.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

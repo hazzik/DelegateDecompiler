@@ -15,6 +15,8 @@ namespace DelegateDecompiler
     {
         private const string cachedAnonymousMethodDelegate = "<>9__CachedAnonymousMethodDelegate";
 
+        private readonly IList<IInstructionProcessor> processors;
+
         public static Processor Create(Expression[] locals, IList<ParameterExpression> args)
         {
             return new Processor(new Stack<Expression>(), locals, args);
@@ -33,6 +35,10 @@ namespace DelegateDecompiler
 
         Processor(Stack<Expression> stack, Expression[] locals, IList<ParameterExpression> args)
         {
+            processors = new IInstructionProcessor[]
+            {
+                new LdArgInstructionProcessor(args), 
+            };
             this.stack = stack;
             this.locals = locals;
             this.args = args;
@@ -55,34 +61,12 @@ namespace DelegateDecompiler
             while(instruction != null && instruction != last)
             {
                 Debug.WriteLine(instruction);
-
-                if (instruction.OpCode == OpCodes.Nop || instruction.OpCode == OpCodes.Break)
+                if (processors.Any(x => x.Process(instruction, stack)))
+                {
+                } 
+                else if (instruction.OpCode == OpCodes.Nop || instruction.OpCode == OpCodes.Break)
                 {
                     //do nothing;
-                }
-                else if (instruction.OpCode == OpCodes.Ldarg_0)
-                {
-                    LdArg(0);
-                }
-                else if (instruction.OpCode == OpCodes.Ldarg_1)
-                {
-                    LdArg(1);
-                }
-                else if (instruction.OpCode == OpCodes.Ldarg_2)
-                {
-                    LdArg(2);
-                }
-                else if (instruction.OpCode == OpCodes.Ldarg_3)
-                {
-                    LdArg(3);
-                }
-                else if (instruction.OpCode == OpCodes.Ldarg_S)
-                {
-                    LdArg((short) instruction.Operand);
-                }
-                else if (instruction.OpCode == OpCodes.Ldarg)
-                {
-                    LdArg((int) instruction.Operand);
                 }
                 else if (instruction.OpCode == OpCodes.Ldarga || instruction.OpCode == OpCodes.Ldarga_S)
                 {
