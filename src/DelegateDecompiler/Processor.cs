@@ -603,9 +603,9 @@ namespace DelegateDecompiler
                 instruction = instruction.Next;
             }
 
-            return stack.Count == 0
-                       ? Expression.Empty()
-                       : stack.Pop();
+            if (stack.Count == 0) return Expression.Empty();
+            if (stack.Count == 1) return stack.Pop();
+            return Expression.Block(stack.Reverse());
         }
 
         private static bool IsCachedAnonymousMethodDelegate(FieldInfo field)
@@ -669,6 +669,7 @@ namespace DelegateDecompiler
             var leftExpression = AdjustType(Clone().Process(left, common), rightExpression.Type);
 
             var expression = BuildConditionalBranch(test, val1, leftExpression, rightExpression);
+            stack.Clear();
             stack.Push(expression);
             return common;
         }
@@ -839,11 +840,12 @@ namespace DelegateDecompiler
             stack.Push(Expression.Constant(i));
         }
 
-        void Call(MethodInfo m)
+        private void Call(MethodInfo m)
         {
             var mArgs = GetArguments(m);
 
             var instance = m.IsStatic ? null : stack.Pop();
+
             stack.Push(BuildMethodCallExpression(m, instance, mArgs));
         }
 
@@ -852,33 +854,33 @@ namespace DelegateDecompiler
             var parameterInfos = m.GetParameters();
             var mArgs = new Expression[parameterInfos.Length];
             for (var i = parameterInfos.Length - 1; i >= 0; i--)
-            {
                 mArgs[i] = stack.Pop();
-            }
             return mArgs;
         }
 
         Expression BuildMethodCallExpression(MethodInfo m, Expression instance, Expression[] arguments)
         {
-            if (m.Name == "Add" && instance != null && typeof(IEnumerable).IsAssignableFrom(instance.Type))
-            {
-                var newExpression = instance as NewExpression;
-                if (newExpression != null)
-                {
-                    var init = Expression.ListInit(newExpression, Expression.ElementInit(m, arguments));
-                    UpdateLocals(newExpression, init);
-                    return init;
-                }
-                var initExpression = instance as ListInitExpression;
-                if (initExpression != null)
-                {
-                    var initializers = initExpression.Initializers.ToList();
-                    initializers.Add(Expression.ElementInit(m, arguments));
-                    var init = Expression.ListInit(initExpression.NewExpression, initializers);
-                    UpdateLocals(initExpression, init);
-                    return init;
-                }
-            }
+//            if (m.Name == "Add" && instance != null && typeof(IEnumerable).IsAssignableFrom(instance.Type))
+//            {
+//                var newExpression = instance as NewExpression;
+//                if (newExpression != null)
+//                {
+//                    var init = Expression.ListInit(newExpression, Expression.ElementInit(m, arguments));
+//                    UpdateLocals(newExpression, init);
+//                    return init;
+//                }
+//                var initExpression = instance as ListInitExpression;
+//                if (initExpression != null)
+//                {
+//                    if (stack.Peek() == instance)
+//                        stack.Pop();
+//                    var initializers = initExpression.Initializers.ToList();
+//                    initializers.Add(Expression.ElementInit(m, arguments));
+//                    var init = Expression.ListInit(initExpression.NewExpression, initializers);
+//                    UpdateLocals(initExpression, init);
+//                    return init;
+//                }
+//            }
             if (m.IsSpecialName && m.IsHideBySig)
             {
                 if (m.Name.StartsWith("get_"))
