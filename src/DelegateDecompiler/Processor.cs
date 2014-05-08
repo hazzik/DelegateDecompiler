@@ -39,6 +39,7 @@ namespace DelegateDecompiler
             {
                 new LdArgInstructionProcessor(args),
                 new LdLocInstructionProcessor(locals),
+                new LdCInstructionProcessor(),
                 new StLocInstructionProcessor(locals), 
             };
             this.stack = stack;
@@ -130,70 +131,6 @@ namespace DelegateDecompiler
                     {
                         stack.Push(Expression.Field(null, (FieldInfo) instruction.Operand));
                     }
-                }
-                else if (instruction.OpCode == OpCodes.Ldstr)
-                {
-                    stack.Push(Expression.Constant((string) instruction.Operand));
-                }
-                else if (instruction.OpCode == OpCodes.Ldc_I4_0)
-                {
-                    LdC(0);
-                }
-                else if (instruction.OpCode == OpCodes.Ldc_I4_1)
-                {
-                    LdC(1);
-                }
-                else if (instruction.OpCode == OpCodes.Ldc_I4_2)
-                {
-                    LdC(2);
-                }
-                else if (instruction.OpCode == OpCodes.Ldc_I4_3)
-                {
-                    LdC(3);
-                }
-                else if (instruction.OpCode == OpCodes.Ldc_I4_4)
-                {
-                    LdC(4);
-                }
-                else if (instruction.OpCode == OpCodes.Ldc_I4_5)
-                {
-                    LdC(5);
-                }
-                else if (instruction.OpCode == OpCodes.Ldc_I4_6)
-                {
-                    LdC(6);
-                }
-                else if (instruction.OpCode == OpCodes.Ldc_I4_7)
-                {
-                    LdC(7);
-                }
-                else if (instruction.OpCode == OpCodes.Ldc_I4_8)
-                {
-                    LdC(8);
-                }
-                else if (instruction.OpCode == OpCodes.Ldc_I4_S)
-                {
-                    LdC((sbyte) instruction.Operand);
-                }
-                else if (instruction.OpCode == OpCodes.Ldc_I4_M1)
-                {
-                    LdC(-1);
-                }
-                else if (instruction.OpCode == OpCodes.Ldc_I4)
-                {
-                    LdC((int) instruction.Operand);
-                }
-                else if (instruction.OpCode == OpCodes.Ldc_I8)
-                {
-                    LdC((long) instruction.Operand);
-                }
-                else if (instruction.OpCode == OpCodes.Ldc_R4)
-                {
-                    LdC((float) instruction.Operand);
-                }
-                else if (instruction.OpCode == OpCodes.Ldc_R8)
-                {
-                    LdC((double) instruction.Operand);
                 }
                 else if (instruction.OpCode == OpCodes.Br_S || instruction.OpCode == OpCodes.Br)
                 {
@@ -750,26 +687,6 @@ namespace DelegateDecompiler
                 return expressions;
             }
             return new[] { value };
-        }
-
-        void LdC(int i)
-        {
-            stack.Push(Expression.Constant(i));
-        }
-
-        void LdC(long i)
-        {
-            stack.Push(Expression.Constant(i));
-        }
-
-        void LdC(float i)
-        {
-            stack.Push(Expression.Constant(i));
-        }
-
-        void LdC(double i)
-        {
-            stack.Push(Expression.Constant(i));
         }
 
         void Call(MethodInfo m)
