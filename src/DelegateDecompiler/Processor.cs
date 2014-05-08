@@ -37,6 +37,7 @@ namespace DelegateDecompiler
         {
             processors = new IInstructionProcessor[]
             {
+                new NopInstructionProcessor(),
                 new LdArgInstructionProcessor(args),
                 new LdLocInstructionProcessor(locals),
                 new LdCInstructionProcessor(),
@@ -67,10 +68,6 @@ namespace DelegateDecompiler
                 if (processors.Any(x => x.Process(instruction, stack)))
                 {
                 } 
-                else if (instruction.OpCode == OpCodes.Nop || instruction.OpCode == OpCodes.Break)
-                {
-                    //do nothing;
-                }
                 else if (instruction.OpCode == OpCodes.Ldarga || instruction.OpCode == OpCodes.Ldarga_S)
                 {
                     var operand = (ParameterInfo) instruction.Operand;
