@@ -13,6 +13,9 @@
 
         public string LastName { get; set; }
 
+        public int From;
+        public int To;
+
         [Computed]
         public string FullName
         {

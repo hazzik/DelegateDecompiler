@@ -54,6 +54,103 @@ namespace DelegateDecompiler.Tests
             Test(expected, compiled);
         }
 
+        [Fact]
+        public void AndLessThanOrEqual()
+        {
+            Expression<Func<Employee, int, bool>> expected = (e, p) => e.From <= p && p < e.To;
+            Func<Employee, int, bool> compiled = (e, p) => e.From <= p && p < e.To;
+            Test(expected, compiled);
+        }
+
+        [Fact]
+        public void AndLessThan()
+        {
+            Expression<Func<Employee, int, bool>> expected = (e, p) => e.From < p && p < e.To;
+            Func<Employee, int, bool> compiled = (e, p) => e.From < p && p < e.To;
+            Test(expected, compiled);
+        }
+
+        [Fact]
+        public void AndGreaterThanOrEqual()
+        {
+            Expression<Func<Employee, int, bool>> expected = (e, p) => e.From >= p && p < e.To;
+            Func<Employee, int, bool> compiled = (e, p) => e.From >= p && p < e.To;
+            Test(expected, compiled);
+        }
+
+        [Fact]
+        public void AndGreaterThan()
+        {
+            Expression<Func<Employee, int, bool>> expected = (e, p) => e.From > p && p < e.To;
+            Func<Employee, int, bool> compiled = (e, p) => e.From > p && p < e.To;
+            Test(expected, compiled);
+        }
+
+        [Fact]
+        public void AndEqual()
+        {
+            Expression<Func<Employee, int, bool>> expected = (e, p) => e.From == p && p < e.To;
+            Func<Employee, int, bool> compiled = (e, p) => e.From == p && p < e.To;
+            Test(expected, compiled);
+        }
+
+        [Fact]
+        public void AndNotEqual()
+        {
+            Expression<Func<Employee, int, bool>> expected = (e, p) => e.From != p && p < e.To;
+            Func<Employee, int, bool> compiled = (e, p) => e.From != p && p < e.To;
+            Test(expected, compiled);
+        }
+
+
+        [Fact]
+        public void OrLessThanOrEqual()
+        {
+            Expression<Func<Employee, int, bool>> expected = (e, p) => e.From <= p || p < e.To;
+            Func<Employee, int, bool> compiled = (e, p) => e.From <= p || p < e.To;
+            Test(expected, compiled);
+        }
+
+        [Fact]
+        public void OrLessThan()
+        {
+            Expression<Func<Employee, int, bool>> expected = (e, p) => e.From < p || p < e.To;
+            Func<Employee, int, bool> compiled = (e, p) => e.From < p || p < e.To;
+            Test(expected, compiled);
+        }
+
+        [Fact]
+        public void OrGreaterThanOrEqual()
+        {
+            Expression<Func<Employee, int, bool>> expected = (e, p) => e.From >= p || p < e.To;
+            Func<Employee, int, bool> compiled = (e, p) => e.From >= p || p < e.To;
+            Test(expected, compiled);
+        }
+
+        [Fact]
+        public void OrGreaterThan()
+        {
+            Expression<Func<Employee, int, bool>> expected = (e, p) => e.From > p || p < e.To;
+            Func<Employee, int, bool> compiled = (e, p) => e.From > p || p < e.To;
+            Test(expected, compiled);
+        }
+
+        [Fact]
+        public void OrEqual()
+        {
+            Expression<Func<Employee, int, bool>> expected = (e, p) => e.From == p || p < e.To;
+            Func<Employee, int, bool> compiled = (e, p) => e.From == p || p < e.To;
+            Test(expected, compiled);
+        }
+
+        [Fact]
+        public void OrNotEqual()
+        {
+            Expression<Func<Employee, int, bool>> expected = (e, p) => e.From != p || p < e.To;
+            Func<Employee, int, bool> compiled = (e, p) => e.From != p || p < e.To;
+            Test(expected, compiled);
+        }
+
         [Fact(Skip = "Need IIF optimization for Nullable<>")]
         public void NullableCoalesce()
         {

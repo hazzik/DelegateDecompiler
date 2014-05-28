@@ -675,45 +675,45 @@ namespace DelegateDecompiler
 
         private static Expression BuildConditionalBranch(BinaryExpression test, Expression val1, Expression leftExpression, Expression rightExpression)
         {
+            var leftConstant = leftExpression as ConstantExpression;
+            if (leftConstant != null && leftConstant.Value is bool)
+            {
+                if ((bool)leftConstant.Value)
+                {
+                    if (test.NodeType == ExpressionType.Equal ||
+                        test.NodeType == ExpressionType.NotEqual ||
+                        test.NodeType == ExpressionType.GreaterThan ||
+                        test.NodeType == ExpressionType.GreaterThanOrEqual ||
+                        test.NodeType == ExpressionType.LessThan ||
+                        test.NodeType == ExpressionType.LessThanOrEqual)
+                    {
+                        return Expression.OrElse(test, rightExpression);
+                    }
+                }
+                else
+                {
+                    switch (test.NodeType)
+                    {
+                        case ExpressionType.Equal:
+                            return Expression.AndAlso(Expression.NotEqual(test.Left, test.Right), rightExpression);
+                        case ExpressionType.NotEqual:
+                            return Expression.AndAlso(Expression.Equal(test.Left, test.Right), rightExpression);
+                        case ExpressionType.GreaterThan:
+                            return Expression.AndAlso(Expression.LessThanOrEqual(test.Left, test.Right), rightExpression);
+                        case ExpressionType.GreaterThanOrEqual:
+                            return Expression.AndAlso(Expression.LessThan(test.Left, test.Right), rightExpression);
+                        case ExpressionType.LessThan:
+                            return Expression.AndAlso(Expression.GreaterThanOrEqual(test.Left, test.Right), rightExpression);
+                        case ExpressionType.LessThanOrEqual:
+                            return Expression.AndAlso(Expression.GreaterThan(test.Left, test.Right), rightExpression);
+                    }
+                }
+            }
             if (test.NodeType == ExpressionType.NotEqual)
             {
                 if (val1 == leftExpression && (test.Right is DefaultExpression || (test.Right is ConstantExpression && ((ConstantExpression) test.Right).Value == null)))
                 {
                     return Expression.Coalesce(val1, rightExpression);
-                }
-                var leftConstant = leftExpression as ConstantExpression;
-                if (leftConstant != null)
-                {
-                    if (leftConstant.Value is bool)
-                    {
-                        if ((bool) leftConstant.Value)
-                        {
-                            return Expression.OrElse(test, rightExpression);
-                        }
-                    }
-                }
-            }
-            else if (test.NodeType == ExpressionType.Equal)
-            {
-                var leftConstant = leftExpression as ConstantExpression;
-                if (leftConstant != null)
-                {
-                    if (leftConstant.Value is bool)
-                    {
-                        if ((bool) leftConstant.Value)
-                        {
-                            return Expression.OrElse(test, rightExpression);
-                        }
-                        var constantExpression = test.Right as ConstantExpression;
-                        if (constantExpression != null && constantExpression.Value is bool && !((bool) constantExpression.Value))
-                        {
-                            return Expression.AndAlso(test.Left, rightExpression);
-                        }
-                        else
-                        {
-                            return Expression.AndAlso(Expression.NotEqual(test.Left, test.Right), rightExpression);
-                        }
-                    }
                 }
             }
             return Expression.Condition(test, leftExpression, rightExpression);
