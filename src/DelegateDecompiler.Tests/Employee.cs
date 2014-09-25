@@ -22,6 +22,13 @@
             get { return FirstName + " " + LastName; }
         }
 
+        public string FullNameWithoutAttribute
+        {
+            get { return FirstName + " " + LastName; }
+        }
+
+
+
         [Computed]
         public bool IsActive
         {
