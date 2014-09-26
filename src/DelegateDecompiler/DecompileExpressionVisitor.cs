@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 
@@ -29,6 +31,17 @@ namespace DelegateDecompiler
 
         protected override Expression VisitMethodCall(MethodCallExpression node)
         {
+            if (node.Method.GetGenericMethodDefinition() == typeof (ComputedExtension).GetMethod("Computed", BindingFlags.Static | BindingFlags.Public))
+            {
+                var arg = node.Arguments.SingleOrDefault() as MemberExpression;
+                var info = arg.Member as PropertyInfo;
+                if (info != null)
+                {
+                    var method = info.GetGetMethod();
+                    return Decompile(method, arg.Expression, new List<Expression>());
+                }
+            }
+
             if (ShouldDecompile(node.Method))
             {
                 return Decompile(node.Method, node.Object, node.Arguments);

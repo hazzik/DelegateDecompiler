@@ -54,6 +54,7 @@
   <ItemGroup>
     <Compile Include="Cache.cs" />
     <Compile Include="ComputedAttribute.cs" />
+    <Compile Include="ComputedExtension.cs" />
     <Compile Include="Configuration.cs" />
     <Compile Include="DecompileAttribute.cs" />
     <Compile Include="DecompileExpressionVisitor.cs" />

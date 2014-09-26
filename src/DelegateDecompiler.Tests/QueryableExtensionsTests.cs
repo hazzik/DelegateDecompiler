@@ -7,6 +7,22 @@ namespace DelegateDecompiler.Tests
     public class QueryableExtensionsTests
     {
         [Fact]
+        public void InlinePropertyWithoutAttribute()
+        {
+            var employees = new[] { new Employee { FirstName = "Test", LastName = "User" } };
+
+            var expected = (from employee in employees.AsQueryable()
+                            where (employee.FirstName + " " + employee.LastName) == "Test User"
+                            select employee);
+
+            var actual = (from employee in employees.AsQueryable()
+                          where employee.FullNameWithoutAttribute.Computed() == "Test User"
+                          select employee).Decompile();
+
+            Assert.Equal(expected.Expression.ToString(), actual.Expression.ToString());
+        }
+
+        [Fact]
         public void InlineProperty()
         {
             var employees = new[] { new Employee { FirstName = "Test", LastName = "User" } };

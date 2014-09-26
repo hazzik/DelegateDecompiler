@@ -35,6 +35,14 @@ When you call `.Decompile` method it decompiles your computed properties to thei
                      where (employee.FirstName + " " + employee.LastName)  == "Test User"
                      select employee).ToList();
 
+If your class doesn't have a [Computed] attribute, you can use the `.Computed()` extension method..
+
+    var employees = (from employee in db.Employees
+                     where employee.FullName.Computed() == "Test User"
+                     select employee).ToList();
+
+					 
+					 
 # Installation
 
 Available on [NuGet](https://nuget.org/packages/DelegateDecompiler)
