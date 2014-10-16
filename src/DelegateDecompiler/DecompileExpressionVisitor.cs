@@ -31,7 +31,7 @@ namespace DelegateDecompiler
 
         protected override Expression VisitMethodCall(MethodCallExpression node)
         {
-            if (node.Method.GetGenericMethodDefinition() == typeof (ComputedExtension).GetMethod("Computed", BindingFlags.Static | BindingFlags.Public))
+            if (node.Method.IsGenericMethod && node.Method.GetGenericMethodDefinition() == typeof (ComputedExtension).GetMethod("Computed", BindingFlags.Static | BindingFlags.Public))
             {
                 var arg = node.Arguments.SingleOrDefault() as MemberExpression;
                 var info = arg.Member as PropertyInfo;
