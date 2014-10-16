@@ -28,5 +28,10 @@ namespace DelegateDecompiler
             }
             return self;
         }
+
+        public static IQueryable<T> Decompiled<T>(this IQueryable<T> source)
+        {
+            return new DecompiledQueryable<T>(source);
+        }
     }
 }

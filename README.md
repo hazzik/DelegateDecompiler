@@ -42,7 +42,13 @@ If your class doesn't have a [Computed] attribute, you can use the `.Computed()`
                      where employee.FullName.Computed() == "Test User"
                      select employee).ToList();
 
-					 
+
+Using the new Decompiled method you can call methods that return a single item (Any, Count, First, Single, etc) as well as other methods in identical way like this:
+
+	bool exists = db.Employees.Decompiled().Any(employee => employee.FullName == "Test User");	
+
+	var employees = db.Employees.Where(employee => employee.FullName == "Test User"));
+			 
 					 
 # Installation
 
