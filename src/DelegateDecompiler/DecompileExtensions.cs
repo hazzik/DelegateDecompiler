@@ -35,5 +35,10 @@ namespace DelegateDecompiler
 
             return Expression.Lambda<Func<T, bool>>(decompiled.Body, expression.Parameters);
         }
+
+        public static IQueryable<T> Decompiled<T>(this IQueryable<T> source)
+        {
+            return new DecompiledQueryable<T>(source);
+        }
     }
 }
