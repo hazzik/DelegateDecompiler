@@ -43,15 +43,11 @@ If your class doesn't have a [Computed] attribute, you can use the `.Computed()`
                      select employee).ToList();
 
 					 
-If you need to call methods that return a single item (Any, Count, First, Single, etc) you need to invoke the Decompile method like this:
+Using the new Decompiled method you can call methods that return a single item (Any, Count, First, Single, etc) as well as other methods in identical way like this:
 
-	bool exists = db.Employees.Any(DecompileExtensions.Decompile<Employee>(employee => 
-													employee.FullName == "Test User"));	
-or cast the lamda expression to corresponding type:
+	bool exists = db.Employees.Decompiled().Any(employee => employee.FullName == "Test User");	
 
-	bool exists = db.Employees.Any(((Expression<Func<Employee, bool>>)(employee => 
-													employee.FullName == "Test User"))
-							  .Decompile())
+	var employees = db.Employees.Where(employee => employee.FullName == "Test User"));
 			 
 					 
 # Installation
