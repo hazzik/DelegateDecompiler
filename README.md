@@ -3,6 +3,7 @@ DelegateDecompiler
 
 A tool which is able to decompile a delegate or a method body to its lambda representation
 
+<a href='https://pledgie.com/campaigns/27088'><img alt='Click here to lend your support to: DelegateDecompiler and make a donation at pledgie.com !' src='https://pledgie.com/campaigns/27088.png?skin_name=chrome' border='0' ></a>
 
 ## Examples
 
@@ -41,7 +42,7 @@ If your class doesn't have a [Computed] attribute, you can use the `.Computed()`
                      where employee.FullName.Computed() == "Test User"
                      select employee).ToList();
 
-
+					 
 If you need to call methods that return a single item (Any, Count, First, Single, etc) you need to invoke the Decompile method like this:
 
 	bool exists = db.Employees.Any(DecompileExtensions.Decompile<Employee>(employee => 
