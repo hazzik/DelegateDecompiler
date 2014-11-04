@@ -57,6 +57,8 @@
     <Compile Include="ComputedExtension.cs" />
     <Compile Include="Configuration.cs" />
     <Compile Include="DecompileAttribute.cs" />
+    <Compile Include="DecompiledQueryable.cs" />
+    <Compile Include="DecompiledQueryProvider.cs" />
     <Compile Include="DecompileExpressionVisitor.cs" />
     <Compile Include="DecompileExtensions.cs" />
     <Compile Include="DefaultConfiguration.cs" />
