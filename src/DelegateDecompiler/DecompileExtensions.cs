@@ -29,13 +29,6 @@ namespace DelegateDecompiler
             return self;
         }
 
-        public static Expression<Func<T, bool>> Decompile<T>(Expression<Func<T, bool>> expression)
-        {
-            var decompiled = (Expression<Func<T, bool>>)DecompileExpressionVisitor.Decompile(expression);
-
-            return Expression.Lambda<Func<T, bool>>(decompiled.Body, expression.Parameters);
-        }
-
         public static IQueryable<T> Decompiled<T>(this IQueryable<T> source)
         {
             return new DecompiledQueryable<T>(source);
