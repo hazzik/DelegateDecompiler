@@ -11,45 +11,57 @@ A tool which is able to decompile a delegate or a method body to its lambda repr
 
 Asume we have a class with a computed property
 
-    class Employee
+```csharp
+class Employee
+{
+    [Computed]
+    public string FullName
     {
-        [Computed]
-        public string FullName
-        {
-          get { return FirstName + " " + LastName; }
-        }
-
-        public string LastName { get; set; }
-
-        public string FirstName { get; set; }
+        get { return FirstName + " " + LastName; }
     }
+
+    public string LastName { get; set; }
+
+    public string FirstName { get; set; }
+}
+```
 
 And you are going to query employees by their full names
 
-    var employees = (from employee in db.Employees
-                     where employee.FullName == "Test User"
-                     select employee).Decompile().ToList();
+```csharp
+var employees = (from employee in db.Employees
+                 where employee.FullName == "Test User"
+                 select employee).Decompile().ToList();
+```
 
 When you call `.Decompile` method it decompiles your computed properties to their underlying representation and the query will become simmilar to the following query
 
-    var employees = (from employee in db.Employees
-                     where (employee.FirstName + " " + employee.LastName)  == "Test User"
-                     select employee).ToList();
+```csharp
+var employees = (from employee in db.Employees
+                 where (employee.FirstName + " " + employee.LastName)  == "Test User"
+                 select employee).ToList();
+```
 
 If your class doesn't have a [Computed] attribute, you can use the `.Computed()` extension method..
 
-    var employees = (from employee in db.Employees
-                     where employee.FullName.Computed() == "Test User"
-                     select employee).ToList();
+```csharp
+var employees = (from employee in db.Employees
+                 where employee.FullName.Computed() == "Test User"
+                 select employee).ToList();
+```
 
+Also, you can call methods that return a single item (Any, Count, First, Single, etc) as well as other methods in identical way like this:
 
-Using the new Decompiled method you can call methods that return a single item (Any, Count, First, Single, etc) as well as other methods in identical way like this:
+```csharp
+bool exists = db.Employees.Decompile().Any(employee => employee.FullName == "Test User");
+```
 
-	bool exists = db.Employees.Decompiled().Any(employee => employee.FullName == "Test User");	
+Again, the `FullName` property will be decompiled:
 
-	var employees = db.Employees.Where(employee => employee.FullName == "Test User"));
-			 
-					 
+```csharp
+bool exists = db.Employees.Any(employee => (employee.FirstName + " " + employee.LastName) == "Test User");
+```
+ 
 # Installation
 
 Available on [NuGet](https://nuget.org/packages/DelegateDecompiler)
