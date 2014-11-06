@@ -14,13 +14,13 @@ namespace DelegateDecompiler
         public IQueryable CreateQuery(Expression expression)
         {
             var decompiled = DecompileExpressionVisitor.Decompile(expression);
-            return inner.CreateQuery(decompiled);
+            return new DecompiledQueryable(this, inner.CreateQuery(decompiled));
         }
 
         public IQueryable<TElement> CreateQuery<TElement>(Expression expression)
         {
             var decompiled = DecompileExpressionVisitor.Decompile(expression);
-            return inner.CreateQuery<TElement>(decompiled);
+            return new DecompiledQueryable<TElement>(this, inner.CreateQuery<TElement>(decompiled));
         }
 
         public object Execute(Expression expression)

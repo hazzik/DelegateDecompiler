@@ -6,31 +6,56 @@ using System.Linq.Expressions;
 
 namespace DelegateDecompiler
 {
-    class DecompiledQueryable<T> : IQueryable<T>
+    class DecompiledQueryable : IQueryable
     {
-        readonly IQueryable<T> inner;
-
-        public DecompiledQueryable(IQueryable<T> inner)
+        public DecompiledQueryable(IQueryProvider provider, IQueryable inner)
         {
             this.inner = inner;
-            
-            Provider = new DecompiledQueryProvider(inner.Provider);
-            Expression = inner.Expression;
-            ElementType = inner.ElementType;
+            this.provider = provider;
+        }
+
+        private readonly IQueryable inner;
+        private readonly IQueryProvider provider;
+
+        public Expression Expression
+        {
+            get { return inner.Expression; }
+        }
+
+        public Type ElementType
+        {
+            get { return inner.ElementType; }
+        }
+
+        public IQueryProvider Provider
+        {
+            get { return provider; }
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return inner.GetEnumerator();
+        }
+
+        public override string ToString()
+        {
+            return inner.ToString();
+        }
+    }
+
+    class DecompiledQueryable<T> : DecompiledQueryable, IQueryable<T>
+    {
+        private readonly IQueryable<T> inner;
+
+        public DecompiledQueryable(IQueryProvider provider, IQueryable<T> inner)
+            : base(provider, inner)
+        {
+            this.inner = inner;
         }
 
         public IEnumerator<T> GetEnumerator()
         {
             return inner.GetEnumerator();
         }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
-        }
-
-        public Expression Expression { get; private set; }
-        public Type ElementType { get; private set; }
-        public IQueryProvider Provider { get; private set; }
     }
 }

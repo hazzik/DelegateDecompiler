@@ -21,17 +21,8 @@ namespace DelegateDecompiler
 
         public static IQueryable<T> Decompile<T>(this IQueryable<T> self)
         {
-            var expression = DecompileExpressionVisitor.Decompile(self.Expression);
-            if (expression != self.Expression)
-            {
-                return self.Provider.CreateQuery<T>(expression);
-            }
-            return self;
-        }
-
-        public static IQueryable<T> Decompiled<T>(this IQueryable<T> source)
-        {
-            return new DecompiledQueryable<T>(source);
+            var provider = new DecompiledQueryProvider(self.Provider);
+            return provider.CreateQuery<T>(self.Expression);
         }
     }
 }
