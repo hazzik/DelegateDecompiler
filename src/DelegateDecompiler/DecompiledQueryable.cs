@@ -6,7 +6,7 @@ using System.Linq.Expressions;
 
 namespace DelegateDecompiler
 {
-    class DecompiledQueryable : IQueryable
+    class DecompiledQueryable : IOrderedQueryable
     {
         public DecompiledQueryable(IQueryProvider provider, IQueryable inner)
         {
@@ -43,7 +43,7 @@ namespace DelegateDecompiler
         }
     }
 
-    class DecompiledQueryable<T> : DecompiledQueryable, IQueryable<T>
+    class DecompiledQueryable<T> : DecompiledQueryable, IOrderedQueryable<T>
     {
         private readonly IQueryable<T> inner;
 

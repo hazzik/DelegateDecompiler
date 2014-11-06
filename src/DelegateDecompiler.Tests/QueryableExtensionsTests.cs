@@ -37,6 +37,42 @@ namespace DelegateDecompiler.Tests
 
             Assert.Equal(expected.Expression.ToString(), actual.Expression.ToString());
         }
+        
+        [Fact]
+        public void InlinePropertyOrderBy()
+        {
+            var employees = new[] { new Employee { FirstName = "Test", LastName = "User" } };
+
+            var expected = (from employee in employees.AsQueryable()
+                            where (employee.FirstName + " " + employee.LastName) == "Test User"
+                            orderby (employee.FirstName + " " + employee.LastName)
+                            select employee);
+
+            var actual = (from employee in employees.AsQueryable().Decompile()
+                          where employee.FullName == "Test User"
+                          orderby employee.FullName
+                          select employee);
+
+            Assert.Equal(expected.Expression.ToString(), actual.Expression.ToString());
+        }
+
+        [Fact]
+        public void InlinePropertyOrderByThenBy()
+        {
+            var employees = new[] { new Employee { FirstName = "Test", LastName = "User" } };
+
+            var expected = (from employee in employees.AsQueryable()
+                            where (employee.FirstName + " " + employee.LastName) == "Test User"
+                            orderby (employee.FirstName + " " + employee.LastName)
+                            select employee).ThenBy(x => true);
+
+            var actual = (from employee in employees.AsQueryable().Decompile()
+                          where employee.FullName == "Test User"
+                          orderby employee.FullName 
+                          select employee).ThenBy(x => x.IsActive);
+
+            Assert.Equal(expected.Expression.ToString(), actual.Expression.ToString());
+        }
        
         [Fact]
         public void InlineBooleanProperty()
