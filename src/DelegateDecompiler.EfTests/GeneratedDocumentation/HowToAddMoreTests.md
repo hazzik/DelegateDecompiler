@@ -1,7 +1,7 @@
 # Documentation on the DelegateDecompiler.EfTests test harness
 
 DelegateDecompiler has a test harness called 
-[DelegateDecompiler.EfTests](https://github.com/hazzik/DelegateDecompiler/tree/master/src/DelegateDecompiler.EfTests) 
+[DelegateDecompiler.EfTests](../) 
 that allows checks on what DelegateDecompiler supports. After running all the tests it produces
 documentation which details what linq commands DelegateDecompiler supports.
 
@@ -97,7 +97,7 @@ listed as **Not Supported** in the documentation.
 ### Other things
 
 The header text that goes at the start of the documentation comes from a file 
-[here](https://github.com/hazzik/DelegateDecompiler/tree/master/src/DelegateDecompiler.EfTests/GeneratedDocumentation/DocumentationHeaderText.md).
+[here](DocumentationHeaderText.md).
 
 
 ## Things to watch out for
