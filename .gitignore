@@ -4,3 +4,4 @@ _ReSharper.*
 *.suo
 *.user
 packages
+/src/DelegateDecompiler.EfTests/GeneratedDocumentation/Test file - please ignore.txt
