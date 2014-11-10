@@ -1,6 +1,6 @@
 Detail With Sql of supported commands
 ============
-## Documentation produced for DelegateDecompiler, version 0.11.1.0 on 10 November 2014 08:37
+## Documentation produced for DelegateDecompiler, version 0.11.1.0 on 10 November 2014 08:57
 
 This file documents what linq commands **DelegateDecompiler** supports when
 working with [Entity Framework v6.1](http://msdn.microsoft.com/en-us/data/aa937723) (EF).
@@ -24,7 +24,7 @@ More will appear as we move forward.*
 
 
 ### Group: Logical Operators
-#### [Boolean](https://github.com/hazzik/DelegateDecompiler/tree/master/src/DelegateDecompiler.EfTests/TestGroup05LogicalOperators/Test01Boolean.cs):
+#### [Boolean](../TestGroup05LogicalOperators/Test01Boolean.cs):
 - Supported
   * Bool Equals Constant (line 32)
      * T-Sql executed is
@@ -56,7 +56,7 @@ SELECT
 
 
 ### Group: Equality Operators
-#### [Equals And Not Equals](https://github.com/hazzik/DelegateDecompiler/tree/master/src/DelegateDecompiler.EfTests/TestGroup06EqualityOperators/Test01EqualsAndNotEquals.cs):
+#### [Equals And Not Equals](../TestGroup06EqualityOperators/Test01EqualsAndNotEquals.cs):
 - Supported
   * Int Equals Constant (line 32)
      * T-Sql executed is
@@ -97,7 +97,7 @@ SELECT
 
 
 ### Group: Quantifier Operators
-#### [Any](https://github.com/hazzik/DelegateDecompiler/tree/master/src/DelegateDecompiler.EfTests/TestGroup12QuantifierOperators/Test01Any.cs):
+#### [Any](../TestGroup12QuantifierOperators/Test01Any.cs):
 - Supported
   * Any Children (line 32)
      * T-Sql executed is
@@ -126,7 +126,7 @@ SELECT
 ```
 
 
-#### [All](https://github.com/hazzik/DelegateDecompiler/tree/master/src/DelegateDecompiler.EfTests/TestGroup12QuantifierOperators/Test02All.cs):
+#### [All](../TestGroup12QuantifierOperators/Test02All.cs):
 - Supported
   * Singleton All Filter (line 32)
      * T-Sql executed is
@@ -155,7 +155,7 @@ SELECT
 ```
 
 
-#### [Contains](https://github.com/hazzik/DelegateDecompiler/tree/master/src/DelegateDecompiler.EfTests/TestGroup12QuantifierOperators/Test03Contains.cs):
+#### [Contains](../TestGroup12QuantifierOperators/Test03Contains.cs):
 - Supported
   * String Contains Constant String With Filter (line 33)
      * T-Sql executed is
@@ -170,7 +170,7 @@ SELECT
 
 
 ### Group: Aggregation
-#### [Count](https://github.com/hazzik/DelegateDecompiler/tree/master/src/DelegateDecompiler.EfTests/TestGroup15Aggregation/Test01Count.cs):
+#### [Count](../TestGroup15Aggregation/Test01Count.cs):
 - Supported
   * Count Children (line 33)
      * T-Sql executed is
@@ -216,7 +216,7 @@ SELECT
 ```
 
 
-#### [Sum](https://github.com/hazzik/DelegateDecompiler/tree/master/src/DelegateDecompiler.EfTests/TestGroup15Aggregation/Test02Sum.cs):
+#### [Sum](../TestGroup15Aggregation/Test02Sum.cs):
 - Supported
   * Singleton Sum Children (line 33)
      * T-Sql executed is
@@ -241,7 +241,7 @@ SELECT
 
 
 ### Group: Types
-#### [Strings](https://github.com/hazzik/DelegateDecompiler/tree/master/src/DelegateDecompiler.EfTests/TestGroup50Types/Test01Strings.cs):
+#### [Strings](../TestGroup50Types/Test01Strings.cs):
 - Supported
   * Concatenate Person Not Handle Null (line 32)
      * T-Sql executed is
@@ -271,7 +271,7 @@ SELECT
 ```
 
 
-#### [DateTime](https://github.com/hazzik/DelegateDecompiler/tree/master/src/DelegateDecompiler.EfTests/TestGroup50Types/Test05DateTime.cs):
+#### [DateTime](../TestGroup50Types/Test05DateTime.cs):
 - Supported
   * DateTime Where Compare With Static Variable (line 35)
      * T-Sql executed is

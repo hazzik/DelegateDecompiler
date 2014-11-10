@@ -12,8 +12,6 @@ namespace DelegateDecompiler.EfTests.Helpers
 
     static class MasterEnvironment
     {
-        public const string UrlOfGitHubEfTestDirectory =
-            "https://github.com/hazzik/DelegateDecompiler/tree/master/src/DelegateDecompiler.EfTests/";
         public const string HeaderTestFilename = "DocumentationHeaderText.md";
 
         //list of filenames to produce (these names must be in the same order as OutputVersions)

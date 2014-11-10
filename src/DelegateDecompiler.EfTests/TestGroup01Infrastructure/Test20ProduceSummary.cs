@@ -44,7 +44,7 @@ namespace DelegateDecompiler.EfTests.TestGroup01Infrastructure
             markup.ShouldContain("Group: Unit Test Group");
             markup.ShouldContain("\n- Partially Supported\n");
             markup.ShouldContain(
-                "\n  * [My Unit Test](https://github.com/hazzik/DelegateDecompiler/tree/master/src/DelegateDecompiler.EfTests/TestGroup01UnitTestGroup/Test01MyUnitTest) (1 of 2 tests passed)");
+                "\n  * [My Unit Test](../TestGroup01UnitTestGroup/Test01MyUnitTest) (1 of 2 tests passed)");
         }
 
         [Test]
@@ -64,7 +64,7 @@ namespace DelegateDecompiler.EfTests.TestGroup01Infrastructure
             markup.ShouldContain("Group: Unit Test Group");
             markup.ShouldContain("\n- Supported\n");
             markup.ShouldContain(
-                "\n  * [My Unit Test](https://github.com/hazzik/DelegateDecompiler/tree/master/src/DelegateDecompiler.EfTests/TestGroup01UnitTestGroup/Test01MyUnitTest) (2 tests)");
+                "\n  * [My Unit Test](../TestGroup01UnitTestGroup/Test01MyUnitTest) (2 tests)");
         }
 
         [Test]
@@ -84,7 +84,7 @@ namespace DelegateDecompiler.EfTests.TestGroup01Infrastructure
             markup.ShouldContain("Group: Unit Test Group");
             markup.ShouldContain("\n- Not Supported\n");
             markup.ShouldContain(
-                "\n  * [My Unit Test](https://github.com/hazzik/DelegateDecompiler/tree/master/src/DelegateDecompiler.EfTests/TestGroup01UnitTestGroup/Test01MyUnitTest) (2 tests)");
+                "\n  * [My Unit Test](../TestGroup01UnitTestGroup/Test01MyUnitTest) (2 tests)");
         }
 
         //------------------------------

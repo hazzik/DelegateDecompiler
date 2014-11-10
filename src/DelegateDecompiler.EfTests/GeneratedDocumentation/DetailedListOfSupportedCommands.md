@@ -1,6 +1,6 @@
 Detail of supported commands
 ============
-## Documentation produced for DelegateDecompiler, version 0.11.1.0 on 10 November 2014 08:37
+## Documentation produced for DelegateDecompiler, version 0.11.1.0 on 10 November 2014 08:57
 
 This file documents what linq commands **DelegateDecompiler** supports when
 working with [Entity Framework v6.1](http://msdn.microsoft.com/en-us/data/aa937723) (EF).
@@ -24,7 +24,7 @@ More will appear as we move forward.*
 
 
 ### Group: Logical Operators
-#### [Boolean](https://github.com/hazzik/DelegateDecompiler/tree/master/src/DelegateDecompiler.EfTests/TestGroup05LogicalOperators/Test01Boolean.cs):
+#### [Boolean](../TestGroup05LogicalOperators/Test01Boolean.cs):
 - Supported
   * Bool Equals Constant (line 32)
   * Bool Equals Static Variable (line 51)
@@ -32,7 +32,7 @@ More will appear as we move forward.*
 
 
 ### Group: Equality Operators
-#### [Equals And Not Equals](https://github.com/hazzik/DelegateDecompiler/tree/master/src/DelegateDecompiler.EfTests/TestGroup06EqualityOperators/Test01EqualsAndNotEquals.cs):
+#### [Equals And Not Equals](../TestGroup06EqualityOperators/Test01EqualsAndNotEquals.cs):
 - Supported
   * Int Equals Constant (line 32)
   * Int Equals Static Variable (line 50)
@@ -41,29 +41,29 @@ More will appear as we move forward.*
 
 
 ### Group: Quantifier Operators
-#### [Any](https://github.com/hazzik/DelegateDecompiler/tree/master/src/DelegateDecompiler.EfTests/TestGroup12QuantifierOperators/Test01Any.cs):
+#### [Any](../TestGroup12QuantifierOperators/Test01Any.cs):
 - Supported
   * Any Children (line 32)
   * Any Children With Filter (line 49)
 
-#### [All](https://github.com/hazzik/DelegateDecompiler/tree/master/src/DelegateDecompiler.EfTests/TestGroup12QuantifierOperators/Test02All.cs):
+#### [All](../TestGroup12QuantifierOperators/Test02All.cs):
 - Supported
   * Singleton All Filter (line 32)
   * All Filter On Children Int (line 49)
 
-#### [Contains](https://github.com/hazzik/DelegateDecompiler/tree/master/src/DelegateDecompiler.EfTests/TestGroup12QuantifierOperators/Test03Contains.cs):
+#### [Contains](../TestGroup12QuantifierOperators/Test03Contains.cs):
 - Supported
   * String Contains Constant String With Filter (line 33)
 
 
 ### Group: Aggregation
-#### [Count](https://github.com/hazzik/DelegateDecompiler/tree/master/src/DelegateDecompiler.EfTests/TestGroup15Aggregation/Test01Count.cs):
+#### [Count](../TestGroup15Aggregation/Test01Count.cs):
 - Supported
   * Count Children (line 33)
   * Count Children With Filter (line 51)
   * Singleton Count Children With Filter (line 69)
 
-#### [Sum](https://github.com/hazzik/DelegateDecompiler/tree/master/src/DelegateDecompiler.EfTests/TestGroup15Aggregation/Test02Sum.cs):
+#### [Sum](../TestGroup15Aggregation/Test02Sum.cs):
 - Supported
   * Singleton Sum Children (line 33)
 - Not Supported
@@ -71,13 +71,13 @@ More will appear as we move forward.*
 
 
 ### Group: Types
-#### [Strings](https://github.com/hazzik/DelegateDecompiler/tree/master/src/DelegateDecompiler.EfTests/TestGroup50Types/Test01Strings.cs):
+#### [Strings](../TestGroup50Types/Test01Strings.cs):
 - Supported
   * Concatenate Person Not Handle Null (line 32)
   * Concatenate Person Handle Null (line 49)
   * Concatenate Person Handle Name Order (line 68)
 
-#### [DateTime](https://github.com/hazzik/DelegateDecompiler/tree/master/src/DelegateDecompiler.EfTests/TestGroup50Types/Test05DateTime.cs):
+#### [DateTime](../TestGroup50Types/Test05DateTime.cs):
 - Supported
   * DateTime Where Compare With Static Variable (line 35)
 

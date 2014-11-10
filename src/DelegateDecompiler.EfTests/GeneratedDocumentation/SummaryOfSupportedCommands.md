@@ -1,6 +1,6 @@
 Summary of supported commands
 ============
-## Documentation produced for DelegateDecompiler, version 0.11.1.0 on 10 November 2014 08:37
+## Documentation produced for DelegateDecompiler, version 0.11.1.0 on 10 November 2014 08:57
 
 This file documents what linq commands **DelegateDecompiler** supports when
 working with [Entity Framework v6.1](http://msdn.microsoft.com/en-us/data/aa937723) (EF).
@@ -25,28 +25,28 @@ More will appear as we move forward.*
 
 ### Group: Logical Operators
 - Supported
-  * [Boolean](https://github.com/hazzik/DelegateDecompiler/tree/master/src/DelegateDecompiler.EfTests/TestGroup05LogicalOperators/Test01Boolean.cs) (3 tests)
+  * [Boolean](../TestGroup05LogicalOperators/Test01Boolean.cs) (3 tests)
 
 ### Group: Equality Operators
 - Supported
-  * [Equals And Not Equals](https://github.com/hazzik/DelegateDecompiler/tree/master/src/DelegateDecompiler.EfTests/TestGroup06EqualityOperators/Test01EqualsAndNotEquals.cs) (4 tests)
+  * [Equals And Not Equals](../TestGroup06EqualityOperators/Test01EqualsAndNotEquals.cs) (4 tests)
 
 ### Group: Quantifier Operators
 - Supported
-  * [Any](https://github.com/hazzik/DelegateDecompiler/tree/master/src/DelegateDecompiler.EfTests/TestGroup12QuantifierOperators/Test01Any.cs) (2 tests)
-  * [All](https://github.com/hazzik/DelegateDecompiler/tree/master/src/DelegateDecompiler.EfTests/TestGroup12QuantifierOperators/Test02All.cs) (2 tests)
-  * [Contains](https://github.com/hazzik/DelegateDecompiler/tree/master/src/DelegateDecompiler.EfTests/TestGroup12QuantifierOperators/Test03Contains.cs) (1 tests)
+  * [Any](../TestGroup12QuantifierOperators/Test01Any.cs) (2 tests)
+  * [All](../TestGroup12QuantifierOperators/Test02All.cs) (2 tests)
+  * [Contains](../TestGroup12QuantifierOperators/Test03Contains.cs) (1 tests)
 
 ### Group: Aggregation
 - Supported
-  * [Count](https://github.com/hazzik/DelegateDecompiler/tree/master/src/DelegateDecompiler.EfTests/TestGroup15Aggregation/Test01Count.cs) (3 tests)
+  * [Count](../TestGroup15Aggregation/Test01Count.cs) (3 tests)
 - Partially Supported
-  * [Sum](https://github.com/hazzik/DelegateDecompiler/tree/master/src/DelegateDecompiler.EfTests/TestGroup15Aggregation/Test02Sum.cs) (1 of 2 tests passed)
+  * [Sum](../TestGroup15Aggregation/Test02Sum.cs) (1 of 2 tests passed)
 
 ### Group: Types
 - Supported
-  * [Strings](https://github.com/hazzik/DelegateDecompiler/tree/master/src/DelegateDecompiler.EfTests/TestGroup50Types/Test01Strings.cs) (3 tests)
-  * [DateTime](https://github.com/hazzik/DelegateDecompiler/tree/master/src/DelegateDecompiler.EfTests/TestGroup50Types/Test05DateTime.cs) (1 tests)
+  * [Strings](../TestGroup50Types/Test01Strings.cs) (3 tests)
+  * [DateTime](../TestGroup50Types/Test05DateTime.cs) (1 tests)
 
 
 The End

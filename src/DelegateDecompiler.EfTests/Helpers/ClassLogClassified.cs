@@ -26,8 +26,8 @@ namespace DelegateDecompiler.EfTests.Helpers
                     : ClassClassifications.PartiallySupported;
 
             DisplayMarkupNoPrefix = Classification == ClassClassifications.PartiallySupported
-                ? string.Format("{0} ({1} of {2} tests passed)", classLog.TestNameAsMarkupLink, numSupportedResults, numTests)
-                : string.Format("{0} ({1} tests)", classLog.TestNameAsMarkupLink, numTests);
+                ? string.Format("{0} ({1} of {2} tests passed)", classLog.TestNameAsMarkupLinkRelativeToDocumentationDir, numSupportedResults, numTests)
+                : string.Format("{0} ({1} tests)", classLog.TestNameAsMarkupLinkRelativeToDocumentationDir, numTests);
         }
     }
 }

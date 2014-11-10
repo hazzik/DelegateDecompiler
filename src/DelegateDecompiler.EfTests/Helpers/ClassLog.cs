@@ -31,9 +31,9 @@ namespace DelegateDecompiler.EfTests.Helpers
             return MethodLogs.Where(x => x.State != LogStates.EvenLinqDidNotWork);
         } }
 
-        public string TestNameAsMarkupLink
+        public string TestNameAsMarkupLinkRelativeToDocumentationDir
         {
-            get {  return string.Format("[{0}]({1})", TestDescription, MasterEnvironment.UrlOfGitHubEfTestDirectory + FileUrlFragment);}
+            get {  return string.Format("[{0}]({1})", TestDescription, "../" + FileUrlFragment);}
         }
 
         /// <summary>
@@ -54,7 +54,7 @@ namespace DelegateDecompiler.EfTests.Helpers
         public StringBuilder ResultsAsMarkup(OutputVersions version)
         {
             var sb = new StringBuilder();
-            sb.AppendFormat("#### {0}:\n", TestNameAsMarkupLink);
+            sb.AppendFormat("#### {0}:\n", TestNameAsMarkupLinkRelativeToDocumentationDir);
 
             var dict = MethodLogs.GroupBy(x => x.State).ToDictionary( g => g.Key, m => m.ToList());
             sb.Append(ListInGroup(LogStates.Supported, dict, version == OutputVersions.DetailWithSql));
