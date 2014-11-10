@@ -1,6 +1,6 @@
 Detail of supported commands
 ============
-## Documentation produced for DelegateDecompiler, version 0.11.1.0 on 10 November 2014 09:02
+## Documentation produced for DelegateDecompiler, version 0.11.1.0 on 10 November 2014 09:08
 
 This file documents what linq commands **DelegateDecompiler** supports when
 working with [Entity Framework v6.1](http://msdn.microsoft.com/en-us/data/aa937723) (EF).
@@ -15,8 +15,8 @@ easier.
 So, if you want to use DelegateDecompiler and are not sure whether the linq command
 you want to use will work then clone this project and write your own tests.
 (See [How to add a test](HowToAddMoreTests.md) documentation on how to do this). 
-If there is a problem then please send us your test in the EfTest format as it will be easier 
-for us to debug.
+If there is a problem then please fork the repository and add your own tests. 
+That will make it much easier to diagnose your issue.
 
 *Note: The test suite has only recently been set up and has only a handful of tests at the moment.
 More will appear as we move forward.*
