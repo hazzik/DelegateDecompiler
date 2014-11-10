@@ -11,8 +11,7 @@ easier.
 
 So, if you want to use DelegateDecompiler and are not sure whether the linq command
 you want to use will work then clone this project and write your own tests.
-(See [How to add a test](https://github.com/hazzik/DelegateDecompiler/tree/master/src/DelegateDecompiler.EfTests/GeneratedDocumentation/HowToAddMoreTests.md)
-documentation on how to do this). 
+(See [How to add a test](HowToAddMoreTests.md) documentation on how to do this). 
 If there is a problem then please send us your test in the EfTest format as it will be easier 
 for us to debug.
 
