@@ -1,6 +1,6 @@
 Detail With Sql of supported commands
 ============
-## Documentation produced for DelegateDecompiler, version 0.11.1.0 on 12 November 2014 08:55
+## Documentation produced for DelegateDecompiler, version 0.11.1.0 on 12 November 2014 17:52
 
 This file documents what linq commands **DelegateDecompiler** supports when
 working with [Entity Framework v6.1](http://msdn.microsoft.com/en-us/data/aa937723) (EF).
@@ -93,6 +93,12 @@ SELECT
     FROM [dbo].[EfParents] AS [Extent1]
 ```
 
+
+
+### Group: Async Support
+#### [Async](../TestGroup10AsyncSupport/Test01Async.cs):
+- **Not Supported**
+  * Bool Equals Constant Async (line 30)
 
 
 ### Group: Quantifier Operators

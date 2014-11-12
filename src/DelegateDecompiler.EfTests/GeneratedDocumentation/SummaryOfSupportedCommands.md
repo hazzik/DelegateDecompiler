@@ -1,6 +1,6 @@
 Summary of supported commands
 ============
-## Documentation produced for DelegateDecompiler, version 0.11.1.0 on 12 November 2014 08:55
+## Documentation produced for DelegateDecompiler, version 0.11.1.0 on 12 November 2014 17:52
 
 This file documents what linq commands **DelegateDecompiler** supports when
 working with [Entity Framework v6.1](http://msdn.microsoft.com/en-us/data/aa937723) (EF).
@@ -29,6 +29,10 @@ More will appear as we move forward.*
 ### Group: Equality Operators
 - Supported
   * [Equals And Not Equals](../TestGroup06EqualityOperators/Test01EqualsAndNotEquals.cs) (4 tests)
+
+### Group: Async Support
+- **Not Supported**
+  * [Async](../TestGroup10AsyncSupport/Test01Async.cs) (1 tests)
 
 ### Group: Quantifier Operators
 - Supported

@@ -78,6 +78,7 @@
     <Compile Include="TestGroup01Infrastructure\Test99StartProperRun.cs" />
     <Compile Include="TestGroup05LogicalOperators\Test01Boolean.cs" />
     <Compile Include="TestGroup06EqualityOperators\Test01EqualsAndNotEquals.cs" />
+    <Compile Include="TestGroup10AsyncSupport\Test01Async.cs" />
     <Compile Include="TestGroup12QuantifierOperators\Test01Any.cs" />
     <Compile Include="TestGroup12QuantifierOperators\Test02All.cs" />
     <Compile Include="TestGroup12QuantifierOperators\Test03Contains.cs" />
