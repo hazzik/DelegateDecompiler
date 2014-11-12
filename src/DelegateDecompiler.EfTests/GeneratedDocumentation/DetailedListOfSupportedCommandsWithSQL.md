@@ -1,6 +1,6 @@
 Detail With Sql of supported commands
 ============
-## Documentation produced for DelegateDecompiler, version 0.11.1.0 on 10 November 2014 09:08
+## Documentation produced for DelegateDecompiler, version 0.11.1.0 on 12 November 2014 08:55
 
 This file documents what linq commands **DelegateDecompiler** supports when
 working with [Entity Framework v6.1](http://msdn.microsoft.com/en-us/data/aa937723) (EF).
@@ -235,8 +235,140 @@ SELECT
     )  AS [GroupBy2]
 ```
 
-- Not Supported
+- **Not Supported**
   * Sum Count In Children Where Children Can Be None (line 47)
+
+
+### Group: Order Take
+#### [Order By](../TestGroup20OrderTake/Test01OrderBy.cs):
+- Supported
+  * Order By Children Count (line 33)
+     * T-Sql executed is
+
+```SQL
+SELECT 
+    [Project1].[EfParentId] AS [EfParentId]
+    FROM ( SELECT 
+        [Extent1].[EfParentId] AS [EfParentId], 
+        (SELECT 
+            COUNT(1) AS [A1]
+            FROM [dbo].[EfChilds] AS [Extent2]
+            WHERE [Extent1].[EfParentId] = [Extent2].[EfParentId]) AS [C1]
+        FROM [dbo].[EfParents] AS [Extent1]
+    )  AS [Project1]
+    ORDER BY [Project1].[C1] ASC
+```
+
+  * Order By Children Count Then By String Length (line 51)
+     * T-Sql executed is
+
+```SQL
+SELECT 
+    [Project2].[EfParentId] AS [EfParentId]
+    FROM ( SELECT 
+         CAST(LEN([Project1].[ParentString]) AS int) AS [C1], 
+        [Project1].[EfParentId] AS [EfParentId], 
+        [Project1].[C1] AS [C2]
+        FROM ( SELECT 
+            [Extent1].[EfParentId] AS [EfParentId], 
+            [Extent1].[ParentString] AS [ParentString], 
+            (SELECT 
+                COUNT(1) AS [A1]
+                FROM [dbo].[EfChilds] AS [Extent2]
+                WHERE [Extent1].[EfParentId] = [Extent2].[EfParentId]) AS [C1]
+            FROM [dbo].[EfParents] AS [Extent1]
+        )  AS [Project1]
+    )  AS [Project2]
+    ORDER BY [Project2].[C2] ASC, [Project2].[C1] ASC
+```
+
+  * Where Any Children Then Order By Children Count (line 69)
+     * T-Sql executed is
+
+```SQL
+SELECT 
+    [Project2].[EfParentId] AS [EfParentId]
+    FROM ( SELECT 
+        [Extent1].[EfParentId] AS [EfParentId], 
+        (SELECT 
+            COUNT(1) AS [A1]
+            FROM [dbo].[EfChilds] AS [Extent3]
+            WHERE [Extent1].[EfParentId] = [Extent3].[EfParentId]) AS [C1]
+        FROM [dbo].[EfParents] AS [Extent1]
+        WHERE  EXISTS (SELECT 
+            1 AS [C1]
+            FROM [dbo].[EfChilds] AS [Extent2]
+            WHERE [Extent1].[EfParentId] = [Extent2].[EfParentId]
+        )
+    )  AS [Project2]
+    ORDER BY [Project2].[C1] ASC
+```
+
+
+#### [Skip Take](../TestGroup20OrderTake/Test02SkipTake.cs):
+- Supported
+  * Order By Children Count Then Take (line 33)
+     * T-Sql executed is
+
+```SQL
+SELECT TOP (2) 
+    [Project1].[EfParentId] AS [EfParentId]
+    FROM ( SELECT 
+        [Extent1].[EfParentId] AS [EfParentId], 
+        (SELECT 
+            COUNT(1) AS [A1]
+            FROM [dbo].[EfChilds] AS [Extent2]
+            WHERE [Extent1].[EfParentId] = [Extent2].[EfParentId]) AS [C1]
+        FROM [dbo].[EfParents] AS [Extent1]
+    )  AS [Project1]
+    ORDER BY [Project1].[C1] ASC
+```
+
+  * Order By Children Count Then Skip And Take (line 51)
+     * T-Sql executed is
+
+```SQL
+SELECT TOP (2) 
+    [Project1].[EfParentId] AS [EfParentId]
+    FROM ( SELECT [Project1].[EfParentId] AS [EfParentId], [Project1].[C1] AS [C1], row_number() OVER (ORDER BY [Project1].[C1] ASC) AS [row_number]
+        FROM ( SELECT 
+            [Extent1].[EfParentId] AS [EfParentId], 
+            (SELECT 
+                COUNT(1) AS [A1]
+                FROM [dbo].[EfChilds] AS [Extent2]
+                WHERE [Extent1].[EfParentId] = [Extent2].[EfParentId]) AS [C1]
+            FROM [dbo].[EfParents] AS [Extent1]
+        )  AS [Project1]
+    )  AS [Project1]
+    WHERE [Project1].[row_number] > 1
+    ORDER BY [Project1].[C1] ASC
+```
+
+  * Where Any Children Then Order By Then Skip Take (line 69)
+     * T-Sql executed is
+
+```SQL
+SELECT TOP (1) 
+    [Project2].[EfParentId] AS [EfParentId]
+    FROM ( SELECT [Project2].[EfParentId] AS [EfParentId], [Project2].[C1] AS [C1], row_number() OVER (ORDER BY [Project2].[C1] ASC) AS [row_number]
+        FROM ( SELECT 
+            [Extent1].[EfParentId] AS [EfParentId], 
+            (SELECT 
+                COUNT(1) AS [A1]
+                FROM [dbo].[EfChilds] AS [Extent3]
+                WHERE [Extent1].[EfParentId] = [Extent3].[EfParentId]) AS [C1]
+            FROM [dbo].[EfParents] AS [Extent1]
+            WHERE  EXISTS (SELECT 
+                1 AS [C1]
+                FROM [dbo].[EfChilds] AS [Extent2]
+                WHERE [Extent1].[EfParentId] = [Extent2].[EfParentId]
+            )
+        )  AS [Project2]
+    )  AS [Project2]
+    WHERE [Project2].[row_number] > 1
+    ORDER BY [Project2].[C1] ASC
+```
+
 
 
 ### Group: Types

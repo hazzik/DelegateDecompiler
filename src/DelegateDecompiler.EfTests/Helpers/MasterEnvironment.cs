@@ -106,7 +106,7 @@ namespace DelegateDecompiler.EfTests.Helpers
 
             if (!dict.ContainsKey(classification)) return sb;
 
-            sb.AppendFormat("- {0}\n", classification.ToString().SplitCamelCase());
+            sb.AppendFormat("- {0}\n", classification.ToString().SplitCamelCase( classification != ClassClassifications.Supported));
             foreach (var markup in dict[classification])
                 sb.AppendFormat("  * {0}\n", markup);
 

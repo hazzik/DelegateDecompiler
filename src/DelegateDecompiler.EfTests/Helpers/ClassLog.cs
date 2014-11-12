@@ -71,7 +71,7 @@ namespace DelegateDecompiler.EfTests.Helpers
 
             if (!dict.ContainsKey(state)) return sb;
 
-            sb.AppendFormat("- {0}\n", state.ToString().SplitCamelCase());
+            sb.AppendFormat("- {0}\n", state.ToString().SplitCamelCase(state != LogStates.Supported));
             foreach (var methodLog in dict[state].OrderBy(x => x.LineNumber))
             {
                 sb.AppendFormat("  * {0}\n", methodLog.ResultsAsMarkup());

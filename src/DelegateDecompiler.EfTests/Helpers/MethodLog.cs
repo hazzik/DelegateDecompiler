@@ -47,8 +47,12 @@ namespace DelegateDecompiler.EfTests.Helpers
 
         private List<string> FilterSqlLog(IEnumerable<string> slqLog)
         {
-            return slqLog.Where(x => !(string.IsNullOrWhiteSpace(x) || x.StartsWith("--") || x.StartsWith("Opened connection ") || x.StartsWith("Closed connection ")))
-                .Select(x => x.Replace("\r", "")).ToList();
+            return
+                slqLog.Where(
+                    x =>
+                        !(string.IsNullOrWhiteSpace(x) || x.StartsWith("--") || x.StartsWith("Opened connection ") ||
+                          x.StartsWith("Closed connection ")))
+                    .Select(x => x.Replace("\r", "")).ToList();
         }
 
         private static string DecodeSpecificTest(string memberName)

@@ -83,6 +83,8 @@
     <Compile Include="TestGroup12QuantifierOperators\Test03Contains.cs" />
     <Compile Include="TestGroup15Aggregation\Test01Count.cs" />
     <Compile Include="TestGroup15Aggregation\Test02Sum.cs" />
+    <Compile Include="TestGroup20OrderTake\Test02SkipTake.cs" />
+    <Compile Include="TestGroup20OrderTake\Test01OrderBy.cs" />
     <Compile Include="TestGroup50Types\Test01Strings.cs" />
     <Compile Include="TestGroup50Types\Test05DateTime.cs" />
     <Compile Include="TestGroup99SaveResults\Test99SaveResults.cs" />

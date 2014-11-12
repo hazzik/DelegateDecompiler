@@ -42,7 +42,7 @@ namespace DelegateDecompiler.EfTests.TestGroup01Infrastructure
             //VERIFY
             markup.ShouldStartWith("Summary");
             markup.ShouldContain("Group: Unit Test Group");
-            markup.ShouldContain("\n- Partially Supported\n");
+            markup.ShouldContain("\n- **Partially Supported**\n");
             markup.ShouldContain(
                 "\n  * [My Unit Test](../TestGroup01UnitTestGroup/Test01MyUnitTest) (1 of 2 tests passed)");
         }
@@ -82,7 +82,7 @@ namespace DelegateDecompiler.EfTests.TestGroup01Infrastructure
             //VERIFY
             markup.ShouldStartWith("Summary");
             markup.ShouldContain("Group: Unit Test Group");
-            markup.ShouldContain("\n- Not Supported\n");
+            markup.ShouldContain("\n- **Not Supported**\n");
             markup.ShouldContain(
                 "\n  * [My Unit Test](../TestGroup01UnitTestGroup/Test01MyUnitTest) (2 tests)");
         }

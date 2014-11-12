@@ -37,7 +37,7 @@ namespace DelegateDecompiler.EfTests.TestGroup01Infrastructure
             markup.ShouldContain("Group: Unit Test Group");
             markup.ShouldContain("\n#### [My Unit Test](");
             markup.ShouldContain("\n- Supported\n  * Good (line 1)\n     * T-Sql executed is\n\n```SQL");
-            markup.ShouldContain("\n- Not Supported\n  * Bad (line 2)");
+            markup.ShouldContain("\n- **Not Supported**\n  * Bad (line 2)");
         }
 
         

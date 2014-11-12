@@ -66,15 +66,12 @@ namespace DelegateDecompiler.EfTests.EfItems
         public bool AnyChildrenWithFilter { get { return Children.Any(y => y.ChildInt == 123); } }
 
         [Computed]
-        public bool AnyCharInString { get { return ParentString.Any(y => y == '2'); } }
-
-        [Computed]
         public bool AllFilterOnChildrenInt { get { return Children.All(y => y.ChildInt == 123); } }
 
         [Computed]
         public bool StringContainsConstantString { get { return ParentString.Contains("2"); } }
 
-        //AGGREGATE GROUP
+        //AGGREGATE GROUP/ORDERBY
 
         [Computed]
         public int CountChildren { get { return Children.Count(); } }  
@@ -83,8 +80,10 @@ namespace DelegateDecompiler.EfTests.EfItems
         public int CountChildrenWithFilter { get { return Children.Count(y => y.ChildInt == 123); } }
 
         [Computed]
-        public int SumIntInChildrenWhereChildrenCanBeNone { get { return Children.Sum(y => (int?)y.ChildInt) ?? 0; } } 
+        public int SumIntInChildrenWhereChildrenCanBeNone { get { return Children.Sum(y => (int?)y.ChildInt) ?? 0; } }
 
+        [Computed]
+        public int GetStringLength { get { return ParentString.Length; } }
 
         //TYPES GROUP
         private static readonly DateTime dateConst = new DateTime(2000, 1, 1);

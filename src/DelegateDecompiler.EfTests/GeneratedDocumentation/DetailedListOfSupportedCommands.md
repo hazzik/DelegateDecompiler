@@ -1,6 +1,6 @@
 Detail of supported commands
 ============
-## Documentation produced for DelegateDecompiler, version 0.11.1.0 on 10 November 2014 09:08
+## Documentation produced for DelegateDecompiler, version 0.11.1.0 on 12 November 2014 08:55
 
 This file documents what linq commands **DelegateDecompiler** supports when
 working with [Entity Framework v6.1](http://msdn.microsoft.com/en-us/data/aa937723) (EF).
@@ -65,8 +65,22 @@ More will appear as we move forward.*
 #### [Sum](../TestGroup15Aggregation/Test02Sum.cs):
 - Supported
   * Singleton Sum Children (line 33)
-- Not Supported
+- **Not Supported**
   * Sum Count In Children Where Children Can Be None (line 47)
+
+
+### Group: Order Take
+#### [Order By](../TestGroup20OrderTake/Test01OrderBy.cs):
+- Supported
+  * Order By Children Count (line 33)
+  * Order By Children Count Then By String Length (line 51)
+  * Where Any Children Then Order By Children Count (line 69)
+
+#### [Skip Take](../TestGroup20OrderTake/Test02SkipTake.cs):
+- Supported
+  * Order By Children Count Then Take (line 33)
+  * Order By Children Count Then Skip And Take (line 51)
+  * Where Any Children Then Order By Then Skip Take (line 69)
 
 
 ### Group: Types
