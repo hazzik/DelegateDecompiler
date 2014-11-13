@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using NUnit.Framework;
 
@@ -12,6 +13,9 @@ namespace DelegateDecompiler.EfTests.Helpers
         public static void CompareAndLogList<T>(this MethodEnvironment env, IList<T> linqResult, IList<T> ddResult, 
             [CallerLineNumber] int sourceLineNumber = 0)
         {
+            if (!linqResult.Any())
+                throw new ArgumentException("The linq result was empty, so this was not a fair test.");
+
             try
             {
                 CollectionAssert.AreEqual( linqResult, ddResult);

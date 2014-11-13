@@ -4,9 +4,9 @@ using System.Linq;
 using DelegateDecompiler.EfTests.Helpers;
 using NUnit.Framework;
 
-namespace DelegateDecompiler.EfTests.TestGroup06EqualityOperators
+namespace DelegateDecompiler.EfTests.TestGroup05BasicFeatures
 {
-    class Test01EqualsAndNotEquals
+    class Test03EqualsAndNotEquals
     {
         private ClassEnvironment classEnv;
 

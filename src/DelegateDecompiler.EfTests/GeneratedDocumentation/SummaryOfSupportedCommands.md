@@ -1,6 +1,6 @@
 Summary of supported commands
 ============
-## Documentation produced for DelegateDecompiler, version 0.11.1.0 on 12 November 2014 17:52
+## Documentation produced for DelegateDecompiler, version 0.11.1.0 on 13 November 2014 10:25
 
 This file documents what linq commands **DelegateDecompiler** supports when
 working with [Entity Framework v6.1](http://msdn.microsoft.com/en-us/data/aa937723) (EF).
@@ -22,17 +22,20 @@ That will make it much easier to diagnose your issue.
 More will appear as we move forward.*
 
 
-### Group: Logical Operators
+### Group: Basic Features
 - Supported
-  * [Boolean](../TestGroup05LogicalOperators/Test01Boolean.cs) (3 tests)
-
-### Group: Equality Operators
-- Supported
-  * [Equals And Not Equals](../TestGroup06EqualityOperators/Test01EqualsAndNotEquals.cs) (4 tests)
-
-### Group: Async Support
+  * [Select](../TestGroup05BasicFeatures/Test01Select.cs) (3 tests)
+  * [Equals And Not Equals](../TestGroup05BasicFeatures/Test03EqualsAndNotEquals.cs) (4 tests)
+  * [Where](../TestGroup05BasicFeatures/Test05Where.cs) (3 tests)
+  * [Single](../TestGroup05BasicFeatures/Test10Single.cs) (1 tests)
 - **Not Supported**
-  * [Async](../TestGroup10AsyncSupport/Test01Async.cs) (1 tests)
+  * [Select Async](../TestGroup05BasicFeatures/Test02SelectAsync.cs) (3 tests)
+  * [Single Async](../TestGroup05BasicFeatures/Test11SingleAsync.cs) (1 tests)
+
+### Group: Order Take
+- Supported
+  * [Order By](../TestGroup10OrderTake/Test01OrderBy.cs) (3 tests)
+  * [Skip Take](../TestGroup10OrderTake/Test02SkipTake.cs) (3 tests)
 
 ### Group: Quantifier Operators
 - Supported
@@ -45,11 +48,6 @@ More will appear as we move forward.*
   * [Count](../TestGroup15Aggregation/Test01Count.cs) (3 tests)
 - **Partially Supported**
   * [Sum](../TestGroup15Aggregation/Test02Sum.cs) (1 of 2 tests passed)
-
-### Group: Order Take
-- Supported
-  * [Order By](../TestGroup20OrderTake/Test01OrderBy.cs) (3 tests)
-  * [Skip Take](../TestGroup20OrderTake/Test02SkipTake.cs) (3 tests)
 
 ### Group: Types
 - Supported

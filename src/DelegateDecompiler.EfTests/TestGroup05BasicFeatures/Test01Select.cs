@@ -4,9 +4,9 @@ using System.Linq;
 using DelegateDecompiler.EfTests.Helpers;
 using NUnit.Framework;
 
-namespace DelegateDecompiler.EfTests.TestGroup05LogicalOperators
+namespace DelegateDecompiler.EfTests.TestGroup05BasicFeatures
 {
-    class Test01Boolean
+    class Test01Select
     {
         private ClassEnvironment classEnv;
 

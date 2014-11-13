@@ -30,7 +30,7 @@ namespace DelegateDecompiler.EfTests.EfItems
         //----------------------------------------------------
         //Computed properties
 
-        //LOGICAL GROUP
+        //BASIC FEARTURES
 
         [Computed]
         public bool BoolEqualsConstant { get { return ParentBool == true; } }
@@ -40,6 +40,8 @@ namespace DelegateDecompiler.EfTests.EfItems
         [Computed]
         public bool BoolEqualsStaticVariable { get { return ParentBool == staticBool; } }
 
+        [Computed]
+        public bool IntEqualsUniqueValue { get { return ParentInt == DatabaseHelpers.ParentIntUniqueValue; } }
 
         //EQUALITY GROUP
 

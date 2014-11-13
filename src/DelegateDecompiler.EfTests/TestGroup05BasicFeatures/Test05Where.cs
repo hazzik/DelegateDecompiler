@@ -4,9 +4,9 @@ using System.Linq;
 using DelegateDecompiler.EfTests.Helpers;
 using NUnit.Framework;
 
-namespace DelegateDecompiler.EfTests.TestGroup20OrderTake
+namespace DelegateDecompiler.EfTests.TestGroup05BasicFeatures
 {
-    class Test02SkipTake
+    class Test05Where
     {
         private ClassEnvironment classEnv;
 
@@ -17,17 +17,35 @@ namespace DelegateDecompiler.EfTests.TestGroup20OrderTake
         }
 
         [Test]
-        public void TestOrderByChildrenCountThenTake()
+        public void TestWhereBoolEqualsConstant()
         {
             using (var env = new MethodEnvironment(classEnv))
             {
                 //SETUP
-
-                var linq = env.Db.EfParents.OrderBy(x => x.Children.Count).Select( x => x.EfParentId).Take(2).ToList();
+                var linq = env.Db.EfParents.Where(x => x.ParentBool == true).Select( x => x.EfParentId).ToList();
 
                 //ATTEMPT
                 env.AboutToUseDelegateDecompiler();
-                var dd = env.Db.EfParents.OrderBy(x => x.CountChildren).Select( x => x.EfParentId).Take(2).Decompile().ToList();
+                var dd = env.Db.EfParents.Where(x => x.BoolEqualsConstant).Select(x => x.EfParentId).Decompile().ToList();
+
+                //VERIFY
+                env.CompareAndLogList(linq, dd);
+            }
+        }
+
+        private static bool staticBool = true;
+
+        [Test]
+        public void TestWhereBoolEqualsStaticVariable()
+        {
+            using (var env = new MethodEnvironment(classEnv))
+            {
+                //SETUP
+                var linq = env.Db.EfParents.Where(x => x.ParentBool == staticBool).Select(x => x.EfParentId).ToList();
+
+                //ATTEMPT
+                env.AboutToUseDelegateDecompiler();
+                var dd = env.Db.EfParents.Where(x => x.BoolEqualsStaticVariable).Select(x => x.EfParentId).Decompile().ToList();
 
                 //VERIFY
                 env.CompareAndLogList(linq, dd);
@@ -35,35 +53,16 @@ namespace DelegateDecompiler.EfTests.TestGroup20OrderTake
         }
 
         [Test]
-        public void TestOrderByChildrenCountThenSkipAndTake()
+        public void TestWhereIntEqualsConstant()
         {
             using (var env = new MethodEnvironment(classEnv))
             {
                 //SETUP
-
-                var linq = env.Db.EfParents.OrderBy(x => x.Children.Count).Select(x => x.EfParentId).Skip(1).Take(2).ToList();
-
-                //ATTEMPT
-                env.AboutToUseDelegateDecompiler();
-                var dd = env.Db.EfParents.OrderBy(x => x.CountChildren).Select(x => x.EfParentId).Skip(1).Take(2).Decompile().ToList();
-
-                //VERIFY
-                env.CompareAndLogList(linq, dd);
-            }
-        }
-
-        [Test]
-        public void TestWhereAnyChildrenThenOrderByThenSkipTake()
-        {
-            using (var env = new MethodEnvironment(classEnv))
-            {
-                //SETUP
-
-                var linq = env.Db.EfParents.Where(x => x.Children.Any()).OrderBy(x => x.Children.Count).Select(x => x.EfParentId).Skip(1).Take(1).ToList();
+                var linq = env.Db.EfParents.Where(x => x.ParentInt == 123).Select(x => x.EfParentId).ToList();
 
                 //ATTEMPT
                 env.AboutToUseDelegateDecompiler();
-                var dd = env.Db.EfParents.Where(x => x.AnyChildren).OrderBy(x => x.CountChildren).Select(x => x.EfParentId).Decompile().Skip(1).Take(1).ToList();
+                var dd = env.Db.EfParents.Where(x => x.IntEqualsConstant).Select(x => x.EfParentId).Decompile().ToList();
 
                 //VERIFY
                 env.CompareAndLogList(linq, dd);

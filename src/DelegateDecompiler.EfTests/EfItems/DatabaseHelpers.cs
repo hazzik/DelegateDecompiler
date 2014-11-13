@@ -2,11 +2,13 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace DelegateDecompiler.EfTests.EfItems
 {
     static class DatabaseHelpers
     {
+        public const int ParentIntUniqueValue = 987;
 
         public static readonly ICollection<EfParent> BaseData = new List<EfParent>
         {
@@ -44,7 +46,7 @@ namespace DelegateDecompiler.EfTests.EfItems
             new EfParent
             {
                 ParentBool = false,
-                ParentInt = 987,
+                ParentInt = ParentIntUniqueValue,
                 ParentDouble = 987.654,
                 ParentString = "987",
                 StartDate = new DateTime(2009, 8, 7),
@@ -86,6 +88,10 @@ namespace DelegateDecompiler.EfTests.EfItems
 
         public static void ResetDatabaseContent(this EfTestDbContext db)
         {
+            //check that ParentIntUniqueValue is unique
+            if (BaseData.Count(x => x.ParentInt == ParentIntUniqueValue) != 1)
+                throw new InvalidOperationException("The test data must have only one item with ParentInt equal to ParentIntUniqueValue");
+
             //wipe out all exsiting data
             db.EfParents.RemoveRange(db.EfParents);
             db.EfPersons.RemoveRange(db.EfPersons);
