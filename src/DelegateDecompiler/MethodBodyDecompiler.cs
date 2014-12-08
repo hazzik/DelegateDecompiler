@@ -35,8 +35,9 @@ namespace DelegateDecompiler
         {
             var instructions = method.GetInstructions();
             var ex = Processor.Create(locals, args).Process(instructions.First(), method.ReturnType);
-
-            return Expression.Lambda(ex, args);
+            LambdaExpression lambda = Expression.Lambda(ex, args);
+            lambda = (LambdaExpression)new NewNullableExpressionVisitor().Visit(lambda);
+            return lambda;
         }
     }
 }
