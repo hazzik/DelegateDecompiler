@@ -1,0 +1,126 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{CC1F2D70-08F7-4DA0-963C-E1915F233C45}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>DelegateDecompiler.EfTests</RootNamespace>
+    <AssemblyName>DelegateDecompiler.EfTests</AssemblyName>
+    <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\..\</SolutionDir>
+    <RestorePackages>true</RestorePackages>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="EntityFramework">
+      <HintPath>..\..\packages\EntityFramework.6.1.1\lib\net45\EntityFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework.SqlServer">
+      <HintPath>..\..\packages\EntityFramework.6.1.1\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+    </Reference>
+    <Reference Include="nunit.framework">
+      <HintPath>..\..\packages\NUnit.2.6.3\lib\nunit.framework.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="EfItems\DatabaseHelpers.cs" />
+    <Compile Include="EfItems\EfChild.cs" />
+    <Compile Include="EfItems\EfGrandChild.cs" />
+    <Compile Include="EfItems\EfParent.cs" />
+    <Compile Include="EfItems\EfPerson.cs" />
+    <Compile Include="EfItems\EfTestDbContext.cs" />
+    <Compile Include="Helpers\CheckerAndLogger.cs" />
+    <Compile Include="Helpers\ClassEnvironment.cs" />
+    <Compile Include="Helpers\ClassLog.cs" />
+    <Compile Include="Helpers\ClassLogClassified.cs" />
+    <Compile Include="Helpers\ExtendAsserts.cs" />
+    <Compile Include="Helpers\MarkupFileHelpers.cs" />
+    <Compile Include="Helpers\MasterEnvironment.cs" />
+    <Compile Include="Helpers\MethodEnvironment.cs" />
+    <Compile Include="Helpers\MethodLog.cs" />
+    <Compile Include="Helpers\SplitterExtension.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TestGroup01Infrastructure\Test01EfDatabase.cs" />
+    <Compile Include="TestGroup01Infrastructure\Test05VariousLogs.cs" />
+    <Compile Include="TestGroup01Infrastructure\Test10Environments.cs" />
+    <Compile Include="TestGroup01Infrastructure\Test15MarkupFileAccess.cs" />
+    <Compile Include="TestGroup01Infrastructure\Test20ProduceSummary.cs" />
+    <Compile Include="TestGroup01Infrastructure\Test22ProduceDetail.cs" />
+    <Compile Include="TestGroup01Infrastructure\Test25ProduceDetailWithSql.cs" />
+    <Compile Include="TestGroup01Infrastructure\Test99StartProperRun.cs" />
+    <Compile Include="TestGroup05BasicFeatures\Test11SingleAsync.cs" />
+    <Compile Include="TestGroup05BasicFeatures\Test10Single.cs" />
+    <Compile Include="TestGroup05BasicFeatures\Test05Where.cs" />
+    <Compile Include="TestGroup05BasicFeatures\Test01Select.cs" />
+    <Compile Include="TestGroup05BasicFeatures\Test03EqualsAndNotEquals.cs" />
+    <Compile Include="TestGroup05BasicFeatures\Test02SelectAsync.cs" />
+    <Compile Include="TestGroup12QuantifierOperators\Test01Any.cs" />
+    <Compile Include="TestGroup12QuantifierOperators\Test02All.cs" />
+    <Compile Include="TestGroup12QuantifierOperators\Test03Contains.cs" />
+    <Compile Include="TestGroup15Aggregation\Test01Count.cs" />
+    <Compile Include="TestGroup15Aggregation\Test02Sum.cs" />
+    <Compile Include="TestGroup10OrderTake\Test02SkipTake.cs" />
+    <Compile Include="TestGroup10OrderTake\Test01OrderBy.cs" />
+    <Compile Include="TestGroup50Types\Test01Strings.cs" />
+    <Compile Include="TestGroup50Types\Test05DateTime.cs" />
+    <Compile Include="TestGroup99SaveResults\Test99SaveResults.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+    <None Include="GeneratedDocumentation\DetailedListOfSupportedCommands.md" />
+    <None Include="GeneratedDocumentation\DetailedListOfSupportedCommandsWithSQL.md" />
+    <None Include="GeneratedDocumentation\DocumentationHeaderText.md" />
+    <None Include="GeneratedDocumentation\HowToAddMoreTests.md" />
+    <None Include="GeneratedDocumentation\SummaryOfSupportedCommands.md" />
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\DelegateDecompiler\DelegateDecompiler.csproj">
+      <Project>{11f42698-bb34-4175-9da8-80bd62171d02}</Project>
+      <Name>DelegateDecompiler</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('$(SolutionDir)\.nuget\NuGet.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(SolutionDir)\.nuget\NuGet.targets'))" />
+  </Target>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
