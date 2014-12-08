@@ -63,6 +63,7 @@
     <Compile Include="DecompileExtensions.cs" />
     <Compile Include="DefaultConfiguration.cs" />
     <Compile Include="MethodBodyDecompiler.cs" />
+    <Compile Include="NewNullableExpressionVisitor.cs" />
     <Compile Include="Processor.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ReplaceExpressionVisitor.cs" />
