@@ -111,4 +111,17 @@ in TestGroup01Infrastructure.Test01EfDatabase to test the database.
 and `CompareAndLogList` for lists. If you need a
 new comparitor then just follow the pattern in the Helpers.CheckerAndLogger class.
 
+## Note to self on how to sync a fork with the remote
+
+This is just a note to myself so I remember how to sync this Git Repro to the master DelegateDecompiler repro.
+
+- Run Windows Git Command Line
+- Move to the right directory using `cd "<path to dir>"`. Note: need "" around path as it has spaces in it
+- I have set up the link back to the master using `git remote add upstream https://github.com/hazzik/DelegateDecompiler`
+- I then use `git fetch upstream` to fetch any changes
+- Then make sure I am have the master branch with `git checkout master`
+- Then use `git merge upstream/master` to merge in the upstream
+- Then in Visual Studio needed to refresh to see the files
+- I am now up to date and can make changes/run tests.
+
 
