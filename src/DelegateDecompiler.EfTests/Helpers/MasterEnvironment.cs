@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -140,7 +141,7 @@ namespace DelegateDecompiler.EfTests.Helpers
 
             sb.AppendFormat("{0} of supported commands\n============\n", version.ToString().SplitCamelCase());
 
-            sb.AppendFormat("## Documentation produced for {0}, version {1} on {2:f}\n",
+            sb.AppendFormat(CultureInfo.InvariantCulture, "## Documentation produced for {0}, version {1} on {2:f}\n",
                 delegateDecompilerAssembly.GetName().Name,
                 delegateDecompilerAssembly.GetName().Version,
                 DateTime.Now);

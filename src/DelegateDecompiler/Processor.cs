@@ -668,55 +668,9 @@ namespace DelegateDecompiler
             var rightExpression = Clone().Process(right, common);
             var leftExpression = AdjustType(Clone().Process(left, common), rightExpression.Type);
 
-            var expression = BuildConditionalBranch(test, val1, leftExpression, rightExpression);
+            var expression = Expression.Condition(test, leftExpression, rightExpression);
             stack.Push(expression);
             return common;
-        }
-
-        private static Expression BuildConditionalBranch(BinaryExpression test, Expression val1, Expression leftExpression, Expression rightExpression)
-        {
-            var leftConstant = leftExpression as ConstantExpression;
-            if (leftConstant != null && leftConstant.Value is bool)
-            {
-                if ((bool)leftConstant.Value)
-                {
-                    if (test.NodeType == ExpressionType.Equal ||
-                        test.NodeType == ExpressionType.NotEqual ||
-                        test.NodeType == ExpressionType.GreaterThan ||
-                        test.NodeType == ExpressionType.GreaterThanOrEqual ||
-                        test.NodeType == ExpressionType.LessThan ||
-                        test.NodeType == ExpressionType.LessThanOrEqual)
-                    {
-                        return Expression.OrElse(test, rightExpression);
-                    }
-                }
-                else
-                {
-                    switch (test.NodeType)
-                    {
-                        case ExpressionType.Equal:
-                            return Expression.AndAlso(Expression.NotEqual(test.Left, test.Right), rightExpression);
-                        case ExpressionType.NotEqual:
-                            return Expression.AndAlso(Expression.Equal(test.Left, test.Right), rightExpression);
-                        case ExpressionType.GreaterThan:
-                            return Expression.AndAlso(Expression.LessThanOrEqual(test.Left, test.Right), rightExpression);
-                        case ExpressionType.GreaterThanOrEqual:
-                            return Expression.AndAlso(Expression.LessThan(test.Left, test.Right), rightExpression);
-                        case ExpressionType.LessThan:
-                            return Expression.AndAlso(Expression.GreaterThanOrEqual(test.Left, test.Right), rightExpression);
-                        case ExpressionType.LessThanOrEqual:
-                            return Expression.AndAlso(Expression.GreaterThan(test.Left, test.Right), rightExpression);
-                    }
-                }
-            }
-            if (test.NodeType == ExpressionType.NotEqual)
-            {
-                if (val1 == leftExpression && (test.Right is DefaultExpression || (test.Right is ConstantExpression && ((ConstantExpression) test.Right).Value == null)))
-                {
-                    return Expression.Coalesce(val1, rightExpression);
-                }
-            }
-            return Expression.Condition(test, leftExpression, rightExpression);
         }
 
         static Instruction GetJoinPoint(Instruction left, Instruction right)

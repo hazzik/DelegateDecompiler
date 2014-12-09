@@ -29,5 +29,12 @@ namespace DelegateDecompiler.Tests
             Func<int, int?> compiled = x => (int?)x;
             Test(expected, compiled);
         }
+        [Fact]
+        public void ExpressionWithNullable2()
+        {
+            Expression<Func<int?, int>> expected = x => x ?? 0;
+            Func<int?, int> compiled = x => x ?? 0;
+            Test(expected, compiled);
+        }
     }
 }

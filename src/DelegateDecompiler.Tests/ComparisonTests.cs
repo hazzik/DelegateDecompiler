@@ -30,7 +30,7 @@ namespace DelegateDecompiler.Tests
             Test(expected, compiled);
         }
 
-        [Fact(Skip = "Need optimization")]
+        [Fact]
         public void Cge()
         {
             Expression<Func<int, int, bool>> expected = (x, y) => x >= y;
@@ -62,7 +62,7 @@ namespace DelegateDecompiler.Tests
             Test(expected, compiled);
         }
 
-        [Fact(Skip = "Need optimization")]
+        [Fact]
         public void Cle()
         {
             Expression<Func<int, int, bool>> expected = (x, y) => x <= y;

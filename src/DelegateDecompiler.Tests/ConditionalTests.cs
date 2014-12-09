@@ -151,7 +151,7 @@ namespace DelegateDecompiler.Tests
             Test(expected, compiled);
         }
 
-        [Fact(Skip = "Need IIF optimization for Nullable<>")]
+        [Fact]
         public void NullableCoalesce()
         {
             Expression<Func<int?, bool>> expected = e => (e ?? 100) == 100;
@@ -159,10 +159,10 @@ namespace DelegateDecompiler.Tests
             Test(expected, compiled);
         }
 
-        [Fact(Skip = "Need optimization for Boolean")]
+        [Fact]
         public void TwoIifs()
         {
-            Expression<Func<Employee, bool>> expected = e => e.FirstName != null && e.FirstName.Contains("Test") && !e.IsBlocked;
+            Expression<Func<Employee, bool>> expected = e => e.FirstName != null && (e.FirstName.Contains("Test") && !e.IsBlocked);
             Func<Employee, bool> compiled = e => e.FirstName != null && e.FirstName.Contains("Test") && !e.IsBlocked;
             Test(expected, compiled);
         }
