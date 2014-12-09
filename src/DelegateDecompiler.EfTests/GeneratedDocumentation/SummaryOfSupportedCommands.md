@@ -1,6 +1,6 @@
 Summary of supported commands
 ============
-## Documentation produced for DelegateDecompiler, version 0.11.1.0 on 09 December 2014 10:17
+## Documentation produced for DelegateDecompiler, version 0.11.1.0 on 09 December 2014 10:47
 
 This file documents what linq commands **DelegateDecompiler** supports when
 working with [Entity Framework v6.1](http://msdn.microsoft.com/en-us/data/aa937723) (EF).
@@ -28,6 +28,8 @@ More will appear as we move forward.*
   * [Equals And Not Equals](../TestGroup05BasicFeatures/Test03EqualsAndNotEquals.cs) (4 tests)
   * [Where](../TestGroup05BasicFeatures/Test05Where.cs) (3 tests)
   * [Single](../TestGroup05BasicFeatures/Test10Single.cs) (1 tests)
+- **Partially Supported**
+  * [Nullable](../TestGroup05BasicFeatures/Test04Nullable.cs) (1 of 3 tests passed)
 - **Not Supported**
   * [Select Async](../TestGroup05BasicFeatures/Test02SelectAsync.cs) (3 tests)
   * [Single Async](../TestGroup05BasicFeatures/Test11SingleAsync.cs) (1 tests)

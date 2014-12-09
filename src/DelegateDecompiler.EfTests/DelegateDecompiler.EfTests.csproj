@@ -76,6 +76,7 @@
     <Compile Include="TestGroup01Infrastructure\Test22ProduceDetail.cs" />
     <Compile Include="TestGroup01Infrastructure\Test25ProduceDetailWithSql.cs" />
     <Compile Include="TestGroup01Infrastructure\Test99StartProperRun.cs" />
+    <Compile Include="TestGroup05BasicFeatures\Test04Nullable.cs" />
     <Compile Include="TestGroup05BasicFeatures\Test11SingleAsync.cs" />
     <Compile Include="TestGroup05BasicFeatures\Test10Single.cs" />
     <Compile Include="TestGroup05BasicFeatures\Test05Where.cs" />
