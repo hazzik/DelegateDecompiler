@@ -352,67 +352,67 @@ namespace DelegateDecompiler
                 {
                     var val1 = stack.Pop();
                     var val2 = stack.Pop();
-                    stack.Push(Expression.Add(val2, val1));
+                    stack.Push(AdjustedBinaryExpression(val2, AdjustType(val1, val2.Type), ExpressionType.Add));
                 }
                 else if (instruction.OpCode == OpCodes.Add_Ovf || instruction.OpCode == OpCodes.Add_Ovf_Un)
                 {
                     var val1 = stack.Pop();
                     var val2 = stack.Pop();
-                    stack.Push(Expression.AddChecked(val2, val1));
+                    stack.Push(AdjustedBinaryExpression(val2, AdjustType(val1, val2.Type), ExpressionType.AddChecked));
                 }
                 else if (instruction.OpCode == OpCodes.Sub)
                 {
                     var val1 = stack.Pop();
                     var val2 = stack.Pop();
-                    stack.Push(Expression.Subtract(val2, val1));
+                    stack.Push(AdjustedBinaryExpression(val2, AdjustType(val1, val2.Type), ExpressionType.Subtract));
                 }
                 else if (instruction.OpCode == OpCodes.Sub_Ovf || instruction.OpCode == OpCodes.Sub_Ovf_Un)
                 {
                     var val1 = stack.Pop();
                     var val2 = stack.Pop();
-                    stack.Push(Expression.SubtractChecked(val2, val1));
+                    stack.Push(AdjustedBinaryExpression(val2, AdjustType(val1, val2.Type), ExpressionType.SubtractChecked));
                 }
                 else if (instruction.OpCode == OpCodes.Mul)
                 {
                     var val1 = stack.Pop();
                     var val2 = stack.Pop();
-                    stack.Push(Expression.Multiply(val2, val1));
+                    stack.Push(AdjustedBinaryExpression(val2, AdjustType(val1, val2.Type), ExpressionType.Multiply));
                 }
                 else if (instruction.OpCode == OpCodes.Mul_Ovf || instruction.OpCode == OpCodes.Mul_Ovf_Un)
                 {
                     var val1 = stack.Pop();
                     var val2 = stack.Pop();
-                    stack.Push(Expression.MultiplyChecked(val2, val1));
+                    stack.Push(AdjustedBinaryExpression(val2, AdjustType(val1, val2.Type), ExpressionType.MultiplyChecked));
                 }
                 else if (instruction.OpCode == OpCodes.Div || instruction.OpCode == OpCodes.Div_Un)
                 {
                     var val1 = stack.Pop();
                     var val2 = stack.Pop();
-                    stack.Push(Expression.Divide(val2, val1));
+                    stack.Push(AdjustedBinaryExpression(val2, AdjustType(val1, val2.Type), ExpressionType.Divide));
                 }
                 else if (instruction.OpCode == OpCodes.Rem || instruction.OpCode == OpCodes.Rem_Un)
                 {
                     var val1 = stack.Pop();
                     var val2 = stack.Pop();
-                    stack.Push(Expression.Modulo(val2, val1));
+                    stack.Push(AdjustedBinaryExpression(val2, AdjustType(val1, val2.Type), ExpressionType.Modulo));
                 }
                 else if (instruction.OpCode == OpCodes.Xor)
                 {
                     var val1 = stack.Pop();
                     var val2 = stack.Pop();
-                    stack.Push(Expression.ExclusiveOr(val2, val1));
+                    stack.Push(AdjustedBinaryExpression(val2, AdjustType(val1, val2.Type), ExpressionType.ExclusiveOr));
                 }
                 else if (instruction.OpCode == OpCodes.Shl)
                 {
                     var val1 = stack.Pop();
                     var val2 = stack.Pop();
-                    stack.Push(Expression.LeftShift(val2, val1));
+                    stack.Push(AdjustedBinaryExpression(val2, AdjustType(val1, val2.Type), ExpressionType.LeftShift));
                 }
                 else if (instruction.OpCode == OpCodes.Shr || instruction.OpCode == OpCodes.Shr_Un)
                 {
                     var val1 = stack.Pop();
                     var val2 = stack.Pop();
-                    stack.Push(Expression.RightShift(val2, val1));
+                    stack.Push(AdjustedBinaryExpression(val2, AdjustType(val1, val2.Type), ExpressionType.RightShift));
                 }
                 else if (instruction.OpCode == OpCodes.Neg)
                 {
@@ -585,15 +585,15 @@ namespace DelegateDecompiler
                 {
                     var val1 = stack.Pop();
                     var val2 = stack.Pop();
-
-                    stack.Push(Expression.GreaterThan(val2, AdjustType(val1, val2.Type)));
+                    
+                    stack.Push(AdjustedBinaryExpression(val2, AdjustType(val1, val2.Type), ExpressionType.GreaterThan));
                 }
                 else if (instruction.OpCode == OpCodes.Clt || instruction.OpCode == OpCodes.Clt_Un)
                 {
                     var val1 = stack.Pop();
                     var val2 = stack.Pop();
-
-                    stack.Push(Expression.LessThan(val2, AdjustType(val1, val2.Type)));
+                    
+                    stack.Push(AdjustedBinaryExpression(val2, AdjustType(val1, val2.Type), ExpressionType.LessThan));
                 }
                 else if (instruction.OpCode == OpCodes.Ret)
                 {
