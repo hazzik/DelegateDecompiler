@@ -3,21 +3,22 @@ using System.Linq.Expressions;
 
 namespace DelegateDecompiler
 {
-    class DecompiledQueryProvider : IQueryProvider
+    public class DecompiledQueryProvider : IQueryProvider
     {
         readonly IQueryProvider inner;
-        public DecompiledQueryProvider(IQueryProvider inner)
+
+        protected internal DecompiledQueryProvider(IQueryProvider inner)
         {
             this.inner = inner;
         }
 
-        public IQueryable CreateQuery(Expression expression)
+        public virtual IQueryable CreateQuery(Expression expression)
         {
             var decompiled = DecompileExpressionVisitor.Decompile(expression);
             return new DecompiledQueryable(this, inner.CreateQuery(decompiled));
         }
 
-        public IQueryable<TElement> CreateQuery<TElement>(Expression expression)
+        public virtual IQueryable<TElement> CreateQuery<TElement>(Expression expression)
         {
             var decompiled = DecompileExpressionVisitor.Decompile(expression);
             return new DecompiledQueryable<TElement>(this, inner.CreateQuery<TElement>(decompiled));

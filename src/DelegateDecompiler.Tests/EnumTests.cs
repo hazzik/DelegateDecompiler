@@ -164,6 +164,40 @@ namespace DelegateDecompiler.Tests
             Test(expected, compiled);
         }
 
+        // The following tests check for the insertion of Expression.Convert in the expression tree for compatible types
+
+        [Fact]
+        public void TestEnumCastSubtraction()
+        {
+            Expression<Func<TestEnum, int>> expected = x => (int)x - 10;
+            Func<TestEnum, int> compiled = x => (int)x - 10;
+            Test(expected, compiled);
+        }
+
+        [Fact]
+        public void TestEnumCastMod()
+        {
+            Expression<Func<TestEnum, int>> expected = x => (int)x % 10;
+            Func<TestEnum, int> compiled = x => (int)x % 10;
+            Test(expected, compiled);
+        }
+
+        [Fact]
+        public void TestEnumCastEquals()
+        {
+            Expression<Func<TestEnum, bool>> expected = x => (int)x == 10;
+            Func<TestEnum, bool> compiled = x => (int)x == 10;
+            Test(expected, compiled);
+        }
+
+        [Fact]
+        public void TestEnumCastGreaterThan()
+        {
+            Expression<Func<TestEnum, bool>> expected = x => (int)x > 10;
+            Func<TestEnum, bool> compiled = x => (int)x > 10;
+            Test(expected, compiled);
+        }
+
         private static bool TestEnumMethod(TestEnum p0)
         {
             throw new NotImplementedException();
