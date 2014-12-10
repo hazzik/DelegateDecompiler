@@ -6,9 +6,9 @@ using System.Linq.Expressions;
 
 namespace DelegateDecompiler
 {
-    class DecompiledQueryable : IOrderedQueryable
+    public class DecompiledQueryable : IOrderedQueryable
     {
-        public DecompiledQueryable(IQueryProvider provider, IQueryable inner)
+        protected internal DecompiledQueryable(IQueryProvider provider, IQueryable inner)
         {
             this.inner = inner;
             this.provider = provider;
@@ -43,11 +43,11 @@ namespace DelegateDecompiler
         }
     }
 
-    class DecompiledQueryable<T> : DecompiledQueryable, IOrderedQueryable<T>
+    public class DecompiledQueryable<T> : DecompiledQueryable, IOrderedQueryable<T>
     {
         private readonly IQueryable<T> inner;
 
-        public DecompiledQueryable(IQueryProvider provider, IQueryable<T> inner)
+        protected internal DecompiledQueryable(IQueryProvider provider, IQueryable<T> inner)
             : base(provider, inner)
         {
             this.inner = inner;
