@@ -1,6 +1,6 @@
 Detail With Sql of supported commands
 ============
-## Documentation produced for DelegateDecompiler, version 0.11.1.0 on 09 December 2014 10:47
+## Documentation produced for DelegateDecompiler, version 0.11.1.0 on Wednesday, December 10, 2014 3:57 PM
 
 This file documents what linq commands **DelegateDecompiler** supports when
 working with [Entity Framework v6.1](http://msdn.microsoft.com/en-us/data/aa937723) (EF).
@@ -54,10 +54,34 @@ SELECT
 
 
 #### [Select Async](../TestGroup05BasicFeatures/Test02SelectAsync.cs):
-- **Not Supported**
-  * Bool Equals Constant Async (line 30)
-  * Bool Equals Static Variable To Array Async (line 49)
-  * Int Equals Constant (line 66)
+- Supported
+  * Bool Equals Constant Async (line 34)
+     * T-Sql executed is
+
+```SQL
+SELECT 
+    [Extent1].[ParentBool] AS [ParentBool]
+    FROM [dbo].[EfParents] AS [Extent1]
+```
+
+  * Bool Equals Static Variable To Array Async (line 53)
+     * T-Sql executed is
+
+```SQL
+SELECT 
+    CASE WHEN ([Extent1].[ParentBool] = @p__linq__0) THEN cast(1 as bit) WHEN ([Extent1].[ParentBool] <> @p__linq__0) THEN cast(0 as bit) END AS [C1]
+    FROM [dbo].[EfParents] AS [Extent1]
+```
+
+  * Int Equals Constant (line 70)
+     * T-Sql executed is
+
+```SQL
+SELECT 
+    CASE WHEN (123 = [Extent1].[ParentInt]) THEN cast(1 as bit) WHEN (123 <> [Extent1].[ParentInt]) THEN cast(0 as bit) END AS [C1]
+    FROM [dbo].[EfParents] AS [Extent1]
+```
+
 
 #### [Equals And Not Equals](../TestGroup05BasicFeatures/Test03EqualsAndNotEquals.cs):
 - Supported
@@ -165,8 +189,22 @@ SELECT
 
 
 #### [Single Async](../TestGroup05BasicFeatures/Test11SingleAsync.cs):
-- **Not Supported**
-  * Single Int Equals Unique Value Async (line 33)
+- Supported
+  * Single Int Equals Unique Value Async (line 41)
+     * T-Sql executed is
+
+```SQL
+SELECT 
+    [Limit1].[EfParentId] AS [EfParentId], 
+    [Limit1].[C1] AS [C1]
+    FROM ( SELECT TOP (2) 
+        [Extent1].[EfParentId] AS [EfParentId], 
+        CASE WHEN (987 = [Extent1].[ParentInt]) THEN cast(1 as bit) WHEN (987 <> [Extent1].[ParentInt]) THEN cast(0 as bit) END AS [C1]
+        FROM [dbo].[EfParents] AS [Extent1]
+        WHERE (CASE WHEN (987 = [Extent1].[ParentInt]) THEN cast(1 as bit) WHEN (987 <> [Extent1].[ParentInt]) THEN cast(0 as bit) END) = 1
+    )  AS [Limit1]
+```
+
 
 
 ### Group: Order Take
