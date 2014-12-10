@@ -5,3 +5,4 @@ _ReSharper.*
 *.user
 packages
 /src/DelegateDecompiler.EfTests/GeneratedDocumentation/Test file - please ignore.txt
+*.sln.ide
