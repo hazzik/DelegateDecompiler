@@ -16,6 +16,7 @@ namespace DelegateDecompiler.EfTests.EfItems
             {
                 ParentBool = true,
                 ParentInt = 123,
+                ParentNullableInt = 123,
                 ParentDouble = 123.456,
                 ParentString = "123",
                 StartDate = new DateTime(2001, 2, 3),
@@ -47,6 +48,7 @@ namespace DelegateDecompiler.EfTests.EfItems
             {
                 ParentBool = false,
                 ParentInt = ParentIntUniqueValue,
+                ParentNullableInt = null,
                 ParentDouble = 987.654,
                 ParentString = "987",
                 StartDate = new DateTime(2009, 8, 7),
@@ -69,6 +71,7 @@ namespace DelegateDecompiler.EfTests.EfItems
             {
                 ParentBool = false,
                 ParentInt = 111,
+                ParentNullableInt = 111,
                 ParentDouble = 111.222,
                 ParentString = "111",
                 StartDate = new DateTime(2001, 1, 1),

@@ -15,6 +15,8 @@ namespace DelegateDecompiler.EfTests.EfItems
 
         public int ParentInt { get; set; }
 
+        public int? ParentNullableInt { get; set; }
+
         public double ParentDouble { get; set; }
 
         public string ParentString { get; set; }
@@ -42,6 +44,19 @@ namespace DelegateDecompiler.EfTests.EfItems
 
         [Computed]
         public bool IntEqualsUniqueValue { get { return ParentInt == DatabaseHelpers.ParentIntUniqueValue; } }
+
+        //NULLABLE
+
+        [Computed]
+        public bool ParentNullableIntIsNull { get { return ParentNullableInt == null; } }
+
+        private static int? staticNullableInt = null;
+
+        [Computed]
+        public bool ParentNullableIntEqualsStaticVariable { get { return ParentNullableInt == staticNullableInt; } }
+
+        [Computed]
+        public bool ParentNullableIntEqualsConstant { get { return ParentNullableInt == 123; } }
 
         //EQUALITY GROUP
 
