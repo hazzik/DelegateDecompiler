@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using NUnit.Framework;
-using Xunit;
 
 namespace DelegateDecompiler.Tests
 {
