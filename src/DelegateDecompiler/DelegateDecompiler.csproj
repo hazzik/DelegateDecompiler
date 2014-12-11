@@ -52,6 +52,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Address.cs" />
     <Compile Include="Cache.cs" />
     <Compile Include="ComputedAttribute.cs" />
     <Compile Include="ComputedExtension.cs" />

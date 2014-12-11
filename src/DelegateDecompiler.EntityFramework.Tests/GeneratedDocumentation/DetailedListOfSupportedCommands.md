@@ -1,6 +1,6 @@
 Detail of supported commands
 ============
-## Documentation produced for DelegateDecompiler, version 0.11.1.0 on Wednesday, December 10, 2014 3:57 PM
+## Documentation produced for DelegateDecompiler, version 0.11.1.0 on Friday, 12 December 2014 01:09
 
 This file documents what linq commands **DelegateDecompiler** supports when
 working with [Entity Framework v6.1](http://msdn.microsoft.com/en-us/data/aa937723) (EF).
@@ -45,9 +45,8 @@ More will appear as we move forward.*
 #### [Nullable](../TestGroup05BasicFeatures/Test04Nullable.cs):
 - Supported
   * Property Is Null (line 32)
-- **Not Supported**
-  * Bool Equals Static Variable (line 47)
-  * Int Equals Constant (line 64)
+  * Bool Equals Static Variable (line 51)
+  * Int Equals Constant (line 68)
 
 #### [Where](../TestGroup05BasicFeatures/Test05Where.cs):
 - Supported
@@ -104,8 +103,7 @@ More will appear as we move forward.*
 #### [Sum](../TestGroup15Aggregation/Test02Sum.cs):
 - Supported
   * Singleton Sum Children (line 33)
-- **Not Supported**
-  * Sum Count In Children Where Children Can Be None (line 47)
+  * Sum Count In Children Where Children Can Be None (line 51)
 
 
 ### Group: Types

@@ -20,7 +20,11 @@ namespace DelegateDecompiler.Tests
             //Double cast required as we can not convert T to Delegate directly
             var decompiled = ((Delegate) ((object) compiled)).Decompile();
 
-            Assert.AreEqual(expected.ToString(), decompiled.ToString());
+            var x = expected.ToString();
+            Console.WriteLine(x);
+            var y = decompiled.ToString();
+            Console.WriteLine(y);
+            Assert.AreEqual(x, y);
             Assert.AreEqual(debugView(expected), debugView(decompiled));
         }
     }

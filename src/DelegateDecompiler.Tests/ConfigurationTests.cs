@@ -5,7 +5,7 @@ using NUnit.Framework;
 namespace DelegateDecompiler.Tests
 {
     [TestFixture]
-    public class ConfigurationTests : IDisposable
+    public class ConfigurationTests
     {
         private static readonly Func<Configuration> instanceGetter = BuildInstanceGetter();
 
@@ -22,7 +22,14 @@ namespace DelegateDecompiler.Tests
             return Expression.Lambda<Action<Configuration>>(Expression.Assign(Expression.Field(null, typeof (Configuration), "instance"), arg), arg).Compile();
         }
 
-        public ConfigurationTests()
+        [TearDown]
+        public void SetUp()
+        {
+            instanceSetter(null);
+        }
+
+        [SetUp]
+        public void TearDown()
         {
             instanceSetter(null);
         }
@@ -54,9 +61,5 @@ namespace DelegateDecompiler.Tests
             Assert.AreSame(configuration, configured);
         }
 
-        public void Dispose()
-        {
-            instanceSetter(null);
-        }
     }
 }

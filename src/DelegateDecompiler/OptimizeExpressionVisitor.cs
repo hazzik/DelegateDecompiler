@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Linq.Expressions;
 
 namespace DelegateDecompiler
@@ -9,7 +10,7 @@ namespace DelegateDecompiler
         protected override Expression VisitNew(NewExpression node)
         {
             // Test if this is a nullable type
-            if (IsNullable(node.Type))
+            if (IsNullable(node.Type) && node.Arguments.Count == 1)
             {
                 return Expression.Convert(Visit(node.Arguments[0]), node.Type);
             }
@@ -23,18 +24,73 @@ namespace DelegateDecompiler
 
         protected override Expression VisitConditional(ConditionalExpression node)
         {
+            Debug.WriteLine(node);
             var ifTrue = Visit(node.IfTrue);
             var ifFalse = Visit(node.IfFalse);
             var test = Visit(node.Test);
 
+            Expression expression;
+            if (ExtractNullableArgument(test, ifTrue, out expression))
+            {
+                return Expression.Coalesce(expression, ifFalse);
+            }
+            var ifTrueBinary = UnwrapUnaryExpression(ifTrue) as BinaryExpression;
+            if (ifTrueBinary != null)
+            {
+                if (ExtractNullableArgument(test, ifTrueBinary.Right, out expression))
+                {
+                    return Expression.MakeBinary(ifTrueBinary.NodeType, expression, Expression.Convert(ifTrueBinary.Left, expression.Type));
+                }
+                if (ExtractNullableArgument(test, ifTrueBinary.Left, out expression))
+                {
+                    return Expression.MakeBinary(ifTrueBinary.NodeType, Expression.Convert(ifTrueBinary.Right, expression.Type), expression);
+                }
+            }
             var binaryExpression = test as BinaryExpression;
             var ifTrueConstant = ifTrue as ConstantExpression;
             if (binaryExpression != null)
             {
+                if (ifTrueBinary != null)
+                {
+                    Expression left;
+                    Expression right;
+                    if (binaryExpression.NodeType == ExpressionType.And &&
+                        ExtractNullableArgument(binaryExpression.Left, ifTrueBinary.Left, out left) &&
+                        ExtractNullableArgument(binaryExpression.Right, ifTrueBinary.Right, out right))
+                    {
+                        return Expression.MakeBinary(ifTrueBinary.NodeType, right, left);
+                    }
+                }
                 if (ifTrueConstant != null && ifTrueConstant.Value is bool)
                 {
-                    if ((bool) ifTrueConstant.Value)
+                    var ifFalseBinary = ifFalse as BinaryExpression;
+                    if ((bool)ifTrueConstant.Value)
                     {
+                        if (ifFalseBinary != null)
+                        {
+                            Expression left;
+                            Expression right;
+                            if (ExtractNullableArgument(ifFalseBinary.Left, binaryExpression.Left, out left) &&
+                                ExtractNullableArgument(ifFalseBinary.Right, binaryExpression.Right, out right))
+                            {
+                                return Expression.MakeBinary(ifFalseBinary.NodeType, left, right);
+                            }
+                        }
+                        else
+                        {
+                            Expression left;
+                            var unaryExpression = ifFalse as UnaryExpression;
+                            if (unaryExpression != null && ExtractNullableArgument(unaryExpression.Operand, binaryExpression.Left, out left))
+                            {
+                                return Expression.MakeBinary(binaryExpression.NodeType, left, Expression.Convert(binaryExpression.Right, left.Type));
+                            }
+                            Expression right;
+                            if (unaryExpression != null && ExtractNullableArgument(unaryExpression.Operand, binaryExpression.Right, out right))
+                            {
+                                return Expression.MakeBinary(binaryExpression.NodeType, Expression.Convert(binaryExpression.Left, right.Type), right);
+                            }
+                        }
+
                         if (binaryExpression.NodeType == ExpressionType.Equal ||
                             binaryExpression.NodeType == ExpressionType.NotEqual ||
                             binaryExpression.NodeType == ExpressionType.GreaterThan ||
@@ -49,6 +105,30 @@ namespace DelegateDecompiler
                     {
                         if (Invert(ref binaryExpression))
                         {
+                            if (ifFalseBinary != null)
+                            {
+                                Expression left;
+                                Expression right;
+                                if (ExtractNullableArgument(ifFalseBinary.Left, binaryExpression.Left, out left) &&
+                                    ExtractNullableArgument(ifFalseBinary.Right, binaryExpression.Right, out right))
+                                {
+                                    return Expression.MakeBinary(binaryExpression.NodeType, left, right);
+                                }
+                            }
+                            else
+                            {
+                                Expression left;
+                                if (ExtractNullableArgument(ifFalse, binaryExpression.Left, out left))
+                                {
+                                    return Expression.MakeBinary(binaryExpression.NodeType, left, Expression.Convert(binaryExpression.Right, left.Type));
+                                }
+                                Expression right;
+                                if (ExtractNullableArgument(ifFalse, binaryExpression.Right, out right))
+                                {
+                                    return Expression.MakeBinary(binaryExpression.NodeType, Expression.Convert(binaryExpression.Left, right.Type), right);
+                                }
+                            }
+
                             return Expression.AndAlso(binaryExpression, ifFalse);
                         }
                     }
@@ -70,17 +150,6 @@ namespace DelegateDecompiler
                 }
             }
 
-            var property = test as MemberExpression;
-            var method = ifTrue as MethodCallExpression;
-            if (property != null && property.Member.Name == "HasValue" &&
-                method != null && method.Method.Name == "GetValueOrDefault")
-            {
-                var expression = property.Expression;
-                if (expression == method.Object && IsNullable(expression.Type))
-                {
-                    return Expression.Coalesce(expression, ifFalse);
-                }
-            }
             if (test.NodeType == ExpressionType.Not)
             {
                 if (ifTrueConstant != null)
@@ -93,6 +162,43 @@ namespace DelegateDecompiler
             }
 
             return node.Update(test, ifTrue, ifFalse);
+        }
+
+        private static Expression UnwrapUnaryExpression(Expression expression)
+        {
+            var unary = expression as UnaryExpression;
+            if (unary != null && expression.NodeType == ExpressionType.Convert)
+            {
+                return unary.Operand;
+            }
+            return expression;
+        }
+
+        private static bool ExtractNullableArgument(Expression hasValue, Expression getValueOrDefault, out Expression expression)
+        {
+            MemberExpression memberExpression;
+            MethodCallExpression callExpression;
+            if (IsHasValue(hasValue, out memberExpression) && IsGetValueOrDefault(getValueOrDefault, out callExpression))
+            {
+                expression = memberExpression.Expression;
+                if (expression == callExpression.Object)
+                    return true;
+            }
+            
+            expression = null;
+            return false;
+        }
+
+        private static bool IsHasValue(Expression expression, out MemberExpression property)
+        {
+            property = expression as MemberExpression;
+            return property != null && property.Member.Name == "HasValue" && property.Expression != null && IsNullable(property.Expression.Type);
+        }
+
+        private static bool IsGetValueOrDefault(Expression expression, out MethodCallExpression method)
+        {
+            method = expression as MethodCallExpression;
+            return method != null && method.Method.Name == "GetValueOrDefault" && method.Object != null && IsNullable(method.Object.Type);
         }
 
         protected override Expression VisitBinary(BinaryExpression node)

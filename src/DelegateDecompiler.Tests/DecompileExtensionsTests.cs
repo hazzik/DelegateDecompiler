@@ -65,7 +65,7 @@ namespace DelegateDecompiler.Tests
             Test(expected, compiled);
         }
 
-        [Test, Ignore("Code is optimized")]
+        [Test]
         public void ShouldBeAbleToDecompileExpressionWithNot()
         {
             Expression<Func<bool, bool>> expected = x => !x;

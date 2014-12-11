@@ -15,23 +15,23 @@ namespace DelegateDecompiler
     {
         private const string cachedAnonymousMethodDelegate = "<>9__CachedAnonymousMethodDelegate";
 
-        public static Processor Create(Expression[] locals, IList<ParameterExpression> args)
+        public static Processor Create(Address[] locals, IList<Address> args)
         {
-            return new Processor(new Stack<Expression>(), locals, args);
+            return new Processor(new Stack<Address>(), locals, args);
         }
 
         Processor Clone()
         {
-            return new Processor(new Stack<Expression>(stack), locals.ToArray(), args.ToArray());
+            return new Processor(new Stack<Address>(stack), locals.ToArray(), args.ToArray());
         }
 
-        static readonly MethodInfo stringConcat = typeof(string).GetMethod("Concat", new[] { typeof(object), typeof(object) });
+        static readonly MethodInfo StringConcat = typeof(string).GetMethod("Concat", new[] { typeof(object), typeof(object) });
 
-        readonly Stack<Expression> stack;
-        readonly Expression[] locals;
-        readonly IList<ParameterExpression> args;
+        readonly Stack<Address> stack;
+        readonly Address[] locals;
+        readonly IList<Address> args;
 
-        Processor(Stack<Expression> stack, Expression[] locals, IList<ParameterExpression> args)
+        Processor(Stack<Address> stack, Address[] locals, IList<Address> args)
         {
             this.stack = stack;
             this.locals = locals;
@@ -87,7 +87,7 @@ namespace DelegateDecompiler
                 else if (instruction.OpCode == OpCodes.Ldarga || instruction.OpCode == OpCodes.Ldarga_S)
                 {
                     var operand = (ParameterInfo) instruction.Operand;
-                    stack.Push(args.Single(x => x.Name == operand.Name));
+                    stack.Push(args.Single(x => ((ParameterExpression) x.Expression).Name == operand.Name));
                 }
                 else if (instruction.OpCode == OpCodes.Ldlen)
                 {
@@ -553,14 +553,20 @@ namespace DelegateDecompiler
                 }
                 else if (instruction.OpCode == OpCodes.Newobj)
                 {
-                    var operand = (ConstructorInfo) instruction.Operand;
-                    stack.Push(Expression.New(operand, GetArguments(operand)));
+                    var constructor = (ConstructorInfo) instruction.Operand;
+                    stack.Push(Expression.New(constructor, GetArguments(constructor)));
+                }
+                else if (instruction.OpCode == OpCodes.Initobj)
+                {
+                    var address = stack.Pop();
+                    var type = (Type) instruction.Operand;
+                    address.Expression = Expression.Default(type);
                 }
                 else if (instruction.OpCode == OpCodes.Newarr)
                 {
                     var operand = (Type) instruction.Operand;
                     var expression = stack.Pop();
-                    var size = expression as ConstantExpression;
+                    var size = expression.Expression as ConstantExpression;
                     if (size != null && (int) size.Value == 0) // optimization
                         stack.Push(Expression.NewArrayInit(operand));
                     else
@@ -598,6 +604,10 @@ namespace DelegateDecompiler
                 else if (instruction.OpCode == OpCodes.Ret)
                 {
                     break;
+                }
+                else
+                {
+                    Debug.WriteLine("Unhandled!!!");
                 }
 
                 instruction = instruction.Next;
@@ -666,7 +676,11 @@ namespace DelegateDecompiler
             Instruction common = GetJoinPoint(left, right);
 
             var rightExpression = Clone().Process(right, common);
-            var leftExpression = AdjustType(Clone().Process(left, common), rightExpression.Type);
+            var leftExpression = Clone().Process(left, common);
+            if (rightExpression != null)
+            {
+                leftExpression = AdjustType(leftExpression, rightExpression.Type);
+            }
 
             var expression = Expression.Condition(test, leftExpression, rightExpression);
             stack.Push(expression);
@@ -751,11 +765,12 @@ namespace DelegateDecompiler
             var index = stack.Pop();
             var array = stack.Pop();
 
-            var newArray = array as NewArrayExpression;
+            var newArray = array.Expression as NewArrayExpression;
             if (newArray != null)
             {
                 var expressions = CreateArrayInitExpressions(newArray, value);
-                UpdateLocals(newArray, Expression.NewArrayInit(array.Type.GetElementType(), expressions));
+                var newArrayInit = Expression.NewArrayInit(array.Type.GetElementType(), expressions);
+                array.Expression = newArrayInit;
                 return;
             }
 
@@ -797,7 +812,7 @@ namespace DelegateDecompiler
         {
             var mArgs = GetArguments(m);
 
-            var instance = m.IsStatic ? null : stack.Pop();
+            var instance = m.IsStatic ? new Address() : stack.Pop();
             stack.Push(BuildMethodCallExpression(m, instance, mArgs));
         }
 
@@ -812,25 +827,25 @@ namespace DelegateDecompiler
             return mArgs;
         }
 
-        Expression BuildMethodCallExpression(MethodInfo m, Expression instance, Expression[] arguments)
+        Expression BuildMethodCallExpression(MethodInfo m, Address instance, Expression[] arguments)
         {
-            if (m.Name == "Add" && instance != null && typeof(IEnumerable).IsAssignableFrom(instance.Type))
+            if (m.Name == "Add" && instance.Expression != null && typeof(IEnumerable).IsAssignableFrom(instance.Type))
             {
-                var newExpression = instance as NewExpression;
+                var newExpression = instance.Expression as NewExpression;
                 if (newExpression != null)
                 {
                     var init = Expression.ListInit(newExpression, Expression.ElementInit(m, arguments));
-                    UpdateLocals(newExpression, init);
-                    return init;
+                    instance.Expression = init;
+                    return instance;
                 }
-                var initExpression = instance as ListInitExpression;
+                var initExpression = instance.Expression as ListInitExpression;
                 if (initExpression != null)
                 {
                     var initializers = initExpression.Initializers.ToList();
                     initializers.Add(Expression.ElementInit(m, arguments));
                     var init = Expression.ListInit(initExpression.NewExpression, initializers);
-                    UpdateLocals(initExpression, init);
-                    return init;
+                    instance.Expression = init;
+                    return instance;
                 }
             }
             if (m.IsSpecialName && m.IsHideBySig)
@@ -862,7 +877,7 @@ namespace DelegateDecompiler
                     var expression = expressions[0];
                     for (var i = 1; i < expressions.Count; i++)
                     {
-                        expression = Expression.Add(expression, expressions[i], stringConcat);
+                        expression = Expression.Add(expression, expressions[i], StringConcat);
                     }
                     return expression;
                 }
@@ -877,7 +892,7 @@ namespace DelegateDecompiler
                 arguments[i] = AdjustType(argument, parameterType);
             }
 
-            if (instance != null)
+            if (instance.Expression != null)
                 return Expression.Call(AdjustType(instance, m.DeclaringType), m, arguments);
 
             return Expression.Call(null, m, arguments);
@@ -899,12 +914,12 @@ namespace DelegateDecompiler
             return arguments;
         }
 
-        void UpdateLocals(Expression oldExpression, Expression newExpression)
+        private void UpdateLocals(Expression oldExpression, Expression newExpression)
         {
             for (var i = 0; i < locals.Length; i++)
             {
                 var local = locals[i];
-                if (local == oldExpression)
+                if (local.Expression == oldExpression)
                 {
                     locals[i] = newExpression;
                 }

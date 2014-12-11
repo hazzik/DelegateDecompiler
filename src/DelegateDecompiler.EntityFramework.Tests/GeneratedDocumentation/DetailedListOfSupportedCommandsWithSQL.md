@@ -1,6 +1,6 @@
 Detail With Sql of supported commands
 ============
-## Documentation produced for DelegateDecompiler, version 0.11.1.0 on Wednesday, December 10, 2014 3:57 PM
+## Documentation produced for DelegateDecompiler, version 0.11.1.0 on Friday, 12 December 2014 01:09
 
 This file documents what linq commands **DelegateDecompiler** supports when
 working with [Entity Framework v6.1](http://msdn.microsoft.com/en-us/data/aa937723) (EF).
@@ -117,7 +117,7 @@ SELECT
 
 ```SQL
 SELECT 
-    CASE WHEN (0 = (CASE WHEN ([Extent1].[ParentInt] = ( CAST(LEN([Extent1].[ParentString]) AS int))) THEN cast(1 as bit) WHEN ( NOT (([Extent1].[ParentInt] = ( CAST(LEN([Extent1].[ParentString]) AS int))) AND (0 = (CASE WHEN ([Extent1].[ParentString] IS NULL) THEN cast(1 as bit) ELSE cast(0 as bit) END)))) THEN cast(0 as bit) END)) THEN cast(1 as bit) WHEN ( NOT ((0 = (CASE WHEN ([Extent1].[ParentInt] = ( CAST(LEN([Extent1].[ParentString]) AS int))) THEN cast(1 as bit) WHEN ( NOT (([Extent1].[ParentInt] = ( CAST(LEN([Extent1].[ParentString]) AS int))) AND (0 = (CASE WHEN ([Extent1].[ParentString] IS NULL) THEN cast(1 as bit) ELSE cast(0 as bit) END)))) THEN cast(0 as bit) END)) AND (CASE WHEN ([Extent1].[ParentInt] = ( CAST(LEN([Extent1].[ParentString]) AS int))) THEN cast(1 as bit) WHEN ( NOT (([Extent1].[ParentInt] = ( CAST(LEN([Extent1].[ParentString]) AS int))) AND (0 = (CASE WHEN ([Extent1].[ParentString] IS NULL) THEN cast(1 as bit) ELSE cast(0 as bit) END)))) THEN cast(0 as bit) END IS NOT NULL))) THEN cast(0 as bit) END AS [C1]
+    CASE WHEN ( NOT (([Extent1].[ParentInt] = ( CAST(LEN([Extent1].[ParentString]) AS int))) AND (0 = (CASE WHEN ([Extent1].[ParentString] IS NULL) THEN cast(1 as bit) ELSE cast(0 as bit) END)))) THEN cast(1 as bit) WHEN ([Extent1].[ParentInt] = ( CAST(LEN([Extent1].[ParentString]) AS int))) THEN cast(0 as bit) END AS [C1]
     FROM [dbo].[EfParents] AS [Extent1]
 ```
 
@@ -129,13 +129,28 @@ SELECT
 
 ```SQL
 SELECT 
-    CASE WHEN (0 = (CASE WHEN ([Extent1].[ParentNullableInt] IS NOT NULL) THEN cast(1 as bit) ELSE cast(0 as bit) END)) THEN cast(1 as bit) WHEN ( NOT ((0 = (CASE WHEN ([Extent1].[ParentNullableInt] IS NOT NULL) THEN cast(1 as bit) ELSE cast(0 as bit) END)) AND (CASE WHEN ([Extent1].[ParentNullableInt] IS NOT NULL) THEN cast(1 as bit) ELSE cast(0 as bit) END IS NOT NULL))) THEN cast(0 as bit) END AS [C1]
+    CASE WHEN ([Extent1].[ParentNullableInt] IS NULL) THEN cast(1 as bit) ELSE cast(0 as bit) END AS [C1]
     FROM [dbo].[EfParents] AS [Extent1]
 ```
 
-- **Not Supported**
-  * Bool Equals Static Variable (line 47)
-  * Int Equals Constant (line 64)
+  * Bool Equals Static Variable (line 51)
+     * T-Sql executed is
+
+```SQL
+SELECT 
+    CASE WHEN (([Extent1].[ParentNullableInt] = @p__linq__0) OR (([Extent1].[ParentNullableInt] IS NULL) AND (@p__linq__0 IS NULL))) THEN cast(1 as bit) WHEN ( NOT (([Extent1].[ParentNullableInt] = @p__linq__0) AND ((CASE WHEN ([Extent1].[ParentNullableInt] IS NULL) THEN cast(1 as bit) ELSE cast(0 as bit) END) = (CASE WHEN (@p__linq__0 IS NULL) THEN cast(1 as bit) ELSE cast(0 as bit) END)))) THEN cast(0 as bit) END AS [C1]
+    FROM [dbo].[EfParents] AS [Extent1]
+```
+
+  * Int Equals Constant (line 68)
+     * T-Sql executed is
+
+```SQL
+SELECT 
+    CASE WHEN (123 = [Extent1].[ParentNullableInt]) THEN cast(1 as bit) WHEN ( NOT ((123 = [Extent1].[ParentNullableInt]) AND ([Extent1].[ParentNullableInt] IS NOT NULL))) THEN cast(0 as bit) END AS [C1]
+    FROM [dbo].[EfParents] AS [Extent1]
+```
+
 
 #### [Where](../TestGroup05BasicFeatures/Test05Where.cs):
 - Supported
@@ -479,8 +494,29 @@ SELECT
     )  AS [GroupBy2]
 ```
 
-- **Not Supported**
-  * Sum Count In Children Where Children Can Be None (line 47)
+  * Sum Count In Children Where Children Can Be None (line 51)
+     * T-Sql executed is
+
+```SQL
+SELECT 
+    CASE WHEN ([Project2].[C1] IS NULL) THEN 0 ELSE [Project2].[C2] END AS [C1]
+    FROM ( SELECT 
+        [Project1].[C1] AS [C1], 
+        (SELECT 
+            SUM([Extent3].[ChildInt]) AS [A1]
+            FROM [dbo].[EfChilds] AS [Extent3]
+            WHERE [Project1].[EfParentId] = [Extent3].[EfParentId]) AS [C2]
+        FROM ( SELECT 
+            [Extent1].[EfParentId] AS [EfParentId], 
+            (SELECT 
+                SUM([Extent2].[ChildInt]) AS [A1]
+                FROM [dbo].[EfChilds] AS [Extent2]
+                WHERE [Extent1].[EfParentId] = [Extent2].[EfParentId]) AS [C1]
+            FROM [dbo].[EfParents] AS [Extent1]
+        )  AS [Project1]
+    )  AS [Project2]
+```
+
 
 
 ### Group: Types
@@ -509,7 +545,7 @@ SELECT
 
 ```SQL
 SELECT 
-    CASE WHEN (cast(0 as bit) <> [Extent1].[NameOrder]) THEN [Extent1].[LastName] + N', ' + [Extent1].[FirstName] + CASE WHEN (CASE WHEN ([Extent1].[MiddleName] IS NULL) THEN N'' ELSE N' ' END IS NULL) THEN N'' WHEN ([Extent1].[MiddleName] IS NULL) THEN N'' ELSE N' ' END ELSE [Extent1].[FirstName] + CASE WHEN (CASE WHEN ([Extent1].[MiddleName] IS NULL) THEN N'' ELSE N' ' END IS NULL) THEN N'' WHEN ([Extent1].[MiddleName] IS NULL) THEN N'' ELSE N' ' END + CASE WHEN ([Extent1].[MiddleName] IS NULL) THEN N'' ELSE [Extent1].[MiddleName] END + N' ' + [Extent1].[LastName] END AS [C1]
+    CASE WHEN ([Extent1].[NameOrder] = 1) THEN [Extent1].[LastName] + N', ' + [Extent1].[FirstName] + CASE WHEN (CASE WHEN ([Extent1].[MiddleName] IS NULL) THEN N'' ELSE N' ' END IS NULL) THEN N'' WHEN ([Extent1].[MiddleName] IS NULL) THEN N'' ELSE N' ' END ELSE [Extent1].[FirstName] + CASE WHEN (CASE WHEN ([Extent1].[MiddleName] IS NULL) THEN N'' ELSE N' ' END IS NULL) THEN N'' WHEN ([Extent1].[MiddleName] IS NULL) THEN N'' ELSE N' ' END + CASE WHEN ([Extent1].[MiddleName] IS NULL) THEN N'' ELSE [Extent1].[MiddleName] END + N' ' + [Extent1].[LastName] END AS [C1]
     FROM [dbo].[EfPersons] AS [Extent1]
 ```
 

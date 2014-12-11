@@ -62,7 +62,7 @@ namespace DelegateDecompiler.Tests
             Test(expected, compiled);
         }
 
-        [Test, Ignore("Need optimization")]
+        [Test]
         public void TestEnumParameterNotEqualsEnumConstant()
         {
             Expression<Func<TestEnum, bool>> expected = x => x != TestEnum.Bar;
@@ -70,7 +70,7 @@ namespace DelegateDecompiler.Tests
             Test(expected, compiled);
         }
 
-        [Test, Ignore("Need optimization")]
+        [Test]
         public void TestEnumConstantNotEqualsEnumParameter()
         {
             Expression<Func<TestEnum, bool>> expected = x => TestEnum.Bar != x;
@@ -78,7 +78,7 @@ namespace DelegateDecompiler.Tests
             Test(expected, compiled);
         }
 
-        [Test, Ignore("Need optimization")]
+        [Test]
         public void TestEnumParametersNotEqual()
         {
             Expression<Func<TestEnum, TestEnum, bool>> expected = (x, y) => x != y;
