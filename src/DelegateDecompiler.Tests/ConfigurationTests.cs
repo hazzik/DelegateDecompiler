@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Linq.Expressions;
-using Xunit;
+using NUnit.Framework;
 
 namespace DelegateDecompiler.Tests
 {
+    [TestFixture]
     public class ConfigurationTests : IDisposable
     {
         private static readonly Func<Configuration> instanceGetter = BuildInstanceGetter();
@@ -26,15 +27,15 @@ namespace DelegateDecompiler.Tests
             instanceSetter(null);
         }
 
-        [Fact]
+        [Test]
         public void ShouldReturnDefaultConfigurationIfUnconfigured()
         {
             Assert.Null(instanceGetter());
             var instance = Configuration.Instance;
-            Assert.IsType<DefaultConfiguration>(instance);
+            Assert.IsInstanceOf<DefaultConfiguration>(instance);
         }
 
-        [Fact]
+        [Test]
         public void ShouldThrowExceptionIfAlreadyConfigured()
         {
             Assert.Null(instanceGetter());
@@ -43,14 +44,14 @@ namespace DelegateDecompiler.Tests
             Assert.Throws<InvalidOperationException>(() => Configuration.Configure(new DefaultConfiguration()));
         }
 
-        [Fact]
+        [Test]
         public void ShouldBeAbleToConfigure()
         {
             Assert.Null(instanceGetter());
             var configuration = new DefaultConfiguration();
             Configuration.Configure(configuration);
             var configured = Configuration.Instance;
-            Assert.Same(configuration, configured);
+            Assert.AreSame(configuration, configured);
         }
 
         public void Dispose()

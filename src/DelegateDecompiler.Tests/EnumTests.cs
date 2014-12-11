@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Linq.Expressions;
+using NUnit.Framework;
 using Xunit;
 
 namespace DelegateDecompiler.Tests
 {
+    [TestFixture]
     public class EnumTests : DecompilerTestsBase
     {
         public enum TestEnum
@@ -20,7 +22,7 @@ namespace DelegateDecompiler.Tests
             Bar = 2,
         }
 
-        [Fact]
+        [Test]
         public void TestEnumParameterEqualsEnumConstant()
         {
             Expression<Func<TestEnum, bool>> expected = x => x == TestEnum.Bar;
@@ -28,7 +30,7 @@ namespace DelegateDecompiler.Tests
             Test(expected, compiled);
         }
 
-        [Fact]
+        [Test]
         public void TestEnumConstantEqualsEnumParameter()
         {
             Expression<Func<TestEnum, bool>> expected = x => TestEnum.Bar == x;
@@ -36,7 +38,7 @@ namespace DelegateDecompiler.Tests
             Test(expected, compiled);
         }
 
-        [Fact]
+        [Test]
         public void TestEnumPropertyNotEqualsFooOrElseEnumPropertyEqualsBar()
         {
             Expression<Func<TestEnum, bool>> expected = x => (x != TestEnum.Bar) || (x == TestEnum.Foo);
@@ -44,7 +46,7 @@ namespace DelegateDecompiler.Tests
             Test(expected, compiled);
         }
 
-        [Fact]
+        [Test]
         public void TestEnumPropertyEqualsFooOrElseEnumPropertyEqualsBar()
         {
             Expression<Func<TestEnum, bool>> expected = x => (x == TestEnum.Bar) || (x == TestEnum.Foo);
@@ -52,7 +54,7 @@ namespace DelegateDecompiler.Tests
             Test(expected, compiled);
         }
 
-        [Fact]
+        [Test]
         public void TestEnumParametersEqual()
         {
             Expression<Func<TestEnum, TestEnum, bool>> expected = (x, y) => x == y;
@@ -60,7 +62,7 @@ namespace DelegateDecompiler.Tests
             Test(expected, compiled);
         }
 
-        [Fact(Skip = "Need optimization")]
+        [Test, Ignore("Need optimization")]
         public void TestEnumParameterNotEqualsEnumConstant()
         {
             Expression<Func<TestEnum, bool>> expected = x => x != TestEnum.Bar;
@@ -68,7 +70,7 @@ namespace DelegateDecompiler.Tests
             Test(expected, compiled);
         }
 
-        [Fact(Skip = "Need optimization")]
+        [Test, Ignore("Need optimization")]
         public void TestEnumConstantNotEqualsEnumParameter()
         {
             Expression<Func<TestEnum, bool>> expected = x => TestEnum.Bar != x;
@@ -76,7 +78,7 @@ namespace DelegateDecompiler.Tests
             Test(expected, compiled);
         }
 
-        [Fact(Skip = "Need optimization")]
+        [Test, Ignore("Need optimization")]
         public void TestEnumParametersNotEqual()
         {
             Expression<Func<TestEnum, TestEnum, bool>> expected = (x, y) => x != y;
@@ -84,7 +86,7 @@ namespace DelegateDecompiler.Tests
             Test(expected, compiled);
         }
 
-        [Fact(Skip = "Need optimization")]
+        [Test, Ignore("Need optimization")]
         public void TestEnumConstantHasFlagEnumParameter()
         {
             Expression<Func<TestFlagEnum, bool>> expected = x => TestFlagEnum.Bar.HasFlag(x);
@@ -92,7 +94,7 @@ namespace DelegateDecompiler.Tests
             Test(expected, compiled);
         }
 
-        [Fact(Skip = "Need optimization")]
+        [Test, Ignore("Need optimization")]
         public void TestEnumParameterHasFlagEnumConstant()
         {
             Expression<Func<TestFlagEnum, bool>> expected = x => x.HasFlag(TestFlagEnum.Bar);
@@ -100,7 +102,7 @@ namespace DelegateDecompiler.Tests
             Test(expected, compiled);
         }
 
-        [Fact(Skip = "Need optimization")]
+        [Test, Ignore("Need optimization")]
         public void TestEnumParameterHasFlagEnumParameter()
         {
             Expression<Func<TestFlagEnum, bool>> expected = x => x.HasFlag(TestFlagEnum.Bar);
@@ -108,7 +110,7 @@ namespace DelegateDecompiler.Tests
             Test(expected, compiled);
         }
 
-        [Fact]
+        [Test]
         public void TestEnumParameterAsMethodParameter()
         {
             Expression<Func<TestEnum, bool>> expected = x => TestEnumMethod(x);
@@ -116,7 +118,7 @@ namespace DelegateDecompiler.Tests
             Test(expected, compiled);
         }
 
-        [Fact]
+        [Test]
         public void TestEnumParameterAsMethodWithEnumParameter()
         {
             Expression<Func<TestEnum, bool>> expected = x => EnumMethod(x);
@@ -124,7 +126,7 @@ namespace DelegateDecompiler.Tests
             Test(expected, compiled);
         }
 
-        [Fact(Skip = "Need optimization")]
+        [Test, Ignore("Need optimization")]
         public void TestEnumParameterAsMethodWithObjectParameter()
         {
             Expression<Func<TestEnum, bool>> expected = x => ObjectMethod(x);
@@ -132,7 +134,7 @@ namespace DelegateDecompiler.Tests
             Test(expected, compiled);
         }
 
-        [Fact]
+        [Test]
         public void TestEnumParameterAsMethodWithInt16Parameter()
         {
             Expression<Func<TestEnum, bool>> expected = x => Int16Method((short) x);
@@ -140,7 +142,7 @@ namespace DelegateDecompiler.Tests
             Test(expected, compiled);
         }
 
-        [Fact]
+        [Test]
         public void TestEnumParameterAsMethodWithInt32Parameter()
         {
             Expression<Func<TestEnum, bool>> expected = x => Int32Method((int) x);
@@ -148,7 +150,7 @@ namespace DelegateDecompiler.Tests
             Test(expected, compiled);
         }
 
-        [Fact]
+        [Test]
         public void TestEnumParameterAsMethodWithInt64Parameter()
         {
             Expression<Func<TestEnum, bool>> expected = x => Int64Method((long) x);
@@ -156,7 +158,7 @@ namespace DelegateDecompiler.Tests
             Test(expected, compiled);
         }
 
-        [Fact]
+        [Test]
         public void TestEnumParameterAsGenericMethodParameter()
         {
             Expression<Func<TestEnum, bool>> expected = x => GenericMethod(x);
@@ -166,7 +168,7 @@ namespace DelegateDecompiler.Tests
 
         // The following tests check for the insertion of Expression.Convert in the expression tree for compatible types
 
-        [Fact]
+        [Test]
         public void TestEnumCastSubtraction()
         {
             Expression<Func<TestEnum, int>> expected = x => (int)x - 10;
@@ -174,7 +176,7 @@ namespace DelegateDecompiler.Tests
             Test(expected, compiled);
         }
 
-        [Fact]
+        [Test]
         public void TestEnumCastMod()
         {
             Expression<Func<TestEnum, int>> expected = x => (int)x % 10;
@@ -182,7 +184,7 @@ namespace DelegateDecompiler.Tests
             Test(expected, compiled);
         }
 
-        [Fact]
+        [Test]
         public void TestEnumCastEquals()
         {
             Expression<Func<TestEnum, bool>> expected = x => (int)x == 10;
@@ -190,7 +192,7 @@ namespace DelegateDecompiler.Tests
             Test(expected, compiled);
         }
 
-        [Fact]
+        [Test]
         public void TestEnumCastGreaterThan()
         {
             Expression<Func<TestEnum, bool>> expected = x => (int)x > 10;

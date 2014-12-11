@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Linq.Expressions;
-using Xunit;
+using NUnit.Framework;
 
 namespace DelegateDecompiler.Tests
 {
+    [TestFixture]
     public class ArrayTests : DecompilerTestsBase
     {
-        [Fact]
+        [Test]
         public void TestNewArray()
         {
             Expression<Func<int[]>> expected = () => new int[] { };
@@ -14,7 +15,7 @@ namespace DelegateDecompiler.Tests
             Test(expected, compiled);
         }
 
-        [Fact]
+        [Test]
         public void TestNewArray0()
         {
             Expression<Func<int[]>> expected = () => new int[0];
@@ -22,7 +23,7 @@ namespace DelegateDecompiler.Tests
             Test(expected, compiled);
         }
 
-        [Fact]
+        [Test]
         public void TestNewArrayX()
         {
             Expression<Func<int, int[]>> expected = x => new int[x];
@@ -30,7 +31,7 @@ namespace DelegateDecompiler.Tests
             Test(expected, compiled);
         }
 
-        [Fact]
+        [Test]
         public void TestNewArray1()
         {
             Expression<Func<int[]>> expected = () => new int[1];
@@ -38,7 +39,7 @@ namespace DelegateDecompiler.Tests
             Test(expected, compiled);
         }
 
-        [Fact]
+        [Test]
         public void DecompileArrayWithBounds()
         {
             Expression<Func<int[]>> expected = () => new int[10];
@@ -46,7 +47,7 @@ namespace DelegateDecompiler.Tests
             Test(expected, compiled);
         }
 
-        [Fact]
+        [Test]
         public void DecompileArrayWithInit()
         {
             Expression<Func<int[]>> expected = () => new[] { 1 };
@@ -54,7 +55,7 @@ namespace DelegateDecompiler.Tests
             Test(expected, compiled);
         }
 
-        [Fact]
+        [Test]
         public void DecompileArrayWithInit2()
         {
             Expression<Func<int[]>> expected = () => new[] { 1, 2 };
@@ -62,7 +63,7 @@ namespace DelegateDecompiler.Tests
             Test(expected, compiled);
         }
 
-        [Fact]
+        [Test]
         public void DecompileArrayOfIntWithInitFromParam()
         {
             Expression<Func<int, int[]>> expected = x => new[] { x, 2 };
@@ -70,7 +71,7 @@ namespace DelegateDecompiler.Tests
             Test(expected, compiled);
         }
 
-        [Fact]
+        [Test]
         public void DecompileArrayOfClassWithInitFromParam()
         {
             Expression<Func<TestClass, TestClass[]>> expected = x => new[] { new TestClass(), x };

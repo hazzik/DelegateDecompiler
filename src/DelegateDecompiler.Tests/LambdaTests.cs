@@ -2,13 +2,15 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using NUnit.Framework;
 using Xunit;
 
 namespace DelegateDecompiler.Tests
 {
+    [TestFixture]
     public class LambdaTest : DecompilerTestsBase
     {
-        [Fact]
+        [Test]
         public void CanUseLambda()
         {
             Expression<Func<bool>> expected = () => Enumerable.Range(1, 10).Any(i => i == 5);
@@ -16,7 +18,7 @@ namespace DelegateDecompiler.Tests
             Test(expected, compiled);
         }
 
-        [Fact]
+        [Test]
         public void CanUseTwoLambda()
         {
             Expression<Func<Dictionary<int, int>>> expected = () => Enumerable.Range(1, 10).ToDictionary(_ => _, _ => _);
@@ -24,7 +26,7 @@ namespace DelegateDecompiler.Tests
             Test(expected, compiled);
         }
 
-        [Fact]
+        [Test]
         public void CanUseConstantAndLambda()
         {
             Expression<Func<int>> expected = () => Enumerable.Range(1, 10).Aggregate(0, (acc, x) => acc + x);
@@ -32,7 +34,7 @@ namespace DelegateDecompiler.Tests
             Test(expected, compiled);
         }
 
-        [Fact]
+        [Test]
         public void CanUseLambdaAndConstant()
         {
             Expression<Func<IOrderedEnumerable<int>>> expected = () => Enumerable.Range(1, 10).OrderBy(x => x, Comparer<int>.Default);
@@ -40,7 +42,7 @@ namespace DelegateDecompiler.Tests
             Test(expected, compiled);
         }
 
-        [Fact]
+        [Test]
         public void CanUseLambdaInLambda()
         {
             Expression<Func<IEnumerable<int>>> expected =
@@ -50,7 +52,7 @@ namespace DelegateDecompiler.Tests
             Test(expected, compiled);
         }
 
-        [Fact]
+        [Test]
         public void CanUseLambdaAndNullParameter()
         {
             Expression<Func<IOrderedEnumerable<int>>> expected = () => Enumerable.Range(1, 10).OrderBy(x => x, null);

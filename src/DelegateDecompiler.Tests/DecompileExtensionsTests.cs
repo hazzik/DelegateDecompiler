@@ -1,13 +1,15 @@
 ﻿using System;
 using System.Globalization;
 using System.Linq.Expressions;
+using NUnit.Framework;
 using Xunit;
 
 namespace DelegateDecompiler.Tests
 {
+    [TestFixture]
     public class DecompileExtensionsTests : DecompilerTestsBase
     {
-        [Fact]
+        [Test]
         public void ShouldBeAbleToDecompileExpression()
         {
             Expression<Func<object, object>> expected = o => o;
@@ -15,7 +17,7 @@ namespace DelegateDecompiler.Tests
             Test(expected, compiled);
         }
 
-        [Fact]
+        [Test]
         public void ShouldBeAbleToDecompileExpressionWithAdd()
         {
             Expression<Func<int, int, int>> expected = (x, y) => x + y;
@@ -23,7 +25,7 @@ namespace DelegateDecompiler.Tests
             Test(expected, compiled);
         }
 
-        [Fact]
+        [Test]
         public void ShouldBeAbleToDecompileExpressionWithRem()
         {
             Expression<Func<int, int, int>> expected = (x, y) => x % y;
@@ -31,7 +33,7 @@ namespace DelegateDecompiler.Tests
             Test(expected, compiled);
         }
         
-        [Fact]
+        [Test]
         public void ShouldBeAbleToDecompileExpressionWithXor()
         {
             Expression<Func<int, int, int>> expected = (x, y) => x ^ y;
@@ -39,7 +41,7 @@ namespace DelegateDecompiler.Tests
             Test(expected, compiled);
         }
         
-        [Fact]
+        [Test]
         public void ShouldBeAbleToDecompileExpressionWithShl()
         {
             Expression<Func<int, int, int>> expected = (x, y) => x << (y & 31);
@@ -47,7 +49,7 @@ namespace DelegateDecompiler.Tests
             Test(expected, compiled);
         }
 
-        [Fact]
+        [Test]
         public void ShouldBeAbleToDecompileExpressionWithShr()
         {
             Expression<Func<int, int, int>> expected = (x, y) => x >> (y & 31);
@@ -55,7 +57,7 @@ namespace DelegateDecompiler.Tests
             Test(expected, compiled);
         }
 
-        [Fact]
+        [Test]
         public void ShouldBeAbleToDecompileExpressionWithNeg()
         {
             Expression<Func<int, int>> expected = x => -x;
@@ -63,7 +65,7 @@ namespace DelegateDecompiler.Tests
             Test(expected, compiled);
         }
 
-        [Fact(Skip = "Code is optimized")]
+        [Test, Ignore("Code is optimized")]
         public void ShouldBeAbleToDecompileExpressionWithNot()
         {
             Expression<Func<bool, bool>> expected = x => !x;
@@ -71,7 +73,7 @@ namespace DelegateDecompiler.Tests
             Test(expected, compiled);
         }
 
-        [Fact]
+        [Test]
         public void ShouldBeAbleToDecompileExpressionWithCastClass()
         {
             Expression<Func<object, DecompileExtensionsTests>> expected = x => (DecompileExtensionsTests) x;
@@ -79,7 +81,7 @@ namespace DelegateDecompiler.Tests
             Test(expected, compiled);
         }
 
-        [Fact]
+        [Test]
         public void ShouldBeAbleToDecompileExpressionWithLdLen()
         {
             Expression<Func<int[], int>> expected = x => (int) x.Length;
@@ -87,7 +89,7 @@ namespace DelegateDecompiler.Tests
             Test(expected, compiled);
         }
 
-        [Fact]
+        [Test]
         public void ShouldBeAbleToDecompileExpressionWithLdElemI4()
         {
             Expression<Func<int[], int>> expected = x => x[0];
@@ -95,7 +97,7 @@ namespace DelegateDecompiler.Tests
             Test(expected, compiled);
         }
 
-        [Fact]
+        [Test]
         public void ShouldBeAbleToDecompileExpressionWithLdElemU1()
         {
             Expression<Func<byte[], int>> expected = x => x[0];
@@ -103,7 +105,7 @@ namespace DelegateDecompiler.Tests
             Test(expected, compiled);
         }
 
-        [Fact]
+        [Test]
         public void ShouldBeAbleToDecompileExpressionWithLdElemRef()
         {
             Expression<Func<object[], object>> expected = x => x[0];
@@ -111,7 +113,7 @@ namespace DelegateDecompiler.Tests
             Test(expected, compiled);
         }
 
-        [Fact]
+        [Test]
         public void ShouldBeAbleToDecompileExpressionWithAddConstant()
         {
             Expression<Func<int, int>> expected = x => x + 1;
@@ -119,7 +121,7 @@ namespace DelegateDecompiler.Tests
             Test(expected, compiled);
         }
 
-        [Fact]
+        [Test]
         public void ShouldBeAbleToDecompileExpressionWithAddConstant127()
         {
             Expression<Func<int, int>> expected = x => x + 127;
@@ -127,7 +129,7 @@ namespace DelegateDecompiler.Tests
             Test(expected, compiled);
         }
 
-        [Fact]
+        [Test]
         public void ShouldBeAbleToDecompileExpressionWithAddConstant128()
         {
             Expression<Func<int, int>> expected = x => x + 128;
@@ -135,7 +137,7 @@ namespace DelegateDecompiler.Tests
             Test(expected, compiled);
         }
 
-        [Fact]
+        [Test]
         public void ShouldBeAbleToDecompileExpressionWithAddConstant65535()
         {
             Expression<Func<int, int>> expected = x => x + 65535;
@@ -143,7 +145,7 @@ namespace DelegateDecompiler.Tests
             Test(expected, compiled);
         }
 
-        [Fact]
+        [Test]
         public void ShouldBeAbleToDecompileExpressionWithSubstract()
         {
             Expression<Func<int, int, int>> expected = (x, y) => x - y;
@@ -151,7 +153,7 @@ namespace DelegateDecompiler.Tests
             Test(expected, compiled);
         }
 
-        [Fact]
+        [Test]
         public void ShouldBeAbleToDecompileExpressionWithMul()
         {
             Expression<Func<int, int, int>> expected = (x, y) => x * y;
@@ -159,7 +161,7 @@ namespace DelegateDecompiler.Tests
             Test(expected, compiled);
         }
 
-        [Fact]
+        [Test]
         public void ShouldBeAbleToDecompileExpressionWithDiv()
         {
             Expression<Func<int, int, int>> expected = (x, y) => x / y;
@@ -167,7 +169,7 @@ namespace DelegateDecompiler.Tests
             Test(expected, compiled);
         }
 
-        [Fact]
+        [Test]
         public void ShouldBeAbleToDecompileExpressionWithBitwiseAnd()
         {
             Expression<Func<int, int, int>> expected = (x, y) => x & y;
@@ -175,7 +177,7 @@ namespace DelegateDecompiler.Tests
             Test(expected, compiled);
         }
 
-        [Fact]
+        [Test]
         public void ShouldBeAbleToDecompileExpressionWithBitwiseOr()
         {
             Expression<Func<int, int, int>> expected = (x, y) => x | y;
@@ -183,7 +185,7 @@ namespace DelegateDecompiler.Tests
             Test(expected, compiled);
         }
 
-        [Fact]
+        [Test]
         public void ShouldBeAbleToDecompileExpressionWithBoxing()
         {
             Expression<Func<int, object>> expected = x => x;
@@ -191,7 +193,7 @@ namespace DelegateDecompiler.Tests
             Test(expected, compiled);
         }
 
-        [Fact]
+        [Test]
         public void ShouldBeAbleToDecompileExpressionWithMethodCall()
         {
             Expression<Func<int, int, int>> expected = (x, y) => Add(x, y);
@@ -199,7 +201,7 @@ namespace DelegateDecompiler.Tests
             Test(expected, compiled);
         }
         
-        [Fact]
+        [Test]
         public void ShouldBeAbleToDecompileExpressionWithInstanceMethodCall()
         {
             Expression<Func<int, string>> expected = x => x.ToString();
@@ -207,7 +209,7 @@ namespace DelegateDecompiler.Tests
             Test(expected, compiled);
         }
 
-        [Fact]
+        [Test]
         public void ShouldBeAbleToDecompileExpressionWithInstanceMethodCallWithArguments()
         {
             Expression<Func<int, CultureInfo, string>> expected = (x, culture) => x.ToString(culture);
@@ -215,7 +217,7 @@ namespace DelegateDecompiler.Tests
             Test(expected, compiled);
         }
 
-        [Fact]
+        [Test]
         public void ShouldBeAbleToDecompileExpressionWithInstanceMethodCallWithArguments2()
         {
             Expression<Func<int, string>> expected = x => x.ToString(CultureInfo.InvariantCulture);
@@ -223,7 +225,7 @@ namespace DelegateDecompiler.Tests
             Test(expected, compiled);
         }
 
-        [Fact]
+        [Test]
         public void ShouldBeAbleToDecompileExpressionWithInstancePropertyCall()
         {
             Expression<Func<int?, bool>> expected = x => x.HasValue;
@@ -231,7 +233,7 @@ namespace DelegateDecompiler.Tests
             Test(expected, compiled);
         }
 
-        [Fact]
+        [Test]
         public void ShouldBeAbleToDecompileExpressionWithCastIntToLong()
         {
             Expression<Func<int, long>> expected = x => x;
@@ -239,7 +241,7 @@ namespace DelegateDecompiler.Tests
             Test(expected, compiled);
         }
 
-        [Fact]
+        [Test]
         public void ShouldBeAbleToDecompileExpressionWithCastIntToSbyte()
         {
             Expression<Func<sbyte, int>> expected = x => x;
@@ -247,7 +249,7 @@ namespace DelegateDecompiler.Tests
             Test(expected, compiled);
         }
 
-        [Fact]
+        [Test]
         public void DateGeDateTimeNow()
         {
             Expression<Func<TestClass, bool>> expected = x => x.StartDate >= DateTime.Now;
@@ -255,7 +257,7 @@ namespace DelegateDecompiler.Tests
             Test(expected, compiled);
         }
 
-        [Fact]
+        [Test]
         public void DateLeDateTimeNow()
         {
             Expression<Func<TestClass, bool>> expected = x => x.EndDate.GetValueOrDefault() <= DateTime.Now;
@@ -263,7 +265,7 @@ namespace DelegateDecompiler.Tests
             Test(expected, compiled);
         }
 
-        [Fact]
+        [Test]
         public void NewObject()
         {
             Expression<Func<TestClass>> expected = () => new TestClass();
@@ -271,7 +273,7 @@ namespace DelegateDecompiler.Tests
             Test(expected, compiled);
         }
 
-        [Fact]
+        [Test]
         public void ShouldBeAbleToDecompileStringConcat2()
         {
             Expression<Func<string, string, string>> expression = (x, y) => x + y;
@@ -279,7 +281,7 @@ namespace DelegateDecompiler.Tests
             Test(expression, compiled);
         }
 
-        [Fact]
+        [Test]
         public void ShouldBeAbleToDecompileStringConcat3()
         {
             Expression<Func<string, string, string, string>> expression = (x, y, z) => x + y + z;

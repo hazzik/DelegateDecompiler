@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Linq;
-using Xunit;
+using NUnit.Framework;
 
 namespace DelegateDecompiler.Tests
 {
+    [TestFixture]
     public class QueryableExtensionsTests
     {
-        [Fact]
+        [Test]
         public void InlinePropertyWithoutAttribute()
         {
             var employees = new[] { new Employee { FirstName = "Test", LastName = "User" } };
@@ -19,10 +20,10 @@ namespace DelegateDecompiler.Tests
                           where employee.FullNameWithoutAttribute.Computed() == "Test User"
                           select employee).Decompile();
 
-            Assert.Equal(expected.Expression.ToString(), actual.Expression.ToString());
+            Assert.AreEqual(expected.Expression.ToString(), actual.Expression.ToString());
         }
 
-        [Fact]
+        [Test]
         public void InlineProperty()
         {
             var employees = new[] { new Employee { FirstName = "Test", LastName = "User" } };
@@ -35,10 +36,10 @@ namespace DelegateDecompiler.Tests
                           where employee.FullName == "Test User"
                           select employee).Decompile();
 
-            Assert.Equal(expected.Expression.ToString(), actual.Expression.ToString());
+            Assert.AreEqual(expected.Expression.ToString(), actual.Expression.ToString());
         }
         
-        [Fact]
+        [Test]
         public void InlinePropertyOrderBy()
         {
             var employees = new[] { new Employee { FirstName = "Test", LastName = "User" } };
@@ -53,10 +54,10 @@ namespace DelegateDecompiler.Tests
                           orderby employee.FullName
                           select employee);
 
-            Assert.Equal(expected.Expression.ToString(), actual.Expression.ToString());
+            Assert.AreEqual(expected.Expression.ToString(), actual.Expression.ToString());
         }
 
-        [Fact]
+        [Test]
         public void InlinePropertyOrderByThenBy()
         {
             var employees = new[] { new Employee { FirstName = "Test", LastName = "User" } };
@@ -71,10 +72,10 @@ namespace DelegateDecompiler.Tests
                           orderby employee.FullName 
                           select employee).ThenBy(x => x.IsActive);
 
-            Assert.Equal(expected.Expression.ToString(), actual.Expression.ToString());
+            Assert.AreEqual(expected.Expression.ToString(), actual.Expression.ToString());
         }
        
-        [Fact]
+        [Test]
         public void InlineBooleanProperty()
         {
             var employees = new[] { new Employee { FirstName = "Test", LastName = "User" } };
@@ -87,10 +88,10 @@ namespace DelegateDecompiler.Tests
                           where employee.IsActive
                           select employee).Decompile();
 
-            Assert.Equal(expected.Expression.ToString(), actual.Expression.ToString());
+            Assert.AreEqual(expected.Expression.ToString(), actual.Expression.ToString());
         }
 
-        [Fact]
+        [Test]
         public void TestLdflda()
         {
             var employees = new[] { new Employee { FirstName = "Test", LastName = "User" } };
@@ -103,10 +104,10 @@ namespace DelegateDecompiler.Tests
                 where employee.Count == 0
                 select employee).Decompile();
 
-            Assert.Equal(expected.Expression.ToString(), actual.Expression.ToString());
+            Assert.AreEqual(expected.Expression.ToString(), actual.Expression.ToString());
         }
 
-        [Fact]
+        [Test]
         public void InlineTooDeepProperty()
         {
             var employees = new[] { new Employee { FirstName = "Test", LastName = "User" } };
@@ -119,10 +120,10 @@ namespace DelegateDecompiler.Tests
                           where employee.TooDeepName == "Test User"
                           select employee).Decompile();
 
-            Assert.Equal(expected.Expression.ToString(), actual.Expression.ToString());
+            Assert.AreEqual(expected.Expression.ToString(), actual.Expression.ToString());
         }
 
-        [Fact]
+        [Test]
         public void InlinePropertyWithVariableClosure()
         {
             var employees = new[] { new Employee { FirstName = "Test", LastName = "User" } };
@@ -137,10 +138,10 @@ namespace DelegateDecompiler.Tests
                           select employee).Decompile();
 
             Console.WriteLine(expected);
-            Assert.Equal(expected.Expression.ToString(), actual.Expression.ToString());
+            Assert.AreEqual(expected.Expression.ToString(), actual.Expression.ToString());
         }
 
-        [Fact]
+        [Test]
         public void InlineMethod()
         {
             var employees = new[] { new Employee { FirstName = "Test", LastName = "User" } };
@@ -153,10 +154,10 @@ namespace DelegateDecompiler.Tests
                           where employee.FullNameMethod() == "Test User"
                           select employee).Decompile();
 
-            Assert.Equal(expected.Expression.ToString(), actual.Expression.ToString());
+            Assert.AreEqual(expected.Expression.ToString(), actual.Expression.ToString());
         }
 
-        [Fact]
+        [Test]
         public void InlineMethodWithArg()
         {
             var employees = new[] { new Employee { FirstName = "Test", LastName = "User" } };
@@ -169,10 +170,10 @@ namespace DelegateDecompiler.Tests
                           where employee.FullNameMethod("Mr ") == "Mr Test User"
                           select employee).Decompile();
 
-            Assert.Equal(expected.Expression.ToString(), actual.Expression.ToString());
+            Assert.AreEqual(expected.Expression.ToString(), actual.Expression.ToString());
         }
 
-        [Fact]
+        [Test]
         public void InlineMethodWithTwoArgs()
         {
             var employees = new[] { new Employee { FirstName = "Test", LastName = "User" } };
@@ -185,7 +186,7 @@ namespace DelegateDecompiler.Tests
                           where employee.FullNameMethod("Mr ", " Jr.") == "Mr Test User Jr."
                           select employee).Decompile();
 
-            Assert.Equal(expected.Expression.ToString(), actual.Expression.ToString());
+            Assert.AreEqual(expected.Expression.ToString(), actual.Expression.ToString());
         }
     }
 }

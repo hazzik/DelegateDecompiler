@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Linq.Expressions;
-using Xunit;
+using NUnit.Framework;
 
 namespace DelegateDecompiler.Tests
 {
+    [TestFixture]
     public class ComparisonTests : DecompilerTestsBase
     {
-        [Fact]
+        [Test]
         public void Ceq()
         {
             Expression<Func<int, int, bool>> expected = (x, y) => x == y;
@@ -14,7 +15,7 @@ namespace DelegateDecompiler.Tests
             Test(expected, compiled);
         }
 
-        [Fact]
+        [Test]
         public void Cgt()
         {
             Expression<Func<int, int, bool>> expected = (x, y) => x > y;
@@ -22,7 +23,7 @@ namespace DelegateDecompiler.Tests
             Test(expected, compiled);
         }
 
-        [Fact]
+        [Test]
         public void Bgt()
         {
             Expression<Func<int, int, int>> expected = (x, y) => x > y ? x : y;
@@ -30,7 +31,7 @@ namespace DelegateDecompiler.Tests
             Test(expected, compiled);
         }
 
-        [Fact]
+        [Test]
         public void Cge()
         {
             Expression<Func<int, int, bool>> expected = (x, y) => x >= y;
@@ -38,7 +39,7 @@ namespace DelegateDecompiler.Tests
             Test(expected, compiled);
         }
 
-        [Fact]
+        [Test]
         public void Bge()
         {
             Expression<Func<int, int, int>> expected = (x, y) => x >= y ? x : y;
@@ -46,7 +47,7 @@ namespace DelegateDecompiler.Tests
             Test(expected, compiled);
         }
 
-        [Fact]
+        [Test]
         public void Clt()
         {
             Expression<Func<int, int, bool>> expected = (x, y) => x < y;
@@ -54,7 +55,7 @@ namespace DelegateDecompiler.Tests
             Test(expected, compiled);
         }
 
-        [Fact]
+        [Test]
         public void Blt()
         {
             Expression<Func<int, int, int>> expected = (x, y) => x < y ? x : y;
@@ -62,7 +63,7 @@ namespace DelegateDecompiler.Tests
             Test(expected, compiled);
         }
 
-        [Fact]
+        [Test]
         public void Cle()
         {
             Expression<Func<int, int, bool>> expected = (x, y) => x <= y;
@@ -70,7 +71,7 @@ namespace DelegateDecompiler.Tests
             Test(expected, compiled);
         }
 
-        [Fact]
+        [Test]
         public void Ble()
         {
             Expression<Func<int, int, int>> expected = (x, y) => x <= y ? x : y;
@@ -78,7 +79,7 @@ namespace DelegateDecompiler.Tests
             Test(expected, compiled);
         }
 
-        [Fact]
+        [Test]
         public void Bne()
         {
             Expression<Func<int, int, int>> expected = (x, y) => x != y ? x : y;
@@ -86,7 +87,7 @@ namespace DelegateDecompiler.Tests
             Test(expected, compiled);
         }
 
-        [Fact]
+        [Test]
         public void Beq()
         {
             Expression<Func<int, int, int>> expected = (x, y) => x == y ? x : y;

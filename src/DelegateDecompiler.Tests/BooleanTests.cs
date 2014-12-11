@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Linq.Expressions;
-
-using Xunit;
+using NUnit.Framework;
 
 namespace DelegateDecompiler.Tests
 {
+    [TestFixture]
     public class BooleanTests : DecompilerTestsBase
     {
-        [Fact]
+        [Test]
         public void ExpressionWithBoolean()
         {
             Expression<Func<string>> expected = () => Method1(true);
@@ -15,7 +15,7 @@ namespace DelegateDecompiler.Tests
             Test(expected, compiled);
         }
 
-        [Fact]
+        [Test]
         public void ExpressionWithBoolean2()
         {
             Expression<Func<string>> expected = () => true.ToString();
@@ -23,7 +23,7 @@ namespace DelegateDecompiler.Tests
             Test(expected, compiled);
         }
 
-        [Fact]
+        [Test]
         public void ExpressionWithBoolean3()
         {
             Expression<Func<bool,string>> expected = x => x.ToString();

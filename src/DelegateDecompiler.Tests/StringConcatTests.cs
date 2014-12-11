@@ -1,12 +1,14 @@
 ﻿using System;
 using System.Linq.Expressions;
+using NUnit.Framework;
 using Xunit;
 
 namespace DelegateDecompiler.Tests
 {
+    [TestFixture]
     public class StringConcatTests : DecompilerTestsBase
     {
-        [Fact]
+        [Test]
         public void StringConcat()
         {
             Expression<Func<string, string, string, string, string>> expected = (w, x, y, z) => w + " " + x + " " + y + " " + z;
@@ -14,7 +16,7 @@ namespace DelegateDecompiler.Tests
             Test(expected, compiled);
         } 
 
-        [Fact]
+        [Test]
         public void StringConcatSingleArg()
         {
             Expression<Func<object, string>> expected = x => string.Concat(x);
@@ -22,7 +24,7 @@ namespace DelegateDecompiler.Tests
             Test(expected, compiled);
         } 
 
-        [Fact]
+        [Test]
         public void StringConcatSingleArgParams()
         {
             Expression<Func<string, string>> expected = x => string.Concat(x);

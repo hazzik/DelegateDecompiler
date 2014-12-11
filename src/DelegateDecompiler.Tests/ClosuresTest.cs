@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Linq.Expressions;
+using NUnit.Framework;
 using Xunit;
 
 namespace DelegateDecompiler.Tests
 {
+    [TestFixture]
     public class ClosuresTest : DecompilerTestsBase
     {
         const string Skip = "Compiler builds expression and delegate in case of closures in different ways";
@@ -14,7 +16,7 @@ namespace DelegateDecompiler.Tests
         readonly TestClass instanceTestClass = new TestClass();
         readonly static TestClass staticTestClass = new TestClass();
 
-        [Fact(Skip = Skip)]
+        [Test, Ignore(Skip)]
         public void CanUseVariableClosure()
         {
             int x = 0;
@@ -23,7 +25,7 @@ namespace DelegateDecompiler.Tests
             Test(expected, compiled);
         } 
 
-        [Fact(Skip = Skip)]
+        [Test, Ignore(Skip)]
         public void CanUseFieldClosure()
         {
             Expression<Func<object, int>> expected = o => y;
@@ -31,7 +33,7 @@ namespace DelegateDecompiler.Tests
             Test(expected, compiled);
         }
  
-        [Fact]
+        [Test]
         public void CanUseStaticFieldClosure()
         {
             Expression<Func<object, int>> expected = o => z;
@@ -39,7 +41,7 @@ namespace DelegateDecompiler.Tests
             Test(expected, compiled);
         }
  
-        [Fact(Skip = Skip)]
+        [Test, Ignore(Skip)]
         public void CanUseFieldAndVariableClosures()
         {
             int x = 0;
@@ -48,7 +50,7 @@ namespace DelegateDecompiler.Tests
             Test(expected, compiled);
         } 
  
-        [Fact(Skip = Skip)]
+        [Test, Ignore(Skip)]
         public void CanUseFieldAndStaticFieldAndVariableClosures()
         {
             int x = 0;
@@ -57,7 +59,7 @@ namespace DelegateDecompiler.Tests
             Test(expected, compiled);
         } 
 
-        [Fact(Skip = Skip)]
+        [Test, Ignore(Skip)]
         public void CanUseRefVariableClosure()
         {
             var x = new TestClass();
@@ -66,7 +68,7 @@ namespace DelegateDecompiler.Tests
             Test(expected, compiled);
         } 
 
-        [Fact(Skip = Skip)]
+        [Test, Ignore(Skip)]
         public void CanUseRefFieldClosure()
         {
             Expression<Func<object, TestClass>> expected = o => instanceTestClass;
@@ -74,7 +76,7 @@ namespace DelegateDecompiler.Tests
             Test(expected, compiled);
         }
  
-        [Fact]
+        [Test]
         public void CanUseRefStaticFieldClosure()
         {
             Expression<Func<object, int>> expected = o => z;
@@ -82,7 +84,7 @@ namespace DelegateDecompiler.Tests
             Test(expected, compiled);
         }
  
-        [Fact(Skip = Skip)]
+        [Test, Ignore(Skip)]
         public void CanUseRefFieldAndVariableClosures()
         {
             var x = new TestClass();
@@ -91,7 +93,7 @@ namespace DelegateDecompiler.Tests
             Test(expected, compiled);
         } 
  
-        [Fact(Skip = Skip)]
+        [Test, Ignore(Skip)]
         public void CanUseRefFieldAndStaticFieldAndVariableClosures()
         {
             var x = new TestClass();

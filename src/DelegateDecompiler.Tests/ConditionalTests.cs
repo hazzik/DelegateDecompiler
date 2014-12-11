@@ -1,12 +1,14 @@
 ﻿using System;
 using System.Linq.Expressions;
+using NUnit.Framework;
 using Xunit;
 
 namespace DelegateDecompiler.Tests
 {
+    [TestFixture]
     public class ConditionalTests : DecompilerTestsBase
     {
-        [Fact]
+        [Test]
         public void SimpleAndAlso()
         {
             Expression<Func<Employee, bool>> expected = e => e.FirstName != null && e.FirstName.Contains("Test");
@@ -14,7 +16,7 @@ namespace DelegateDecompiler.Tests
             Test(expected, compiled);
         }
 
-        [Fact]
+        [Test]
         public void SimpleIif()
         {
             Expression<Func<Employee, string>> expected = e => e.FirstName != null ? e.FirstName : e.LastName;
@@ -22,7 +24,7 @@ namespace DelegateDecompiler.Tests
             Test(expected, compiled);
         }
 
-        [Fact]
+        [Test]
         public void SimpleIif2()
         {
             Expression<Func<Employee, string>> expected = e => e.FirstName == null ? e.LastName : e.FirstName;
@@ -30,7 +32,7 @@ namespace DelegateDecompiler.Tests
             Test(expected, compiled);
         }
 
-        [Fact]
+        [Test]
         public void SimpleCoalesce2()
         {
             Expression<Func<Employee, string>> expected = e => e.FirstName ?? e.LastName;
@@ -38,7 +40,7 @@ namespace DelegateDecompiler.Tests
             Test(expected, compiled);
         }
 
-        [Fact]
+        [Test]
         public void SimpleOrElse()
         {
             Expression<Func<Employee, bool>> expected = e => e.FirstName == null || e.FirstName.Contains("Test");
@@ -46,7 +48,7 @@ namespace DelegateDecompiler.Tests
             Test(expected, compiled);
         }
 
-        [Fact]
+        [Test]
         public void SimpleCoalesce()
         {
             Expression<Func<Employee, bool>> expected = e => (e.FirstName ?? string.Empty).Contains("Test");
@@ -54,7 +56,7 @@ namespace DelegateDecompiler.Tests
             Test(expected, compiled);
         }
 
-        [Fact]
+        [Test]
         public void AndLessThanOrEqual()
         {
             Expression<Func<Employee, int, bool>> expected = (e, p) => e.From <= p && p < e.To;
@@ -62,7 +64,7 @@ namespace DelegateDecompiler.Tests
             Test(expected, compiled);
         }
 
-        [Fact]
+        [Test]
         public void AndLessThan()
         {
             Expression<Func<Employee, int, bool>> expected = (e, p) => e.From < p && p < e.To;
@@ -70,7 +72,7 @@ namespace DelegateDecompiler.Tests
             Test(expected, compiled);
         }
 
-        [Fact]
+        [Test]
         public void AndGreaterThanOrEqual()
         {
             Expression<Func<Employee, int, bool>> expected = (e, p) => e.From >= p && p < e.To;
@@ -78,7 +80,7 @@ namespace DelegateDecompiler.Tests
             Test(expected, compiled);
         }
 
-        [Fact]
+        [Test]
         public void AndGreaterThan()
         {
             Expression<Func<Employee, int, bool>> expected = (e, p) => e.From > p && p < e.To;
@@ -86,7 +88,7 @@ namespace DelegateDecompiler.Tests
             Test(expected, compiled);
         }
 
-        [Fact]
+        [Test]
         public void AndEqual()
         {
             Expression<Func<Employee, int, bool>> expected = (e, p) => e.From == p && p < e.To;
@@ -94,7 +96,7 @@ namespace DelegateDecompiler.Tests
             Test(expected, compiled);
         }
 
-        [Fact]
+        [Test]
         public void AndNotEqual()
         {
             Expression<Func<Employee, int, bool>> expected = (e, p) => e.From != p && p < e.To;
@@ -103,7 +105,7 @@ namespace DelegateDecompiler.Tests
         }
 
 
-        [Fact]
+        [Test]
         public void OrLessThanOrEqual()
         {
             Expression<Func<Employee, int, bool>> expected = (e, p) => e.From <= p || p < e.To;
@@ -111,7 +113,7 @@ namespace DelegateDecompiler.Tests
             Test(expected, compiled);
         }
 
-        [Fact]
+        [Test]
         public void OrLessThan()
         {
             Expression<Func<Employee, int, bool>> expected = (e, p) => e.From < p || p < e.To;
@@ -119,7 +121,7 @@ namespace DelegateDecompiler.Tests
             Test(expected, compiled);
         }
 
-        [Fact]
+        [Test]
         public void OrGreaterThanOrEqual()
         {
             Expression<Func<Employee, int, bool>> expected = (e, p) => e.From >= p || p < e.To;
@@ -127,7 +129,7 @@ namespace DelegateDecompiler.Tests
             Test(expected, compiled);
         }
 
-        [Fact]
+        [Test]
         public void OrGreaterThan()
         {
             Expression<Func<Employee, int, bool>> expected = (e, p) => e.From > p || p < e.To;
@@ -135,7 +137,7 @@ namespace DelegateDecompiler.Tests
             Test(expected, compiled);
         }
 
-        [Fact]
+        [Test]
         public void OrEqual()
         {
             Expression<Func<Employee, int, bool>> expected = (e, p) => e.From == p || p < e.To;
@@ -143,7 +145,7 @@ namespace DelegateDecompiler.Tests
             Test(expected, compiled);
         }
 
-        [Fact]
+        [Test]
         public void OrNotEqual()
         {
             Expression<Func<Employee, int, bool>> expected = (e, p) => e.From != p || p < e.To;
@@ -151,7 +153,7 @@ namespace DelegateDecompiler.Tests
             Test(expected, compiled);
         }
 
-        [Fact]
+        [Test]
         public void NullableCoalesce()
         {
             Expression<Func<int?, bool>> expected = e => (e ?? 100) == 100;
@@ -159,7 +161,7 @@ namespace DelegateDecompiler.Tests
             Test(expected, compiled);
         }
 
-        [Fact]
+        [Test]
         public void TwoIifs()
         {
             Expression<Func<Employee, bool>> expected = e => e.FirstName != null && (e.FirstName.Contains("Test") && !e.IsBlocked);
@@ -167,7 +169,7 @@ namespace DelegateDecompiler.Tests
             Test(expected, compiled);
         }
 
-        [Fact(Skip = "Need optimization for Boolean")]
+        [Test, Ignore("Need optimization for Boolean")]
         public void TwoIifs2()
         {
             Expression<Func<Employee, string, bool>> expected = (u, term) => (u.FirstName != null && (u.FirstName.Contains(term) || term.Contains(u.FirstName))) && !u.IsBlocked;

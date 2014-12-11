@@ -1,13 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
+using NUnit.Framework;
 using Xunit;
 
 namespace DelegateDecompiler.Tests
 {
-    public class ListInitTests:DecompilerTestsBase
+    [TestFixture]
+    public class ListInitTests : DecompilerTestsBase
     {
-        [Fact]
+        [Test]
         public void NewListOfIntWithInitializationTest()
         {
             Expression<Func<List<int>>> expression = () => new List<int> { 1 };
@@ -15,7 +17,7 @@ namespace DelegateDecompiler.Tests
             Test(expression, compiled);
         }
 
-        [Fact]
+        [Test]
         public void NewListOfIntWithInitialization2Test()
         {
             Expression<Func<List<int>>> expression = () => new List<int> { 1, 2 };
@@ -23,7 +25,7 @@ namespace DelegateDecompiler.Tests
             Test(expression, compiled);
         }
 
-        [Fact]
+        [Test]
         public void NewListOfIntWithInitialization3Test()
         {
             Expression<Func<List<int>>> expression = () => new List<int> { 1, 2, 3 };
@@ -31,7 +33,7 @@ namespace DelegateDecompiler.Tests
             Test(expression, compiled);
         }
 
-        [Fact]
+        [Test]
         public void NewDictionaryWithInitializationTest()
         {
             Expression<Func<Dictionary<int, int>>> expression = () => new Dictionary<int, int> { { 1, 2 }, { 3, 4 } };
@@ -39,7 +41,7 @@ namespace DelegateDecompiler.Tests
             Test(expression, compiled);
         }
 
-        [Fact]
+        [Test]
         public void NewTestClassWithInitializationTest()
         {
             Expression<Func<TestClass>> expression = () => new TestClass { { DateTime.Now, DateTime.Now } };

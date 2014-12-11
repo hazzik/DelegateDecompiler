@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq.Expressions;
+using NUnit.Framework;
 using Xunit;
 
 namespace DelegateDecompiler.Tests
@@ -19,8 +20,8 @@ namespace DelegateDecompiler.Tests
             //Double cast required as we can not convert T to Delegate directly
             var decompiled = ((Delegate) ((object) compiled)).Decompile();
 
-            Assert.Equal(expected.ToString(), decompiled.ToString());
-            Assert.Equal(debugView(expected), debugView(decompiled));
+            Assert.AreEqual(expected.ToString(), decompiled.ToString());
+            Assert.AreEqual(debugView(expected), debugView(decompiled));
         }
     }
 }

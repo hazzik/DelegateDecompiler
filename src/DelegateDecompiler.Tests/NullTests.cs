@@ -1,12 +1,14 @@
 ﻿using System;
 using System.Linq.Expressions;
+using NUnit.Framework;
 using Xunit;
 
 namespace DelegateDecompiler.Tests
 {
+    [TestFixture]
     public class NullTests : DecompilerTestsBase
     {
-        [Fact]
+        [Test]
         public void ExpressionWithNull()
         {
             Expression<Func<string>> expected = () => null;
@@ -14,7 +16,7 @@ namespace DelegateDecompiler.Tests
             Test(expected, compiled);
         }
         
-        [Fact]
+        [Test]
         public void ExpressionStringEqualsNull()
         {
             Expression<Func<string, bool>> expected = x => x.Equals(null);
@@ -22,14 +24,14 @@ namespace DelegateDecompiler.Tests
             Test(expected, compiled);
         }
 
-        [Fact]
+        [Test]
         public void ExpressionWithNullable()
         {
             Expression<Func<int, int?>> expected = x => (int?)x;
             Func<int, int?> compiled = x => (int?)x;
             Test(expected, compiled);
         }
-        [Fact]
+        [Test]
         public void ExpressionWithNullable2()
         {
             Expression<Func<int?, int>> expected = x => x ?? 0;
