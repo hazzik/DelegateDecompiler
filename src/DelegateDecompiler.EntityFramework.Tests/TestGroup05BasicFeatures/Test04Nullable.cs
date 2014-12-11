@@ -3,6 +3,7 @@
 using System.Linq;
 using DelegateDecompiler.EntityFramework.Tests.Helpers;
 using NUnit.Framework;
+using System;
 
 namespace DelegateDecompiler.EntityFramework.Tests.TestGroup05BasicFeatures
 {
@@ -63,6 +64,23 @@ namespace DelegateDecompiler.EntityFramework.Tests.TestGroup05BasicFeatures
                 //ATTEMPT
                 env.AboutToUseDelegateDecompiler();
                 var dd = env.Db.EfParents.Select(x => x.ParentNullableIntEqualsConstant).Decompile().ToList();
+
+                //VERIFY
+                env.CompareAndLogList(linq, dd);
+            }
+        }
+
+        [Test]
+        public void TestNullableInit()
+        {
+            using (var env = new MethodEnvironment(classEnv))
+            {
+                //SETUP
+                var linq = env.Db.EfParents.Select(x => new Nullable<int>()).ToList();
+
+                //ATTEMPT
+                env.AboutToUseDelegateDecompiler();
+                var dd = env.Db.EfParents.Select(x => x.NullableInit).Decompile().ToList();
 
                 //VERIFY
                 env.CompareAndLogList(linq, dd);

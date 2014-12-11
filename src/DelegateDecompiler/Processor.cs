@@ -658,11 +658,6 @@ namespace DelegateDecompiler
 
         static Expression Default(Type type)
         {
-            if (type == typeof(bool))
-            {
-                return Expression.Constant(false);
-            }
-
             if (type.IsValueType)
             {
                 // LINQ to entities and possibly other providers don't support Expression.Default, so this gets the default value and then uses an Expression.Constant instead
