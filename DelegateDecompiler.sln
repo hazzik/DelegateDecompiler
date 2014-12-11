@@ -1,16 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
-VisualStudioVersion = 12.0.30723.0
+VisualStudioVersion = 12.0.31101.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DelegateDecompiler", "src\DelegateDecompiler\DelegateDecompiler.csproj", "{11F42698-BB34-4175-9DA8-80BD62171D02}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{55BEEC36-1525-49DA-A596-4D0D76576430}"
-	ProjectSection(SolutionItems) = preProject
-		.nuget\NuGet.Config = .nuget\NuGet.Config
-		.nuget\NuGet.exe = .nuget\NuGet.exe
-		.nuget\NuGet.targets = .nuget\NuGet.targets
-	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DelegateDecompiler.Tests", "src\DelegateDecompiler.Tests\DelegateDecompiler.Tests.csproj", "{9531F38F-9E2C-4487-B76E-1EEA3AAB5B83}"
 EndProject
@@ -23,6 +16,13 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DelegateDecompiler.EntityFramework.Tests", "src\DelegateDecompiler.EntityFramework.Tests\DelegateDecompiler.EntityFramework.Tests.csproj", "{CC1F2D70-08F7-4DA0-963C-E1915F233C45}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DelegateDecompiler.EntityFramework", "src\DelegateDecompiler.EntityFramework\DelegateDecompiler.EntityFramework.csproj", "{9ACA1ACA-7334-42E3-9FBD-336D4AB5BDF7}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{66C7685B-5CD7-4CC4-A172-4E3E4E75EA57}"
+	ProjectSection(SolutionItems) = preProject
+		.nuget\NuGet.Config = .nuget\NuGet.Config
+		.nuget\NuGet.exe = .nuget\NuGet.exe
+		.nuget\NuGet.targets = .nuget\NuGet.targets
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
