@@ -560,7 +560,7 @@ namespace DelegateDecompiler
                 {
                     var address = stack.Pop();
                     var type = (Type) instruction.Operand;
-                    address.Expression = Expression.Default(type);
+                    address.Expression = Default(type);
                 }
                 else if (instruction.OpCode == OpCodes.Newarr)
                 {
@@ -658,10 +658,12 @@ namespace DelegateDecompiler
 
         static Expression Default(Type type)
         {
-            if (type == typeof (bool))
-                return Expression.Constant(false);
             if (type.IsValueType)
-                return Expression.Default(type);
+            {
+                // LINQ to entities and possibly other providers don't support Expression.Default, so this gets the default value and then uses an Expression.Constant instead
+                return Expression.Constant(Activator.CreateInstance(type), type);
+            }
+
             return Expression.Constant(null, type);
         }
 

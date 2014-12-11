@@ -58,6 +58,9 @@ namespace DelegateDecompiler.EntityFramework.Tests.EfItems
         [Computed]
         public bool ParentNullableIntEqualsConstant { get { return ParentNullableInt == 123; } }
 
+        [Computed]
+        public Nullable<int> NullableInit { get { return new Nullable<int>(); } }
+
         //EQUALITY GROUP
 
         [Computed]
