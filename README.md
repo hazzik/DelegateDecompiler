@@ -62,13 +62,16 @@ Again, the `FullName` property will be decompiled:
 bool exists = db.Employees.Any(employee => (employee.FirstName + " " + employee.LastName) == "Test User");
 ```
 
-## Using with EnittyFramework and other ORMs
+## Using with [EnittyFramework](https://www.nuget.org/packages/DelegateDecompiler.EntityFramework) and other ORMs
 
 If you are using ORM specific features, like EF's `Include`, `AsNoTracking` or NH's `Fetch` then `Decompile` method should be called after all ORM specific methods, otherwise it may not work. Ideally use `Decompile` extension method just before materialization methods such as `ToList`, `ToArray`, `First`, `FirstOrDefault`, `Count`, `Any`, and etc.
  
 # Installation
 
-Available on [NuGet](https://nuget.org/packages/DelegateDecompiler)
+Available on [NuGet](https://nuget.org/)
+
+* [DelegateDecompiler](https://nuget.org/packages/DelegateDecompiler)
+* [DelegateDecompiler.EntityFramework](https://nuget.org/packages/EntityFramework)
 
 # License
 
