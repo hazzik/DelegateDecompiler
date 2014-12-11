@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>$id$</id>
+    <version>$version$</version>
+    <title>$title$</title>
+    <authors>hazzik</authors>
+    <owners>$author</owners>
+    <licenseUrl>http://www.opensource.org/licenses/mit-license.php</licenseUrl>
+    <projectUrl>https://github.com/hazzik/DelegateDecompiler</projectUrl>
+    <!--<iconUrl>http://ICON_URL_HERE_OR_DELETE_THIS_LINE</iconUrl>-->
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>
+      A tool which is able to decompile a delegate or a method body to its lambda representation
+    </description>
+    <releaseNotes></releaseNotes>
+    <copyright>Copyright (c) hazzik 2012 - 2014</copyright>
+    <tags>LINQ computed-properties computedproperties decompiler decompilation computed properties expressions expression-tree IL</tags>
+    <dependencies>
+      <dependency id="DelegateDecompiler" version="[$version$]" />
+    </dependencies>
+  </metadata>
+</package>
