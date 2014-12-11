@@ -666,10 +666,7 @@ namespace DelegateDecompiler
             if (type.IsValueType)
             {
                 // LINQ to entities and possibly other providers don't support Expression.Default, so this gets the default value and then uses an Expression.Constant instead
-                Expression<Func<object>> e = Expression.Lambda<Func<object>>(
-                    Expression.Convert(Expression.Default(type), typeof(object))
-                );
-                return Expression.Constant(e.Compile()(), type);
+                return Expression.Constant(Activator.CreateInstance(type), type);
             }
 
             return Expression.Constant(null, type);
