@@ -3,7 +3,7 @@ using System.Linq.Expressions;
 
 namespace DelegateDecompiler
 {
-    public class Address
+    class Address
     {
         public Expression Expression { get; set; }
 

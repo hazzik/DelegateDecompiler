@@ -11,7 +11,7 @@ using System.Runtime.CompilerServices;
 
 namespace DelegateDecompiler
 {
-    public class Processor 
+    class Processor 
     {
         private const string cachedAnonymousMethodDelegate = "<>9__CachedAnonymousMethodDelegate";
 
