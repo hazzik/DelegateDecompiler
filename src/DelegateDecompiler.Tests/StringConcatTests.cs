@@ -13,6 +13,14 @@ namespace DelegateDecompiler.Tests
             Expression<Func<string, string, string, string, string>> expected = (w, x, y, z) => w + " " + x + " " + y + " " + z;
             Func<string, string, string, string, string> compiled = (w, x, y, z) => w + " " + x + " " + y + " " + z;
             Test(expected, compiled);
+        }
+
+        [Test]
+        public void StringConcat5()
+        {
+            Expression<Func<string, string, string, string, string, string>> expected = (u, w, x, y, z) => u + " " + w + " " + x + " " + y + " " + z;
+            Func<string, string, string, string, string, string> compiled = (u, w, x, y, z) => u + " " + w + " " + x + " " + y + " " + z;
+            Test(expected, compiled);
         } 
 
         [Test]

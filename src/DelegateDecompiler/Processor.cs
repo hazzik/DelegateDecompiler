@@ -15,7 +15,7 @@ namespace DelegateDecompiler
     {
         private const string cachedAnonymousMethodDelegate = "<>9__CachedAnonymousMethodDelegate";
 
-        public static Processor Create(Address[] locals, IList<Address> args)
+        public static Processor Create(VariableInfo[] locals, IList<Address> args)
         {
             return new Processor(new Stack<Address>(), locals, args);
         }
@@ -28,10 +28,10 @@ namespace DelegateDecompiler
         static readonly MethodInfo StringConcat = typeof(string).GetMethod("Concat", new[] { typeof(object), typeof(object) });
 
         readonly Stack<Address> stack;
-        readonly Address[] locals;
+        readonly VariableInfo[] locals;
         readonly IList<Address> args;
 
-        Processor(Stack<Address> stack, Address[] locals, IList<Address> args)
+        Processor(Stack<Address> stack, VariableInfo[] locals, IList<Address> args)
         {
             this.stack = stack;
             this.locals = locals;
@@ -76,15 +76,7 @@ namespace DelegateDecompiler
                 {
                     LdArg(3);
                 }
-                else if (instruction.OpCode == OpCodes.Ldarg_S)
-                {
-                    LdArg((short) instruction.Operand);
-                }
-                else if (instruction.OpCode == OpCodes.Ldarg)
-                {
-                    LdArg((int) instruction.Operand);
-                }
-                else if (instruction.OpCode == OpCodes.Ldarga || instruction.OpCode == OpCodes.Ldarga_S)
+                else if (instruction.OpCode == OpCodes.Ldarg_S || instruction.OpCode == OpCodes.Ldarg || instruction.OpCode == OpCodes.Ldarga || instruction.OpCode == OpCodes.Ldarga_S)
                 {
                     var operand = (ParameterInfo) instruction.Operand;
                     stack.Push(args.Single(x => ((ParameterExpression) x.Expression).Name == operand.Name));
@@ -672,17 +664,15 @@ namespace DelegateDecompiler
             var val1 = stack.Pop();
             var test = condition(val1);
 
-            var left = (Instruction)instruction.Operand;
+            var left = (Instruction) instruction.Operand;
             var right = instruction.Next;
 
             Instruction common = GetJoinPoint(left, right);
 
             var rightExpression = Clone().Process(right, common);
             var leftExpression = Clone().Process(left, common);
-            if (rightExpression != null)
-            {
-                leftExpression = AdjustType(leftExpression, rightExpression.Type);
-            }
+            leftExpression = AdjustType(leftExpression, rightExpression.Type);
+            rightExpression = AdjustType(rightExpression, leftExpression.Type);
 
             var expression = Expression.Condition(test, leftExpression, rightExpression);
             stack.Push(expression);
@@ -916,26 +906,15 @@ namespace DelegateDecompiler
             return arguments;
         }
 
-        private void UpdateLocals(Expression oldExpression, Expression newExpression)
-        {
-            for (var i = 0; i < locals.Length; i++)
-            {
-                var local = locals[i];
-                if (local.Expression == oldExpression)
-                {
-                    locals[i] = newExpression;
-                }
-            }
-        }
-
         void LdLoc(int index)
         {
-            stack.Push(locals[index]);
+            stack.Push(locals[index].Address);
         }
 
         void StLoc(int index)
         {
-            locals[index] = stack.Pop();
+            var info = locals[index];
+            info.Address = AdjustType(stack.Pop(), info.Type);
         }
 
         void LdArg(int index)

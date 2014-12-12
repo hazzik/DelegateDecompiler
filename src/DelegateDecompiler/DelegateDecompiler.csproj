@@ -68,6 +68,7 @@
     <Compile Include="Processor.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ReplaceExpressionVisitor.cs" />
+    <Compile Include="VariableInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\DelegateDecompiler.snk">

@@ -10,7 +10,7 @@ namespace DelegateDecompiler
     public class MethodBodyDecompiler
     {
         readonly IList<Address> args;
-        readonly Address[] locals;
+        readonly VariableInfo[] locals;
         readonly MethodInfo method;
 
         public MethodBodyDecompiler(MethodInfo method)
@@ -27,10 +27,10 @@ namespace DelegateDecompiler
                     .ToList();
 
             var body = method.GetMethodBody();
-            var addresses = new Address[body.LocalVariables.Count];
+            var addresses = new VariableInfo[body.LocalVariables.Count];
             for (int i = 0; i < addresses.Length; i++)
             {
-                addresses[i] = new Address();
+                addresses[i] = new VariableInfo(body.LocalVariables[i].LocalType);
             }
             locals = addresses.ToArray();
         }
