@@ -90,7 +90,7 @@ namespace DelegateDecompiler.Tests
         public void ExpressionWithNullableXor()
         {
             Expression<Func<int?, int?, int?>> expected = (x, y) => x ^ y;
-            Func<int?, int?, int?> compiled = (x, y) => y ^ x;
+            Func<int?, int?, int?> compiled = (x, y) => x ^ y;
             Test(expected, compiled);
         }
 
@@ -98,7 +98,7 @@ namespace DelegateDecompiler.Tests
         public void ExpressionWithNullableAnd()
         {
             Expression<Func<int?, int?, int?>> expected = (x, y) => x & y;
-            Func<int?, int?, int?> compiled = (x, y) => y & x;
+            Func<int?, int?, int?> compiled = (x, y) => x & y;
             Test(expected, compiled);
         }
 
@@ -106,7 +106,7 @@ namespace DelegateDecompiler.Tests
         public void ExpressionWithNullableOr()
         {
             Expression<Func<int?, int?, int?>> expected = (x, y) => x | y;
-            Func<int?, int?, int?> compiled = (x, y) => y | x;
+            Func<int?, int?, int?> compiled = (x, y) => x | y;
             Test(expected, compiled);
         }
 
@@ -114,7 +114,7 @@ namespace DelegateDecompiler.Tests
         public void ExpressionWithNullableMul()
         {
             Expression<Func<int?, int?, int?>> expected = (x, y) => x * y;
-            Func<int?, int?, int?> compiled = (x, y) => y * x;
+            Func<int?, int?, int?> compiled = (x, y) => x * y;
             Test(expected, compiled);
         }
         
@@ -122,7 +122,7 @@ namespace DelegateDecompiler.Tests
         public void ExpressionWithNullablePlus()
         {
             Expression<Func<int?, int?, int?>> expected = (x, y) => x + y;
-            Func<int?, int?, int?> compiled = (x, y) => y + x;
+            Func<int?, int?, int?> compiled = (x, y) => x + y;
             Test(expected, compiled);
         }
 
@@ -130,7 +130,7 @@ namespace DelegateDecompiler.Tests
         public void ExpressionWithNullableDiv()
         {
             Expression<Func<int?, int?, int?>> expected = (x, y) => x / y;
-            Func<int?, int?, int?> compiled = (x, y) => y / x;
+            Func<int?, int?, int?> compiled = (x, y) => x / y;
             Test(expected, compiled);
         }
         
@@ -147,6 +147,8 @@ namespace DelegateDecompiler.Tests
         {
             Expression<Func<int?, int, bool>> expected = (x, y) => x != y;
             Func<int?, int, bool> compiled = (x, y) => x != y;
+
+            Func<int?, int, bool> c = (x, y) => (x.GetValueOrDefault() == y) ? (x.HasValue == false) : true;
             Test(expected, compiled);
         }
 
@@ -186,7 +188,7 @@ namespace DelegateDecompiler.Tests
         public void ExpressionWithNullableXor2()
         {
             Expression<Func<int?, int, int?>> expected = (x, y) => x ^ y;
-            Func<int?, int, int?> compiled = (x, y) => y ^ x;
+            Func<int?, int, int?> compiled = (x, y) => x ^ y;
             Test(expected, compiled);
         }
 
@@ -194,7 +196,7 @@ namespace DelegateDecompiler.Tests
         public void ExpressionWithNullableAnd2()
         {
             Expression<Func<int?, int, int?>> expected = (x, y) => x & y;
-            Func<int?, int, int?> compiled = (x, y) => y & x;
+            Func<int?, int, int?> compiled = (x, y) => x & y;
             Test(expected, compiled);
         }
 
@@ -202,7 +204,7 @@ namespace DelegateDecompiler.Tests
         public void ExpressionWithNullableOr2()
         {
             Expression<Func<int?, int, int?>> expected = (x, y) => x | y;
-            Func<int?, int, int?> compiled = (x, y) => y | x;
+            Func<int?, int, int?> compiled = (x, y) => x | y;
             Test(expected, compiled);
         }
 
@@ -210,7 +212,7 @@ namespace DelegateDecompiler.Tests
         public void ExpressionWithNullableMul2()
         {
             Expression<Func<int?, int, int?>> expected = (x, y) => x * y;
-            Func<int?, int, int?> compiled = (x, y) => y * x;
+            Func<int?, int, int?> compiled = (x, y) => x * y;
             Test(expected, compiled);
         }
         
@@ -218,7 +220,7 @@ namespace DelegateDecompiler.Tests
         public void ExpressionWithNullablePlus2()
         {
             Expression<Func<int?, int, int?>> expected = (x, y) => x + y;
-            Func<int?, int, int?> compiled = (x, y) => y + x;
+            Func<int?, int, int?> compiled = (x, y) => x + y;
             Test(expected, compiled);
         }
 
@@ -226,7 +228,7 @@ namespace DelegateDecompiler.Tests
         public void ExpressionWithNullableDiv2()
         {
             Expression<Func<int?, int, int?>> expected = (x, y) => x / y;
-            Func<int?, int, int?> compiled = (x, y) => y / x;
+            Func<int?, int, int?> compiled = (x, y) => x / y;
             Test(expected, compiled);
         }
         
@@ -282,7 +284,7 @@ namespace DelegateDecompiler.Tests
         public void ExpressionWithNullableXor3()
         {
             Expression<Func<int, int?, int?>> expected = (x, y) => x ^ y;
-            Func<int, int?, int?> compiled = (x, y) => y ^ x;
+            Func<int, int?, int?> compiled = (x, y) => x ^ y;
             Test(expected, compiled);
         }
 
@@ -290,7 +292,7 @@ namespace DelegateDecompiler.Tests
         public void ExpressionWithNullableAnd3()
         {
             Expression<Func<int, int?, int?>> expected = (x, y) => x & y;
-            Func<int, int?, int?> compiled = (x, y) => y & x;
+            Func<int, int?, int?> compiled = (x, y) => x & y;
             Test(expected, compiled);
         }
 
@@ -298,7 +300,7 @@ namespace DelegateDecompiler.Tests
         public void ExpressionWithNullableOr3()
         {
             Expression<Func<int, int?, int?>> expected = (x, y) => x | y;
-            Func<int, int?, int?> compiled = (x, y) => y | x;
+            Func<int, int?, int?> compiled = (x, y) => x | y;
             Test(expected, compiled);
         }
 
@@ -306,7 +308,7 @@ namespace DelegateDecompiler.Tests
         public void ExpressionWithNullableMul3()
         {
             Expression<Func<int, int?, int?>> expected = (x, y) => x * y;
-            Func<int, int?, int?> compiled = (x, y) => y * x;
+            Func<int, int?, int?> compiled = (x, y) => x * y;
             Test(expected, compiled);
         }
         
@@ -314,7 +316,7 @@ namespace DelegateDecompiler.Tests
         public void ExpressionWithNullablePlus3()
         {
             Expression<Func<int, int?, int?>> expected = (x, y) => x + y;
-            Func<int, int?, int?> compiled = (x, y) => y + x;
+            Func<int, int?, int?> compiled = (x, y) => x + y;
             Test(expected, compiled);
         }
 
@@ -322,7 +324,7 @@ namespace DelegateDecompiler.Tests
         public void ExpressionWithNullableDiv3()
         {
             Expression<Func<int, int?, int?>> expected = (x, y) => x / y;
-            Func<int, int?, int?> compiled = (x, y) => y / x;
+            Func<int, int?, int?> compiled = (x, y) => x / y;
             Test(expected, compiled);
         }
         
