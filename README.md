@@ -71,7 +71,7 @@ If you are using ORM specific features, like EF's `Include`, `AsNoTracking` or N
 Available on [NuGet](https://nuget.org/)
 
 * Install-Package [DelegateDecompiler](https://nuget.org/packages/DelegateDecompiler)
-* Install-Package [DelegateDecompiler.EntityFramework](https://nuget.org/packages/EntityFramework)
+* Install-Package [DelegateDecompiler.EntityFramework](https://nuget.org/packages/DelegateDecompiler.EntityFramework)
 
 # License
 
