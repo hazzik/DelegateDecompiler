@@ -183,6 +183,24 @@ namespace DelegateDecompiler
                         stack.Push(Expression.Assign(Expression.Field(null, field), pop));
                     }
                 }
+                else if (instruction.OpCode == OpCodes.Stfld)
+                {
+                    var value = stack.Pop();
+                    var instance = stack.Pop();
+                    var field = (FieldInfo)instruction.Operand;
+                    if (instance.Expression is NewExpression)
+                    {
+                        instance.Expression = Expression.MemberInit((NewExpression) instance.Expression, Expression.Bind(field, value));
+                    }
+                    else if (instance.Expression is MemberInitExpression)
+                    {
+                        throw new NotImplementedException();
+                    }
+                    else
+                    {
+                        throw new NotImplementedException();
+                    }
+                }
                 else if (instruction.OpCode == OpCodes.Ldloc_0)
                 {
                     LdLoc(0);
@@ -316,6 +334,7 @@ namespace DelegateDecompiler
                         };
 
                         var body = new ReplaceExpressionVisitor(expressions).Visit(decompile.Body);
+                        body = TransparentIdentifierRemovingExpressionVisitor.RemoveTransparentIdentifiers(body);
                         decompile = Expression.Lambda(body, decompile.Parameters.Skip(1));
                     }
 

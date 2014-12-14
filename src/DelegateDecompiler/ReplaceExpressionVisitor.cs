@@ -3,9 +3,9 @@ using System.Linq.Expressions;
 
 namespace DelegateDecompiler
 {
-    public class ReplaceExpressionVisitor :ExpressionVisitor
+    public class ReplaceExpressionVisitor : ExpressionVisitor
     {
-        readonly IDictionary<Expression, Expression> replacements;
+        private readonly IDictionary<Expression, Expression> replacements;
 
         public ReplaceExpressionVisitor(IDictionary<Expression, Expression> replacements)
         {
