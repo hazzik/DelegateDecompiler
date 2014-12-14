@@ -1,11 +1,15 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq.Expressions;
+using System.Reflection;
 
 namespace DelegateDecompiler
 {
-    public class OptimizeExpressionVisitor : ExpressionVisitor
+    class OptimizeExpressionVisitor : ExpressionVisitor
     {
+        static readonly MethodInfo StringConcat = typeof(string).GetMethod("Concat", new[] { typeof(object), typeof(object) });
+
         protected override Expression VisitNew(NewExpression node)
         {
             // Test if this is a nullable type
@@ -20,7 +24,6 @@ namespace DelegateDecompiler
         {
             return type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>);
         }
-
 
         protected override Expression VisitConditional(ConditionalExpression node)
         {

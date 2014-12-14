@@ -889,7 +889,7 @@ namespace DelegateDecompiler
                 if (m.Name.StartsWith("op_"))
                 {
                     ExpressionType type;
-                    if (Enum.TryParse(m.Name.Substring(3), out type))
+                    if (TryParseOperator(m, out type))
                     {
                         switch (arguments.Length)
                         {
@@ -897,6 +897,16 @@ namespace DelegateDecompiler
                                 return Expression.MakeUnary(type, arguments[0], arguments[0].Type);
                             case 2:
                                 return Expression.MakeBinary(type, arguments[0], arguments[1]);
+                        }
+                    }
+                    else
+                    {
+                        switch (m.Name)
+                        {
+                            case "op_Increment":
+                                return Expression.Add(arguments[0], Expression.Constant(Convert.ChangeType(1, arguments[0].Type)));
+                            case "op_Decrement":
+                                return Expression.Subtract(arguments[0], Expression.Constant(Convert.ChangeType(1, arguments[0].Type)));
                         }
                     }
                 }
@@ -928,6 +938,33 @@ namespace DelegateDecompiler
                 return Expression.Call(AdjustType(instance, m.DeclaringType), m, arguments);
 
             return Expression.Call(null, m, arguments);
+        }
+
+        private static bool TryParseOperator(MethodInfo m, out ExpressionType type)
+        {
+            switch (m.Name)
+            {
+                case "op_Increment":
+                    type = default(ExpressionType);
+                    return false;
+
+                case "op_Decrement":
+                    type = default(ExpressionType);
+                    return false;
+
+                case "op_Division":
+                    type = ExpressionType.Divide;
+                    return true;
+                
+                case "op_Equality":
+                    type = ExpressionType.Equal;
+                    return true;
+
+                case "op_Inequality":
+                    type = ExpressionType.NotEqual;
+                    return true;
+            }
+            return Enum.TryParse(m.Name.Substring(3), out type);
         }
 
         static IList<Expression> GetExpressionsForStringConcat(Expression[] arguments)

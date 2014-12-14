@@ -60,6 +60,7 @@
     <Compile Include="ComparisonTests.cs" />
     <Compile Include="ConditionalTests.cs" />
     <Compile Include="ConfigurationTests.cs" />
+    <Compile Include="DecimalTests.cs" />
     <Compile Include="DecompileExtensionsTests.cs" />
     <Compile Include="DecompilerTestsBase.cs" />
     <Compile Include="Employee.cs" />
