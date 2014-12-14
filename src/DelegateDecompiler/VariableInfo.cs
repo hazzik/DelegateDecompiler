@@ -2,7 +2,7 @@ using System;
 
 namespace DelegateDecompiler
 {
-    public class VariableInfo
+    class VariableInfo
     {
         public VariableInfo(Type type)
         {

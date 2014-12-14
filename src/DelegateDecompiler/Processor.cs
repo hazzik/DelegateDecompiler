@@ -11,7 +11,7 @@ using System.Runtime.CompilerServices;
 
 namespace DelegateDecompiler
 {
-    public class Processor 
+    class Processor 
     {
         private const string cachedAnonymousMethodDelegate = "<>9__CachedAnonymousMethodDelegate";
 
@@ -583,14 +583,14 @@ namespace DelegateDecompiler
                 {
                     var val1 = stack.Pop();
                     var val2 = stack.Pop();
-                    
+
                     stack.Push(AdjustedBinaryExpression(val2, AdjustType(val1, val2.Type), ExpressionType.GreaterThan));
                 }
                 else if (instruction.OpCode == OpCodes.Clt || instruction.OpCode == OpCodes.Clt_Un)
                 {
                     var val1 = stack.Pop();
                     var val2 = stack.Pop();
-                    
+
                     stack.Push(AdjustedBinaryExpression(val2, AdjustType(val1, val2.Type), ExpressionType.LessThan));
                 }
                 else if (instruction.OpCode == OpCodes.Ret)
