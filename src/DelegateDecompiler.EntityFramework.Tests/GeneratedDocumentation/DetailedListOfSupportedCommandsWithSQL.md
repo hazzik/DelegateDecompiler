@@ -1,6 +1,6 @@
 Detail With Sql of supported commands
 ============
-## Documentation produced for DelegateDecompiler, version 0.12.0.0 on Thursday, 11 December 2014 17:48
+## Documentation produced for DelegateDecompiler, version 0.12.1.0 on Sunday, 14 December 2014 23:04
 
 This file documents what linq commands **DelegateDecompiler** supports when
 working with [Entity Framework v6.1](http://msdn.microsoft.com/en-us/data/aa937723) (EF).
@@ -463,7 +463,19 @@ SELECT
     FROM [dbo].[EfParents] AS [Extent1]
 ```
 
-  * Singleton Count Children With Filter (line 69)
+  * Count Children With Filter By Closure (line 69)
+     * T-Sql executed is
+
+```SQL
+SELECT 
+    (SELECT 
+        COUNT(1) AS [A1]
+        FROM [dbo].[EfChilds] AS [Extent2]
+        WHERE ([Extent1].[EfParentId] = [Extent2].[EfParentId]) AND ([Extent2].[ChildInt] = [Extent1].[ParentInt])) AS [C1]
+    FROM [dbo].[EfParents] AS [Extent1]
+```
+
+  * Singleton Count Children With Filter (line 87)
      * T-Sql executed is
 
 ```SQL

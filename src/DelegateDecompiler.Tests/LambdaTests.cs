@@ -17,6 +17,15 @@ namespace DelegateDecompiler.Tests
             Test(expected, compiled);
         }
 
+        [Test, Ignore("Not supported yet")]
+        public void CanUseLambdaWithClosure()
+        {
+            var j = 5;
+            Expression<Func<bool>> expected = () => Enumerable.Range(1, 10).Any(i => i == j);
+            Func<bool> compiled = () => Enumerable.Range(1, 10).Any(i => i == j);
+            Test(expected, compiled);
+        }
+
         [Test]
         public void CanUseTwoLambda()
         {

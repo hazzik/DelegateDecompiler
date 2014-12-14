@@ -53,6 +53,24 @@ namespace DelegateDecompiler.EntityFramework.Tests.TestGroup15Aggregation
         }
 
         [Test]
+        public void TestCountChildrenWithFilterByClosure()
+        {
+            using (var env = new MethodEnvironment(classEnv))
+            {
+                //SETUP
+
+                var linq = env.Db.EfParents.Select(x => x.Children.Count( y => y.ChildInt == x.EfParentId)).ToList();
+
+                //ATTEMPT
+                env.AboutToUseDelegateDecompiler();
+                var dd = env.Db.EfParents.Select(x => x.CountChildrenWithFilterByClosure).Decompile().ToList();
+
+                //VERIFY
+                env.CompareAndLogList(linq, dd);
+            }
+        }
+
+        [Test]
         public void TestSingletonCountChildrenWithFilter()
         {
             using (var env = new MethodEnvironment(classEnv))

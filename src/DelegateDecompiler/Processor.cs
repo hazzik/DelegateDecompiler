@@ -11,9 +11,11 @@ using System.Runtime.CompilerServices;
 
 namespace DelegateDecompiler
 {
-    class Processor 
+    class Processor
     {
-        private const string cachedAnonymousMethodDelegate = "<>9__CachedAnonymousMethodDelegate";
+        IDictionary<FieldInfo, Address> delegates = new Dictionary<FieldInfo, Address>();
+  
+        const string cachedAnonymousMethodDelegate = "<>9__CachedAnonymousMethodDelegate";
 
         public static Processor Create(VariableInfo[] locals, IList<Address> args)
         {
@@ -150,15 +152,35 @@ namespace DelegateDecompiler
                 }
                 else if (instruction.OpCode == OpCodes.Ldsfld)
                 {
-                    var targetField = instruction.Operand as FieldInfo;
-
-                    if (IsCachedAnonymousMethodDelegate(targetField))
+                    var field = (FieldInfo) instruction.Operand;
+                    if (IsCachedAnonymousMethodDelegate(field))
                     {
-                        // do nothing.
+                        Address address;
+                        if (delegates.TryGetValue(field, out address))
+                        {
+                            stack.Push(address);
+                        }
+                        else
+                        {
+                            stack.Push(Expression.Field(null, field));
+                        }
                     }
                     else
                     {
-                        stack.Push(Expression.Field(null, (FieldInfo) instruction.Operand));
+                        stack.Push(Expression.Field(null, field));
+                    }
+                }
+                else if (instruction.OpCode == OpCodes.Stsfld)
+                {
+                    var field = (FieldInfo) instruction.Operand;
+                    if (IsCachedAnonymousMethodDelegate(field))
+                    {
+                        delegates[field] = stack.Pop();
+                    }
+                    else
+                    {
+                        var pop = stack.Pop();
+                        stack.Push(Expression.Assign(Expression.Field(null, field), pop));
                     }
                 }
                 else if (instruction.OpCode == OpCodes.Ldloc_0)
@@ -268,19 +290,37 @@ namespace DelegateDecompiler
                 else if (instruction.OpCode == OpCodes.Brtrue ||
                          instruction.OpCode == OpCodes.Brtrue_S)
                 {
-                    var target = ((Instruction) instruction.Operand);
-
-                    if (target.OpCode == OpCodes.Ldsfld && IsCachedAnonymousMethodDelegate(target.Operand as FieldInfo))
+                    var address = stack.Peek();
+                    var memberExpression = address.Expression as MemberExpression;
+                    if (memberExpression != null && IsCachedAnonymousMethodDelegate(memberExpression.Member as FieldInfo))
                     {
-                        stack.Push(((MethodInfo) instruction.Next.Next.Operand).Decompile());
-                        instruction = (Instruction) instruction.Operand;
+                        stack.Pop();
                     }
                     else
                     {
                         instruction = ConditionalBranch(instruction, val => Expression.NotEqual(val, Default(val.Type)));
+                        continue;
+                    }
+                }
+                else if (instruction.OpCode == OpCodes.Ldftn)
+                {
+                    var method = (MethodInfo) instruction.Operand;
+                    var decompile = method.Decompile();
+
+                    var obj = stack.Pop();
+                    if (!method.IsStatic)
+                    {
+                        var expressions = new Dictionary<Expression, Expression>
+                        {
+                            {decompile.Parameters[0], obj}
+                        };
+
+                        var body = new ReplaceExpressionVisitor(expressions).Visit(decompile.Body);
+                        decompile = Expression.Lambda(body, decompile.Parameters.Skip(1));
                     }
 
-                    continue;
+                    stack.Push(decompile);
+                    instruction = instruction.Next;
                 }
                 else if (instruction.OpCode == OpCodes.Bgt ||
                          instruction.OpCode == OpCodes.Bgt_S ||
@@ -613,8 +653,8 @@ namespace DelegateDecompiler
         private static bool IsCachedAnonymousMethodDelegate(FieldInfo field)
         {
             return field != null &&
-                field.Name.Contains(cachedAnonymousMethodDelegate) &&
-                Attribute.IsDefined(field, typeof (CompilerGeneratedAttribute), false);
+                field.Name.Contains(cachedAnonymousMethodDelegate) /*&&
+                Attribute.IsDefined(field, typeof (CompilerGeneratedAttribute), false)*/;
         }
 
         private static BinaryExpression AdjustedBinaryExpression(Expression left, Expression right, ExpressionType expressionType)

@@ -100,6 +100,9 @@ namespace DelegateDecompiler.EntityFramework.Tests.EfItems
         public int CountChildrenWithFilter { get { return Children.Count(y => y.ChildInt == 123); } }
 
         [Computed]
+        public int CountChildrenWithFilterByClosure { get { return Children.Count(y => y.ChildInt == ParentInt); } }
+
+        [Computed]
         public int SumIntInChildrenWhereChildrenCanBeNone { get { return Children.Sum(y => (int?)y.ChildInt) ?? 0; } }
 
         [Computed]
@@ -110,7 +113,5 @@ namespace DelegateDecompiler.EntityFramework.Tests.EfItems
 
         [Computed]
         public bool StartDateGreaterThanStaticVar { get { return StartDate > dateConst; } } 
-
-
     }
 }
