@@ -103,6 +103,12 @@ namespace DelegateDecompiler.EntityFramework.Tests.EfItems
         public int CountChildrenWithFilterByClosure { get { return Children.Count(y => y.ChildInt == ParentInt); } }
 
         [Computed]
+        public int GetCountChildrenWithFilterByExternalClosure(int childInt)
+        {
+            return Children.Count(y => y.ChildInt == childInt);
+        }
+
+        [Computed]
         public int SumIntInChildrenWhereChildrenCanBeNone { get { return Children.Sum(y => (int?)y.ChildInt) ?? 0; } }
 
         [Computed]
