@@ -188,17 +188,24 @@ namespace DelegateDecompiler
                     var value = stack.Pop();
                     var instance = stack.Pop();
                     var field = (FieldInfo)instruction.Operand;
-                    if (instance.Expression is NewExpression)
+                    var newExpression = instance.Expression as NewExpression;
+                    if (newExpression != null)
                     {
-                        instance.Expression = Expression.MemberInit((NewExpression) instance.Expression, Expression.Bind(field, value));
-                    }
-                    else if (instance.Expression is MemberInitExpression)
-                    {
-                        throw new NotImplementedException();
+                        instance.Expression = Expression.MemberInit(newExpression, Expression.Bind(field, value));
                     }
                     else
                     {
-                        throw new NotImplementedException();
+                        var memberInitExpression = instance.Expression as MemberInitExpression;
+                        if (memberInitExpression != null)
+                        {
+                            var expression = memberInitExpression.NewExpression;
+                            var bindings = new List<MemberBinding>(memberInitExpression.Bindings) {Expression.Bind(field, value)};
+                            instance.Expression = Expression.MemberInit(expression, bindings);
+                        }
+                        else
+                        {
+                            throw new NotImplementedException();
+                        }
                     }
                 }
                 else if (instruction.OpCode == OpCodes.Ldloc_0)

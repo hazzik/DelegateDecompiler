@@ -109,6 +109,12 @@ namespace DelegateDecompiler.EntityFramework.Tests.EfItems
         }
 
         [Computed]
+        public int GetCountChildrenWithFilterByExternalClosure(int childInt, int efParentId)
+        {
+            return Children.Count(y => y.ChildInt == childInt && y.EfParentId == efParentId);
+        }
+
+        [Computed]
         public int SumIntInChildrenWhereChildrenCanBeNone { get { return Children.Sum(y => (int?)y.ChildInt) ?? 0; } }
 
         [Computed]
@@ -118,6 +124,6 @@ namespace DelegateDecompiler.EntityFramework.Tests.EfItems
         private static readonly DateTime dateConst = new DateTime(2000, 1, 1);
 
         [Computed]
-        public bool StartDateGreaterThanStaticVar { get { return StartDate > dateConst; } } 
+        public bool StartDateGreaterThanStaticVar { get { return StartDate > dateConst; } }
     }
 }

@@ -1,6 +1,6 @@
 Detail of supported commands
 ============
-## Documentation produced for DelegateDecompiler, version 0.12.1.0 on Monday, 15 December 2014 02:08
+## Documentation produced for DelegateDecompiler, version 0.12.1.0 on Monday, 15 December 2014 02:19
 
 This file documents what linq commands **DelegateDecompiler** supports when
 working with [Entity Framework v6.1](http://msdn.microsoft.com/en-us/data/aa937723) (EF).
@@ -101,7 +101,8 @@ More will appear as we move forward.*
   * Count Children With Filter (line 51)
   * Count Children With Filter By Closure (line 69)
   * Count Children With Filter By External Closure (line 88)
-  * Singleton Count Children With Filter (line 106)
+  * Count Children With Filter By External Closure2 (line 108)
+  * Singleton Count Children With Filter (line 126)
 
 #### [Sum](../TestGroup15Aggregation/Test02Sum.cs):
 - Supported
