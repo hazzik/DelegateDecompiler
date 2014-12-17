@@ -62,9 +62,13 @@ Again, the `FullName` property will be decompiled:
 bool exists = db.Employees.Any(employee => (employee.FirstName + " " + employee.LastName) == "Test User");
 ```
 
-## Using with [EnittyFramework](https://www.nuget.org/packages/DelegateDecompiler.EntityFramework) and other ORMs
+## Using with [EntityFramework](https://www.nuget.org/packages/DelegateDecompiler.EntityFramework) and other ORMs
 
 If you are using ORM specific features, like EF's `Include`, `AsNoTracking` or NH's `Fetch` then `Decompile` method should be called after all ORM specific methods, otherwise it may not work. Ideally use `Decompile` extension method just before materialization methods such as `ToList`, `ToArray`, `First`, `FirstOrDefault`, `Count`, `Any`, and etc.
+
+### Async Support with [EntityFramework](https://www.nuget.org/packages/DelegateDecompiler.EntityFramework)
+
+The [DelegateDecompiler.EntityFramework](https://nuget.org/packages/DelegateDecompiler.EntityFramework) package provides `DecompileAsync` extension method which adds support for EF's Async operations.
  
 # Installation
 
@@ -76,6 +80,3 @@ Available on [NuGet](https://nuget.org/)
 # License
 
 MIT license - http://opensource.org/licenses/mit
-
-[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/hazzik/delegatedecompiler/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
-
