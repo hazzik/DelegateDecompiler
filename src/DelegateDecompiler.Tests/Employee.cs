@@ -1,4 +1,6 @@
-﻿namespace DelegateDecompiler.Tests
+﻿using System;
+
+namespace DelegateDecompiler.Tests
 {
     public struct Reference
     {
@@ -66,5 +68,18 @@
         }
 
         public bool IsBlocked { get; set; }
+
+        public DateTime? NullableDate { get; set; }
+        public int? NullableInt { get; set; }
+
+        [Computed]
+        public bool Test
+        {
+            get
+            {
+                return NullableDate.HasValue && NullableInt.HasValue &&
+                       NullableDate.Value.AddDays(NullableInt.Value) > DateTime.Now;
+            }
+        }
     }
 }

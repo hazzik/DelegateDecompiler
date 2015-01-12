@@ -188,5 +188,21 @@ namespace DelegateDecompiler.Tests
 
             Assert.AreEqual(expected.Expression.ToString(), actual.Expression.ToString());
         }
+
+        [Test, Ignore("Minor differences")]
+        public void Issue39()
+        {
+            var employees = new[] { new Employee { FirstName = "Test", LastName = "User" } };
+
+            var expected = (from employee in employees.AsQueryable()
+                            where (employee.NullableDate.HasValue && (employee.NullableInt.HasValue && employee.NullableDate.Value.AddDays(employee.NullableInt.Value) > DateTime.Now))
+                            select employee);
+
+            var actual = (from employee in employees.AsQueryable()
+                          where employee.Test
+                          select employee).Decompile();
+
+            Assert.AreEqual(expected.Expression.ToString(), actual.Expression.ToString());
+        }
     }
 }

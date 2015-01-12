@@ -121,13 +121,9 @@ namespace DelegateDecompiler
                 {
                     StLoc(3);
                 }
-                else if (instruction.OpCode == OpCodes.Stloc_S)
+                else if (instruction.OpCode == OpCodes.Stloc_S || instruction.OpCode == OpCodes.Stloc)
                 {
-                    StLoc((byte) instruction.Operand);
-                }
-                else if (instruction.OpCode == OpCodes.Stloc)
-                {
-                    StLoc((int) instruction.Operand);
+                    StLoc(((LocalVariableInfo)instruction.Operand).LocalIndex);
                 }
                 else if (instruction.OpCode == OpCodes.Stelem ||
                          instruction.OpCode == OpCodes.Stelem_I ||
@@ -949,6 +945,10 @@ namespace DelegateDecompiler
                     }
                     return expression;
                 }
+            }
+            if (m.Name == "InitializeArray" && m.DeclaringType == typeof (RuntimeHelpers))
+            {
+                
             }
 
             var parameters = m.GetParameters();
