@@ -121,9 +121,11 @@ namespace DelegateDecompiler
                 {
                     StLoc(3);
                 }
-                else if (instruction.OpCode == OpCodes.Stloc_S || instruction.OpCode == OpCodes.Stloc)
+                else if (instruction.OpCode == OpCodes.Stloc_S ||
+                         instruction.OpCode == OpCodes.Stloc)
                 {
-                    StLoc(((LocalVariableInfo)instruction.Operand).LocalIndex);
+                    var operand = (LocalVariableInfo) instruction.Operand;
+                    StLoc(operand.LocalIndex);
                 }
                 else if (instruction.OpCode == OpCodes.Stelem ||
                          instruction.OpCode == OpCodes.Stelem_I ||
@@ -220,15 +222,10 @@ namespace DelegateDecompiler
                 {
                     LdLoc(3);
                 }
-                else if (instruction.OpCode == OpCodes.Ldloc_S)
-                {
-                    LdLoc((byte) instruction.Operand);
-                }
-                else if (instruction.OpCode == OpCodes.Ldloc)
-                {
-                    LdLoc((int) instruction.Operand);
-                }
-                else if (instruction.OpCode == OpCodes.Ldloca || instruction.OpCode == OpCodes.Ldloca_S)
+                else if (instruction.OpCode == OpCodes.Ldloc ||
+                         instruction.OpCode == OpCodes.Ldloc_S ||
+                         instruction.OpCode == OpCodes.Ldloca || 
+                         instruction.OpCode == OpCodes.Ldloca_S)
                 {
                     var operand = (LocalVariableInfo) instruction.Operand;
                     LdLoc(operand.LocalIndex);
