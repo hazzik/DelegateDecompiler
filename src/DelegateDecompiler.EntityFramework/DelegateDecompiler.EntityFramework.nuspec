@@ -4,7 +4,7 @@
     <id>$id$</id>
     <version>$version$</version>
     <title>$title$</title>
-    <authors>hazzik</authors>
+    <authors>Alexander Zaytsev</authors>
     <owners>$author</owners>
     <licenseUrl>http://www.opensource.org/licenses/mit-license.php</licenseUrl>
     <projectUrl>https://github.com/hazzik/DelegateDecompiler</projectUrl>
@@ -14,7 +14,7 @@
       A tool which is able to decompile a delegate or a method body to its lambda representation
     </description>
     <releaseNotes></releaseNotes>
-    <copyright>Copyright (c) hazzik 2012 - 2014</copyright>
+    <copyright>Copyright (c) Alexander Zaytsev 2014 - 2015</copyright>
     <tags>LINQ computed-properties computedproperties decompiler decompilation computed properties expressions expression-tree IL</tags>
     <dependencies>
       <dependency id="DelegateDecompiler" version="[$version$]" />
