@@ -880,45 +880,6 @@ namespace DelegateDecompiler
             return joinPointState.Common;
         }
 
-        static Instruction GetCommon(IEnumerable<Instruction> leftFlow, Stack<Instruction> rightFlow)
-        {
-            Instruction instruction = null;
-            foreach (var left in leftFlow)
-            {
-                if (rightFlow.Count <= 0 || left != rightFlow.Pop())
-                    break;
-                
-                instruction = left;
-            }
-            return instruction;
-        }
-
-        static Stack<Instruction> GetFlow(Instruction instruction)
-        {
-            var instructions = new Stack<Instruction>();
-            while (instruction != null)
-            {
-                instructions.Push(instruction);
-
-                if (instruction.OpCode.FlowControl == FlowControl.Return)
-                    break;
-
-                if (instruction.OpCode.FlowControl == FlowControl.Branch)
-                {
-                    instruction = (Instruction) instruction.Operand;
-                }
-                else if (instruction.OpCode.FlowControl == FlowControl.Cond_Branch)
-                {
-                    instruction = GetJoinPoint((Instruction) instruction.Operand, instruction.Next);
-                }
-                else
-                {
-                    instruction = instruction.Next;
-                }
-            }
-            return instructions;
-        }
-
         static Expression AdjustType(Expression expression, Type type)
         {
             var constantExpression = expression as ConstantExpression;
