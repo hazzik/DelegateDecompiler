@@ -59,7 +59,6 @@ namespace DelegateDecompiler.Tests
         [Test]
         public void StackOverflowTestOnThreadWithSmallStack()
         {
-            // Create a 256-byte maximum stack similar to new(ish) IIS defaults
             Thread thread = new Thread(() =>
             {
                 Expression<Func<Employee, string>> expected = e => e.FirstName != null ? e.FirstName :
