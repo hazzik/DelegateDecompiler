@@ -782,9 +782,102 @@ namespace DelegateDecompiler
             return common;
         }
 
+        private class JoinPointState
+        {
+            public Instruction Left { get; set; }
+            public Instruction Right { get; set; }
+            public Instruction Common { get; set; }
+            public Stack<Instruction> LeftInstructions { get; private set; }
+            public Stack<Instruction> RightInstructions { get; private set; }
+            public JoinPointState Pending { get; set; }
+
+            public JoinPointState(Instruction left, Instruction right)
+            {
+                Left = left;
+                Right = right;
+                LeftInstructions = new Stack<Instruction>();
+                RightInstructions = new Stack<Instruction>();
+            }
+
+            public Instruction Current
+            {
+                get { return Left != null ? Left : Right; }
+                set
+                {
+                    if(Left != null)
+                    {
+                        Left = value;
+                    }
+                    else
+                    {
+                        Right = value;
+                    }
+                }
+            }
+
+            public Stack<Instruction> CurrentInstructions
+            {
+                get { return Left != null ? LeftInstructions : RightInstructions; }
+            }
+        }
+
         static Instruction GetJoinPoint(Instruction left, Instruction right)
         {
-            return GetCommon(GetFlow(left), GetFlow(right));
+            Stack<JoinPointState> joinPointStates = new Stack<JoinPointState>();
+            joinPointStates.Push(new JoinPointState(left, right));
+            JoinPointState joinPointState = null;
+            while(joinPointStates.Count > 0)
+            {
+                joinPointState = joinPointStates.Peek();
+                               
+                // See if both flows have been computed (right goes second) and if so, get the common join point
+                if(joinPointState.Right == null)
+                {
+                    foreach (var leftInstruction in joinPointState.LeftInstructions)
+                    {
+                        if (joinPointState.RightInstructions.Count <= 0 || leftInstruction != joinPointState.RightInstructions.Pop())
+                        {
+                            break;
+                        }
+                        joinPointState.Common = leftInstruction;
+                    }
+                    joinPointStates.Pop();
+                }
+                else
+                {
+                    // Check if we were waiting on a pending operation
+                    if (joinPointState.Pending != null)
+                    {
+                        joinPointState.Current = joinPointState.Pending.Common;
+                        joinPointState.Pending = null;
+                    }
+                    else
+                    {
+
+                        joinPointState.CurrentInstructions.Push(joinPointState.Current);
+
+                        if (joinPointState.Current.OpCode.FlowControl == FlowControl.Return)
+                        {
+                            joinPointState.Current = null;
+                        }
+                        else if (joinPointState.Current.OpCode.FlowControl == FlowControl.Branch)
+                        {
+                            joinPointState.Current = (Instruction)joinPointState.Current.Operand;
+                        }
+                        else if (joinPointState.Current.OpCode.FlowControl == FlowControl.Cond_Branch)
+                        {
+                            joinPointState.Pending = new JoinPointState((Instruction)joinPointState.Current.Operand, joinPointState.Current.Next);
+                            joinPointStates.Push(joinPointState.Pending);
+                        }
+                        else
+                        {
+                            joinPointState.Current = joinPointState.Current.Next;
+                        }
+                    }
+                }
+            }
+
+            return joinPointState.Common;
         }
 
         static Instruction GetCommon(IEnumerable<Instruction> leftFlow, Stack<Instruction> rightFlow)
