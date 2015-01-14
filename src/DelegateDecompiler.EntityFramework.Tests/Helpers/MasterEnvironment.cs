@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Reflection;
@@ -143,7 +144,7 @@ namespace DelegateDecompiler.EntityFramework.Tests.Helpers
 
             sb.AppendFormat(CultureInfo.InvariantCulture, "## Documentation produced for {0}, version {1} on {2:f}\n",
                 delegateDecompilerAssembly.GetName().Name,
-                delegateDecompilerAssembly.GetName().Version,
+                delegateDecompilerAssembly.GetCustomAttribute<AssemblyFileVersionAttribute>().Version,
                 DateTime.Now);
 
             sb.Append(MarkupFileHelpers.SearchMarkupForSingleFileReturnContent(HeaderTestFilename));
