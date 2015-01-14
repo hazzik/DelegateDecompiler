@@ -71,6 +71,7 @@
     <Compile Include="LambdaTests.cs" />
     <Compile Include="ListInitTests.cs" />
     <Compile Include="NullTests.cs" />
+    <Compile Include="StackOverflowTest.cs" />
     <Compile Include="StringConcatTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="QueryableExtensionsTests.cs" />
