@@ -990,7 +990,9 @@ namespace DelegateDecompiler
             var mArgs = GetArguments(state, m);
 
             var instance = m.IsStatic ? new Address() : state.Stack.Pop();
-            state.Stack.Push(BuildMethodCallExpression(m, instance, mArgs));
+            var result = BuildMethodCallExpression(m, instance, mArgs);
+            if (m.ReturnType != typeof(void))
+                state.Stack.Push(result);
         }
 
         static Expression[] GetArguments(ProcessorState state, MethodBase m)
