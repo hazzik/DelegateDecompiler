@@ -17,6 +17,10 @@ namespace DelegateDecompiler.EntityFramework.Tests.EfItems
 
         public int? ParentNullableInt { get; set; }
 
+        public decimal? ParentNullableDecimal1 { get; set; }
+
+        public decimal? ParentNullableDecimal2 { get; set; }
+
         public double ParentDouble { get; set; }
 
         public string ParentString { get; set; }
@@ -60,6 +64,9 @@ namespace DelegateDecompiler.EntityFramework.Tests.EfItems
 
         [Computed]
         public Nullable<int> NullableInit { get { return new Nullable<int>(); } }
+
+        [Computed]
+        public decimal? ParentNullableDecimalAdd { get { return ParentNullableDecimal1 + ParentNullableDecimal2; } }
 
         //EQUALITY GROUP
 

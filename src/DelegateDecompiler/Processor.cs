@@ -1084,6 +1084,10 @@ namespace DelegateDecompiler
                 case "op_Inequality":
                     type = ExpressionType.NotEqual;
                     return true;
+
+                case "op_Addition":
+                    type = ExpressionType.Add;
+                    return true;
             }
             return Enum.TryParse(m.Name.Substring(3), out type);
         }
