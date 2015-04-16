@@ -1,6 +1,6 @@
 Detail With Sql of supported commands
 ============
-## Documentation produced for DelegateDecompiler, version 0.15.0 on Wednesday, 14 January 2015 21:00
+## Documentation produced for DelegateDecompiler, version 0.15.0 on Friday, 17 April 2015 09:05
 
 This file documents what linq commands **DelegateDecompiler** supports when
 working with [Entity Framework v6.1](http://msdn.microsoft.com/en-us/data/aa937723) (EF).
@@ -124,7 +124,7 @@ SELECT
 
 #### [Nullable](../TestGroup05BasicFeatures/Test04Nullable.cs):
 - Supported
-  * Property Is Null (line 33)
+  * Property Is Null (line 35)
      * T-Sql executed is
 
 ```SQL
@@ -133,7 +133,7 @@ SELECT
     FROM [dbo].[EfParents] AS [Extent1]
 ```
 
-  * Bool Equals Static Variable (line 52)
+  * Bool Equals Static Variable (line 54)
      * T-Sql executed is
 
 ```SQL
@@ -142,7 +142,7 @@ SELECT
     FROM [dbo].[EfParents] AS [Extent1]
 ```
 
-  * Int Equals Constant (line 69)
+  * Int Equals Constant (line 71)
      * T-Sql executed is
 
 ```SQL
@@ -151,12 +151,21 @@ SELECT
     FROM [dbo].[EfParents] AS [Extent1]
 ```
 
-  * Nullable Init (line 86)
+  * Nullable Init (line 88)
      * T-Sql executed is
 
 ```SQL
 SELECT 
     CAST(NULL AS int) AS [C1]
+    FROM [dbo].[EfParents] AS [Extent1]
+```
+
+  * Nullable Add (line 105)
+     * T-Sql executed is
+
+```SQL
+SELECT 
+    [Extent1].[ParentNullableDecimal1] + [Extent1].[ParentNullableDecimal2] AS [C1]
     FROM [dbo].[EfParents] AS [Extent1]
 ```
 

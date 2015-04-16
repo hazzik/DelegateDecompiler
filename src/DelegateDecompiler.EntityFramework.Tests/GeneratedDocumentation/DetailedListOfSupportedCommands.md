@@ -1,6 +1,6 @@
 Detail of supported commands
 ============
-## Documentation produced for DelegateDecompiler, version 0.15.0 on Wednesday, 14 January 2015 21:00
+## Documentation produced for DelegateDecompiler, version 0.15.0 on Friday, 17 April 2015 09:05
 
 This file documents what linq commands **DelegateDecompiler** supports when
 working with [Entity Framework v6.1](http://msdn.microsoft.com/en-us/data/aa937723) (EF).
@@ -44,10 +44,11 @@ More will appear as we move forward.*
 
 #### [Nullable](../TestGroup05BasicFeatures/Test04Nullable.cs):
 - Supported
-  * Property Is Null (line 33)
-  * Bool Equals Static Variable (line 52)
-  * Int Equals Constant (line 69)
-  * Nullable Init (line 86)
+  * Property Is Null (line 35)
+  * Bool Equals Static Variable (line 54)
+  * Int Equals Constant (line 71)
+  * Nullable Init (line 88)
+  * Nullable Add (line 105)
 
 #### [Where](../TestGroup05BasicFeatures/Test05Where.cs):
 - Supported
