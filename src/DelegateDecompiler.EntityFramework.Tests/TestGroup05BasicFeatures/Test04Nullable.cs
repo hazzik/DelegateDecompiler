@@ -7,6 +7,8 @@ using System;
 
 namespace DelegateDecompiler.EntityFramework.Tests.TestGroup05BasicFeatures
 {
+    using System.Linq.Expressions;
+
     class Test04Nullable
     {
         private ClassEnvironment classEnv;
@@ -81,6 +83,23 @@ namespace DelegateDecompiler.EntityFramework.Tests.TestGroup05BasicFeatures
                 //ATTEMPT
                 env.AboutToUseDelegateDecompiler();
                 var dd = env.Db.EfParents.Select(x => x.NullableInit).Decompile().ToList();
+
+                //VERIFY
+                env.CompareAndLogList(linq, dd);
+            }
+        }
+
+        [Test]
+        public void TestNullableAdd()
+        {
+            using (var env = new MethodEnvironment(classEnv))
+            {
+                //SETUP
+                var linq = env.Db.EfParents.Select(x => x.ParentNullableDecimal1 + x.ParentNullableDecimal2).ToList();
+
+                //ATTEMPT
+                env.AboutToUseDelegateDecompiler();
+                var dd = env.Db.EfParents.Select(x => x.ParentNullableDecimalAdd).Decompile().ToList();
 
                 //VERIFY
                 env.CompareAndLogList(linq, dd);
