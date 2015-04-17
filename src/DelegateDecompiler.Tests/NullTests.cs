@@ -133,7 +133,23 @@ namespace DelegateDecompiler.Tests
             Func<int?, int?, int?> compiled = (x, y) => x / y;
             Test(expected, compiled);
         }
-        
+
+        [Test, Ignore("Not supported yet")]
+        public void ExpressionWithNullableRightShift()
+        {
+            Expression<Func<int?, int?, int?>> expected = (x, y) => x >> y;
+            Func<int?, int?, int?> compiled = (x, y) => x >> y;
+            Test(expected, compiled);
+        }
+
+        [Test, Ignore("Not supported yet")]
+        public void ExpressionWithNullableLeftShift()
+        {
+            Expression<Func<int?, int?, int?>> expected = (x, y) => x << y;
+            Func<int?, int?, int?> compiled = (x, y) => x << (y & 31);
+            Test(expected, compiled);
+        }
+
         [Test]
         public void ExpressionWithNullableEqual2()
         {
@@ -231,7 +247,23 @@ namespace DelegateDecompiler.Tests
             Func<int?, int, int?> compiled = (x, y) => x / y;
             Test(expected, compiled);
         }
-        
+
+        [Test, Ignore("Not supported yet")]
+        public void ExpressionWithNullableRightShift2()
+        {
+            Expression<Func<int?, int, int?>> expected = (x, y) => x >> y;
+            Func<int?, int, int?> compiled = (x, y) => x >> y;
+            Test(expected, compiled);
+        }
+
+        [Test]
+        public void ExpressionWithNullableLeftShift2()
+        {
+            Expression<Func<int?, int, int?>> expected = (x, y) => x << (y & 31);
+            Func<int?, int, int?> compiled = (x, y) => x << y;
+            Test(expected, compiled);
+        }
+
         [Test]
         public void ExpressionWithNullableEqual3()
         {
@@ -325,6 +357,23 @@ namespace DelegateDecompiler.Tests
         {
             Expression<Func<int, int?, int?>> expected = (x, y) => x / y;
             Func<int, int?, int?> compiled = (x, y) => x / y;
+            Test(expected, compiled);
+        }
+
+        [Test, Ignore("Not supported yet")]
+        public void ExpressionWithNullableRightShift3()
+        {
+            Expression<Func<int, int?, int?>> expected = (x, y) => x >> y;
+            Func<int, int?, int?> compiled = (x, y) => x >> y;
+            Test(expected, compiled);
+        }
+
+
+        [Test, Ignore("Not supported yet")]
+        public void ExpressionWithNullableLeftShift3()
+        {
+            Expression<Func<int, int?, int?>> expected = (x, y) => x << y;
+            Func<int, int?, int?> compiled = (x, y) => x << y;
             Test(expected, compiled);
         }
         

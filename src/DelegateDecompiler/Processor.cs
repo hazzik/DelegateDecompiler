@@ -1065,6 +1065,96 @@ namespace DelegateDecompiler
         {
             switch (m.Name)
             {
+                /* The complete set of binary operator function names used is as follows: 
+                 * op_Addition, op_Subtraction, op_Multiply, op_Division, op_Modulus, 
+                 * op_BitwiseAnd, op_BitwiseOr, op_ExclusiveOr, op_LeftShift, op_RightShift, 
+                 * op_Equality, op_Inequality, op_LessThan, op_LessThanOrEqual, op_GreaterThan, 
+                 * and op_GreaterThanOrEqual.
+                 */ 
+                case "op_Addition":
+                    type = ExpressionType.Add;
+                    return true;
+
+                case "op_Subtraction":
+                    type = ExpressionType.Subtract;
+                    return true;
+
+                case "op_Multiply":
+                    type = ExpressionType.Multiply;
+                    return true;
+
+                case "op_Division":
+                    type = ExpressionType.Divide;
+                    return true;
+
+                case "op_Modulus":
+                    type = ExpressionType.Modulo;
+                    return true;
+
+                case "op_BitwiseAnd":
+                    type = ExpressionType.And;
+                    return true;
+
+                case "op_BitwiseOr":
+                    type = ExpressionType.Or;
+                    return true;
+                
+                case "op_ExclusiveOr":
+                    type = ExpressionType.ExclusiveOr;
+                    return true;
+
+                case "op_LeftShift":
+                    type = ExpressionType.LeftShift;
+                    return true;
+
+                case "op_RightShift":
+                    type = ExpressionType.RightShift;
+                    return true;
+                
+                case "op_Equality":
+                    type = ExpressionType.Equal;
+                    return true;
+                
+                case "op_Inequality":
+                    type = ExpressionType.NotEqual;
+                    return true;
+
+                case "op_LessThan":
+                    type = ExpressionType.LessThan;
+                    return true;
+
+                case "op_LessThanOrEqual":
+                    type = ExpressionType.LessThanOrEqual;
+                    return true;
+
+                case "op_GreaterThan":
+                    type = ExpressionType.GreaterThan;
+                    return true;
+
+                case "op_GreaterThanOrEqual":
+                    type = ExpressionType.GreaterThanOrEqual;
+                    return true;
+
+                /*
+                 * The complete set of unary operator function names used is as follows: 
+                 * op_UnaryPlus, op_UnaryNegation, op_LogicalNot, op_OnesComplement, op_Increment, op_Decrement, op_True, and op_False.
+                 */
+                case "op_UnaryPlus":
+                    type = ExpressionType.UnaryPlus;
+                    return true;
+
+                case "op_UnaryNegation":
+                    type = ExpressionType.Negate;
+                    return true;
+
+                case "op_LogicalNot":
+                    type = ExpressionType.Not;
+                    return true;
+
+                case "op_OnesComplement":
+                    type = ExpressionType.OnesComplement;
+                    return true;
+
                 case "op_Increment":
                     type = default(ExpressionType);
                     return false;
@@ -1073,21 +1163,13 @@ namespace DelegateDecompiler
                     type = default(ExpressionType);
                     return false;
 
-                case "op_Division":
-                    type = ExpressionType.Divide;
-                    return true;
-                
-                case "op_Equality":
-                    type = ExpressionType.Equal;
-                    return true;
+                case "op_True":
+                    type = default(ExpressionType);
+                    return false;
 
-                case "op_Inequality":
-                    type = ExpressionType.NotEqual;
-                    return true;
-
-                case "op_Addition":
-                    type = ExpressionType.Add;
-                    return true;
+                case "op_False":
+                    type = default(ExpressionType);
+                    return false;
             }
             return Enum.TryParse(m.Name.Substring(3), out type);
         }

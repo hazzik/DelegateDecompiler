@@ -80,13 +80,21 @@ namespace DelegateDecompiler.Tests
         }
 
         [Test]
+        public void ExpressionWithNullableMinus()
+        {
+            Expression<Func<decimal?, decimal?, decimal?>> expected = (x, y) => x - y;
+            Func<decimal?, decimal?, decimal?> compiled = (x, y) => x - y;
+            Test(expected, compiled);
+        }
+
+        [Test]
         public void ExpressionWithNullableDiv()
         {
             Expression<Func<decimal?, decimal?, decimal?>> expected = (x, y) => x / y;
             Func<decimal?, decimal?, decimal?> compiled = (x, y) => x / y;
             Test(expected, compiled);
         }
-        
+
         [Test]
         public void ExpressionWithNullableEqual2()
         {
@@ -154,13 +162,21 @@ namespace DelegateDecompiler.Tests
         }
 
         [Test]
+        public void ExpressionWithNullableMinus2()
+        {
+            Expression<Func<decimal?, decimal, decimal?>> expected = (x, y) => x - y;
+            Func<decimal?, decimal, decimal?> compiled = (x, y) => x - y;
+            Test(expected, compiled);
+        }
+
+        [Test]
         public void ExpressionWithNullableDiv2()
         {
             Expression<Func<decimal?, decimal, decimal?>> expected = (x, y) => x / y;
             Func<decimal?, decimal, decimal?> compiled = (x, y) => x / y;
             Test(expected, compiled);
         }
-        
+
         [Test]
         public void ExpressionWithNullableEqual3()
         {
@@ -226,13 +242,21 @@ namespace DelegateDecompiler.Tests
         }
 
         [Test]
+        public void ExpressionWithNullableMinus3()
+        {
+            Expression<Func<decimal, decimal?, decimal?>> expected = (x, y) => x - y;
+            Func<decimal, decimal?, decimal?> compiled = (x, y) => x - y;
+            Test(expected, compiled);
+        }
+
+        [Test]
         public void ExpressionWithNullableDiv3()
         {
             Expression<Func<decimal, decimal?, decimal?>> expected = (x, y) => x / y;
             Func<decimal, decimal?, decimal?> compiled = (x, y) => x / y;
             Test(expected, compiled);
         }
-        
+
         [Test, Ignore("Needs optimization")]
         public void ExpressionWithNullableSum3()
         {
