@@ -175,5 +175,54 @@ namespace DelegateDecompiler.Tests
             Func<Employee, string, bool> compiled = (u,term) => (u.FirstName != null && (u.FirstName.Contains(term) || term.Contains(u.FirstName))) && !u.IsBlocked;
             Test(expected, compiled);
         }
+
+        [Test]
+        public void SimpleIfStatement()
+        {
+            Expression<Func<int, int, int>> expected = (a, b) => a >= b ? b : a;
+            Func<int, int, int> compiled = (a, b) =>
+            {
+                var result = b;
+                if (a < b)
+                    result = a;
+                return result;
+            };
+            Test(expected, compiled);
+        }
+
+        [Test]
+        public void SimpleIfElseStatement()
+        {
+            Expression<Func<int, int, int>> expected = (a, b) => a >= b ? b : a;
+            Func<int, int, int> compiled = (a, b) =>
+            {
+                if (a < b)
+                    return a;
+                else
+                    return b;
+            };
+            Test(expected, compiled);
+        }
+
+        [Test]
+        public void IfElseStatementWithTwoLocalVariables()
+        {
+            Expression<Func<int, int, int>> expected = (a, b) => a + b + (a >= b ? 2 : 1) + 10;
+            Func<int, int, int> compiled = (a, b) =>
+            {
+                var c = 0;
+                var d = 10;
+                if (a < b)
+                {
+                    c = 1;
+                }
+                else
+                {
+                    c = 2;
+                }
+                return a + b + c + d;
+            };
+            Test(expected, compiled);
+        }
     }
 }

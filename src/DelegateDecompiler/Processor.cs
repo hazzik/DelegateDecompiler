@@ -24,9 +24,10 @@ namespace DelegateDecompiler
 
             public Instruction Instruction { get; set; }
 
-            public ProcessorState(Stack<Address> stack, VariableInfo[] locals, IList<Address> args, Instruction instruction, Instruction last = null)
+            public ProcessorState(Stack<Address> stack, VariableInfo[] locals, IList<Address> args, Instruction instruction,
+               Instruction last = null, IDictionary<FieldInfo, Address> delegates = null)
             {
-                Delegates = new Dictionary<FieldInfo, Address>();
+                Delegates = delegates ?? new Dictionary<FieldInfo, Address>();
                 Stack = stack;
                 Locals = locals;
                 Args = args;
@@ -36,7 +37,43 @@ namespace DelegateDecompiler
 
             public ProcessorState Clone(Instruction instruction, Instruction last = null)
             {
-                return new ProcessorState(new Stack<Address>(Stack), Locals.ToArray(), Args.ToArray(), instruction, last);
+                var state = new ProcessorState(null, new VariableInfo[Locals.Length], Args.ToArray(), instruction, last, Delegates);
+                var addressMap = new Dictionary<Address, Address>();
+                var buffer = new List<Address>();
+                foreach (var address in Stack)
+                {
+                    buffer.Add(address.Clone(addressMap));
+                }
+                state.Stack = new Stack<Address>(Enumerable.Reverse(buffer));
+                for (int i = 0; i < Locals.Length; i++)
+                {
+                    state.Locals[i] = new VariableInfo(Locals[i].Type);
+                    state.Locals[i].Address = Locals[i].Address.Clone(addressMap);
+                }
+                return state;
+            }
+
+            public void Merge(Expression test, ProcessorState leftState, ProcessorState rightState)
+            {
+                var addressMap = new Dictionary<Tuple<Address, Address>, Address>();
+                for (int i = 0; i < leftState.Locals.Length; i++)
+                {
+                    var leftLocal = leftState.Locals[i];
+                    var rightLocal = rightState.Locals[i];
+                    Locals[i].Address = Address.Merge(test, leftLocal.Address, rightLocal.Address, addressMap);
+                }
+                var buffer = new List<Address>();
+                while (leftState.Stack.Count > 0 || rightState.Stack.Count > 0)
+                {
+                    var rightExpression = rightState.Stack.Pop();
+                    var leftExpression = leftState.Stack.Pop();
+                    buffer.Add(Address.Merge(test, leftExpression, rightExpression, addressMap));
+                }
+                Stack.Clear();
+                foreach (var address in Enumerable.Reverse(buffer))
+                {
+                    Stack.Push(address);
+                }
             }
 
             public Expression Final()
@@ -768,16 +805,7 @@ namespace DelegateDecompiler
             states.Push(leftState);
 
             // Run this once the conditional branches have been processed
-            state.RunNext = () =>
-            {
-                var rightExpression = rightState.Final();
-                var leftExpression = leftState.Final();
-                leftExpression = AdjustType(leftExpression, rightExpression.Type);
-                rightExpression = AdjustType(rightExpression, leftExpression.Type);
-
-                var expression = Expression.Condition(test, leftExpression, rightExpression);
-                state.Stack.Push(expression);
-            };
+            state.RunNext = () => state.Merge(test, leftState, rightState);
 
             return common;
         }
@@ -880,7 +908,7 @@ namespace DelegateDecompiler
             return joinPointState.Common;
         }
 
-        static Expression AdjustType(Expression expression, Type type)
+        internal static Expression AdjustType(Expression expression, Type type)
         {
             var constantExpression = expression as ConstantExpression;
             if (constantExpression != null)
@@ -962,7 +990,9 @@ namespace DelegateDecompiler
             var mArgs = GetArguments(state, m);
 
             var instance = m.IsStatic ? new Address() : state.Stack.Pop();
-            state.Stack.Push(BuildMethodCallExpression(m, instance, mArgs));
+            var result = BuildMethodCallExpression(m, instance, mArgs);
+            if (m.ReturnType != typeof(void))
+                state.Stack.Push(result);
         }
 
         static Expression[] GetArguments(ProcessorState state, MethodBase m)
