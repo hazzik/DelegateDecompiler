@@ -130,6 +130,11 @@ namespace DelegateDecompiler
                     {
                         //do nothing;
                     }
+                    else if (state.Instruction.OpCode == OpCodes.Ldtoken)
+                    {
+                        var fieldInfo = (FieldInfo) (state.Instruction.Operand);
+                        state.Stack.Push(Expression.Constant(fieldInfo.FieldHandle));
+                    }
                     else if (state.Instruction.OpCode == OpCodes.Ldarg_0)
                     {
                         LdArg(state, 0);
@@ -945,24 +950,35 @@ namespace DelegateDecompiler
             var newArray = array.Expression as NewArrayExpression;
             if (newArray != null)
             {
-                var expressions = CreateArrayInitExpressions(newArray, value);
+                var expressions = CreateArrayInitExpressions(newArray, value, index);
                 var newArrayInit = Expression.NewArrayInit(array.Type.GetElementType(), expressions);
                 array.Expression = newArrayInit;
-                return;
             }
-
-            throw new NotImplementedException();
+            else
+            {
+                throw new NotImplementedException();
+            }
         }
 
-        static IEnumerable<Expression> CreateArrayInitExpressions(NewArrayExpression newArray, Expression value)
+        static IEnumerable<Expression> CreateArrayInitExpressions(NewArrayExpression newArray, Expression valueExpression, Expression indexExpression)
         {
             if (newArray.NodeType == ExpressionType.NewArrayInit)
             {
-                var expressions = newArray.Expressions.ToList();
-                expressions.Add(value);
+                var indexGetter = (Func<int>) Expression.Lambda(indexExpression).Compile();
+                var index = indexGetter();
+                var expressions = newArray.Expressions.ToArray();
+
+                if (index >= newArray.Expressions.Count)
+                {
+                    Array.Resize(ref expressions, index + 1);
+                }
+
+                expressions[index] = valueExpression;
+
                 return expressions;
             }
-            return new[] { value };
+
+            return new[] {valueExpression};
         }
 
         static void LdC(ProcessorState state, int i)
@@ -991,7 +1007,7 @@ namespace DelegateDecompiler
 
             var instance = m.IsStatic ? new Address() : state.Stack.Pop();
             var result = BuildMethodCallExpression(m, instance, mArgs);
-            if (m.ReturnType != typeof(void))
+            if (result.Type != typeof(void))
                 state.Stack.Push(result);
         }
 
@@ -1071,9 +1087,17 @@ namespace DelegateDecompiler
                     return expression;
                 }
             }
+
             if (m.Name == "InitializeArray" && m.DeclaringType == typeof (RuntimeHelpers))
             {
-                
+                var arrayGetter = (Func<Array>) Expression.Lambda(arguments[0]).Compile();
+                var fieldGetter = (Func<RuntimeFieldHandle>) Expression.Lambda(arguments[1]).Compile();
+                var array = arrayGetter();
+                RuntimeHelpers.InitializeArray(array, fieldGetter());
+
+                IEnumerable<Expression> initializers = array.Cast<object>().Select(Expression.Constant);
+
+                return Expression.NewArrayInit(arguments[0].Type.GetElementType(), initializers);
             }
 
             var parameters = m.GetParameters();

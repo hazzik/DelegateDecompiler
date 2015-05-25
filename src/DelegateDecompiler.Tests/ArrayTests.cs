@@ -64,10 +64,34 @@ namespace DelegateDecompiler.Tests
         }
 
         [Test]
+        public void DecompileArrayWithInit3()
+        {
+            Expression<Func<int[]>> expected = () => new[] { 1, 2, 3 };
+            Func<int[]> compiled = () => new[] { 1, 2, 3 };
+            Test(expected, compiled);
+        }
+
+        [Test]
         public void DecompileArrayOfIntWithInitFromParam()
         {
             Expression<Func<int, int[]>> expected = x => new[] { x, 2 };
             Func<int, int[]> compiled = x => new[] { x, 2 };
+            Test(expected, compiled);
+        }
+
+        [Test]
+        public void DecompileArrayOfIntWithInitFromParam4()
+        {
+            Expression<Func<int, int[]>> expected = x => new[] { x, 2, 3, 4 };
+            Func<int, int[]> compiled = x => new[] { x, 2, 3, 4 };
+            Test(expected, compiled);
+        }
+
+        [Test]
+        public void DecompileArrayOfIntWithInitFromParam4A()
+        {
+            Expression<Func<int, int[]>> expected = x => new[] { 1, 2, 3, 4, x };
+            Func<int, int[]> compiled = x => new[] { 1, 2, 3, 4, x };
             Test(expected, compiled);
         }
 
