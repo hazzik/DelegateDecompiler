@@ -18,9 +18,10 @@ namespace DelegateDecompiler.Tests
         [Test]
         public void TestNewArray0()
         {
-            Expression<Func<int[]>> expected = () => new int[0];
+            Expression<Func<int[]>> expected1 = () => new int[0];
+            Expression<Func<int[]>> expected2 = () => new int[] {};
             Func<int[]> compiled = () => new int[0];
-            Test(expected, compiled);
+            Test(expected1, expected2, compiled);
         }
 
         [Test]

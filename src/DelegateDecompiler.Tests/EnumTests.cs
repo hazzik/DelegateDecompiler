@@ -24,33 +24,37 @@ namespace DelegateDecompiler.Tests
         [Test]
         public void TestEnumParameterEqualsEnumConstant()
         {
-            Expression<Func<TestEnum, bool>> expected = x => x == TestEnum.Bar;
+            Expression<Func<TestEnum, bool>> expected1 = x => x == TestEnum.Bar;
+            Expression<Func<TestEnum, bool>> expected2 = x => (int) x == (int) TestEnum.Bar;
             Func<TestEnum, bool> compiled = x => x == TestEnum.Bar;
-            Test(expected, compiled);
+            Test(expected1, expected2, compiled);
         }
 
         [Test]
         public void TestEnumConstantEqualsEnumParameter()
         {
-            Expression<Func<TestEnum, bool>> expected = x => TestEnum.Bar == x;
+            Expression<Func<TestEnum, bool>> expected1 = x => TestEnum.Bar == x;
+            Expression<Func<TestEnum, bool>> expected2 = x => (int) TestEnum.Bar == (int) x;
             Func<TestEnum, bool> compiled = x => TestEnum.Bar == x;
-            Test(expected, compiled);
+            Test(expected1, expected2, compiled);
         }
 
         [Test]
         public void TestEnumPropertyNotEqualsFooOrElseEnumPropertyEqualsBar()
         {
-            Expression<Func<TestEnum, bool>> expected = x => (x != TestEnum.Bar) || (x == TestEnum.Foo);
+            Expression<Func<TestEnum, bool>> expected1 = x => (x != TestEnum.Bar) || (x == TestEnum.Foo);
+            Expression<Func<TestEnum, bool>> expected2 = x => ((int)x != (int)TestEnum.Bar) || ((int)x == (int)TestEnum.Foo);
             Func<TestEnum, bool> compiled = x => (x != TestEnum.Bar) || (x == TestEnum.Foo);
-            Test(expected, compiled);
+            Test(expected1, expected2, compiled);
         }
 
         [Test]
         public void TestEnumPropertyEqualsFooOrElseEnumPropertyEqualsBar()
         {
-            Expression<Func<TestEnum, bool>> expected = x => (x == TestEnum.Bar) || (x == TestEnum.Foo);
+            Expression<Func<TestEnum, bool>> expected1 = x => (x == TestEnum.Bar) || (x == TestEnum.Foo);
+            Expression<Func<TestEnum, bool>> expected2 = x => ((int)x == (int)TestEnum.Bar) || ((int)x == (int)TestEnum.Foo);
             Func<TestEnum, bool> compiled = x => (x == TestEnum.Bar) || (x == TestEnum.Foo);
-            Test(expected, compiled);
+            Test(expected1, expected2, compiled);
         }
 
         [Test]
@@ -64,17 +68,19 @@ namespace DelegateDecompiler.Tests
         [Test]
         public void TestEnumParameterNotEqualsEnumConstant()
         {
-            Expression<Func<TestEnum, bool>> expected = x => x != TestEnum.Bar;
+            Expression<Func<TestEnum, bool>> expected1 = x => x != TestEnum.Bar;
+            Expression<Func<TestEnum, bool>> expected2 = x => (int) x != (int) TestEnum.Bar;
             Func<TestEnum, bool> compiled = x => x != TestEnum.Bar;
-            Test(expected, compiled);
+            Test(expected1, expected2, compiled);
         }
 
         [Test]
         public void TestEnumConstantNotEqualsEnumParameter()
         {
-            Expression<Func<TestEnum, bool>> expected = x => TestEnum.Bar != x;
+            Expression<Func<TestEnum, bool>> expected1 = x => TestEnum.Bar != x;
+            Expression<Func<TestEnum, bool>> expected2 = x => (int) TestEnum.Bar != (int) x;
             Func<TestEnum, bool> compiled = x => TestEnum.Bar != x;
-            Test(expected, compiled);
+            Test(expected1, expected2, compiled);
         }
 
         [Test]
