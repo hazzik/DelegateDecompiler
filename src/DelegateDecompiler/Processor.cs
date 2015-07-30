@@ -84,7 +84,8 @@ namespace DelegateDecompiler
             }
         }
   
-        const string cachedAnonymousMethodDelegate = "<>9__CachedAnonymousMethodDelegate";
+        const string cachedAnonymousMethodDelegate = "CS$<>9__CachedAnonymousMethodDelegate";
+        const string cachedAnonymousMethodDelegateRoslyn = "<>9__";
 
         static readonly MethodInfo StringConcat = typeof(string).GetMethod("Concat", new[] { typeof(object), typeof(object) });
 
@@ -747,9 +748,9 @@ namespace DelegateDecompiler
 
         private static bool IsCachedAnonymousMethodDelegate(FieldInfo field)
         {
-            return field != null &&
-                field.Name.Contains(cachedAnonymousMethodDelegate) /*&&
-                Attribute.IsDefined(field, typeof (CompilerGeneratedAttribute), false)*/;
+            if (field == null) return false;
+            return field.Name.StartsWith(cachedAnonymousMethodDelegate) && Attribute.IsDefined(field, typeof (CompilerGeneratedAttribute), false) ||
+                   field.Name.StartsWith(cachedAnonymousMethodDelegateRoslyn) && field.DeclaringType != null && Attribute.IsDefined(field.DeclaringType, typeof (CompilerGeneratedAttribute), false);
         }
 
         private static BinaryExpression AdjustedBinaryExpression(Expression left, Expression right, ExpressionType expressionType)
