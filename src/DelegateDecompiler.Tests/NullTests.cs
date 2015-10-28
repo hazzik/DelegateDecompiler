@@ -47,6 +47,14 @@ namespace DelegateDecompiler.Tests
         }
 
         [Test]
+        public void ExpressionWithNullableEqualNull()
+        {
+            Expression<Func<int?, bool>> expected = (x) => x == null;
+            Func<int?, bool> compiled = (x) => x == null;
+            Test(expected, compiled);
+        }
+
+        [Test]
         public void ExpressionWithNullableNotEqual()
         {
             Expression<Func<int?, int?, bool>> expected = (x, y) => x != y;
