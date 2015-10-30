@@ -921,7 +921,7 @@ namespace DelegateDecompiler
             {
                 if (constantExpression.Value == null)
                 {
-                    return Expression.Constant(null, type);
+                    return Expression.Constant(null, EnsureNullableType(type));
                 }
                 if (expression.Type == typeof (int) && type == typeof (bool))
                 {
@@ -938,6 +938,10 @@ namespace DelegateDecompiler
             if (!type.IsAssignableFrom(expression.Type) && expression.Type.IsEnum && expression.Type.GetEnumUnderlyingType() == type)
             {
                 return Expression.Convert(expression, type);
+            }
+            if (CanBeNull(type) && !CanBeNull(expression.Type))
+            {
+                return Expression.Convert(expression, MakeNullableType(expression.Type));
             }
             return expression;
         }
@@ -1259,6 +1263,21 @@ namespace DelegateDecompiler
         static void LdArg(ProcessorState state, int index)
         {
             state.Stack.Push(state.Args[index]);
+        }
+
+        public static bool CanBeNull(Type type)
+        {
+            return !type.IsValueType || (Nullable.GetUnderlyingType(type) != null);
+        }
+
+        public static Type MakeNullableType(Type type)
+        {
+            return typeof (Nullable<>).MakeGenericType(type);
+        }
+
+        public static Type EnsureNullableType(Type type)
+        {
+            return CanBeNull(type) ? type : MakeNullableType(type);
         }
     }
 }
