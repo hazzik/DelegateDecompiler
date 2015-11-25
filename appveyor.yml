@@ -12,11 +12,3 @@ build:
 before_build:
   - nuget restore
   - ps: gitversion /l console /output buildserver /updateAssemblyInfo
-
-after_build:
-  - cmd: ECHO nuget pack src\DelegateDecompiler\DelegateDecompiler.nuspec -version "%GitVersion_NuGetVersion%" -prop "target=%CONFIGURATION%"
-  - cmd: nuget pack src\DelegateDecompiler\DelegateDecompiler.nuspec -version "%GitVersion_NuGetVersion%" -prop "target=%CONFIGURATION%"
-  - cmd: ECHO nuget pack src\DelegateDecompiler.EntityFramework\DelegateDecompiler.EntityFramework.nuspec -version "%GitVersion_NuGetVersion%" -prop "target=%CONFIGURATION%"
-  - cmd: nuget pack src\DelegateDecompiler.EntityFramework\DelegateDecompiler.EntityFramework.nuspec -version "%GitVersion_NuGetVersion%" -prop "target=%CONFIGURATION%"
-  - cmd: appveyor PushArtifact "DelegateDecompiler.%GitVersion_NuGetVersion%.nupkg"
-  - cmd: appveyor PushArtifact "DelegateDecompiler.EntityFramework.%GitVersion_NuGetVersion%.nupkg"
