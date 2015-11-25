@@ -1,9 +1,14 @@
+configuration: Release
+
 install:
   - choco install gitversion.portable -pre -y
 
 assembly_info:
   patch: false
 
+build:
+  verbosity: minimal
+  
 before_build:
   - nuget restore
   - ps: gitversion /l console /output buildserver /updateAssemblyInfo
