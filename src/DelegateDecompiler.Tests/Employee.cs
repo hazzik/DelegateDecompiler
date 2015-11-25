@@ -81,5 +81,26 @@ namespace DelegateDecompiler.Tests
                        NullableDate.Value.AddDays(NullableInt.Value) > DateTime.Now;
             }
         }
+
+        public int Id { get; set; }
+
+        [Computed]
+        public int ComplexProperty
+        {
+            get
+            {
+                if (Id > 3)
+                {
+                    return 1;
+                }
+
+                if (Id <= 3)
+                {
+                    return 2;
+                }
+
+                return 3;
+            }
+        }
     }
 }
