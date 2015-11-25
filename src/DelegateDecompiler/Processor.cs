@@ -726,6 +726,20 @@ namespace DelegateDecompiler
 
                         state.Stack.Push(AdjustedBinaryExpression(val2, AdjustBooleanConstant(val1, val2.Type), ExpressionType.LessThan));
                     }
+                    else if (state.Instruction.OpCode == OpCodes.Isinst)
+                    {
+                        var val = state.Stack.Pop();
+                        if (state.Instruction.Next != null && state.Instruction.Next.OpCode == OpCodes.Ldnull &&
+                            state.Instruction.Next.Next != null && state.Instruction.Next.Next.OpCode == OpCodes.Cgt_Un)
+                        {
+                            state.Stack.Push(Expression.TypeIs(val, (Type) state.Instruction.Operand));
+                            state.Instruction = state.Instruction.Next.Next;
+                        }
+                        else
+                        {
+                            state.Stack.Push(Expression.TypeAs(val, (Type) state.Instruction.Operand));
+                        }
+                    }
                     else if (state.Instruction.OpCode == OpCodes.Ret)
                     {
                         states.Pop();
