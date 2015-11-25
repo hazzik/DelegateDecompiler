@@ -204,5 +204,17 @@ namespace DelegateDecompiler.Tests
 
             Assert.AreEqual(expected.Expression.ToString(), actual.Expression.ToString());
         }
+
+        [Test]
+        public void Issue58()
+        {
+            var employees = new[] { new Employee { FirstName = "Test", LastName = "User" } };
+
+            var expected = employees.AsQueryable().Where(_ => (_.Id <= 3 ? (_.Id > 3 ? 3 : 2) : 1) == 1);
+
+            var actual = employees.AsQueryable().Where(_ => _.ComplexProperty == 1).Decompile();
+
+            Assert.AreEqual(expected.Expression.ToString(), actual.Expression.ToString());
+        }
     }
 }
