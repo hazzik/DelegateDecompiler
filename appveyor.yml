@@ -12,3 +12,6 @@ build:
 before_build:
   - nuget restore
   - ps: gitversion /l console /output buildserver /updateAssemblyInfo
+
+artifacts:
+- path: '**/*.nuget'
