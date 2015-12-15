@@ -276,7 +276,7 @@ namespace DelegateDecompiler
                             }
                             else
                             {
-                                throw new NotImplementedException();
+                                state.Stack.Push(Expression.Assign(Expression.Field(instance, field), value));
                             }
                         }
                     }
@@ -936,6 +936,10 @@ namespace DelegateDecompiler
             if (expression.Type == type)
             {
                 return expression;
+            }
+
+            if (type == typeof(void)) { 
+                return Expression.Block(expression, Expression.Empty());
             }
 
             var constantExpression = expression as ConstantExpression;
