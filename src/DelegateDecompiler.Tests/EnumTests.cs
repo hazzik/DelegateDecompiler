@@ -91,7 +91,7 @@ namespace DelegateDecompiler.Tests
             Test(expected, compiled);
         }
 
-        [Test, Ignore("Need optimization")]
+        [Test]
         public void TestEnumConstantHasFlagEnumParameter()
         {
             Expression<Func<TestFlagEnum, bool>> expected = x => TestFlagEnum.Bar.HasFlag(x);
@@ -99,7 +99,7 @@ namespace DelegateDecompiler.Tests
             Test(expected, compiled);
         }
 
-        [Test, Ignore("Need optimization")]
+        [Test]
         public void TestEnumParameterHasFlagEnumConstant()
         {
             Expression<Func<TestFlagEnum, bool>> expected = x => x.HasFlag(TestFlagEnum.Bar);
@@ -107,7 +107,7 @@ namespace DelegateDecompiler.Tests
             Test(expected, compiled);
         }
 
-        [Test, Ignore("Need optimization")]
+        [Test]
         public void TestEnumParameterHasFlagEnumParameter()
         {
             Expression<Func<TestFlagEnum, bool>> expected = x => x.HasFlag(TestFlagEnum.Bar);
@@ -131,7 +131,7 @@ namespace DelegateDecompiler.Tests
             Test(expected, compiled);
         }
 
-        [Test, Ignore("Need optimization")]
+        [Test]
         public void TestEnumParameterAsMethodWithObjectParameter()
         {
             Expression<Func<TestEnum, bool>> expected = x => ObjectMethod(x);
@@ -202,6 +202,14 @@ namespace DelegateDecompiler.Tests
         {
             Expression<Func<TestEnum, bool>> expected = x => (int)x > 10;
             Func<TestEnum, bool> compiled = x => (int)x > 10;
+            Test(expected, compiled);
+        }
+
+        [Test]
+        public void Issue61()
+        {
+            Expression<Func<decimal, decimal>> expected = x => Decimal.Round(x, 3, MidpointRounding.AwayFromZero);
+            Func<decimal, decimal> compiled = x => Decimal.Round(x, 3, MidpointRounding.AwayFromZero);
             Test(expected, compiled);
         }
 

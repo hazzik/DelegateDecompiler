@@ -45,8 +45,8 @@ namespace DelegateDecompiler
             }
             else
             {
-                var left = address1.Expression ?? Expression.Constant(null, address2.Type);
-                var right = address2.Expression ?? Expression.Constant(null, address1.Type);
+                var left = address1.Expression ?? Expression.Default(address2.Type);
+                var right = address2.Expression ?? Expression.Default(address1.Type);
                 left = Processor.AdjustType(left, right.Type);
                 right = Processor.AdjustType(right, left.Type);
                 result = Expression.Condition(test, left, right);

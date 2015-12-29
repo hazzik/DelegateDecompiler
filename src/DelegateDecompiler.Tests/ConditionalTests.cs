@@ -205,6 +205,14 @@ namespace DelegateDecompiler.Tests
         }
 
         [Test]
+        public void Issue58()
+        {
+            Expression<Func<int, bool>> expected = x => (x <= 3 ? (x <= 3 ? 2 : 3) : 1) == 1;
+            Func<int, bool> compiled = x => (x <= 3 ? (x <= 3 ? 2 : 3) : 1) == 1;
+            Test(expected, compiled);
+        }
+
+        [Test]
         public void IfElseStatementWithTwoLocalVariables()
         {
             Expression<Func<int, int, int>> expected = (a, b) => a + b + (a >= b ? 2 : 1) + 10;
