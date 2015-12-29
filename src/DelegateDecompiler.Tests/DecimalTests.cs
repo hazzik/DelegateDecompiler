@@ -104,6 +104,14 @@ namespace DelegateDecompiler.Tests
         }
 
         [Test]
+        public void MulByInt()
+        {
+            Expression<Func<decimal, int, decimal>> expected = (x, y) => x * y;
+            Func<decimal, int, decimal> compiled = (x, y) => x * y;
+            Test(expected, compiled);
+        }
+
+        [Test]
         public void Div()
         {
             Expression<Func<decimal, decimal, decimal>> expected = (x, y) => x / y;

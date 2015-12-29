@@ -1122,6 +1122,8 @@ namespace DelegateDecompiler
                                 return Expression.Add(arguments[0], Expression.Constant(Convert.ChangeType(1, arguments[0].Type)));
                             case "op_Decrement":
                                 return Expression.Subtract(arguments[0], Expression.Constant(Convert.ChangeType(1, arguments[0].Type)));
+                            case "op_Implicit":
+                                return Expression.Convert(arguments[0], m.ReturnType, m);
                         }
                     }
                 }
