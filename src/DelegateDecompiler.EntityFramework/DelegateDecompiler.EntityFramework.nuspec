@@ -14,7 +14,7 @@
       A tool which is able to decompile a delegate or a method body to its lambda representation
     </description>
     <releaseNotes></releaseNotes>
-    <copyright>Copyright (c) Alexander Zaytsev 2014 - 2015</copyright>
+    <copyright>Copyright (c) Alexander Zaytsev 2014 - 2016</copyright>
     <tags>LINQ computed-properties computedproperties decompiler decompilation computed properties expressions expression-tree IL</tags>
     <dependencies>
       <dependency id="DelegateDecompiler" version="0.18.1" />
