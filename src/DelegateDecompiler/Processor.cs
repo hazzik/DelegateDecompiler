@@ -133,8 +133,8 @@ namespace DelegateDecompiler
                     }
                     else if (state.Instruction.OpCode == OpCodes.Ldtoken)
                     {
-                        var fieldInfo = (FieldInfo) (state.Instruction.Operand);
-                        state.Stack.Push(Expression.Constant(fieldInfo.FieldHandle));
+                        var runtimeHandle = GetRuntimeHandle(state.Instruction.Operand);
+                        state.Stack.Push(Expression.Constant(runtimeHandle));
                     }
                     else if (state.Instruction.OpCode == OpCodes.Ldarg_0)
                     {
@@ -758,6 +758,26 @@ namespace DelegateDecompiler
             }
 
             return state == null ? Expression.Empty() : state.Final();
+        }
+
+        static object GetRuntimeHandle(object operand)
+        {
+            var fieldInfo = operand as FieldInfo;
+            if (fieldInfo != null)
+            {
+                return fieldInfo.FieldHandle;
+            }
+            var methodBase = operand as MethodBase;
+            if (methodBase != null)
+            {
+                return methodBase.MethodHandle;
+            }
+            var type = operand as Type;
+            if (type != null)
+            {
+                return type.TypeHandle;
+            }
+            return null;
         }
 
         static bool IsCachedAnonymousMethodDelegate(FieldInfo field)
