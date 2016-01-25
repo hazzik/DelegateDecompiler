@@ -1095,7 +1095,7 @@ namespace DelegateDecompiler
                     return instance;
                 }
             }
-            if (m.IsSpecialName && m.IsHideBySig)
+            if (m.IsSpecialName)
             {
                 if (m.Name.StartsWith("get_"))
                 {
