@@ -56,7 +56,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ArrayTests.cs" />
-    <Compile Include="BooleanTests.cs" />
+    <Compile Include="IntegerConstantTests.cs" />
     <Compile Include="Issue67.cs" />
     <Compile Include="TypeAsTests.cs" />
     <Compile Include="ClosuresTest.cs" />

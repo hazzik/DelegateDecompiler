@@ -968,14 +968,33 @@ namespace DelegateDecompiler
 
                 if (constantExpression.Type == typeof(int))
                 {
-                    if (type == typeof (bool))
-                    {
-                        return Expression.Constant(!Equals(constantExpression.Value, 0));
-                    }
-
                     if (type.IsEnum)
                     {
                         return Expression.Constant(Enum.ToObject(type, constantExpression.Value));
+                    }
+                    if (type == typeof (bool))
+                    {
+                        return Expression.Constant(Convert.ToBoolean(constantExpression.Value));
+                    }
+                    if (type == typeof (byte))
+                    {
+                        return Expression.Constant(Convert.ToByte(constantExpression.Value));
+                    }
+                    if (type == typeof (sbyte))
+                    {
+                        return Expression.Constant(Convert.ToSByte(constantExpression.Value));
+                    }
+                    if (type == typeof (short))
+                    {
+                        return Expression.Constant(Convert.ToInt16(constantExpression.Value));
+                    }
+                    if (type == typeof (ushort))
+                    {
+                        return Expression.Constant(Convert.ToUInt16(constantExpression.Value));
+                    }
+                    if (type == typeof (uint))
+                    {
+                        return Expression.Constant(Convert.ToUInt32(constantExpression.Value));
                     }
                 }
             }
@@ -1089,7 +1108,10 @@ namespace DelegateDecompiler
             var mArgs = new Expression[parameterInfos.Length];
             for (var i = parameterInfos.Length - 1; i >= 0; i--)
             {
-                mArgs[i] = state.Stack.Pop();
+                var argument = state.Stack.Pop();
+                var parameter = parameterInfos[i];
+                var parameterType = parameter.ParameterType;
+                mArgs[i] = AdjustType(argument, parameterType);
             }
             return mArgs;
         }
@@ -1172,15 +1194,6 @@ namespace DelegateDecompiler
                 IEnumerable<Expression> initializers = array.Cast<object>().Select(Expression.Constant);
 
                 return Expression.NewArrayInit(arguments[0].Type.GetElementType(), initializers);
-            }
-
-            var parameters = m.GetParameters();
-            for (int i = 0; i < parameters.Length; i++)
-            {
-                var parameter = parameters[i];
-                var argument = arguments[i];
-                var parameterType = parameter.ParameterType;
-                arguments[i] = AdjustType(argument, parameterType);
             }
 
             if (instance.Expression != null)
