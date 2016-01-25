@@ -29,8 +29,6 @@ namespace DelegateDecompiler.Tests
             get { return FirstName + " " + LastName; }
         }
 
-
-
         [Computed]
         public bool IsActive
         {
@@ -101,6 +99,14 @@ namespace DelegateDecompiler.Tests
 
                 return 3;
             }
+        }
+    }
+
+    public static class EmployeeExtensions
+    {
+        public static string FullName(this Employee e)
+        {
+            return e.FirstName + " " + e.LastName;
         }
     }
 }

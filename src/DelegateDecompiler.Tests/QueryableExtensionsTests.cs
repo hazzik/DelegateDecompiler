@@ -74,7 +74,7 @@ namespace DelegateDecompiler.Tests
 
             Assert.AreEqual(expected.Expression.ToString(), actual.Expression.ToString());
         }
-       
+
         [Test]
         public void InlineBooleanProperty()
         {
@@ -216,5 +216,58 @@ namespace DelegateDecompiler.Tests
 
             Assert.AreEqual(expected.Expression.ToString(), actual.Expression.ToString());
         }
+
+        [Test]
+        public void InlineExtensionMethod()
+        {
+            var employees = new[] { new Employee { FirstName = "Test", LastName = "User" } };
+
+            var expected = (from employee in employees.AsQueryable()
+                            where (employee.FirstName + " " + employee.LastName) == "Test User"
+                            select employee);
+
+            var actual = (from employee in employees.AsQueryable()
+                          where employee.FullName().Computed() == "Test User"
+                          select employee).Decompile();
+
+            Assert.AreEqual(expected.Expression.ToString(), actual.Expression.ToString());
+        }
+
+        [Test]
+        public void InlineExtensionMethodOrderBy()
+        {
+            var employees = new[] { new Employee { FirstName = "Test", LastName = "User" } };
+
+            var expected = (from employee in employees.AsQueryable()
+                            where (employee.FirstName + " " + employee.LastName) == "Test User"
+                            orderby (employee.FirstName + " " + employee.LastName)
+                            select employee);
+
+            var actual = (from employee in employees.AsQueryable().Decompile()
+                          where employee.FullName().Computed() == "Test User"
+                          orderby employee.FullName ().Computed()
+                          select employee);
+
+            Assert.AreEqual(expected.Expression.ToString(), actual.Expression.ToString());
+        }
+
+        [Test]
+        public void InlineExtensionMethodOrderByThenBy()
+        {
+            var employees = new[] { new Employee { FirstName = "Test", LastName = "User" } };
+
+            var expected = (from employee in employees.AsQueryable()
+                            where (employee.FirstName + " " + employee.LastName) == "Test User"
+                            orderby (employee.FirstName + " " + employee.LastName)
+                            select employee).ThenBy(x => true);
+
+            var actual = (from employee in employees.AsQueryable().Decompile()
+                          where employee.FullName().Computed() == "Test User"
+                          orderby employee.FullName().Computed()
+                          select employee).ThenBy(x => x.IsActive);
+
+            Assert.AreEqual(expected.Expression.ToString(), actual.Expression.ToString());
+        }
+
     }
 }

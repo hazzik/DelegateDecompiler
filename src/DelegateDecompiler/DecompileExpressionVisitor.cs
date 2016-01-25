@@ -21,8 +21,7 @@ namespace DelegateDecompiler
                 var info = node.Member as PropertyInfo;
                 if (info != null)
                 {
-                    var method = info.GetGetMethod();
-                    return Decompile(method, node.Expression, new List<Expression>());
+                    return Decompile(info.GetGetMethod(), node.Expression, new List<Expression>());
                 }
             }
 
@@ -33,12 +32,21 @@ namespace DelegateDecompiler
         {
             if (node.Method.IsGenericMethod && node.Method.GetGenericMethodDefinition() == typeof (ComputedExtension).GetMethod("Computed", BindingFlags.Static | BindingFlags.Public))
             {
-                var arg = node.Arguments.SingleOrDefault() as MemberExpression;
-                var info = arg.Member as PropertyInfo;
-                if (info != null)
+                var argument = node.Arguments.SingleOrDefault();
+
+                var member = argument as MemberExpression;
+                if (member != null)
                 {
-                    var method = info.GetGetMethod();
-                    return Decompile(method, arg.Expression, new List<Expression>());
+                    var info = member.Member as PropertyInfo;
+                    if (info != null)
+                    {
+                        return Decompile(info.GetGetMethod(), member.Expression, new List<Expression>());
+                    }
+                }
+                var methodCall = argument as MethodCallExpression;
+                if (methodCall != null)
+                {
+                    return Decompile(methodCall.Method, methodCall.Object, methodCall.Arguments);
                 }
             }
 
