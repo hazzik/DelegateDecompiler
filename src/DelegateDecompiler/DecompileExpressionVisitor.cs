@@ -16,12 +16,20 @@ namespace DelegateDecompiler
 
         protected override Expression VisitMember(MemberExpression node)
         {
-            if (ShouldDecompile(node.Member))
+            var nodeMember = node;
+            if (node.Member.DeclaringType.IsInterface && node.Member.DeclaringType.IsAssignableFrom(node.Expression.Type))
             {
-                var info = node.Member as PropertyInfo;
+                nodeMember = Expression.MakeMemberAccess(
+                    Visit(node.Expression),
+                    node.Expression.Type.GetProperty(node.Member.Name));
+            }
+
+            if (ShouldDecompile(nodeMember.Member))
+            {
+                var info = nodeMember.Member as PropertyInfo;
                 if (info != null)
                 {
-                    return Decompile(info.GetGetMethod(), node.Expression, new List<Expression>());
+                    return Decompile(info.GetGetMethod(), nodeMember.Expression, new List<Expression>());
                 }
             }
 

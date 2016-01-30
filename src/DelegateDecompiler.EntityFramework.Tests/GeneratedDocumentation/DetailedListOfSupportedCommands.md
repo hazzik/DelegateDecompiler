@@ -1,6 +1,6 @@
 Detail of supported commands
 ============
-## Documentation produced for DelegateDecompiler, version 0.18.1 on Monday, 04 January 2016 19:28
+## Documentation produced for DelegateDecompiler, version 0.18.1 on Saturday, 30 January 2016 12:15
 
 This file documents what linq commands **DelegateDecompiler** supports when
 working with [Entity Framework v6.1](http://msdn.microsoft.com/en-us/data/aa937723) (EF).
@@ -117,6 +117,7 @@ More will appear as we move forward.*
   * Concatenate Person Not Handle Null (line 32)
   * Concatenate Person Handle Null (line 49)
   * Concatenate Person Handle Name Order (line 68)
+  * Generic Method Person Handle (line 83)
 
 #### [DateTime](../TestGroup50Types/Test05DateTime.cs):
 - Supported
