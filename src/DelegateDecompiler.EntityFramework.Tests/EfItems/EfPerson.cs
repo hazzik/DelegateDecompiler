@@ -4,7 +4,12 @@ using System.ComponentModel.DataAnnotations;
 
 namespace DelegateDecompiler.EntityFramework.Tests.EfItems
 {
-    public class EfPerson
+    public interface IPerson
+    {
+        string FullNameHandleNull { get; }
+    }
+
+    public class EfPerson : IPerson
     {
         public int EfPersonId { get; set; }
 
