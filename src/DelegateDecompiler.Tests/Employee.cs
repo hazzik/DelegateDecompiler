@@ -30,6 +30,12 @@ namespace DelegateDecompiler.Tests
         }
 
         [Computed]
+        public string FromTo
+        {
+            get { return From + "-" + To; }
+        }
+
+        [Computed]
         public bool IsActive
         {
             get { return true; }

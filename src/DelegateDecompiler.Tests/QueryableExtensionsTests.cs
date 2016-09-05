@@ -38,7 +38,23 @@ namespace DelegateDecompiler.Tests
 
             Assert.AreEqual(expected.Expression.ToString(), actual.Expression.ToString());
         }
-        
+
+        [Test]
+        public void ConcatNonStringInlineProperty()
+        {
+            var employees = new[] { new Employee { FirstName = "Test", LastName = "User", From = 0, To = 100 } };
+
+            var expected = (from employee in employees.AsQueryable()
+                            where (employee.From + "-" + employee.To) == "0-100"
+                            select employee);
+
+            var actual = (from employee in employees.AsQueryable()
+                          where employee.FromTo == "0-100"
+                          select employee).Decompile();
+
+            Assert.AreEqual(expected.Expression.ToString(), actual.Expression.ToString());
+        }
+
         [Test]
         public void InlinePropertyOrderBy()
         {
