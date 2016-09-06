@@ -10,7 +10,7 @@ namespace DelegateDecompiler.EntityFramework.Tests.TestGroup01Infrastructure
     {
         private ClassEnvironment classEnv;
 
-        [TestFixtureSetUp]
+        [OneTimeSetUp]
         public void SetUpFixture()
         {
             classEnv = new ClassEnvironment();
