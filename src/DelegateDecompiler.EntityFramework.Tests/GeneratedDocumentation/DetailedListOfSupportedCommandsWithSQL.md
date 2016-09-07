@@ -1,6 +1,6 @@
 Detail With Sql of supported commands
 ============
-## Documentation produced for DelegateDecompiler, version 0.18.1 on Monday, 04 January 2016 19:28
+## Documentation produced for DelegateDecompiler, version 0.19.0 on Wednesday, 07 September 2016 20:39
 
 This file documents what linq commands **DelegateDecompiler** supports when
 working with [Entity Framework v6.1](http://msdn.microsoft.com/en-us/data/aa937723) (EF).
@@ -329,45 +329,41 @@ SELECT TOP (2)
      * T-Sql executed is
 
 ```SQL
-SELECT TOP (2) 
+SELECT 
     [Project1].[EfParentId] AS [EfParentId]
-    FROM ( SELECT [Project1].[EfParentId] AS [EfParentId], [Project1].[C1] AS [C1], row_number() OVER (ORDER BY [Project1].[C1] ASC) AS [row_number]
-        FROM ( SELECT 
-            [Extent1].[EfParentId] AS [EfParentId], 
-            (SELECT 
-                COUNT(1) AS [A1]
-                FROM [dbo].[EfChilds] AS [Extent2]
-                WHERE [Extent1].[EfParentId] = [Extent2].[EfParentId]) AS [C1]
-            FROM [dbo].[EfParents] AS [Extent1]
-        )  AS [Project1]
+    FROM ( SELECT 
+        [Extent1].[EfParentId] AS [EfParentId], 
+        (SELECT 
+            COUNT(1) AS [A1]
+            FROM [dbo].[EfChilds] AS [Extent2]
+            WHERE [Extent1].[EfParentId] = [Extent2].[EfParentId]) AS [C1]
+        FROM [dbo].[EfParents] AS [Extent1]
     )  AS [Project1]
-    WHERE [Project1].[row_number] > 1
     ORDER BY [Project1].[C1] ASC
+    OFFSET 1 ROWS FETCH NEXT 2 ROWS ONLY 
 ```
 
   * Where Any Children Then Order By Then Skip Take (line 69)
      * T-Sql executed is
 
 ```SQL
-SELECT TOP (1) 
+SELECT 
     [Project2].[EfParentId] AS [EfParentId]
-    FROM ( SELECT [Project2].[EfParentId] AS [EfParentId], [Project2].[C1] AS [C1], row_number() OVER (ORDER BY [Project2].[C1] ASC) AS [row_number]
-        FROM ( SELECT 
-            [Extent1].[EfParentId] AS [EfParentId], 
-            (SELECT 
-                COUNT(1) AS [A1]
-                FROM [dbo].[EfChilds] AS [Extent3]
-                WHERE [Extent1].[EfParentId] = [Extent3].[EfParentId]) AS [C1]
-            FROM [dbo].[EfParents] AS [Extent1]
-            WHERE  EXISTS (SELECT 
-                1 AS [C1]
-                FROM [dbo].[EfChilds] AS [Extent2]
-                WHERE [Extent1].[EfParentId] = [Extent2].[EfParentId]
-            )
-        )  AS [Project2]
+    FROM ( SELECT 
+        [Extent1].[EfParentId] AS [EfParentId], 
+        (SELECT 
+            COUNT(1) AS [A1]
+            FROM [dbo].[EfChilds] AS [Extent3]
+            WHERE [Extent1].[EfParentId] = [Extent3].[EfParentId]) AS [C1]
+        FROM [dbo].[EfParents] AS [Extent1]
+        WHERE  EXISTS (SELECT 
+            1 AS [C1]
+            FROM [dbo].[EfChilds] AS [Extent2]
+            WHERE [Extent1].[EfParentId] = [Extent2].[EfParentId]
+        )
     )  AS [Project2]
-    WHERE [Project2].[row_number] > 1
     ORDER BY [Project2].[C1] ASC
+    OFFSET 1 ROWS FETCH NEXT 1 ROWS ONLY 
 ```
 
 

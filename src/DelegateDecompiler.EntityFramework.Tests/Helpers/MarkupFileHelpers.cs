@@ -49,18 +49,34 @@ namespace DelegateDecompiler.EntityFramework.Tests.Helpers
 
         public static string GetMarkupFileDirectory(string alternateTestDir = MarkupDirectoryName)
         {
-            string pathToManipulate = Environment.CurrentDirectory;
+            string path;
+            if (GetMarkupFileDirectory(Environment.CurrentDirectory, alternateTestDir, out path) ||
+                GetMarkupFileDirectory(Path.GetDirectoryName(new Uri(typeof(MarkupFileHelpers).Assembly.CodeBase).LocalPath), alternateTestDir, out path))
+            {
+                return path;
+            }
+
+            throw new Exception("bad news guys. Not the expected path");
+        }
+
+        static bool GetMarkupFileDirectory(string pathToManipulate, string alternateTestDir, out string path)
+        {
             const string debugEnding = @"\bin\debug";
             const string releaseEnding = @"\bin\release";
 
             if (pathToManipulate.EndsWith(debugEnding, StringComparison.InvariantCultureIgnoreCase))
-                return pathToManipulate.Substring(0, pathToManipulate.Length - debugEnding.Length) + alternateTestDir;
+            {
+                path = pathToManipulate.Substring(0, pathToManipulate.Length - debugEnding.Length) + alternateTestDir;
+                return true;
+            }
             if (pathToManipulate.EndsWith(releaseEnding, StringComparison.InvariantCultureIgnoreCase))
-                return pathToManipulate.Substring(0, pathToManipulate.Length - releaseEnding.Length) + alternateTestDir;   
-                
-            throw new Exception("bad news guys. Not the expected path");
+            {
+                path = pathToManipulate.Substring(0, pathToManipulate.Length - releaseEnding.Length) + alternateTestDir;
+                return true;
+            }
 
+            path = null;
+            return false;
         }
-
     }
 }

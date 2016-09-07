@@ -37,6 +37,14 @@ namespace DelegateDecompiler.Tests
             Expression<Func<string, string>> expected = x => string.Concat(x);
             Func<string, string> compiled = x => string.Concat(x);
             Test(expected, compiled);
+        }
+
+        [Test]
+        public void StringConcatObjects()
+        {
+            Expression<Func<int, string, int, string>> expected = (x, y, z) => x + y + z;
+            Func<int, string, int, string> compiled = (x, y, z) => x + y + z;
+            Test(expected, compiled);
         } 
     }
 }
