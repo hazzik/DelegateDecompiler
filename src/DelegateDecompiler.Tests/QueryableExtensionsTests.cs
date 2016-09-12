@@ -285,5 +285,37 @@ namespace DelegateDecompiler.Tests
             Assert.AreEqual(expected.Expression.ToString(), actual.Expression.ToString());
         }
 
+        [Test]
+        public void InlinePropertyNullableShortColeasce1()
+        {
+            var employees = new[] { new Employee { FirstName = "Test", LastName = "User" } };
+
+            var expected = (from employee in employees.AsQueryable()
+                            where (employee.MyField.HasValue ? employee.MyField.Value : (short)0) > 0
+                            select employee);
+
+            var actual = (from employee in employees.AsQueryable().Decompile()
+                          where employee.TheBad > (short)0
+                          select employee);
+
+            Assert.AreEqual(expected.Expression.ToString(), actual.Expression.ToString());
+        }
+
+        [Test]
+        public void InlinePropertyNullableShortColeasce2()
+        {
+            var employees = new[] { new Employee { FirstName = "Test", LastName = "User" } };
+
+            var expected = (from employee in employees.AsQueryable()
+                            where (employee.MyField.HasValue ? (short)0 : (short)1) > (short)0
+                            select employee);
+
+            var actual = (from employee in employees.AsQueryable().Decompile()
+                          where (employee.MyField.HasValue ? (short)0 : (short)1) > 0
+                          select employee);
+
+            Assert.AreEqual(expected.Expression.ToString(), actual.Expression.ToString());
+        }
+
     }
 }

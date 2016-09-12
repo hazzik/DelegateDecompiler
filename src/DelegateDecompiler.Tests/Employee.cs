@@ -106,6 +106,21 @@ namespace DelegateDecompiler.Tests
                 return 3;
             }
         }
+
+        public short? MyField { get; set; }
+
+        [Computed]
+        public short TheBad
+        {
+            get { return MyField.HasValue ? (short)MyField : (short)0; }
+        }
+
+
+        [Computed]
+        public short TheGood
+        {
+            get { return MyField.HasValue ? (short)0 : (short)1; }
+        }
     }
 
     public static class EmployeeExtensions

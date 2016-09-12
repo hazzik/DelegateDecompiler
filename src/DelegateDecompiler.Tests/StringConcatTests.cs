@@ -46,5 +46,12 @@ namespace DelegateDecompiler.Tests
             Func<int, string, int, string> compiled = (x, y, z) => x + y + z;
             Test(expected, compiled);
         } 
+        [Test]
+        public void StringConcatObjects2()
+        {
+            Expression<Func<int, string, double, string>> expected = (x, y, z) => x + y + z;
+            Func<int, string, double, string> compiled = (x, y, z) => x + y + z;
+            Test(expected, compiled);
+        } 
     }
 }
