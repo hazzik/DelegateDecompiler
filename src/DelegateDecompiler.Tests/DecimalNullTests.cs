@@ -108,8 +108,6 @@ namespace DelegateDecompiler.Tests
         {
             Expression<Func<decimal?, decimal, bool>> expected = (x, y) => x != y;
             Func<decimal?, decimal, bool> compiled = (x, y) => x != y;
-
-            Func<decimal?, decimal, bool> c = (x, y) => (x.GetValueOrDefault() == y) ? (x.HasValue == false) : true;
             Test(expected, compiled);
         }
 
