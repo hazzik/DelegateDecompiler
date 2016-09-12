@@ -1137,7 +1137,7 @@ namespace DelegateDecompiler
                     return instance;
                 }
             }
-            if (m.IsSpecialName && m.IsHideBySig)
+            if (m.IsSpecialName)
             {
                 if (m.Name.StartsWith("get_"))
                 {
@@ -1169,6 +1169,30 @@ namespace DelegateDecompiler
                         }
                     }
                 }
+            }
+            if (m.DeclaringType == typeof (decimal) &&
+                (m.Name == "Add" || m.Name == "Subtract" || m.Name == "Multiply" || m.Name == "Divide"))
+            {
+                ExpressionType op;
+                switch (m.Name)
+                {
+                    case "Add":
+                        op = ExpressionType.Add;
+                        break;
+                    case "Subtract":
+                        op = ExpressionType.Subtract;
+                        break;
+                    case "Multiply":
+                        op = ExpressionType.Multiply;
+                        break;
+                    case "Divide":
+                        op = ExpressionType.Divide;
+                        break;
+                    default:
+                        throw new InvalidOperationException();
+                }
+
+                return Expression.MakeBinary(op, arguments[0], arguments[1]);
             }
             if (m.Name == "Concat" && m.DeclaringType == typeof (string))
             {
