@@ -255,7 +255,7 @@ namespace DelegateDecompiler.Tests
             Test(expected, compiled);
         }
 
-        [Test, Ignore("Needs optimization")]
+        [Test]
         public void ExpressionWithNullableSum3()
         {
             Expression<Func<decimal?, decimal?, decimal?, decimal?>> expected = (x, y, z) => x + y + z;

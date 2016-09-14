@@ -157,8 +157,8 @@ Public Class DecimalNullTests
 
     <Test>
     Public Sub ExpressionWithNullableEqual3()
-        Dim expected As Expression(Of Func(Of Decimal, Decimal?, Boolean?)) = Function(x As Decimal, y As Decimal?) CType(x, Decimal?) = y
-        Dim compiled As Func(Of Decimal, Decimal?, Boolean?) =  Function(x As Decimal, y As Decimal?) CType(x, Decimal?) = y
+        Dim expected As Expression(Of Func(Of Decimal, Decimal?, Boolean?)) = Function(x As Decimal, y As Decimal?) x = y
+        Dim compiled As Func(Of Decimal, Decimal?, Boolean?) = Function(x As Decimal, y As Decimal?) x = y
         Test(expected, compiled)
     End Sub
 
@@ -225,7 +225,7 @@ Public Class DecimalNullTests
         Test(expected, compiled)
     End Sub
 
-    <Ignore("Needs optimization"), Test>
+    <Test>
     Public Sub ExpressionWithNullableSum3()
         Dim expected As Expression(Of Func(Of Decimal?, Decimal?, Decimal?, Decimal?)) = Function(x As Decimal?, y As Decimal?, z As Decimal?) x + y + z
         Dim compiled As Func(Of Decimal?, Decimal?, Decimal?, Decimal?) = Function(x As Decimal?, y As Decimal?, z As Decimal?) x + y + z

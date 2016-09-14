@@ -86,39 +86,40 @@ Public Class DecimalTests
 
     <Test>
     Public Sub Mul()
-        Dim expected As Expression(Of Func(Of Decimal, Decimal, Decimal)) = Function(x As Decimal, y As Decimal) x*y
-        Dim compiled As Func(Of Decimal, Decimal, Decimal) = Function(x As Decimal, y As Decimal) x*y
+        Dim expected As Expression(Of Func(Of Decimal, Decimal, Decimal)) = Function(x As Decimal, y As Decimal) x * y
+        Dim compiled As Func(Of Decimal, Decimal, Decimal) = Function(x As Decimal, y As Decimal) x * y
         Test(expected, compiled)
     End Sub
 
     <Test>
     Public Sub MulByInt()
-        Dim expected As Expression(Of Func(Of Decimal, Integer, Decimal)) = Function(x As Decimal, y As Integer) x*y
-        Dim compiled As Func(Of Decimal, Integer, Decimal) = Function(x As Decimal, y As Integer) x*y
-        Test(expected, compiled)
+        Dim expected1 As Expression(Of Func(Of Decimal, Integer, Decimal)) = Function(x As Decimal, y As Integer) x * y
+        Dim expected2 As Expression(Of Func(Of Decimal, Integer, Decimal)) = Function(x As Decimal, y As Integer) x * New Decimal(y)
+        Dim compiled As Func(Of Decimal, Integer, Decimal) = Function(x As Decimal, y As Integer) x * y
+        Test(expected1, expected2, compiled)
     End Sub
 
     <Test>
     Public Sub Div()
-        Dim expected As Expression(Of Func(Of Decimal, Decimal, Decimal)) = Function(x As Decimal, y As Decimal) x/y
-        Dim compiled As Func(Of Decimal, Decimal, Decimal) = Function(x As Decimal, y As Decimal) x/y
+        Dim expected As Expression(Of Func(Of Decimal, Decimal, Decimal)) = Function(x As Decimal, y As Decimal) x / y
+        Dim compiled As Func(Of Decimal, Decimal, Decimal) = Function(x As Decimal, y As Decimal) x / y
         Test(expected, compiled)
     End Sub
 
     <Test>
     Public Sub DecimalCast()
-        Dim expected As Expression(Of Func(Of Decimal)) = Function() 1.21D
+        Dim expected1 As Expression(Of Func(Of Decimal)) = Function() 1.21D
         Dim expected2 As Expression(Of Func(Of Decimal)) = Function() New Decimal(121, 0, 0, False, 2)
         Dim compiled As Func(Of Decimal) = Function() 1.21D
-        Test(expected, expected2, compiled)
+        Test(expected1, expected2, compiled)
     End Sub
 
     <Test>
     Public Sub DecimalConstructor()
-        Dim expected As Expression(Of Func(Of Decimal)) = Function() 1.21D
+        Dim expected1 As Expression(Of Func(Of Decimal)) = Function() 1.21D
         Dim expected2 As Expression(Of Func(Of Decimal)) = Function() New Decimal(121, 0, 0, False, 2)
         Dim compiled As Func(Of Decimal) = Function() New Decimal(121, 0, 0, False, 2)
-        Test(expected, expected2, compiled)
+        Test(expected1, expected2, compiled)
     End Sub
 End Class
 
