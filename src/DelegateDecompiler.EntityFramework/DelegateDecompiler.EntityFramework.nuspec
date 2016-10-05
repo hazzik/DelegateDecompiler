@@ -2,7 +2,7 @@
 <package >
   <metadata>
     <id>$id$</id>
-    <version>0.19.0</version>
+    <version>0.20.0</version>
     <title>$title$</title>
     <authors>Alexander Zaytsev</authors>
     <owners>$author</owners>
@@ -17,7 +17,7 @@
     <copyright>Copyright (c) Alexander Zaytsev 2014 - 2016</copyright>
     <tags>LINQ computed-properties computedproperties decompiler decompilation computed properties expressions expression-tree IL</tags>
     <dependencies>
-      <dependency id="DelegateDecompiler" version="0.19.0" />
+      <dependency id="DelegateDecompiler" version="0.20.0" />
     </dependencies>
   </metadata>
 </package>
