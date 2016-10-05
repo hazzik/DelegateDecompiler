@@ -1,15 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Linq.Expressions;
-using System.Reflection;
 
 namespace DelegateDecompiler
 {
     class OptimizeExpressionVisitor : ExpressionVisitor
     {
-        static readonly MethodInfo StringConcat = typeof(string).GetMethod("Concat", new[] { typeof(object), typeof(object) });
-
         protected override Expression VisitNew(NewExpression node)
         {
             // Test if this is a nullable type
@@ -23,6 +21,22 @@ namespace DelegateDecompiler
         private static bool IsNullable(Type type)
         {
             return type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>);
+        }
+
+        readonly Dictionary<Expression, Expression> expressionsCache
+            = new Dictionary<Expression, Expression>();
+
+        public override Expression Visit(Expression node)
+        {
+            if (node == null)
+                return null;
+            Expression result;
+            if (expressionsCache.TryGetValue(node, out result))
+                return result;
+            result = base.Visit(node);
+            if (node != result)
+                expressionsCache[node] = result;
+            return result;
         }
 
         protected override Expression VisitConditional(ConditionalExpression node)
@@ -83,12 +97,9 @@ namespace DelegateDecompiler
 
             if (test.NodeType == ExpressionType.Not)
             {
-                if (ifTrueConstant != null)
+                if (ifTrueConstant?.Value as bool? == false)
                 {
-                    if (ifTrueConstant.Value as bool? == false)
-                    {
-                        return Expression.AndAlso(((UnaryExpression) test).Operand, ifFalse);
-                    }
+                    return Expression.AndAlso(((UnaryExpression) test).Operand, ifFalse);
                 }
             }
 
@@ -97,7 +108,7 @@ namespace DelegateDecompiler
 
         private static bool TryConvert(ConstantExpression constant, BinaryExpression left, Expression right, out BinaryExpression result, bool isLeft)
         {
-            if (constant != null && constant.Value is bool)
+            if (constant?.Value is bool)
             {
                 if ((bool) constant.Value)
                 {
@@ -250,6 +261,17 @@ namespace DelegateDecompiler
                             return Expression.Not(Visit(node.Left));
                         case ExpressionType.NotEqual:
                             return Visit(node.Left);
+                    }
+                }
+                if (rightConstant.Value as int? == 0)
+                {
+                    var expression = node.Left as MethodCallExpression;
+                    if (expression != null)
+                    {
+                        if (expression.Method.Name == "Compare" && expression.Method.IsStatic && expression.Method.DeclaringType == typeof(decimal))
+                        {
+                            return Expression.MakeBinary(node.NodeType, expression.Arguments[0], expression.Arguments[1]);
+                        }
                     }
                 }
             }

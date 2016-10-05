@@ -376,12 +376,20 @@ namespace DelegateDecompiler.Tests
             Func<int, int?, int?> compiled = (x, y) => x << y;
             Test(expected, compiled);
         }
-        
-        [Test, Ignore("Needs optimization")]
+
+        [Test]
         public void ExpressionWithNullableSum3()
         {
             Expression<Func<int?, int?, int?, int?>> expected = (x, y, z) => x + y + z;
             Func<int?, int?, int?, int?> compiled = (x, y, z) => x + y + z;
+            Test(expected, compiled);
+        }
+
+        [Test]
+        public void NotNull()
+        {
+            Expression<Func<Employee, bool>> expected = x => x != null;
+            Func<Employee, bool> compiled = x => x != null;
             Test(expected, compiled);
         }
     }

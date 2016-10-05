@@ -390,7 +390,7 @@ namespace DelegateDecompiler
                         }
                         else
                         {
-                            state.Instruction = ConditionalBranch(state, val => Expression.NotEqual(val, Default(val.Type)));
+                            state.Instruction = ConditionalBranch(state, val => val.Type == typeof(bool) ? val : Expression.NotEqual(val, Default(val.Type)));
                             continue;
                         }
                     }
@@ -676,11 +676,6 @@ namespace DelegateDecompiler
                         var val2 = state.Stack.Pop();
                         state.Stack.Push(Expression.Or(val2, val1));
                     }
-                    else if (state.Instruction.OpCode == OpCodes.Newobj)
-                    {
-                        var constructor = (ConstructorInfo) state.Instruction.Operand;
-                        state.Stack.Push(Expression.New(constructor, GetArguments(state, constructor)));
-                    }
                     else if (state.Instruction.OpCode == OpCodes.Initobj)
                     {
                         var address = state.Stack.Pop();
@@ -701,9 +696,29 @@ namespace DelegateDecompiler
                     {
                         state.Stack.Push(Box(state.Stack.Pop(), (Type) state.Instruction.Operand));
                     }
+                    else if (state.Instruction.OpCode == OpCodes.Newobj)
+                    {
+                        var constructor = (ConstructorInfo)state.Instruction.Operand;
+                        state.Stack.Push(Expression.New(constructor, GetArguments(state, constructor)));
+                    }
                     else if (state.Instruction.OpCode == OpCodes.Call || state.Instruction.OpCode == OpCodes.Callvirt)
                     {
-                        Call(state, (MethodInfo)state.Instruction.Operand);
+                        var method = state.Instruction.Operand as MethodInfo;
+                        var constructor = state.Instruction.Operand as ConstructorInfo;
+                        if (method != null)
+                        {
+                            Call(state, method);
+                        }
+                        else if (constructor != null)
+                        {
+                            var address = Expression.New(constructor, GetArguments(state, constructor));
+                            var local = state.Stack.Pop();
+                            local.Expression = address;
+                        }
+                        else
+                        {
+                            throw new NotSupportedException();
+                        }
                     }
                     else if (state.Instruction.OpCode == OpCodes.Ceq)
                     {
@@ -712,12 +727,28 @@ namespace DelegateDecompiler
 
                         state.Stack.Push(AdjustedBinaryExpression(val2, AdjustBooleanConstant(val1, val2.Type), ExpressionType.Equal));
                     }
-                    else if (state.Instruction.OpCode == OpCodes.Cgt || state.Instruction.OpCode == OpCodes.Cgt_Un)
+                    else if (state.Instruction.OpCode == OpCodes.Cgt)
                     {
                         var val1 = state.Stack.Pop();
                         var val2 = state.Stack.Pop();
 
                         state.Stack.Push(AdjustedBinaryExpression(val2, AdjustBooleanConstant(val1, val2.Type), ExpressionType.GreaterThan));
+                    }
+                    else if (state.Instruction.OpCode == OpCodes.Cgt_Un)
+                    {
+                        var val1 = state.Stack.Pop();
+                        var val2 = state.Stack.Pop();
+
+                        var constantExpression = val1.Expression as ConstantExpression;
+                        if (constantExpression != null && (constantExpression.Value as int? == 0 || constantExpression.Value == null))
+                        {
+                            //Special case.
+                            state.Stack.Push(AdjustedBinaryExpression(val2, AdjustBooleanConstant(val1, val2.Type), ExpressionType.NotEqual));
+                        }
+                        else
+                        {
+                            state.Stack.Push(AdjustedBinaryExpression(val2, AdjustBooleanConstant(val1, val2.Type), ExpressionType.GreaterThan));
+                        }
                     }
                     else if (state.Instruction.OpCode == OpCodes.Clt || state.Instruction.OpCode == OpCodes.Clt_Un)
                     {
@@ -832,7 +863,7 @@ namespace DelegateDecompiler
             return Expression.Constant(null, type);
         }
 
-        Instruction ConditionalBranch(ProcessorState state, Func<Expression, BinaryExpression> condition)
+        Instruction ConditionalBranch(ProcessorState state, Func<Expression, Expression> condition)
         {
             var val1 = state.Stack.Pop();
             var test = condition(val1);
@@ -1137,7 +1168,7 @@ namespace DelegateDecompiler
                     return instance;
                 }
             }
-            if (m.IsSpecialName && m.IsHideBySig)
+            if (m.IsSpecialName)
             {
                 if (m.Name.StartsWith("get_"))
                 {
@@ -1168,6 +1199,20 @@ namespace DelegateDecompiler
                                 return Expression.Convert(arguments[0], m.ReturnType, m);
                         }
                     }
+                }
+            }
+            if (m.IsStatic && m.DeclaringType == typeof(decimal))
+            {
+                switch (m.Name)
+                {
+                    case "Add":
+                        return Expression.MakeBinary(ExpressionType.Add, arguments[0], arguments[1]);
+                    case "Subtract":
+                        return Expression.MakeBinary(ExpressionType.Subtract, arguments[0], arguments[1]);
+                    case "Multiply":
+                        return Expression.MakeBinary(ExpressionType.Multiply, arguments[0], arguments[1]);
+                    case "Divide":
+                        return Expression.MakeBinary(ExpressionType.Divide, arguments[0], arguments[1]);
                 }
             }
             if (m.Name == "Concat" && m.DeclaringType == typeof (string))
