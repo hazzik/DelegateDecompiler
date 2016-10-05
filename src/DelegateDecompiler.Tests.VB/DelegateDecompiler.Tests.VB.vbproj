@@ -88,6 +88,7 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <Compile Include="NullTests.vb" />
     <Compile Include="PropertiesTests.vb" />
   </ItemGroup>
   <ItemGroup>
