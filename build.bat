@@ -1,3 +1,3 @@
 set EnableNuGetPackageRestore=true 
-set msbuild=%windir%\Microsoft.NET\Framework\v4.0.30319\MSBuild
+set msbuild="%ProgramFiles(x86)%\MSBuild\14.0\Bin\MSBuild"
 %msbuild% /p:Configuration=Release /p:BuildPackage=True
