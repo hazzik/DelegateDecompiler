@@ -61,6 +61,7 @@
     <Compile Include="EfItems\EfParent.cs" />
     <Compile Include="EfItems\EfPerson.cs" />
     <Compile Include="EfItems\EfTestDbContext.cs" />
+    <Compile Include="EntityTypeConfigurationExtensionsTests.cs" />
     <Compile Include="Helpers\CheckerAndLogger.cs" />
     <Compile Include="Helpers\ClassEnvironment.cs" />
     <Compile Include="Helpers\ClassLog.cs" />

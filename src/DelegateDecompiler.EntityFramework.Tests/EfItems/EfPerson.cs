@@ -27,6 +27,8 @@ namespace DelegateDecompiler.EntityFramework.Tests.EfItems
         [Computed]
         public string FullNameNoNull { get { return FirstName + " " + MiddleName + " " + LastName; } }
 
+        public string FullNameNoAttibute { get { return FirstName + " " + MiddleName + " " + LastName; } }
+
         [Computed]
         public string FullNameHandleNull { get { return FirstName + (MiddleName == null ? "" : " ") + MiddleName + " " + LastName; } }
 
