@@ -18,7 +18,7 @@ namespace DelegateDecompiler
                     {
                         if (instance == null)
                         {
-                            instance = new DefaultConfiguration();        
+                            instance = new DefaultConfiguration();
                         }
                     }
                 }
@@ -28,12 +28,26 @@ namespace DelegateDecompiler
 
         public static void Configure(Configuration cfg)
         {
-            if (instance != null)
-                throw new InvalidOperationException("DelegateDecompiler has been configured already");
-            
-            instance = cfg;
+            if (instance == null)
+            {
+                lock (locker)
+                {
+                    if (instance == null)
+                    {
+                        instance = cfg;
+                        return;
+                    }
+                }
+            }
+
+            throw new InvalidOperationException("DelegateDecompiler has been configured already");
         }
 
         public abstract bool ShouldDecompile(MemberInfo memberInfo);
+
+        public virtual void RegisterDecompileableMember(MemberInfo property)
+        {
+            throw new NotImplementedException("The method RegisterDecompileableMember of Configuration is not implemented. Please implement it in your custom configuration class.");
+        }
     }
 }

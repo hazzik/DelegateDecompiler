@@ -22,6 +22,7 @@ namespace DelegateDecompiler.EntityFramework.Tests.EfItems
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
             modelBuilder.Entity<EfPerson>().Computed(x => x.FullNameNoAttibute);
+            modelBuilder.Entity<EfPerson>().Computed(x => x.GetFullNameNoAttibute());
             base.OnModelCreating(modelBuilder);
         }
 

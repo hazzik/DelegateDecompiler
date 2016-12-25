@@ -1,6 +1,6 @@
 Detail With Sql of supported commands
 ============
-## Documentation produced for DelegateDecompiler, version 0.20.0 on Thursday, 06 October 2016 01:06
+## Documentation produced for DelegateDecompiler, version 0.20.0 on Sunday, 25 December 2016 13:19
 
 This file documents what linq commands **DelegateDecompiler** supports when
 working with [Entity Framework v6.1](http://msdn.microsoft.com/en-us/data/aa937723) (EF).
@@ -50,6 +50,24 @@ SELECT
 SELECT 
     CASE WHEN (123 = [Extent1].[ParentInt]) THEN cast(1 as bit) WHEN (123 <> [Extent1].[ParentInt]) THEN cast(0 as bit) END AS [C1]
     FROM [dbo].[EfParents] AS [Extent1]
+```
+
+  * Select Property Without Computed Attribute (line 85)
+     * T-Sql executed is
+
+```SQL
+SELECT 
+    [Extent1].[FirstName] + N' ' + CASE WHEN ([Extent1].[MiddleName] IS NULL) THEN N'' ELSE [Extent1].[MiddleName] END + N' ' + [Extent1].[LastName] AS [C1]
+    FROM [dbo].[EfPersons] AS [Extent1]
+```
+
+  * Select Method Without Computed Attribute (line 102)
+     * T-Sql executed is
+
+```SQL
+SELECT 
+    [Extent1].[FirstName] + N' ' + CASE WHEN ([Extent1].[MiddleName] IS NULL) THEN N'' ELSE [Extent1].[MiddleName] END + N' ' + [Extent1].[LastName] AS [C1]
+    FROM [dbo].[EfPersons] AS [Extent1]
 ```
 
 

@@ -85,5 +85,22 @@ namespace DelegateDecompiler.EntityFramework.Tests.TestGroup05BasicFeatures
                 env.CompareAndLogList(linq, dd);
             }
         }
+
+        [Test]
+        public void TestSelectMethodWithoutComputedAttribute()
+        {
+            using (var env = new MethodEnvironment(classEnv))
+            {
+                //SETUP
+                var linq = env.Db.EfPersons.Select(x => x.FirstName + " " + x.MiddleName + " " + x.LastName).ToList();
+
+                //ATTEMPT
+                env.AboutToUseDelegateDecompiler();
+                var dd = env.Db.EfPersons.Select(x => x.GetFullNameNoAttibute()).Decompile().ToList();
+
+                //VERIFY
+                env.CompareAndLogList(linq, dd);
+            }
+        }
     }
 }
