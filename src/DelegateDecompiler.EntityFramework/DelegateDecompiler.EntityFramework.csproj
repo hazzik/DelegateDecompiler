@@ -59,6 +59,7 @@
   <ItemGroup>
     <Compile Include="AsyncDecompiledQueryable.cs" />
     <Compile Include="AsyncDecompiledQueryProvider.cs" />
+    <Compile Include="EntityTypeConfigurationExtensions.cs" />
     <Compile Include="DecompileExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

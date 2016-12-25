@@ -58,6 +58,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ArrayTests.cs" />
+    <Compile Include="ConfigurationTestsBase.cs" />
     <Compile Include="DateTimeTests.cs" />
     <Compile Include="IntegerConstantTests.cs" />
     <Compile Include="Issue67.cs" />
