@@ -82,6 +82,25 @@ namespace DelegateDecompiler
                        ? Expression.Empty()
                        : Stack.Pop();
             }
+
+            public void CompressToMemberInitExpression()
+            {
+                var props = Stack.Where(
+                    x =>
+                        x.Expression.NodeType == ExpressionType.Constant && x.Expression is ConstantExpression &&
+                        x.Expression.Type == typeof(MemberAssignment))
+                    .Reverse()
+                    .Select(x => ((ConstantExpression) x.Expression)?.Value as MemberAssignment)
+                    .ToList();
+
+                var ctor = Stack.FirstOrDefault(x => x.Expression.NodeType == ExpressionType.New && x.Expression is NewExpression)?.Expression as NewExpression;
+
+                if (ctor != null && Stack.Count() > 1)
+                {
+                    Stack.Clear();
+                    Stack.Push(Expression.MemberInit(ctor, props));
+                }
+            }
         }
   
         const string cachedAnonymousMethodDelegate = "CS$<>9__CachedAnonymousMethodDelegate";
@@ -707,7 +726,14 @@ namespace DelegateDecompiler
                         var constructor = state.Instruction.Operand as ConstructorInfo;
                         if (method != null)
                         {
-                            Call(state, method);
+                            if (method.IsSpecialName && method.Name.StartsWith("set_"))
+                            {
+                                MemberInit(state, method);
+                            }
+                            else
+                            {
+                                Call(state, method);
+                            }
                         }
                         else if (constructor != null)
                         {
@@ -787,6 +813,8 @@ namespace DelegateDecompiler
                     states.Pop();
                 }
             }
+
+            state.CompressToMemberInitExpression();
 
             return state == null ? Expression.Empty() : state.Final();
         }
@@ -1131,6 +1159,17 @@ namespace DelegateDecompiler
             var result = BuildMethodCallExpression(m, instance, mArgs);
             if (result.Type != typeof(void))
                 state.Stack.Push(result);
+        }
+
+        static void MemberInit(ProcessorState state, MethodInfo m)
+        {
+            var value = GetArguments(state, m).Single();
+            var property = m.Name.Substring("set_".Length);
+
+            var assignment = Expression.Bind(m.DeclaringType.GetProperty(property), value);
+
+            state.Stack.Pop();
+            state.Stack.Push(Expression.Constant(assignment, typeof(MemberAssignment)));
         }
 
         static Expression[] GetArguments(ProcessorState state, MethodBase m)

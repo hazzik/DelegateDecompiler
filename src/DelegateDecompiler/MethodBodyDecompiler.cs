@@ -21,6 +21,10 @@ namespace DelegateDecompiler
                 args = parameters
                     .Select(p => (Address) Expression.Parameter(p.ParameterType, p.Name))
                     .ToList();
+            else if (method.IsAnonymous())
+                args = new[] {(Address) Expression.Constant(null, method.DeclaringType)}
+                    .Union(parameters.Select(p => (Address)Expression.Parameter(p.ParameterType, p.Name)))
+                    .ToList();
             else
                 args = new[] {(Address) Expression.Parameter(method.DeclaringType, "this")}
                     .Union(parameters.Select(p => (Address) Expression.Parameter(p.ParameterType, p.Name)))
@@ -39,7 +43,10 @@ namespace DelegateDecompiler
         {
             var instructions = method.GetInstructions();
             var ex = Processor.Process(locals, args, instructions.First(), method.ReturnType);
-            return Expression.Lambda(new OptimizeExpressionVisitor().Visit(ex), args.Select(x => (ParameterExpression) x.Expression));
+            var parameters = args
+                .Where(x => x.Expression is ParameterExpression)
+                .Select(x => (ParameterExpression) x.Expression);
+            return Expression.Lambda(new OptimizeExpressionVisitor().Visit(ex), parameters);
         }
     }
 }
