@@ -61,6 +61,7 @@
     <Compile Include="EfItems\EfParent.cs" />
     <Compile Include="EfItems\EfPerson.cs" />
     <Compile Include="EfItems\EfTestDbContext.cs" />
+    <Compile Include="EntityTypeConfigurationExtensionsTests.cs" />
     <Compile Include="Helpers\CheckerAndLogger.cs" />
     <Compile Include="Helpers\ClassEnvironment.cs" />
     <Compile Include="Helpers\ClassLog.cs" />
@@ -113,6 +114,10 @@
     <ProjectReference Include="..\DelegateDecompiler.EntityFramework\DelegateDecompiler.EntityFramework.csproj">
       <Project>{9aca1aca-7334-42e3-9fbd-336d4ab5bdf7}</Project>
       <Name>DelegateDecompiler.EntityFramework</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\DelegateDecompiler.Tests\DelegateDecompiler.Tests.csproj">
+      <Project>{9531F38F-9E2C-4487-B76E-1EEA3AAB5B83}</Project>
+      <Name>DelegateDecompiler.Tests</Name>
     </ProjectReference>
     <ProjectReference Include="..\DelegateDecompiler\DelegateDecompiler.csproj">
       <Project>{11f42698-bb34-4175-9da8-80bd62171d02}</Project>
