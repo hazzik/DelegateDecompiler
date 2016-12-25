@@ -273,6 +273,30 @@ namespace DelegateDecompiler.Tests
         }
 
         [Test]
+        public void ShouldBeAbleToDecompileObjectInitializer()
+        {
+            Expression<Func<TestClass>> expression = () => new TestClass { StartDate = DateTime.Now };
+            Func<TestClass> compiled = () => new TestClass { StartDate = DateTime.Now };
+            Test(expression, compiled);
+        }
+
+        [Test]
+        public void ShouldBeAbleToDecompileObjectInitializerWithParameter()
+        {
+            Expression<Func<DateTime, TestClass>> expression = (x) => new TestClass { StartDate = x };
+            Func<DateTime, TestClass> compiled = (x) => new TestClass { StartDate = x };
+            Test(expression, compiled);
+        }
+
+        [Test]
+        public void ShouldBeAbleToDecompileObjectInitializerWithParameter2()
+        {
+            Expression<Func<DateTime, DateTime, TestClass>> expression = (x, y) => new TestClass { StartDate = x, EndDate = y };
+            Func<DateTime, DateTime, TestClass> compiled = (x, y) => new TestClass { StartDate = x, EndDate = y };
+            Test(expression, compiled);
+        }
+
+        [Test]
         public void ShouldBeAbleToDecompileStringConcat2()
         {
             Expression<Func<string, string, string>> expression = (x, y) => x + y;
@@ -286,6 +310,22 @@ namespace DelegateDecompiler.Tests
             Expression<Func<string, string, string, string>> expression = (x, y, z) => x + y + z;
             Func<string, string, string, string> compiled = (x, y, z) => x + y + z;
             Test(expression, compiled);
+        }
+
+        [Test]
+        public void IsAnonymous_ShouldReturnTrue_WhenMemberIsAnonymousMethod()
+        {
+            Func<string, string> func = x => x;
+
+            Assert.IsTrue(func.Method.IsAnonymous());
+        }
+
+        [Test]
+        public void IsAnonymous_ShouldReturnTrueFalse_WhenMemberIsNotAnonymousMethod()
+        {
+            Assert.IsFalse(typeof(TestClass).GetProperty(nameof(TestClass.StartDate)).GetGetMethod().IsAnonymous());
+            Assert.IsFalse(typeof(TestClass).GetMethod(nameof(TestClass.Equals)).IsAnonymous());
+            Assert.IsFalse(typeof(DecompileExtensions).GetMethod(nameof(DecompileExtensions.IsAnonymous)).IsAnonymous());
         }
 
         public static int Add(int x, int y)

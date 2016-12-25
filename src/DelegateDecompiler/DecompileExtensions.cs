@@ -24,5 +24,11 @@ namespace DelegateDecompiler
             var provider = new DecompiledQueryProvider(self.Provider);
             return provider.CreateQuery<T>(self.Expression);
         }
+
+        public static bool IsAnonymous(this MethodInfo method)
+        {
+            var invalidChars = new[] { '<', '>' };
+            return method.DeclaringType == null || method.Name.Any(invalidChars.Contains);
+        }
     }
 }
