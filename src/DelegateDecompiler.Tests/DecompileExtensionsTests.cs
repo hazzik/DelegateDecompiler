@@ -304,7 +304,7 @@ namespace DelegateDecompiler.Tests
             Test(expression, compiled);
         }
 
-        [Test, Ignore("Difference is expected")]
+        [Test]
         public void ShouldBeAbleToDecompileObjectInitializerWithOuterVariables()
         {
             var date = DateTime.Now;
