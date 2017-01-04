@@ -260,25 +260,7 @@ namespace DelegateDecompiler
                         var value = state.Stack.Pop();
                         var instance = state.Stack.Pop();
                         var field = (FieldInfo)state.Instruction.Operand;
-                        var newExpression = instance.Expression as NewExpression;
-                        if (newExpression != null)
-                        {
-                            instance.Expression = Expression.MemberInit(newExpression, Expression.Bind(field, value));
-                        }
-                        else
-                        {
-                            var memberInitExpression = instance.Expression as MemberInitExpression;
-                            if (memberInitExpression != null)
-                            {
-                                var expression = memberInitExpression.NewExpression;
-                                var bindings = new List<MemberBinding>(memberInitExpression.Bindings) {Expression.Bind(field, value)};
-                                instance.Expression = Expression.MemberInit(expression, bindings);
-                            }
-                            else
-                            {
-                                throw new NotImplementedException();
-                            }
-                        }
+                        instance.Expression = BuildMemberInit(instance.Expression, Expression.Bind(field, value));
                     }
                     else if (state.Instruction.OpCode == OpCodes.Ldloc_0)
                     {
@@ -1133,6 +1115,27 @@ namespace DelegateDecompiler
                 state.Stack.Push(result);
         }
 
+        static MemberInitExpression BuildMemberInit(Expression instance, MemberBinding assignment)
+        {
+            if (instance.NodeType == ExpressionType.New)
+            {
+                return Expression.MemberInit((NewExpression)instance, assignment);
+            }
+
+            if (instance.NodeType == ExpressionType.MemberInit)
+            {
+                var memberInitExpression = (MemberInitExpression) instance;
+                return Expression.MemberInit(
+                    memberInitExpression.NewExpression,
+                    new List<MemberBinding>(memberInitExpression.Bindings)
+                    {
+                        assignment
+                    });
+            }
+
+            throw new NotSupportedException();
+        }
+
         static Expression[] GetArguments(ProcessorState state, MethodBase m)
         {
             var parameterInfos = m.GetParameters();
@@ -1156,7 +1159,7 @@ namespace DelegateDecompiler
                 {
                     var init = Expression.ListInit(newExpression, Expression.ElementInit(m, arguments));
                     instance.Expression = init;
-                    return instance;
+                    return Expression.Empty();
                 }
                 var initExpression = instance.Expression as ListInitExpression;
                 if (initExpression != null)
@@ -1165,7 +1168,7 @@ namespace DelegateDecompiler
                     initializers.Add(Expression.ElementInit(m, arguments));
                     var init = Expression.ListInit(initExpression.NewExpression, initializers);
                     instance.Expression = init;
-                    return instance;
+                    return Expression.Empty();
                 }
             }
             if (m.IsSpecialName)
@@ -1174,6 +1177,14 @@ namespace DelegateDecompiler
                 {
                     return Expression.Property(instance, m);
                 }
+
+                if (m.Name.StartsWith("set_"))
+                {
+                    var assignment = Expression.Bind(m, arguments.Single());
+                    instance.Expression = BuildMemberInit(instance.Expression, assignment);
+                    return Expression.Empty();
+                }
+
                 if (m.Name.StartsWith("op_"))
                 {
                     ExpressionType type;
