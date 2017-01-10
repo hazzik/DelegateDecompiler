@@ -38,8 +38,9 @@ namespace DelegateDecompiler
 
         static readonly IProcessor[] Processors =
         {
+            new ConstantProcessor(),
             new ConvertProcessor(),
-            new ConvertCheckedProcessor()
+            new ConvertCheckedProcessor(),
         };
 
         Processor()
@@ -225,71 +226,7 @@ namespace DelegateDecompiler
                         var operand = (LocalVariableInfo) state.Instruction.Operand;
                         LdLoc(state, operand.LocalIndex);
                     }
-                    else if (state.Instruction.OpCode == OpCodes.Ldstr)
-                    {
-                        state.Stack.Push(Expression.Constant((string) state.Instruction.Operand));
-                    }
-                    else if (state.Instruction.OpCode == OpCodes.Ldc_I4_0)
-                    {
-                        LdC(state, 0);
-                    }
-                    else if (state.Instruction.OpCode == OpCodes.Ldc_I4_1)
-                    {
-                        LdC(state, 1);
-                    }
-                    else if (state.Instruction.OpCode == OpCodes.Ldc_I4_2)
-                    {
-                        LdC(state, 2);
-                    }
-                    else if (state.Instruction.OpCode == OpCodes.Ldc_I4_3)
-                    {
-                        LdC(state, 3);
-                    }
-                    else if (state.Instruction.OpCode == OpCodes.Ldc_I4_4)
-                    {
-                        LdC(state, 4);
-                    }
-                    else if (state.Instruction.OpCode == OpCodes.Ldc_I4_5)
-                    {
-                        LdC(state, 5);
-                    }
-                    else if (state.Instruction.OpCode == OpCodes.Ldc_I4_6)
-                    {
-                        LdC(state, 6);
-                    }
-                    else if (state.Instruction.OpCode == OpCodes.Ldc_I4_7)
-                    {
-                        LdC(state, 7);
-                    }
-                    else if (state.Instruction.OpCode == OpCodes.Ldc_I4_8)
-                    {
-                        LdC(state, 8);
-                    }
-                    else if (state.Instruction.OpCode == OpCodes.Ldc_I4_S)
-                    {
-                        LdC(state, (sbyte) state.Instruction.Operand);
-                    }
-                    else if (state.Instruction.OpCode == OpCodes.Ldc_I4_M1)
-                    {
-                        LdC(state, -1);
-                    }
-                    else if (state.Instruction.OpCode == OpCodes.Ldc_I4)
-                    {
-                        LdC(state, (int) state.Instruction.Operand);
-                    }
-                    else if (state.Instruction.OpCode == OpCodes.Ldc_I8)
-                    {
-                        LdC(state, (long) state.Instruction.Operand);
-                    }
-                    else if (state.Instruction.OpCode == OpCodes.Ldc_R4)
-                    {
-                        LdC(state, (float) state.Instruction.Operand);
-                    }
-                    else if (state.Instruction.OpCode == OpCodes.Ldc_R8)
-                    {
-                        LdC(state, (double) state.Instruction.Operand);
-                    }
-                    else if (state.Instruction.OpCode == OpCodes.Br_S || state.Instruction.OpCode == OpCodes.Br)
+                    else  if (state.Instruction.OpCode == OpCodes.Br_S || state.Instruction.OpCode == OpCodes.Br)
                     {
                         state.Instruction = (Instruction) state.Instruction.Operand;
                         continue;
@@ -917,26 +854,6 @@ namespace DelegateDecompiler
             }
 
             return new[] {valueExpression};
-        }
-
-        static void LdC(ProcessorState state, int i)
-        {
-            state.Stack.Push(Expression.Constant(i));
-        }
-
-        static void LdC(ProcessorState state, long i)
-        {
-            state.Stack.Push(Expression.Constant(i));
-        }
-
-        static void LdC(ProcessorState state, float i)
-        {
-            state.Stack.Push(Expression.Constant(i));
-        }
-
-        static void LdC(ProcessorState state, double i)
-        {
-            state.Stack.Push(Expression.Constant(i));
         }
 
         static void Call(ProcessorState state, MethodInfo m)
