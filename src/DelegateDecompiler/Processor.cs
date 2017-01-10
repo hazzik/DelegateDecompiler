@@ -14,9 +14,6 @@ namespace DelegateDecompiler
 {
     internal class Processor
     {
-        const string cachedAnonymousMethodDelegate = "CS$<>9__CachedAnonymousMethodDelegate";
-        const string cachedAnonymousMethodDelegateRoslyn = "<>9__";
-
         static readonly MethodInfo StringConcat = typeof(string).GetMethod("Concat", new[] { typeof(object), typeof(object) });
 
         public static Expression Process(VariableInfo[] locals, IList<Address> args, Instruction instruction, Type returnType)
@@ -43,7 +40,8 @@ namespace DelegateDecompiler
             new LoadLocalProcessor(), 
             new ConvertProcessor(),
             new ConvertCheckedProcessor(),
-            new BinaryProcessor()
+            new BinaryProcessor(),
+            new StaticFieldProcessor(), 
         };
 
         Processor()
@@ -139,40 +137,7 @@ namespace DelegateDecompiler
                         var instance = state.Stack.Pop();
                         state.Stack.Push(Expression.Field(instance, (FieldInfo) state.Instruction.Operand));
                     }
-                    else if (state.Instruction.OpCode == OpCodes.Ldsfld)
-                    {
-                        var field = (FieldInfo) state.Instruction.Operand;
-                        if (IsCachedAnonymousMethodDelegate(field))
-                        {
-                            Address address;
-                            if (state.Delegates.TryGetValue(field, out address))
-                            {
-                                state.Stack.Push(address);
-                            }
-                            else
-                            {
-                                state.Stack.Push(Expression.Field(null, field));
-                            }
-                        }
-                        else
-                        {
-                            state.Stack.Push(Expression.Field(null, field));
-                        }
-                    }
-                    else if (state.Instruction.OpCode == OpCodes.Stsfld)
-                    {
-                        var field = (FieldInfo) state.Instruction.Operand;
-                        if (IsCachedAnonymousMethodDelegate(field))
-                        {
-                            state.Delegates[field] = state.Stack.Pop();
-                        }
-                        else
-                        {
-                            var pop = state.Stack.Pop();
-                            state.Stack.Push(Expression.Assign(Expression.Field(null, field), pop));
-                        }
-                    }
-                    else if (state.Instruction.OpCode == OpCodes.Stfld)
+                    else  if (state.Instruction.OpCode == OpCodes.Stfld)
                     {
                         var value = state.Stack.Pop();
                         var instance = state.Stack.Pop();
@@ -195,7 +160,7 @@ namespace DelegateDecompiler
                     {
                         var address = state.Stack.Peek();
                         var memberExpression = address.Expression as MemberExpression;
-                        if (memberExpression != null && IsCachedAnonymousMethodDelegate(memberExpression.Member as FieldInfo))
+                        if (memberExpression != null && StaticFieldProcessor.IsCachedAnonymousMethodDelegate(memberExpression.Member as FieldInfo))
                         {
                             state.Stack.Pop();
                         }
@@ -396,13 +361,6 @@ namespace DelegateDecompiler
                 return type.TypeHandle;
             }
             return null;
-        }
-
-        static bool IsCachedAnonymousMethodDelegate(FieldInfo field)
-        {
-            if (field == null) return false;
-            return field.Name.StartsWith(cachedAnonymousMethodDelegate) && Attribute.IsDefined(field, typeof (CompilerGeneratedAttribute), false) ||
-                   field.Name.StartsWith(cachedAnonymousMethodDelegateRoslyn) && field.DeclaringType != null && Attribute.IsDefined(field.DeclaringType, typeof (CompilerGeneratedAttribute), false);
         }
 
         static Expression Box(Expression expression, Type type)

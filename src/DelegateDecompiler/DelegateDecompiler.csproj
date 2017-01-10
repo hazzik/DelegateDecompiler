@@ -73,6 +73,7 @@
     <Compile Include="IProcessor.cs" />
     <Compile Include="Processors\ConstantProcessor.cs" />
     <Compile Include="Processors\LoadLocalProcessor.cs" />
+    <Compile Include="Processors\StaticFieldProcessor.cs" />
     <Compile Include="Processors\StoreLocalProcessor.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ReplaceExpressionVisitor.cs" />
