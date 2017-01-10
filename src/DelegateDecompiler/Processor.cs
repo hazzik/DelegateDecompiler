@@ -437,14 +437,14 @@ namespace DelegateDecompiler
                              state.Instruction.OpCode == OpCodes.Beq_S)
                     {
                         var val1 = state.Stack.Pop();
-                        state.Instruction = ConditionalBranch(state, val => AdjustedBinaryExpression(val, val1, ExpressionType.Equal));
+                        state.Instruction = ConditionalBranch(state, val => MakeBinaryExpression(val, val1, ExpressionType.Equal));
                         continue;
                     }
                     else if (state.Instruction.OpCode == OpCodes.Bne_Un ||
                              state.Instruction.OpCode == OpCodes.Bne_Un_S)
                     {
                         var val1 = state.Stack.Pop();
-                        state.Instruction = ConditionalBranch(state, val => AdjustedBinaryExpression(val, val1, ExpressionType.NotEqual));
+                        state.Instruction = ConditionalBranch(state, val => MakeBinaryExpression(val, val1, ExpressionType.NotEqual));
                         continue;
                     }
                     else if (state.Instruction.OpCode == OpCodes.Dup)
@@ -459,67 +459,67 @@ namespace DelegateDecompiler
                     {
                         var val1 = state.Stack.Pop();
                         var val2 = state.Stack.Pop();
-                        state.Stack.Push(AdjustedBinaryExpression(val2, AdjustBooleanConstant(val1, val2.Type), ExpressionType.Add));
+                        state.Stack.Push(MakeBinaryExpression(val2, val1, ExpressionType.Add));
                     }
                     else if (state.Instruction.OpCode == OpCodes.Add_Ovf || state.Instruction.OpCode == OpCodes.Add_Ovf_Un)
                     {
                         var val1 = state.Stack.Pop();
                         var val2 = state.Stack.Pop();
-                        state.Stack.Push(AdjustedBinaryExpression(val2, AdjustBooleanConstant(val1, val2.Type), ExpressionType.AddChecked));
+                        state.Stack.Push(MakeBinaryExpression(val2, val1, ExpressionType.AddChecked));
                     }
                     else if (state.Instruction.OpCode == OpCodes.Sub)
                     {
                         var val1 = state.Stack.Pop();
                         var val2 = state.Stack.Pop();
-                        state.Stack.Push(AdjustedBinaryExpression(val2, AdjustBooleanConstant(val1, val2.Type), ExpressionType.Subtract));
+                        state.Stack.Push(MakeBinaryExpression(val2, val1, ExpressionType.Subtract));
                     }
                     else if (state.Instruction.OpCode == OpCodes.Sub_Ovf || state.Instruction.OpCode == OpCodes.Sub_Ovf_Un)
                     {
                         var val1 = state.Stack.Pop();
                         var val2 = state.Stack.Pop();
-                        state.Stack.Push(AdjustedBinaryExpression(val2, AdjustBooleanConstant(val1, val2.Type), ExpressionType.SubtractChecked));
+                        state.Stack.Push(MakeBinaryExpression(val2, val1, ExpressionType.SubtractChecked));
                     }
                     else if (state.Instruction.OpCode == OpCodes.Mul)
                     {
                         var val1 = state.Stack.Pop();
                         var val2 = state.Stack.Pop();
-                        state.Stack.Push(AdjustedBinaryExpression(val2, AdjustBooleanConstant(val1, val2.Type), ExpressionType.Multiply));
+                        state.Stack.Push(MakeBinaryExpression(val2, val1, ExpressionType.Multiply));
                     }
                     else if (state.Instruction.OpCode == OpCodes.Mul_Ovf || state.Instruction.OpCode == OpCodes.Mul_Ovf_Un)
                     {
                         var val1 = state.Stack.Pop();
                         var val2 = state.Stack.Pop();
-                        state.Stack.Push(AdjustedBinaryExpression(val2, AdjustBooleanConstant(val1, val2.Type), ExpressionType.MultiplyChecked));
+                        state.Stack.Push(MakeBinaryExpression(val2, val1, ExpressionType.MultiplyChecked));
                     }
                     else if (state.Instruction.OpCode == OpCodes.Div || state.Instruction.OpCode == OpCodes.Div_Un)
                     {
                         var val1 = state.Stack.Pop();
                         var val2 = state.Stack.Pop();
-                        state.Stack.Push(AdjustedBinaryExpression(val2, AdjustBooleanConstant(val1, val2.Type), ExpressionType.Divide));
+                        state.Stack.Push(MakeBinaryExpression(val2, val1, ExpressionType.Divide));
                     }
                     else if (state.Instruction.OpCode == OpCodes.Rem || state.Instruction.OpCode == OpCodes.Rem_Un)
                     {
                         var val1 = state.Stack.Pop();
                         var val2 = state.Stack.Pop();
-                        state.Stack.Push(AdjustedBinaryExpression(val2, AdjustBooleanConstant(val1, val2.Type), ExpressionType.Modulo));
+                        state.Stack.Push(MakeBinaryExpression(val2, val1, ExpressionType.Modulo));
                     }
                     else if (state.Instruction.OpCode == OpCodes.Xor)
                     {
                         var val1 = state.Stack.Pop();
                         var val2 = state.Stack.Pop();
-                        state.Stack.Push(AdjustedBinaryExpression(val2, AdjustBooleanConstant(val1, val2.Type), ExpressionType.ExclusiveOr));
+                        state.Stack.Push(MakeBinaryExpression(val2, val1, ExpressionType.ExclusiveOr));
                     }
                     else if (state.Instruction.OpCode == OpCodes.Shl)
                     {
                         var val1 = state.Stack.Pop();
                         var val2 = state.Stack.Pop();
-                        state.Stack.Push(AdjustedBinaryExpression(val2, AdjustBooleanConstant(val1, val2.Type), ExpressionType.LeftShift));
+                        state.Stack.Push(MakeBinaryExpression(val2, val1, ExpressionType.LeftShift));
                     }
                     else if (state.Instruction.OpCode == OpCodes.Shr || state.Instruction.OpCode == OpCodes.Shr_Un)
                     {
                         var val1 = state.Stack.Pop();
                         var val2 = state.Stack.Pop();
-                        state.Stack.Push(AdjustedBinaryExpression(val2, AdjustBooleanConstant(val1, val2.Type), ExpressionType.RightShift));
+                        state.Stack.Push(MakeBinaryExpression(val2, val1, ExpressionType.RightShift));
                     }
                     else if (state.Instruction.OpCode == OpCodes.Neg)
                     {
@@ -650,13 +650,13 @@ namespace DelegateDecompiler
                     {
                         var val1 = state.Stack.Pop();
                         var val2 = state.Stack.Pop();
-                        state.Stack.Push(AdjustedBinaryExpression(val2, val1, ExpressionType.And));
+                        state.Stack.Push(MakeBinaryExpression(val2, val1, ExpressionType.And));
                     }
                     else if (state.Instruction.OpCode == OpCodes.Or)
                     {
                         var val1 = state.Stack.Pop();
                         var val2 = state.Stack.Pop();
-                        state.Stack.Push(AdjustedBinaryExpression(val2, val1, ExpressionType.Or));
+                        state.Stack.Push(MakeBinaryExpression(val2, val1, ExpressionType.Or));
                     }
                     else if (state.Instruction.OpCode == OpCodes.Initobj)
                     {
@@ -707,14 +707,14 @@ namespace DelegateDecompiler
                         var val1 = state.Stack.Pop();
                         var val2 = state.Stack.Pop();
 
-                        state.Stack.Push(AdjustedBinaryExpression(val2, AdjustBooleanConstant(val1, val2.Type), ExpressionType.Equal));
+                        state.Stack.Push(MakeBinaryExpression(val2, val1, ExpressionType.Equal));
                     }
                     else if (state.Instruction.OpCode == OpCodes.Cgt)
                     {
                         var val1 = state.Stack.Pop();
                         var val2 = state.Stack.Pop();
 
-                        state.Stack.Push(AdjustedBinaryExpression(val2, AdjustBooleanConstant(val1, val2.Type), ExpressionType.GreaterThan));
+                        state.Stack.Push(MakeBinaryExpression(val2, val1, ExpressionType.GreaterThan));
                     }
                     else if (state.Instruction.OpCode == OpCodes.Cgt_Un)
                     {
@@ -725,11 +725,11 @@ namespace DelegateDecompiler
                         if (constantExpression != null && (constantExpression.Value as int? == 0 || constantExpression.Value == null))
                         {
                             //Special case.
-                            state.Stack.Push(AdjustedBinaryExpression(val2, AdjustBooleanConstant(val1, val2.Type), ExpressionType.NotEqual));
+                            state.Stack.Push(MakeBinaryExpression(val2, val1, ExpressionType.NotEqual));
                         }
                         else
                         {
-                            state.Stack.Push(AdjustedBinaryExpression(val2, AdjustBooleanConstant(val1, val2.Type), ExpressionType.GreaterThan));
+                            state.Stack.Push(MakeBinaryExpression(val2, val1, ExpressionType.GreaterThan));
                         }
                     }
                     else if (state.Instruction.OpCode == OpCodes.Clt || state.Instruction.OpCode == OpCodes.Clt_Un)
@@ -737,7 +737,7 @@ namespace DelegateDecompiler
                         var val1 = state.Stack.Pop();
                         var val2 = state.Stack.Pop();
 
-                        state.Stack.Push(AdjustedBinaryExpression(val2, AdjustBooleanConstant(val1, val2.Type), ExpressionType.LessThan));
+                        state.Stack.Push(MakeBinaryExpression(val2, val1, ExpressionType.LessThan));
                     }
                     else if (state.Instruction.OpCode == OpCodes.Isinst)
                     {
@@ -800,8 +800,13 @@ namespace DelegateDecompiler
                    field.Name.StartsWith(cachedAnonymousMethodDelegateRoslyn) && field.DeclaringType != null && Attribute.IsDefined(field.DeclaringType, typeof (CompilerGeneratedAttribute), false);
         }
 
-        static BinaryExpression AdjustedBinaryExpression(Expression left, Expression right, ExpressionType expressionType)
+        static BinaryExpression MakeBinaryExpression(Address left, Address right, ExpressionType expressionType)
         {
+            var rightType = right.Type;
+            var leftType = left.Type;
+
+            left = AdjustBooleanConstant(left, rightType);
+            right = AdjustBooleanConstant(right, leftType);
             left = ConvertEnumExpressionToUnderlyingType(left);
             right = ConvertEnumExpressionToUnderlyingType(right);
 
