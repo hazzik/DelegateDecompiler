@@ -11,7 +11,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("DelegateDecompiler")]
-[assembly: AssemblyCopyright("Copyright © Alexander Zaytsev 2012 - 2016")]
+[assembly: AssemblyCopyright("Copyright © Alexander Zaytsev 2012 - 2017")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
