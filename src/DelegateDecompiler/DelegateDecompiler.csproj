@@ -57,6 +57,7 @@
     <Compile Include="ComputedAttribute.cs" />
     <Compile Include="ComputedExtension.cs" />
     <Compile Include="Configuration.cs" />
+    <Compile Include="Processors\BinaryProcessor.cs" />
     <Compile Include="Processors\ConvertCheckedProcessor.cs" />
     <Compile Include="Processors\ConvertProcessor.cs" />
     <Compile Include="DecompileAttribute.cs" />

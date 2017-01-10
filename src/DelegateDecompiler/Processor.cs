@@ -41,6 +41,7 @@ namespace DelegateDecompiler
             new ConstantProcessor(),
             new ConvertProcessor(),
             new ConvertCheckedProcessor(),
+            new BinaryProcessor()
         };
 
         Processor()
@@ -313,14 +314,14 @@ namespace DelegateDecompiler
                              state.Instruction.OpCode == OpCodes.Beq_S)
                     {
                         var val1 = state.Stack.Pop();
-                        state.Instruction = ConditionalBranch(state, val => MakeBinaryExpression(val, val1, ExpressionType.Equal));
+                        state.Instruction = ConditionalBranch(state, val => BinaryProcessor.MakeBinaryExpression(val, val1, ExpressionType.Equal));
                         continue;
                     }
                     else if (state.Instruction.OpCode == OpCodes.Bne_Un ||
                              state.Instruction.OpCode == OpCodes.Bne_Un_S)
                     {
                         var val1 = state.Stack.Pop();
-                        state.Instruction = ConditionalBranch(state, val => MakeBinaryExpression(val, val1, ExpressionType.NotEqual));
+                        state.Instruction = ConditionalBranch(state, val => BinaryProcessor.MakeBinaryExpression(val, val1, ExpressionType.NotEqual));
                         continue;
                     }
                     else if (state.Instruction.OpCode == OpCodes.Dup)
@@ -330,72 +331,6 @@ namespace DelegateDecompiler
                     else if (state.Instruction.OpCode == OpCodes.Pop)
                     {
                         state.Stack.Pop();
-                    }
-                    else if (state.Instruction.OpCode == OpCodes.Add)
-                    {
-                        var val1 = state.Stack.Pop();
-                        var val2 = state.Stack.Pop();
-                        state.Stack.Push(MakeBinaryExpression(val2, val1, ExpressionType.Add));
-                    }
-                    else if (state.Instruction.OpCode == OpCodes.Add_Ovf || state.Instruction.OpCode == OpCodes.Add_Ovf_Un)
-                    {
-                        var val1 = state.Stack.Pop();
-                        var val2 = state.Stack.Pop();
-                        state.Stack.Push(MakeBinaryExpression(val2, val1, ExpressionType.AddChecked));
-                    }
-                    else if (state.Instruction.OpCode == OpCodes.Sub)
-                    {
-                        var val1 = state.Stack.Pop();
-                        var val2 = state.Stack.Pop();
-                        state.Stack.Push(MakeBinaryExpression(val2, val1, ExpressionType.Subtract));
-                    }
-                    else if (state.Instruction.OpCode == OpCodes.Sub_Ovf || state.Instruction.OpCode == OpCodes.Sub_Ovf_Un)
-                    {
-                        var val1 = state.Stack.Pop();
-                        var val2 = state.Stack.Pop();
-                        state.Stack.Push(MakeBinaryExpression(val2, val1, ExpressionType.SubtractChecked));
-                    }
-                    else if (state.Instruction.OpCode == OpCodes.Mul)
-                    {
-                        var val1 = state.Stack.Pop();
-                        var val2 = state.Stack.Pop();
-                        state.Stack.Push(MakeBinaryExpression(val2, val1, ExpressionType.Multiply));
-                    }
-                    else if (state.Instruction.OpCode == OpCodes.Mul_Ovf || state.Instruction.OpCode == OpCodes.Mul_Ovf_Un)
-                    {
-                        var val1 = state.Stack.Pop();
-                        var val2 = state.Stack.Pop();
-                        state.Stack.Push(MakeBinaryExpression(val2, val1, ExpressionType.MultiplyChecked));
-                    }
-                    else if (state.Instruction.OpCode == OpCodes.Div || state.Instruction.OpCode == OpCodes.Div_Un)
-                    {
-                        var val1 = state.Stack.Pop();
-                        var val2 = state.Stack.Pop();
-                        state.Stack.Push(MakeBinaryExpression(val2, val1, ExpressionType.Divide));
-                    }
-                    else if (state.Instruction.OpCode == OpCodes.Rem || state.Instruction.OpCode == OpCodes.Rem_Un)
-                    {
-                        var val1 = state.Stack.Pop();
-                        var val2 = state.Stack.Pop();
-                        state.Stack.Push(MakeBinaryExpression(val2, val1, ExpressionType.Modulo));
-                    }
-                    else if (state.Instruction.OpCode == OpCodes.Xor)
-                    {
-                        var val1 = state.Stack.Pop();
-                        var val2 = state.Stack.Pop();
-                        state.Stack.Push(MakeBinaryExpression(val2, val1, ExpressionType.ExclusiveOr));
-                    }
-                    else if (state.Instruction.OpCode == OpCodes.Shl)
-                    {
-                        var val1 = state.Stack.Pop();
-                        var val2 = state.Stack.Pop();
-                        state.Stack.Push(MakeBinaryExpression(val2, val1, ExpressionType.LeftShift));
-                    }
-                    else if (state.Instruction.OpCode == OpCodes.Shr || state.Instruction.OpCode == OpCodes.Shr_Un)
-                    {
-                        var val1 = state.Stack.Pop();
-                        var val2 = state.Stack.Pop();
-                        state.Stack.Push(MakeBinaryExpression(val2, val1, ExpressionType.RightShift));
                     }
                     else if (state.Instruction.OpCode == OpCodes.Neg)
                     {
@@ -411,18 +346,6 @@ namespace DelegateDecompiler
                     {
                         var val1 = state.Stack.Pop();
                         state.Stack.Push(Expression.Convert(val1, (Type) state.Instruction.Operand));
-                    }
-                    else if (state.Instruction.OpCode == OpCodes.And)
-                    {
-                        var val1 = state.Stack.Pop();
-                        var val2 = state.Stack.Pop();
-                        state.Stack.Push(MakeBinaryExpression(val2, val1, ExpressionType.And));
-                    }
-                    else if (state.Instruction.OpCode == OpCodes.Or)
-                    {
-                        var val1 = state.Stack.Pop();
-                        var val2 = state.Stack.Pop();
-                        state.Stack.Push(MakeBinaryExpression(val2, val1, ExpressionType.Or));
                     }
                     else if (state.Instruction.OpCode == OpCodes.Initobj)
                     {
@@ -467,43 +390,6 @@ namespace DelegateDecompiler
                         {
                             throw new NotSupportedException();
                         }
-                    }
-                    else if (state.Instruction.OpCode == OpCodes.Ceq)
-                    {
-                        var val1 = state.Stack.Pop();
-                        var val2 = state.Stack.Pop();
-
-                        state.Stack.Push(MakeBinaryExpression(val2, val1, ExpressionType.Equal));
-                    }
-                    else if (state.Instruction.OpCode == OpCodes.Cgt)
-                    {
-                        var val1 = state.Stack.Pop();
-                        var val2 = state.Stack.Pop();
-
-                        state.Stack.Push(MakeBinaryExpression(val2, val1, ExpressionType.GreaterThan));
-                    }
-                    else if (state.Instruction.OpCode == OpCodes.Cgt_Un)
-                    {
-                        var val1 = state.Stack.Pop();
-                        var val2 = state.Stack.Pop();
-
-                        var constantExpression = val1.Expression as ConstantExpression;
-                        if (constantExpression != null && (constantExpression.Value as int? == 0 || constantExpression.Value == null))
-                        {
-                            //Special case.
-                            state.Stack.Push(MakeBinaryExpression(val2, val1, ExpressionType.NotEqual));
-                        }
-                        else
-                        {
-                            state.Stack.Push(MakeBinaryExpression(val2, val1, ExpressionType.GreaterThan));
-                        }
-                    }
-                    else if (state.Instruction.OpCode == OpCodes.Clt || state.Instruction.OpCode == OpCodes.Clt_Un)
-                    {
-                        var val1 = state.Stack.Pop();
-                        var val2 = state.Stack.Pop();
-
-                        state.Stack.Push(MakeBinaryExpression(val2, val1, ExpressionType.LessThan));
                     }
                     else if (state.Instruction.OpCode == OpCodes.Isinst)
                     {
@@ -566,19 +452,6 @@ namespace DelegateDecompiler
                    field.Name.StartsWith(cachedAnonymousMethodDelegateRoslyn) && field.DeclaringType != null && Attribute.IsDefined(field.DeclaringType, typeof (CompilerGeneratedAttribute), false);
         }
 
-        static BinaryExpression MakeBinaryExpression(Address left, Address right, ExpressionType expressionType)
-        {
-            var rightType = right.Type;
-            var leftType = left.Type;
-
-            left = AdjustBooleanConstant(left, rightType);
-            right = AdjustBooleanConstant(right, leftType);
-            left = ConvertEnumExpressionToUnderlyingType(left);
-            right = ConvertEnumExpressionToUnderlyingType(right);
-
-            return Expression.MakeBinary(expressionType, left, right);
-        }
-
         static Expression Box(Expression expression, Type type)
         {
             if (expression.Type == type)
@@ -593,14 +466,6 @@ namespace DelegateDecompiler
 
             if (expression.Type.IsEnum)
                 return Expression.Convert(expression, type);
-
-            return expression;
-        }
-
-        static Expression ConvertEnumExpressionToUnderlyingType(Expression expression)
-        {
-            if (expression.Type.IsEnum)
-                return Expression.Convert(expression, expression.Type.GetEnumUnderlyingType());
 
             return expression;
         }
@@ -797,20 +662,6 @@ namespace DelegateDecompiler
             if (type.IsValueType != expression.Type.IsValueType)
             {
                 return Expression.Convert(expression, type);
-            }
-
-            return expression;
-        }
-
-        static Expression AdjustBooleanConstant(Expression expression, Type type)
-        {
-            if (type == typeof (bool) && expression.Type == typeof (int))
-            {
-                var constantExpression = expression as ConstantExpression;
-                if (constantExpression != null)
-                {
-                    return Expression.Constant(!Equals(constantExpression.Value, 0));
-                }
             }
 
             return expression;
