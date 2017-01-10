@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -7,24 +6,18 @@ using Mono.Reflection;
 
 namespace DelegateDecompiler
 {
-    public class MethodBodyDecompiler
+    public static class MethodBodyDecompiler
     {
-        readonly IList<Address> args;
-        readonly VariableInfo[] locals;
-        readonly MethodInfo method;
-
-        public MethodBodyDecompiler(MethodInfo method)
+        public static LambdaExpression Decompile(MethodInfo method)
         {
-            this.method = method;
-            var parameters = method.GetParameters();
-            if (method.IsStatic)
-                args = parameters
-                    .Select(p => (Address) Expression.Parameter(p.ParameterType, p.Name))
-                    .ToList();
-            else
-                args = new[] {(Address) Expression.Parameter(method.DeclaringType, "this")}
-                    .Union(parameters.Select(p => (Address) Expression.Parameter(p.ParameterType, p.Name)))
-                    .ToList();
+            var args = method.GetParameters()
+                .Select(p => (Address)Expression.Parameter(p.ParameterType, p.Name))
+                .ToList();
+
+            if (!method.IsStatic)
+            {
+                args.Insert(0, Expression.Parameter(method.DeclaringType, "this"));
+            }
 
             var body = method.GetMethodBody();
             var addresses = new VariableInfo[body.LocalVariables.Count];
@@ -32,14 +25,11 @@ namespace DelegateDecompiler
             {
                 addresses[i] = new VariableInfo(body.LocalVariables[i].LocalType);
             }
-            locals = addresses.ToArray();
-        }
+            var locals = addresses.ToArray();
 
-        public LambdaExpression Decompile()
-        {
             var instructions = method.GetInstructions();
             var ex = Processor.Process(locals, args, instructions.First(), method.ReturnType);
-            return Expression.Lambda(new OptimizeExpressionVisitor().Visit(ex), args.Select(x => (ParameterExpression) x.Expression));
+            return Expression.Lambda(new OptimizeExpressionVisitor().Visit(ex), args.Select(x => (ParameterExpression)x.Expression));
         }
     }
 }

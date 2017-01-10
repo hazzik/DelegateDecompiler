@@ -288,6 +288,31 @@ namespace DelegateDecompiler.Tests
             Test(expression, compiled);
         }
 
+        [Test]
+        public void ShouldBeAbleToDecompileObjectInitializer()
+        {
+            Expression<Func<TestClass>> expression = () => new TestClass { StartDate = DateTime.Now };
+            Func<TestClass> compiled = () => new TestClass { StartDate = DateTime.Now };
+            Test(expression, compiled);
+        }
+
+        [Test]
+        public void ShouldBeAbleToDecompileObjectInitializerWithParameters()
+        {
+            Expression<Func<DateTime, DateTime, TestClass>> expression = (x, y) => new TestClass { StartDate = x, EndDate = y };
+            Func<DateTime, DateTime, TestClass> compiled = (x, y) => new TestClass { StartDate = x, EndDate = y };
+            Test(expression, compiled);
+        }
+
+        [Test]
+        public void ShouldBeAbleToDecompileObjectInitializerWithOuterVariables()
+        {
+            var date = DateTime.Now;
+            Expression<Func<DateTime, TestClass>> expression = (x) => new TestClass { StartDate = date };
+            Func<DateTime, TestClass> compiled = (x) => new TestClass { StartDate = date };
+            Test(expression, compiled);
+        }
+
         public static int Add(int x, int y)
         {
             return x + y;

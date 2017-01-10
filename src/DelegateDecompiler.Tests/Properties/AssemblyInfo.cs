@@ -10,7 +10,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("DelegateDecompiler.Tests")]
-[assembly: AssemblyCopyright("Copyright © Alexander Zaytsev 2012 - 2016")]
+[assembly: AssemblyCopyright("Copyright © Alexander Zaytsev 2012 - 2017")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -33,4 +33,4 @@ using System.Runtime.InteropServices;
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
 [assembly: AssemblyVersion("1.0.0.0")]
-[assembly: AssemblyFileVersion("0.21.0")]
+[assembly: AssemblyFileVersion("0.22.0")]

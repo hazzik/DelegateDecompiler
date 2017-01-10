@@ -7,15 +7,13 @@ namespace DelegateDecompiler.Tests
     [TestFixture]
     public class ClosuresTest : DecompilerTestsBase
     {
-        const string Skip = "Compiler builds expression and delegate in case of closures in different ways";
-        
         int y = 0;
         static int z = 0;
 
         readonly TestClass instanceTestClass = new TestClass();
         readonly static TestClass staticTestClass = new TestClass();
 
-        [Test, Ignore(Skip)]
+        [Test]
         public void CanUseVariableClosure()
         {
             int x = 0;
@@ -24,7 +22,7 @@ namespace DelegateDecompiler.Tests
             Test(expected, compiled);
         } 
 
-        [Test, Ignore(Skip)]
+        [Test]
         public void CanUseFieldClosure()
         {
             Expression<Func<object, int>> expected = o => y;
@@ -40,7 +38,7 @@ namespace DelegateDecompiler.Tests
             Test(expected, compiled);
         }
  
-        [Test, Ignore(Skip)]
+        [Test, Ignore("The difference is expected")]
         public void CanUseFieldAndVariableClosures()
         {
             int x = 0;
@@ -49,7 +47,7 @@ namespace DelegateDecompiler.Tests
             Test(expected, compiled);
         } 
  
-        [Test, Ignore(Skip)]
+        [Test, Ignore("The difference is expected")]
         public void CanUseFieldAndStaticFieldAndVariableClosures()
         {
             int x = 0;
@@ -58,7 +56,7 @@ namespace DelegateDecompiler.Tests
             Test(expected, compiled);
         } 
 
-        [Test, Ignore(Skip)]
+        [Test]
         public void CanUseRefVariableClosure()
         {
             var x = new TestClass();
@@ -67,7 +65,7 @@ namespace DelegateDecompiler.Tests
             Test(expected, compiled);
         } 
 
-        [Test, Ignore(Skip)]
+        [Test]
         public void CanUseRefFieldClosure()
         {
             Expression<Func<object, TestClass>> expected = o => instanceTestClass;
@@ -83,7 +81,7 @@ namespace DelegateDecompiler.Tests
             Test(expected, compiled);
         }
  
-        [Test, Ignore(Skip)]
+        [Test, Ignore("The difference is expected")]
         public void CanUseRefFieldAndVariableClosures()
         {
             var x = new TestClass();
@@ -92,7 +90,7 @@ namespace DelegateDecompiler.Tests
             Test(expected, compiled);
         } 
  
-        [Test, Ignore(Skip)]
+        [Test, Ignore("The difference is expected")]
         public void CanUseRefFieldAndStaticFieldAndVariableClosures()
         {
             var x = new TestClass();
