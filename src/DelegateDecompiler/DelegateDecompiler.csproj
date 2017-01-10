@@ -57,6 +57,7 @@
     <Compile Include="ComputedAttribute.cs" />
     <Compile Include="ComputedExtension.cs" />
     <Compile Include="Configuration.cs" />
+    <Compile Include="Processors\ConvertProcessor.cs" />
     <Compile Include="DecompileAttribute.cs" />
     <Compile Include="DecompiledQueryable.cs" />
     <Compile Include="DecompiledQueryProvider.cs" />
@@ -66,6 +67,7 @@
     <Compile Include="MethodBodyDecompiler.cs" />
     <Compile Include="OptimizeExpressionVisitor.cs" />
     <Compile Include="Processor.cs" />
+    <Compile Include="ProcessorState.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ReplaceExpressionVisitor.cs" />
     <Compile Include="TransparentIdentifierRemovingExpressionVisitor.cs" />
@@ -80,6 +82,7 @@
     </None>
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

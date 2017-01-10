@@ -8,82 +8,12 @@ using System.Reflection;
 using System.Reflection.Emit;
 using Mono.Reflection;
 using System.Runtime.CompilerServices;
+using DelegateDecompiler.Processors;
 
 namespace DelegateDecompiler
 {
     internal class Processor
     {
-        class ProcessorState
-        {
-            public IDictionary<FieldInfo, Address> Delegates { get; private set; }
-            public Stack<Address> Stack { get; private set; }
-            public VariableInfo[] Locals { get; private set; }
-            public IList<Address> Args { get; private set; }
-            public Instruction Last { get; private set; }
-            public Action RunNext { get; set; }
-
-            public Instruction Instruction { get; set; }
-
-            public ProcessorState(Stack<Address> stack, VariableInfo[] locals, IList<Address> args, Instruction instruction,
-               Instruction last = null, IDictionary<FieldInfo, Address> delegates = null)
-            {
-                Delegates = delegates ?? new Dictionary<FieldInfo, Address>();
-                Stack = stack;
-                Locals = locals;
-                Args = args;
-                Instruction = instruction;
-                Last = last;
-            }
-
-            public ProcessorState Clone(Instruction instruction, Instruction last = null)
-            {
-                var state = new ProcessorState(null, new VariableInfo[Locals.Length], Args.ToArray(), instruction, last, Delegates);
-                var addressMap = new Dictionary<Address, Address>();
-                var buffer = new List<Address>();
-                foreach (var address in Stack)
-                {
-                    buffer.Add(address.Clone(addressMap));
-                }
-                state.Stack = new Stack<Address>(Enumerable.Reverse(buffer));
-                for (int i = 0; i < Locals.Length; i++)
-                {
-                    state.Locals[i] = new VariableInfo(Locals[i].Type);
-                    state.Locals[i].Address = Locals[i].Address.Clone(addressMap);
-                }
-                return state;
-            }
-
-            public void Merge(Expression test, ProcessorState leftState, ProcessorState rightState)
-            {
-                var addressMap = new Dictionary<Tuple<Address, Address>, Address>();
-                for (int i = 0; i < leftState.Locals.Length; i++)
-                {
-                    var leftLocal = leftState.Locals[i];
-                    var rightLocal = rightState.Locals[i];
-                    Locals[i].Address = Address.Merge(test, leftLocal.Address, rightLocal.Address, addressMap);
-                }
-                var buffer = new List<Address>();
-                while (leftState.Stack.Count > 0 || rightState.Stack.Count > 0)
-                {
-                    var rightExpression = rightState.Stack.Pop();
-                    var leftExpression = leftState.Stack.Pop();
-                    buffer.Add(Address.Merge(test, leftExpression, rightExpression, addressMap));
-                }
-                Stack.Clear();
-                foreach (var address in Enumerable.Reverse(buffer))
-                {
-                    Stack.Push(address);
-                }
-            }
-
-            public Expression Final()
-            {
-                return Stack.Count == 0
-                       ? Expression.Empty()
-                       : Stack.Pop();
-            }
-        }
-  
         const string cachedAnonymousMethodDelegate = "CS$<>9__CachedAnonymousMethodDelegate";
         const string cachedAnonymousMethodDelegateRoslyn = "<>9__";
 
@@ -105,6 +35,7 @@ namespace DelegateDecompiler
         }
 
         readonly Stack<ProcessorState> states = new Stack<ProcessorState>();
+        static readonly ConvertProcessor processor = new ConvertProcessor();
 
         Processor()
         {
@@ -113,21 +44,24 @@ namespace DelegateDecompiler
         Expression Process()
         {
             ProcessorState state = null;
-            while(states.Count > 0)
+            while (states.Count > 0)
             {
                 state = states.Peek();
 
-                if(state.RunNext != null)
+                if (state.RunNext != null)
                 {
                     state.RunNext();
                     state.RunNext = null;
                 }
 
-                if(state.Instruction != null && state.Instruction != state.Last)
+                if (state.Instruction != null && state.Instruction != state.Last)
                 {
                     Debug.WriteLine(state.Instruction);
 
-                    if (state.Instruction.OpCode == OpCodes.Nop || state.Instruction.OpCode == OpCodes.Break)
+                    if (processor.Process(state))
+                    {
+                    }
+                    else if (state.Instruction.OpCode == OpCodes.Nop || state.Instruction.OpCode == OpCodes.Break)
                     {
                         //do nothing;
                     }
@@ -259,7 +193,7 @@ namespace DelegateDecompiler
                     {
                         var value = state.Stack.Pop();
                         var instance = state.Stack.Pop();
-                        var field = (FieldInfo)state.Instruction.Operand;
+                        var field = (FieldInfo) state.Instruction.Operand;
                         instance.Expression = BuildMemberInit(instance.Expression, Expression.Bind(field, value));
                     }
                     else if (state.Instruction.OpCode == OpCodes.Ldloc_0)
@@ -280,7 +214,7 @@ namespace DelegateDecompiler
                     }
                     else if (state.Instruction.OpCode == OpCodes.Ldloc ||
                              state.Instruction.OpCode == OpCodes.Ldloc_S ||
-                             state.Instruction.OpCode == OpCodes.Ldloca || 
+                             state.Instruction.OpCode == OpCodes.Ldloca ||
                              state.Instruction.OpCode == OpCodes.Ldloca_S)
                     {
                         var operand = (LocalVariableInfo) state.Instruction.Operand;
@@ -328,7 +262,7 @@ namespace DelegateDecompiler
                     }
                     else if (state.Instruction.OpCode == OpCodes.Ldc_I4_S)
                     {
-                        LdC(state, (sbyte)state.Instruction.Operand);
+                        LdC(state, (sbyte) state.Instruction.Operand);
                     }
                     else if (state.Instruction.OpCode == OpCodes.Ldc_I4_M1)
                     {
@@ -336,19 +270,19 @@ namespace DelegateDecompiler
                     }
                     else if (state.Instruction.OpCode == OpCodes.Ldc_I4)
                     {
-                        LdC(state, (int)state.Instruction.Operand);
+                        LdC(state, (int) state.Instruction.Operand);
                     }
                     else if (state.Instruction.OpCode == OpCodes.Ldc_I8)
                     {
-                        LdC(state, (long)state.Instruction.Operand);
+                        LdC(state, (long) state.Instruction.Operand);
                     }
                     else if (state.Instruction.OpCode == OpCodes.Ldc_R4)
                     {
-                        LdC(state, (float)state.Instruction.Operand);
+                        LdC(state, (float) state.Instruction.Operand);
                     }
                     else if (state.Instruction.OpCode == OpCodes.Ldc_R8)
                     {
-                        LdC(state, (double)state.Instruction.Operand);
+                        LdC(state, (double) state.Instruction.Operand);
                     }
                     else if (state.Instruction.OpCode == OpCodes.Br_S || state.Instruction.OpCode == OpCodes.Br)
                     {
@@ -531,115 +465,55 @@ namespace DelegateDecompiler
                         var val = state.Stack.Pop();
                         state.Stack.Push(Expression.Not(val));
                     }
-                    else if (state.Instruction.OpCode == OpCodes.Conv_I)
-                    {
-                        var val1 = state.Stack.Pop();
-                        state.Stack.Push(Expression.Convert(val1, typeof (int))); // Support x64?
-                    }
-                    else if (state.Instruction.OpCode == OpCodes.Conv_I1)
-                    {
-                        var val1 = state.Stack.Pop();
-                        state.Stack.Push(Expression.Convert(val1, typeof (sbyte)));
-                    }
-                    else if (state.Instruction.OpCode == OpCodes.Conv_I2)
-                    {
-                        var val1 = state.Stack.Pop();
-                        state.Stack.Push(Expression.Convert(val1, typeof (short)));
-                    }
-                    else if (state.Instruction.OpCode == OpCodes.Conv_I4)
-                    {
-                        var val1 = state.Stack.Pop();
-                        state.Stack.Push(Expression.Convert(val1, typeof (int)));
-                    }
-                    else if (state.Instruction.OpCode == OpCodes.Conv_I8)
-                    {
-                        var val1 = state.Stack.Pop();
-                        state.Stack.Push(Expression.Convert(val1, typeof (long)));
-                    }
-                    else if (state.Instruction.OpCode == OpCodes.Conv_U)
-                    {
-                        var val1 = state.Stack.Pop();
-                        state.Stack.Push(Expression.Convert(val1, typeof (uint))); // Suppot x64?
-                    }
-                    else if (state.Instruction.OpCode == OpCodes.Conv_U1)
-                    {
-                        var val1 = state.Stack.Pop();
-                        state.Stack.Push(Expression.Convert(val1, typeof (byte)));
-                    }
-                    else if (state.Instruction.OpCode == OpCodes.Conv_U2)
-                    {
-                        var val1 = state.Stack.Pop();
-                        state.Stack.Push(Expression.Convert(val1, typeof (ushort)));
-                    }
-                    else if (state.Instruction.OpCode == OpCodes.Conv_U4)
-                    {
-                        var val1 = state.Stack.Pop();
-                        state.Stack.Push(Expression.Convert(val1, typeof (uint)));
-                    }
-                    else if (state.Instruction.OpCode == OpCodes.Conv_U8)
-                    {
-                        var val1 = state.Stack.Pop();
-                        state.Stack.Push(Expression.Convert(val1, typeof (ulong)));
-                    }
                     else if (state.Instruction.OpCode == OpCodes.Conv_Ovf_I || state.Instruction.OpCode == OpCodes.Conv_Ovf_I_Un)
                     {
                         var val1 = state.Stack.Pop();
-                        state.Stack.Push(Expression.ConvertChecked(val1, typeof (int))); // Suppot x64?
+                        state.Stack.Push(Expression.ConvertChecked(val1, typeof(int))); // Suppot x64?
                     }
                     else if (state.Instruction.OpCode == OpCodes.Conv_Ovf_I1 || state.Instruction.OpCode == OpCodes.Conv_Ovf_I1_Un)
                     {
                         var val1 = state.Stack.Pop();
-                        state.Stack.Push(Expression.ConvertChecked(val1, typeof (sbyte)));
+                        state.Stack.Push(Expression.ConvertChecked(val1, typeof(sbyte)));
                     }
                     else if (state.Instruction.OpCode == OpCodes.Conv_Ovf_I2 || state.Instruction.OpCode == OpCodes.Conv_Ovf_I2_Un)
                     {
                         var val1 = state.Stack.Pop();
-                        state.Stack.Push(Expression.ConvertChecked(val1, typeof (short)));
+                        state.Stack.Push(Expression.ConvertChecked(val1, typeof(short)));
                     }
                     else if (state.Instruction.OpCode == OpCodes.Conv_Ovf_I4 || state.Instruction.OpCode == OpCodes.Conv_Ovf_I4_Un)
                     {
                         var val1 = state.Stack.Pop();
-                        state.Stack.Push(Expression.ConvertChecked(val1, typeof (int)));
+                        state.Stack.Push(Expression.ConvertChecked(val1, typeof(int)));
                     }
                     else if (state.Instruction.OpCode == OpCodes.Conv_Ovf_I8 || state.Instruction.OpCode == OpCodes.Conv_Ovf_I8_Un)
                     {
                         var val1 = state.Stack.Pop();
-                        state.Stack.Push(Expression.ConvertChecked(val1, typeof (long)));
+                        state.Stack.Push(Expression.ConvertChecked(val1, typeof(long)));
                     }
                     else if (state.Instruction.OpCode == OpCodes.Conv_Ovf_U || state.Instruction.OpCode == OpCodes.Conv_Ovf_U_Un)
                     {
                         var val1 = state.Stack.Pop();
-                        state.Stack.Push(Expression.ConvertChecked(val1, typeof (uint))); // Suppot x64?
+                        state.Stack.Push(Expression.ConvertChecked(val1, typeof(uint))); // Suppot x64?
                     }
                     else if (state.Instruction.OpCode == OpCodes.Conv_Ovf_U1 || state.Instruction.OpCode == OpCodes.Conv_Ovf_U1_Un)
                     {
                         var val1 = state.Stack.Pop();
-                        state.Stack.Push(Expression.ConvertChecked(val1, typeof (byte)));
+                        state.Stack.Push(Expression.ConvertChecked(val1, typeof(byte)));
                     }
                     else if (state.Instruction.OpCode == OpCodes.Conv_Ovf_U2 || state.Instruction.OpCode == OpCodes.Conv_Ovf_U2_Un)
                     {
                         var val1 = state.Stack.Pop();
-                        state.Stack.Push(Expression.ConvertChecked(val1, typeof (ushort)));
+                        state.Stack.Push(Expression.ConvertChecked(val1, typeof(ushort)));
                     }
                     else if (state.Instruction.OpCode == OpCodes.Conv_Ovf_U4 || state.Instruction.OpCode == OpCodes.Conv_Ovf_U4_Un)
                     {
                         var val1 = state.Stack.Pop();
-                        state.Stack.Push(Expression.ConvertChecked(val1, typeof (uint)));
+                        state.Stack.Push(Expression.ConvertChecked(val1, typeof(uint)));
                     }
                     else if (state.Instruction.OpCode == OpCodes.Conv_Ovf_U8 || state.Instruction.OpCode == OpCodes.Conv_Ovf_U8_Un)
                     {
                         var val1 = state.Stack.Pop();
-                        state.Stack.Push(Expression.ConvertChecked(val1, typeof (ulong)));
-                    }
-                    else if (state.Instruction.OpCode == OpCodes.Conv_R4 || state.Instruction.OpCode == OpCodes.Conv_R_Un)
-                    {
-                        var val1 = state.Stack.Pop();
-                        state.Stack.Push(Expression.ConvertChecked(val1, typeof (float)));
-                    }
-                    else if (state.Instruction.OpCode == OpCodes.Conv_R8)
-                    {
-                        var val1 = state.Stack.Pop();
-                        state.Stack.Push(Expression.ConvertChecked(val1, typeof (double)));
+                        state.Stack.Push(Expression.ConvertChecked(val1, typeof(ulong)));
                     }
                     else if (state.Instruction.OpCode == OpCodes.Castclass)
                     {
@@ -680,7 +554,7 @@ namespace DelegateDecompiler
                     }
                     else if (state.Instruction.OpCode == OpCodes.Newobj)
                     {
-                        var constructor = (ConstructorInfo)state.Instruction.Operand;
+                        var constructor = (ConstructorInfo) state.Instruction.Operand;
                         state.Stack.Push(Expression.New(constructor, GetArguments(state, constructor)));
                     }
                     else if (state.Instruction.OpCode == OpCodes.Call || state.Instruction.OpCode == OpCodes.Callvirt)
