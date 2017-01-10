@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
@@ -8,7 +9,11 @@ namespace DelegateDecompiler
 {
     public static class DecompileExtensions
     {
-        private static readonly Cache<MethodInfo, LambdaExpression> cache = new Cache<MethodInfo, LambdaExpression>();
+        static readonly ConcurrentDictionary<MethodInfo, Lazy<LambdaExpression>> Cache =
+            new ConcurrentDictionary<MethodInfo, Lazy<LambdaExpression>>();
+
+        static readonly Func<MethodInfo, Lazy<LambdaExpression>> DecompileDelegate =
+            info => new Lazy<LambdaExpression>(() => MethodBodyDecompiler.Decompile(info));
 
         public static LambdaExpression Decompile(this Delegate @delegate)
         {
@@ -25,7 +30,7 @@ namespace DelegateDecompiler
 
         public static LambdaExpression Decompile(this MethodInfo method)
         {
-            return cache.GetOrAdd(method, m => MethodBodyDecompiler.Decompile(method));
+            return Cache.GetOrAdd(method, DecompileDelegate).Value;
         }
 
         public static IQueryable<T> Decompile<T>(this IQueryable<T> self)
