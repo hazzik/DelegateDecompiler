@@ -650,13 +650,13 @@ namespace DelegateDecompiler
                     {
                         var val1 = state.Stack.Pop();
                         var val2 = state.Stack.Pop();
-                        state.Stack.Push(Expression.And(val2, val1));
+                        state.Stack.Push(AdjustedBinaryExpression(val2, val1, ExpressionType.And));
                     }
                     else if (state.Instruction.OpCode == OpCodes.Or)
                     {
                         var val1 = state.Stack.Pop();
                         var val2 = state.Stack.Pop();
-                        state.Stack.Push(Expression.Or(val2, val1));
+                        state.Stack.Push(AdjustedBinaryExpression(val2, val1, ExpressionType.Or));
                     }
                     else if (state.Instruction.OpCode == OpCodes.Initobj)
                     {

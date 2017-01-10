@@ -110,8 +110,56 @@ namespace DelegateDecompiler.Tests
         [Test]
         public void TestEnumParameterHasFlagEnumParameter()
         {
-            Expression<Func<TestFlagEnum, bool>> expected = x => x.HasFlag(TestFlagEnum.Bar);
-            Func<TestFlagEnum, bool> compiled = x => x.HasFlag(TestFlagEnum.Bar);
+            Expression<Func<TestFlagEnum, bool>> expected = x => x.HasFlag(x);
+            Func<TestFlagEnum, bool> compiled = x => x.HasFlag(x);
+            Test(expected, compiled);
+        }
+
+        [Test]
+        public void TestEnumConstantAndEnumParameter()
+        {
+            Expression<Func<TestFlagEnum, TestFlagEnum>> expected = x => TestFlagEnum.Bar & x;
+            Func<TestFlagEnum, TestFlagEnum> compiled = x => TestFlagEnum.Bar & x;
+            Test(expected, compiled);
+        }
+
+        [Test]
+        public void TestEnumParameterAndEnumConstant()
+        {
+            Expression<Func<TestFlagEnum, TestFlagEnum>> expected = x => x & TestFlagEnum.Bar ;
+            Func<TestFlagEnum, TestFlagEnum> compiled = x => x & TestFlagEnum.Bar ;
+            Test(expected, compiled);
+        }
+
+        [Test]
+        public void TestEnumParameterAndEnumParameter()
+        {
+            Expression<Func<TestFlagEnum, TestFlagEnum>> expected = x => x & x;
+            Func<TestFlagEnum, TestFlagEnum> compiled = x => x & x ;
+            Test(expected, compiled);
+        }
+
+        [Test]
+        public void TestEnumConstantOrEnumParameter()
+        {
+            Expression<Func<TestFlagEnum, TestFlagEnum>> expected = x => TestFlagEnum.Bar | x;
+            Func<TestFlagEnum, TestFlagEnum> compiled = x => TestFlagEnum.Bar | x;
+            Test(expected, compiled);
+        }
+
+        [Test]
+        public void TestEnumParameterOrEnumConstant()
+        {
+            Expression<Func<TestFlagEnum, TestFlagEnum>> expected = x => x | TestFlagEnum.Bar ;
+            Func<TestFlagEnum, TestFlagEnum> compiled = x => x | TestFlagEnum.Bar ;
+            Test(expected, compiled);
+        }
+
+        [Test]
+        public void TestEnumParameterOrEnumParameter()
+        {
+            Expression<Func<TestFlagEnum, TestFlagEnum>> expected = x => x | x;
+            Func<TestFlagEnum, TestFlagEnum> compiled = x => x | x ;
             Test(expected, compiled);
         }
 
