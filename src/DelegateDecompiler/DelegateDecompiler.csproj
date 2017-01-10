@@ -57,6 +57,7 @@
     <Compile Include="ComputedAttribute.cs" />
     <Compile Include="ComputedExtension.cs" />
     <Compile Include="Configuration.cs" />
+    <Compile Include="Processors\ConvertCheckedProcessor.cs" />
     <Compile Include="Processors\ConvertProcessor.cs" />
     <Compile Include="DecompileAttribute.cs" />
     <Compile Include="DecompiledQueryable.cs" />
@@ -68,6 +69,7 @@
     <Compile Include="OptimizeExpressionVisitor.cs" />
     <Compile Include="Processor.cs" />
     <Compile Include="ProcessorState.cs" />
+    <Compile Include="IProcessor.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ReplaceExpressionVisitor.cs" />
     <Compile Include="TransparentIdentifierRemovingExpressionVisitor.cs" />

@@ -35,7 +35,12 @@ namespace DelegateDecompiler
         }
 
         readonly Stack<ProcessorState> states = new Stack<ProcessorState>();
-        static readonly ConvertProcessor processor = new ConvertProcessor();
+
+        static readonly IProcessor[] Processors =
+        {
+            new ConvertProcessor(),
+            new ConvertCheckedProcessor()
+        };
 
         Processor()
         {
@@ -58,7 +63,7 @@ namespace DelegateDecompiler
                 {
                     Debug.WriteLine(state.Instruction);
 
-                    if (processor.Process(state))
+                    if (Processors.Any(p => p.Process(state)))
                     {
                     }
                     else if (state.Instruction.OpCode == OpCodes.Nop || state.Instruction.OpCode == OpCodes.Break)
@@ -464,56 +469,6 @@ namespace DelegateDecompiler
                     {
                         var val = state.Stack.Pop();
                         state.Stack.Push(Expression.Not(val));
-                    }
-                    else if (state.Instruction.OpCode == OpCodes.Conv_Ovf_I || state.Instruction.OpCode == OpCodes.Conv_Ovf_I_Un)
-                    {
-                        var val1 = state.Stack.Pop();
-                        state.Stack.Push(Expression.ConvertChecked(val1, typeof(int))); // Suppot x64?
-                    }
-                    else if (state.Instruction.OpCode == OpCodes.Conv_Ovf_I1 || state.Instruction.OpCode == OpCodes.Conv_Ovf_I1_Un)
-                    {
-                        var val1 = state.Stack.Pop();
-                        state.Stack.Push(Expression.ConvertChecked(val1, typeof(sbyte)));
-                    }
-                    else if (state.Instruction.OpCode == OpCodes.Conv_Ovf_I2 || state.Instruction.OpCode == OpCodes.Conv_Ovf_I2_Un)
-                    {
-                        var val1 = state.Stack.Pop();
-                        state.Stack.Push(Expression.ConvertChecked(val1, typeof(short)));
-                    }
-                    else if (state.Instruction.OpCode == OpCodes.Conv_Ovf_I4 || state.Instruction.OpCode == OpCodes.Conv_Ovf_I4_Un)
-                    {
-                        var val1 = state.Stack.Pop();
-                        state.Stack.Push(Expression.ConvertChecked(val1, typeof(int)));
-                    }
-                    else if (state.Instruction.OpCode == OpCodes.Conv_Ovf_I8 || state.Instruction.OpCode == OpCodes.Conv_Ovf_I8_Un)
-                    {
-                        var val1 = state.Stack.Pop();
-                        state.Stack.Push(Expression.ConvertChecked(val1, typeof(long)));
-                    }
-                    else if (state.Instruction.OpCode == OpCodes.Conv_Ovf_U || state.Instruction.OpCode == OpCodes.Conv_Ovf_U_Un)
-                    {
-                        var val1 = state.Stack.Pop();
-                        state.Stack.Push(Expression.ConvertChecked(val1, typeof(uint))); // Suppot x64?
-                    }
-                    else if (state.Instruction.OpCode == OpCodes.Conv_Ovf_U1 || state.Instruction.OpCode == OpCodes.Conv_Ovf_U1_Un)
-                    {
-                        var val1 = state.Stack.Pop();
-                        state.Stack.Push(Expression.ConvertChecked(val1, typeof(byte)));
-                    }
-                    else if (state.Instruction.OpCode == OpCodes.Conv_Ovf_U2 || state.Instruction.OpCode == OpCodes.Conv_Ovf_U2_Un)
-                    {
-                        var val1 = state.Stack.Pop();
-                        state.Stack.Push(Expression.ConvertChecked(val1, typeof(ushort)));
-                    }
-                    else if (state.Instruction.OpCode == OpCodes.Conv_Ovf_U4 || state.Instruction.OpCode == OpCodes.Conv_Ovf_U4_Un)
-                    {
-                        var val1 = state.Stack.Pop();
-                        state.Stack.Push(Expression.ConvertChecked(val1, typeof(uint)));
-                    }
-                    else if (state.Instruction.OpCode == OpCodes.Conv_Ovf_U8 || state.Instruction.OpCode == OpCodes.Conv_Ovf_U8_Un)
-                    {
-                        var val1 = state.Stack.Pop();
-                        state.Stack.Push(Expression.ConvertChecked(val1, typeof(ulong)));
                     }
                     else if (state.Instruction.OpCode == OpCodes.Castclass)
                     {

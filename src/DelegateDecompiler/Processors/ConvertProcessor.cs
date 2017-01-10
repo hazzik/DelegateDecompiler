@@ -5,7 +5,7 @@ using System.Reflection.Emit;
 
 namespace DelegateDecompiler.Processors
 {
-    class ConvertProcessor
+    class ConvertProcessor : IProcessor
     {
         static readonly Dictionary<OpCode, Type> Types = new Dictionary<OpCode, Type>
         {
