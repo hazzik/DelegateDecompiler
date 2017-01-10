@@ -7,7 +7,7 @@ namespace DelegateDecompiler.Processors
 {
     class ConstantProcessor : IProcessor
     {
-        static readonly Dictionary<OpCode, int> Integers = new Dictionary<OpCode, int>
+        static readonly Dictionary<OpCode, object> Values = new Dictionary<OpCode, object>
         {
             {OpCodes.Ldc_I4_M1, -1},
             {OpCodes.Ldc_I4_0, 0},
@@ -19,11 +19,12 @@ namespace DelegateDecompiler.Processors
             {OpCodes.Ldc_I4_6, 6},
             {OpCodes.Ldc_I4_7, 7},
             {OpCodes.Ldc_I4_8, 8},
+            {OpCodes.Ldnull, null}
         };
 
         public bool Process(ProcessorState state)
         {
-            int i;
+            object i;
             if (state.Instruction.OpCode == OpCodes.Ldc_I4 ||
                 state.Instruction.OpCode == OpCodes.Ldc_I8 ||
                 state.Instruction.OpCode == OpCodes.Ldc_R4 ||
@@ -36,7 +37,7 @@ namespace DelegateDecompiler.Processors
             {
                 state.Stack.Push(Expression.Constant(Convert.ToInt32(state.Instruction.Operand)));
             }
-            else if (Integers.TryGetValue(state.Instruction.OpCode, out i))
+            else if (Values.TryGetValue(state.Instruction.OpCode, out i))
             {
                 state.Stack.Push(Expression.Constant(i));
             }

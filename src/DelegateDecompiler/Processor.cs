@@ -134,10 +134,6 @@ namespace DelegateDecompiler
                     {
                         StElem(state);
                     }
-                    else if (state.Instruction.OpCode == OpCodes.Ldnull)
-                    {
-                        state.Stack.Push(Expression.Constant(null));
-                    }
                     else if (state.Instruction.OpCode == OpCodes.Ldfld || state.Instruction.OpCode == OpCodes.Ldflda)
                     {
                         var instance = state.Stack.Pop();
