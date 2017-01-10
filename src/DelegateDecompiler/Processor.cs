@@ -39,6 +39,7 @@ namespace DelegateDecompiler
         static readonly IProcessor[] Processors =
         {
             new ConstantProcessor(),
+            new StoreLocalProcessor(),
             new ConvertProcessor(),
             new ConvertCheckedProcessor(),
             new BinaryProcessor()
@@ -119,28 +120,6 @@ namespace DelegateDecompiler
                         var index = state.Stack.Pop();
                         var array = state.Stack.Pop();
                         state.Stack.Push(Expression.ArrayIndex(array, index));
-                    }
-                    else if (state.Instruction.OpCode == OpCodes.Stloc_0)
-                    {
-                        StLoc(state, 0);
-                    }
-                    else if (state.Instruction.OpCode == OpCodes.Stloc_1)
-                    {
-                        StLoc(state, 1);
-                    }
-                    else if (state.Instruction.OpCode == OpCodes.Stloc_2)
-                    {
-                        StLoc(state, 2);
-                    }
-                    else if (state.Instruction.OpCode == OpCodes.Stloc_3)
-                    {
-                        StLoc(state, 3);
-                    }
-                    else if (state.Instruction.OpCode == OpCodes.Stloc_S ||
-                             state.Instruction.OpCode == OpCodes.Stloc)
-                    {
-                        var operand = (LocalVariableInfo) state.Instruction.Operand;
-                        StLoc(state, operand.LocalIndex);
                     }
                     else if (state.Instruction.OpCode == OpCodes.Stelem ||
                              state.Instruction.OpCode == OpCodes.Stelem_I ||
@@ -326,6 +305,7 @@ namespace DelegateDecompiler
                     }
                     else if (state.Instruction.OpCode == OpCodes.Dup)
                     {
+
                         state.Stack.Push(state.Stack.Peek());
                     }
                     else if (state.Instruction.OpCode == OpCodes.Pop)
@@ -992,12 +972,6 @@ namespace DelegateDecompiler
         static void LdLoc(ProcessorState state, int index)
         {
             state.Stack.Push(state.Locals[index].Address);
-        }
-
-        static void StLoc(ProcessorState state, int index)
-        {
-            var info = state.Locals[index];
-            info.Address = AdjustType(state.Stack.Pop(), info.Type);
         }
 
         static void LdArg(ProcessorState state, int index)
