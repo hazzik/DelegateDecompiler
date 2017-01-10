@@ -6,16 +6,16 @@ using System.Linq.Expressions;
 
 namespace DelegateDecompiler
 {
-    public class DecompiledQueryable : IOrderedQueryable
+    public class DecompiledQueryable<T> : IOrderedQueryable<T>
     {
-        protected internal DecompiledQueryable(IQueryProvider provider, IQueryable inner)
+        private readonly IQueryable<T> inner;
+        private readonly IQueryProvider provider;
+
+        protected internal DecompiledQueryable(IQueryProvider provider, IQueryable<T> inner)
         {
             this.inner = inner;
             this.provider = provider;
         }
-
-        private readonly IQueryable inner;
-        private readonly IQueryProvider provider;
 
         public Expression Expression
         {
@@ -37,25 +37,14 @@ namespace DelegateDecompiler
             return inner.GetEnumerator();
         }
 
-        public override string ToString()
-        {
-            return inner.ToString();
-        }
-    }
-
-    public class DecompiledQueryable<T> : DecompiledQueryable, IOrderedQueryable<T>
-    {
-        private readonly IQueryable<T> inner;
-
-        protected internal DecompiledQueryable(IQueryProvider provider, IQueryable<T> inner)
-            : base(provider, inner)
-        {
-            this.inner = inner;
-        }
-
         public IEnumerator<T> GetEnumerator()
         {
             return inner.GetEnumerator();
+        }
+
+        public override string ToString()
+        {
+            return inner.ToString();
         }
     }
 }
