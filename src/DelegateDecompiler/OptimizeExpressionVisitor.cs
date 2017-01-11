@@ -47,11 +47,11 @@ namespace DelegateDecompiler
             var test = Visit(node.Test);
 
             Expression expression;
-            if (ExtractNullableArgument(test, ifTrue, out expression))
+            if (IsCoalesce(test, ifTrue, out expression))
             {
                 return Expression.Coalesce(expression, ifFalse);
             }
-            var ifTrueBinary = UnwrapConvertExpression(ifTrue) as BinaryExpression;
+            var ifTrueBinary = UnwrapConvertToNullable(ifTrue) as BinaryExpression;
             if (ifTrueBinary != null)
             {
                 BinaryExpression result;
@@ -59,37 +59,37 @@ namespace DelegateDecompiler
                     return result;
             }
             
-            var binaryExpression = test as BinaryExpression;
+            var testBinary = test as BinaryExpression;
             var ifTrueConstant = ifTrue as ConstantExpression;
             var ifFalseConstant = ifFalse as ConstantExpression;
 
-            if (binaryExpression != null)
+            if (testBinary != null)
             {
                 BinaryExpression result;
-                if (ifTrueBinary != null && TryConvert2(binaryExpression, ifTrueBinary, out result))
+                if (ifTrueBinary != null && TryConvert2(testBinary, ifTrueBinary, out result))
                 {
                     return result;
                 }
-                if (TryConvert(ifTrueConstant, binaryExpression, ifFalse, out result, false))
+                if (TryConvert(ifTrueConstant, testBinary, ifFalse, out result, false))
                 {
                     return result;
                 }
-                if (TryConvert(ifFalseConstant, binaryExpression, ifTrue, out result, true))
+                if (TryConvert(ifFalseConstant, testBinary, ifTrue, out result, true))
                 {
                     return result;
                 }
-                if (binaryExpression.NodeType == ExpressionType.NotEqual)
+                if (testBinary.NodeType == ExpressionType.NotEqual)
                 {
-                    if (binaryExpression.Left == node.IfTrue)
+                    if (testBinary.Left == node.IfTrue)
                     {
-                        if (binaryExpression.Right is DefaultExpression)
+                        if (testBinary.Right is DefaultExpression)
                         {
-                            return Expression.Coalesce(binaryExpression.Left, ifFalse);
+                            return Expression.Coalesce(testBinary.Left, ifFalse);
                         }
-                        var rightConstant = binaryExpression.Right as ConstantExpression;
+                        var rightConstant = testBinary.Right as ConstantExpression;
                         if (rightConstant != null && rightConstant.Value == null)
                         {
-                            return Expression.Coalesce(binaryExpression.Left, ifFalse);
+                            return Expression.Coalesce(testBinary.Left, ifFalse);
                         }
                     }
                 }
@@ -196,29 +196,50 @@ namespace DelegateDecompiler
             Expression expression;
             if (ExtractNullableArgument(hasValue, getValueOrDefault.Left, out expression))
             {
-                result = Expression.MakeBinary(getValueOrDefault.NodeType, expression, Expression.Convert(getValueOrDefault.Right, expression.Type));
+                result = Expression.MakeBinary(getValueOrDefault.NodeType, ConvertToNullable(expression), ConvertToNullable(getValueOrDefault.Right));
                 return true;
             }
             if (ExtractNullableArgument(hasValue, getValueOrDefault.Right, out expression))
             {
-                result = Expression.MakeBinary(getValueOrDefault.NodeType, Expression.Convert(getValueOrDefault.Left, expression.Type), expression);
+                result = Expression.MakeBinary(getValueOrDefault.NodeType, ConvertToNullable(getValueOrDefault.Left), ConvertToNullable(expression));
                 return true;
             }
             result = null;
             return false;
         }
 
-        private static Expression UnwrapConvertExpression(Expression expression)
+        static Expression ConvertToNullable(Expression expression)
+        {
+            if (!expression.Type.IsValueType || IsNullable(expression.Type)) return expression;
+
+            return Expression.Convert(expression, typeof(Nullable<>).MakeGenericType(expression.Type));
+        }
+
+        static Expression UnwrapConvertToNullable(Expression expression)
         {
             var unary = expression as UnaryExpression;
-            if (unary != null && expression.NodeType == ExpressionType.Convert)
+            if (unary != null && expression.NodeType == ExpressionType.Convert && IsNullable(expression.Type))
             {
                 return unary.Operand;
             }
             return expression;
         }
 
-        private static bool ExtractNullableArgument(Expression hasValue, Expression getValueOrDefault, out Expression expression)
+        static bool ExtractNullableArgument(Expression hasValue, Expression getValueOrDefault, out Expression expression)
+        {
+            MemberExpression memberExpression;
+            if (IsHasValue(hasValue, out memberExpression))
+            {
+                expression = new GetValueOrDefaultRemover(memberExpression.Expression).Visit(getValueOrDefault);
+                if (expression != getValueOrDefault)
+                    return true;
+            }
+            
+            expression = null;
+            return false;
+        }
+
+        static bool IsCoalesce(Expression hasValue, Expression getValueOrDefault, out Expression expression)
         {
             MemberExpression memberExpression;
             MethodCallExpression callExpression;
@@ -239,10 +260,15 @@ namespace DelegateDecompiler
             return property != null && property.Member.Name == "HasValue" && property.Expression != null && IsNullable(property.Expression.Type);
         }
 
-        private static bool IsGetValueOrDefault(Expression expression, out MethodCallExpression method)
+        static bool IsGetValueOrDefault(Expression expression, out MethodCallExpression method)
         {
             method = expression as MethodCallExpression;
-            return method != null && method.Method.Name == "GetValueOrDefault" && method.Object != null && IsNullable(method.Object.Type);
+            return method != null && IsGetValueOrDefault(method);
+        }
+
+        static bool IsGetValueOrDefault(MethodCallExpression method)
+        {
+            return method.Method.Name == "GetValueOrDefault" && method.Object != null && IsNullable(method.Object.Type);
         }
 
         protected override Expression VisitBinary(BinaryExpression node)
@@ -314,6 +340,41 @@ namespace DelegateDecompiler
                 }
             }
             return false;
+        }
+
+        class GetValueOrDefaultRemover :ExpressionVisitor
+        {
+            readonly Expression expected;
+
+            public GetValueOrDefaultRemover(Expression expected)
+            {
+                this.expected = expected;
+            }
+
+            protected override Expression VisitMethodCall(MethodCallExpression node)
+            {
+                if (IsGetValueOrDefault(node) && node.Object == expected)
+                {
+                    return expected;
+                }
+
+                return base.VisitMethodCall(node);
+            }
+
+            protected override Expression VisitBinary(BinaryExpression node)
+            {
+                var left = Visit(node.Left);
+                var conversion = VisitAndConvert(node.Conversion, nameof(VisitBinary));
+                var right = Visit(node.Right);
+
+                if (left != node.Left || right != node.Right)
+                {
+                    left = ConvertToNullable(left);
+                    right = ConvertToNullable(right);
+                }
+
+                return node.Update(left, conversion, right);
+            }
         }
     }
 }

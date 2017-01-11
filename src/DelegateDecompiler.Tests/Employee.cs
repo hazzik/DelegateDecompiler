@@ -112,15 +112,36 @@ namespace DelegateDecompiler.Tests
         [Computed]
         public short TheBad
         {
-            get { return MyField.HasValue ? (short)MyField : (short)0; }
+            get { return MyField.HasValue ? (short) MyField : (short) 0; }
         }
 
 
         [Computed]
-        public short TheGood
+        public short TheGood => MyField.HasValue ? (short) 0 : (short) 1;
+
+        public TimePeriodMode TimesheetMode { get; set; }
+        public TimeSpan? StartTimeOfDay { get; set; }
+        public TimeSpan? EndTimeOfDay { get; set; }
+        public Decimal? DurationHours { get; set; }
+
+        [Computed]
+        public decimal TotalHoursDb
         {
-            get { return MyField.HasValue ? (short)0 : (short)1; }
+            get
+            {
+                if (TimesheetMode != TimePeriodMode.Duration)
+                {
+                    return ((decimal?) DbFunctions.DiffMinutes(StartTimeOfDay, EndTimeOfDay)) / 60m ?? 100m;
+                }
+                return DurationHours ?? 100m;
+            }
         }
+    }
+
+    public enum TimePeriodMode
+    {
+        Duration = 1,
+        StartEndTimes = 2
     }
 
     public static class EmployeeExtensions
