@@ -858,7 +858,7 @@ namespace DelegateDecompiler
             var left = (Instruction) state.Instruction.Operand;
             var right = state.Instruction.Next;
 
-            Instruction common = GetJoinPoint(left, right);
+            var common = GetJointPoint(state.Instruction);
 
             var rightState = state.Clone(right, common);
             var leftState = state.Clone(left, common);
@@ -871,102 +871,46 @@ namespace DelegateDecompiler
             return common;
         }
 
-        class JoinPointState
+        static Instruction GetJointPoint(Instruction instruction)
         {
-            public Instruction Left { get; set; }
-            public Instruction Right { get; set; }
-            public Instruction Common { get; set; }
-            public Stack<Instruction> LeftInstructions { get; private set; }
-            public Stack<Instruction> RightInstructions { get; private set; }
-            public JoinPointState Pending { get; set; }
+            var leftInstructions = FollowGraph(instruction.Next);
+            var rightInstructions = FollowGraph((Instruction) instruction.Operand);
 
-            public JoinPointState(Instruction left, Instruction right)
+            Instruction common = null;
+            foreach (var leftInstruction in leftInstructions)
             {
-                Left = left;
-                Right = right;
-                LeftInstructions = new Stack<Instruction>();
-                RightInstructions = new Stack<Instruction>();
+                if (rightInstructions.Count > 0 && leftInstruction == rightInstructions.Pop())
+                    common = leftInstruction;
+                else
+                    break;
             }
-
-            public Instruction Current
-            {
-                get { return Left ?? Right; }
-                set
-                {
-                    if(Left != null)
-                    {
-                        Left = value;
-                    }
-                    else
-                    {
-                        Right = value;
-                    }
-                }
-            }
-
-            public Stack<Instruction> CurrentInstructions
-            {
-                get { return Left != null ? LeftInstructions : RightInstructions; }
-            }
+            return common;
         }
 
-        static Instruction GetJoinPoint(Instruction left, Instruction right)
+        static Stack<Instruction> FollowGraph(Instruction instruction)
         {
-            Stack<JoinPointState> joinPointStates = new Stack<JoinPointState>();
-            joinPointStates.Push(new JoinPointState(left, right));
-            JoinPointState joinPointState = null;
-            while(joinPointStates.Count > 0)
+            var instructions = new Stack<Instruction>();
+            while (instruction != null)
             {
-                joinPointState = joinPointStates.Peek();
-                               
-                // See if both flows have been computed (right goes second) and if so, get the common join point
-                if(joinPointState.Right == null)
-                {
-                    foreach (var leftInstruction in joinPointState.LeftInstructions)
-                    {
-                        if (joinPointState.RightInstructions.Count <= 0 || leftInstruction != joinPointState.RightInstructions.Pop())
-                        {
-                            break;
-                        }
-                        joinPointState.Common = leftInstruction;
-                    }
-                    joinPointStates.Pop();
-                }
-                else
-                {
-                    // Check if we were waiting on a pending operation
-                    if (joinPointState.Pending != null)
-                    {
-                        joinPointState.Current = joinPointState.Pending.Common;
-                        joinPointState.Pending = null;
-                    }
-                    else
-                    {
-
-                        joinPointState.CurrentInstructions.Push(joinPointState.Current);
-
-                        if (joinPointState.Current.OpCode.FlowControl == FlowControl.Return)
-                        {
-                            joinPointState.Current = null;
-                        }
-                        else if (joinPointState.Current.OpCode.FlowControl == FlowControl.Branch)
-                        {
-                            joinPointState.Current = (Instruction)joinPointState.Current.Operand;
-                        }
-                        else if (joinPointState.Current.OpCode.FlowControl == FlowControl.Cond_Branch)
-                        {
-                            joinPointState.Pending = new JoinPointState((Instruction)joinPointState.Current.Operand, joinPointState.Current.Next);
-                            joinPointStates.Push(joinPointState.Pending);
-                        }
-                        else
-                        {
-                            joinPointState.Current = joinPointState.Current.Next;
-                        }
-                    }
-                }
+                instructions.Push(instruction);
+                instruction = GetNextInstruction(instruction);
             }
+            return instructions;
+        }
 
-            return joinPointState.Common;
+        static Instruction GetNextInstruction(Instruction instruction)
+        {
+            switch (instruction.OpCode.FlowControl)
+            {
+                case FlowControl.Return:
+                    return null;
+                case FlowControl.Branch:
+                    return (Instruction) instruction.Operand;
+                case FlowControl.Cond_Branch:
+                    return GetJointPoint(instruction);
+                default:
+                    return instruction.Next;
+            }
         }
 
         internal static Expression AdjustType(Expression expression, Type type)
