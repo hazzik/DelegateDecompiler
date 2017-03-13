@@ -210,12 +210,16 @@ namespace DelegateDecompiler
 
         static Expression ConvertToNullable(Expression expression)
         {
-            if (!expression.Type.IsValueType || IsNullable(expression.Type)) return expression;
+	        if (!expression.Type.IsValueType || IsNullable(expression.Type)) return expression;
 
-            return Expression.Convert(expression, typeof(Nullable<>).MakeGenericType(expression.Type));
-        }
+	        var operand = expression.NodeType == ExpressionType.Convert
+		        ? ((UnaryExpression) expression).Operand
+		        : expression;
 
-        static Expression UnwrapConvertToNullable(Expression expression)
+	        return Expression.Convert(operand, typeof(Nullable<>).MakeGenericType(expression.Type));
+		}
+
+		static Expression UnwrapConvertToNullable(Expression expression)
         {
             var unary = expression as UnaryExpression;
             if (unary != null && expression.NodeType == ExpressionType.Convert && IsNullable(expression.Type))
@@ -230,7 +234,7 @@ namespace DelegateDecompiler
             MemberExpression memberExpression;
             if (IsHasValue(hasValue, out memberExpression))
             {
-                expression = new GetValueOrDefaultRemover(memberExpression.Expression).Visit(getValueOrDefault);
+	            expression = new GetValueOrDefaultRemover(memberExpression.Expression).Visit(getValueOrDefault);
                 if (expression != getValueOrDefault)
                     return true;
             }
@@ -254,7 +258,7 @@ namespace DelegateDecompiler
             return false;
         }
 
-        private static bool IsHasValue(Expression expression, out MemberExpression property)
+	    static bool IsHasValue(Expression expression, out MemberExpression property)
         {
             property = expression as MemberExpression;
             return property != null && property.Member.Name == "HasValue" && property.Expression != null && IsNullable(property.Expression.Type);
@@ -304,7 +308,7 @@ namespace DelegateDecompiler
             return base.VisitBinary(node);
         }
 
-        private static bool Invert(ref BinaryExpression expression)
+        static bool Invert(ref BinaryExpression expression)
         {
             switch (expression.NodeType)
             {
@@ -375,6 +379,19 @@ namespace DelegateDecompiler
 
                 return node.Update(left, conversion, right);
             }
-        }
+
+	        protected override Expression VisitUnary(UnaryExpression node)
+	        {
+		        var before = node;
+		        var operand = Visit(node.Operand);
+
+		        if (operand != before.Operand)
+		        {
+			        operand = ConvertToNullable(operand);
+		        }
+
+		        return before.Update(operand);
+	        }
+		}
     }
 }

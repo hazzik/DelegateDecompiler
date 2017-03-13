@@ -261,6 +261,22 @@ namespace DelegateDecompiler.Tests
             Test(expected, compiled);
         }
 
+        [Test]
+        public void Issue98A()
+        {
+	        Expression<Func<TestEnum?, TestEnum, bool>> expected = (x, y) => x == y;
+	        Func<TestEnum?, TestEnum, bool> compiled = (x, y) => x == y;
+			Test(expected, compiled);
+        }
+
+        [Test]
+        public void Issue98B()
+        {
+	        Expression<Func<TestEnum?, bool>> expected = x => x == TestEnum.Foo;
+	        Func<TestEnum?, bool> compiled = x => x == TestEnum.Foo;
+			Test(expected, compiled);
+        }
+
         private static bool TestEnumMethod(TestEnum p0)
         {
             throw new NotImplementedException();
