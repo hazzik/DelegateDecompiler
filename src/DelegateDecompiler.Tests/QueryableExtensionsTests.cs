@@ -317,5 +317,18 @@ namespace DelegateDecompiler.Tests
             Assert.AreEqual(expected.Expression.ToString(), actual.Expression.ToString());
         }
 
+        [Test, Ignore("Minor differences")]
+        public void Issue78()
+        {
+            var employees = new[] { new Employee { FirstName = "Test", LastName = "User" } };
+
+            var expected = employees.AsQueryable().Select(e => e.TimesheetMode == TimePeriodMode.Duration
+                ? e.DurationHours ?? new decimal(100)
+                : DbFunctions.DiffMinutes(e.StartTimeOfDay, e.EndTimeOfDay) / new decimal(60) ?? new decimal(100));
+
+            var actual = employees.AsQueryable().Select(e => e.TotalHoursDb).Decompile();
+
+            Assert.AreEqual(expected.Expression.ToString(), actual.Expression.ToString());
+        }
     }
 }

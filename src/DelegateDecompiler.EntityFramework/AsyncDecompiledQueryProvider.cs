@@ -1,14 +1,20 @@
 using System;
+using System.Collections.Generic;
 using System.Data.Entity.Infrastructure;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Threading.Tasks;
+using System.Reflection;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace DelegateDecompiler.EntityFramework
 {
     class AsyncDecompiledQueryProvider : DecompiledQueryProvider, IDbAsyncQueryProvider
     {
+        static readonly MethodInfo openGenericCreateQueryMethod =
+            typeof(AsyncDecompiledQueryProvider)
+            .GetMethods(BindingFlags.Public | BindingFlags.Instance)
+            .Single(method => method.Name == "CreateQuery" && method.IsGenericMethod);
         readonly IQueryProvider inner;
 
         protected internal AsyncDecompiledQueryProvider(IQueryProvider inner)
@@ -19,8 +25,20 @@ namespace DelegateDecompiler.EntityFramework
 
         public override IQueryable CreateQuery(Expression expression)
         {
-            var decompiled = DecompileExpressionVisitor.Decompile(expression);
-            return new AsyncDecompiledQueryable(this, inner.CreateQuery(decompiled));
+            Type elementType = expression.Type
+                .GetInterfaces()
+                .Where(type => type.IsGenericType && type.GetGenericTypeDefinition() == typeof(IEnumerable<>))
+                .Select(type => type.GetGenericArguments().FirstOrDefault())
+                .FirstOrDefault();
+
+            if (elementType == null)
+            {
+                throw new ArgumentException();
+            }
+
+            MethodInfo closedGenericCreateQueryMethod = openGenericCreateQueryMethod.MakeGenericMethod(elementType);
+
+            return (IQueryable)closedGenericCreateQueryMethod.Invoke(this, new object[] { expression });
         }
 
         public override IQueryable<TElement> CreateQuery<TElement>(Expression expression)
