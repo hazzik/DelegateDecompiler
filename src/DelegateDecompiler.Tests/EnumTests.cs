@@ -188,6 +188,14 @@ namespace DelegateDecompiler.Tests
         }
 
         [Test]
+        public void TestEnumParameterAsMethodWithInt8Parameter()
+        {
+            Expression<Func<TestEnum, bool>> expected = x => Int8Method((byte) x);
+            Func<TestEnum, bool> compiled = x => Int8Method((byte) x);
+            Test(expected, compiled);
+        }
+
+        [Test]
         public void TestEnumParameterAsMethodWithInt16Parameter()
         {
             Expression<Func<TestEnum, bool>> expected = x => Int16Method((short) x);
@@ -288,6 +296,11 @@ namespace DelegateDecompiler.Tests
         }
 
         private static bool ObjectMethod(object p0)
+        {
+            throw new NotImplementedException();
+        }
+
+        private static bool Int8Method(byte p0)
         {
             throw new NotImplementedException();
         }
