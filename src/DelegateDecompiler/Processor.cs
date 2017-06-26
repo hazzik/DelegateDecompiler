@@ -1122,12 +1122,12 @@ namespace DelegateDecompiler
             }
             if (m.IsSpecialName)
             {
-                if (m.Name.StartsWith("get_"))
+                if (m.Name.StartsWith("get_") && arguments.Length == 0)
                 {
                     return Expression.Property(instance, m);
                 }
 
-                if (m.Name.StartsWith("set_"))
+                if (m.Name.StartsWith("set_") && arguments.Length == 1)
                 {
                     var assignment = Expression.Bind(m, arguments.Single());
                     instance.Expression = BuildMemberInit(instance.Expression, assignment);

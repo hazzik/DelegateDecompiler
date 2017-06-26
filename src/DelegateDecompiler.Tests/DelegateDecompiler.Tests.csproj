@@ -60,6 +60,7 @@
     <Compile Include="BooleanTests.cs" />
     <Compile Include="ConfigurationTestsBase.cs" />
     <Compile Include="DateTimeTests.cs" />
+    <Compile Include="DictionaryTest.cs" />
     <Compile Include="IntegerConstantTests.cs" />
     <Compile Include="Issue67.cs" />
     <Compile Include="TypeAsTests.cs" />
