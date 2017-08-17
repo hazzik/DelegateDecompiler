@@ -1,134 +1,23 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+<Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="..\..\DelegateDecompiler.props" />
+
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{CC1F2D70-08F7-4DA0-963C-E1915F233C45}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>DelegateDecompiler.EntityFramework.Tests</RootNamespace>
-    <AssemblyName>DelegateDecompiler.EntityFramework.Tests</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\..\</SolutionDir>
-    <TargetFrameworkProfile />
+    <TargetFramework>net45</TargetFramework>
+    <Copyright>Copyright © Dave Glick 2014, Jon Smith 2014, Alexander Zaytsev 2014 - 2017</Copyright>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
+
   <ItemGroup>
-    <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.SqlServer.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="nunit.framework, Version=3.6.1.0, Culture=neutral, PublicKeyToken=2638cd05610744eb, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\NUnit.3.6.1\lib\net45\nunit.framework.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="System" />
-    <Reference Include="System.ComponentModel.DataAnnotations" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Xml" />
+    <PackageReference Include="nunit" Version="3.7.1" />
   </ItemGroup>
+
+  <ItemGroup Condition="'$(TargetFramework)' != 'net40'">
+    <PackageReference Include="NUnit3TestAdapter" Version="3.8.0" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.3.0" />
+  </ItemGroup>
+
   <ItemGroup>
-    <Compile Include="EfItems\DatabaseHelpers.cs" />
-    <Compile Include="EfItems\EfChild.cs" />
-    <Compile Include="EfItems\EfGrandChild.cs" />
-    <Compile Include="EfItems\EfParent.cs" />
-    <Compile Include="EfItems\EfPerson.cs" />
-    <Compile Include="EfItems\EfTestDbContext.cs" />
-    <Compile Include="EntityTypeConfigurationExtensionsTests.cs" />
-    <Compile Include="Helpers\CheckerAndLogger.cs" />
-    <Compile Include="Helpers\ClassEnvironment.cs" />
-    <Compile Include="Helpers\ClassLog.cs" />
-    <Compile Include="Helpers\ClassLogClassified.cs" />
-    <Compile Include="Helpers\ExtendAsserts.cs" />
-    <Compile Include="Helpers\MarkupFileHelpers.cs" />
-    <Compile Include="Helpers\MasterEnvironment.cs" />
-    <Compile Include="Helpers\MethodEnvironment.cs" />
-    <Compile Include="Helpers\MethodLog.cs" />
-    <Compile Include="Helpers\SplitterExtension.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="TestGroup01Infrastructure\Test01EfDatabase.cs" />
-    <Compile Include="TestGroup01Infrastructure\Test05VariousLogs.cs" />
-    <Compile Include="TestGroup01Infrastructure\Test10Environments.cs" />
-    <Compile Include="TestGroup01Infrastructure\Test15MarkupFileAccess.cs" />
-    <Compile Include="TestGroup01Infrastructure\Test20ProduceSummary.cs" />
-    <Compile Include="TestGroup01Infrastructure\Test22ProduceDetail.cs" />
-    <Compile Include="TestGroup01Infrastructure\Test25ProduceDetailWithSql.cs" />
-    <Compile Include="TestGroup01Infrastructure\Test99StartProperRun.cs" />
-    <Compile Include="TestGroup05BasicFeatures\Test04Nullable.cs" />
-    <Compile Include="TestGroup05BasicFeatures\Test11SingleAsync.cs" />
-    <Compile Include="TestGroup05BasicFeatures\Test10Single.cs" />
-    <Compile Include="TestGroup05BasicFeatures\Test05Where.cs" />
-    <Compile Include="TestGroup05BasicFeatures\Test01Select.cs" />
-    <Compile Include="TestGroup05BasicFeatures\Test03EqualsAndNotEquals.cs" />
-    <Compile Include="TestGroup05BasicFeatures\Test02SelectAsync.cs" />
-    <Compile Include="TestGroup12QuantifierOperators\Test01Any.cs" />
-    <Compile Include="TestGroup12QuantifierOperators\Test02All.cs" />
-    <Compile Include="TestGroup12QuantifierOperators\Test03Contains.cs" />
-    <Compile Include="TestGroup15Aggregation\Test01Count.cs" />
-    <Compile Include="TestGroup15Aggregation\Test02Sum.cs" />
-    <Compile Include="TestGroup10OrderTake\Test02SkipTake.cs" />
-    <Compile Include="TestGroup10OrderTake\Test01OrderBy.cs" />
-    <Compile Include="TestGroup50Types\Test01Strings.cs" />
-    <Compile Include="TestGroup50Types\Test05DateTime.cs" />
-    <Compile Include="TestGroup99SaveResults\Test99SaveResults.cs" />
+    <ProjectReference Include="..\DelegateDecompiler.EntityFramework\DelegateDecompiler.EntityFramework.csproj" />
+    <ProjectReference Include="..\DelegateDecompiler.Tests\DelegateDecompiler.Tests.csproj" />
   </ItemGroup>
-  <ItemGroup>
-    <None Include="App.config">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="GeneratedDocumentation\DetailedListOfSupportedCommands.md" />
-    <None Include="GeneratedDocumentation\DetailedListOfSupportedCommandsWithSQL.md" />
-    <None Include="GeneratedDocumentation\DocumentationHeaderText.md" />
-    <None Include="GeneratedDocumentation\HowToAddMoreTests.md" />
-    <None Include="GeneratedDocumentation\SummaryOfSupportedCommands.md" />
-    <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\DelegateDecompiler.EntityFramework\DelegateDecompiler.EntityFramework.csproj">
-      <Project>{9aca1aca-7334-42e3-9fbd-336d4ab5bdf7}</Project>
-      <Name>DelegateDecompiler.EntityFramework</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\DelegateDecompiler.Tests\DelegateDecompiler.Tests.csproj">
-      <Project>{9531F38F-9E2C-4487-B76E-1EEA3AAB5B83}</Project>
-      <Name>DelegateDecompiler.Tests</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\DelegateDecompiler\DelegateDecompiler.csproj">
-      <Project>{11f42698-bb34-4175-9da8-80bd62171d02}</Project>
-      <Name>DelegateDecompiler</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
+
 </Project>

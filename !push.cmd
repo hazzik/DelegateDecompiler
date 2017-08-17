@@ -1,2 +1,2 @@
-for %%x in (*.nupkg) do .nuget\NuGet.exe push "%%x" %1 -Source https://nuget.org
+for %%x in (*.nupkg) do dotnet nuget push "%%x" %1 -Source https://nuget.org
 
