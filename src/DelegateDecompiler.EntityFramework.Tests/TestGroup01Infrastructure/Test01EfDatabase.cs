@@ -2,6 +2,7 @@
 
 using System.Linq;
 using DelegateDecompiler.EntityFramework.Tests.EfItems;
+using DelegateDecompiler.EntityFramework.Tests.EfItems.Concretes;
 using DelegateDecompiler.EntityFramework.Tests.Helpers;
 using NUnit.Framework;
 

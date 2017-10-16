@@ -1,5 +1,5 @@
 ﻿// Contributed by @JonPSmith (GitHub) www.thereformedprogrammer.com
-namespace DelegateDecompiler.EntityFramework.Tests.EfItems
+namespace DelegateDecompiler.EntityFramework.Tests.EfItems.Concretes
 {
     public class EfGrandChild
     {

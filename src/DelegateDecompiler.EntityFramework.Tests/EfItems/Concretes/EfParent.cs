@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace DelegateDecompiler.EntityFramework.Tests.EfItems
+namespace DelegateDecompiler.EntityFramework.Tests.EfItems.Concretes
 {
     public class EfParent
     {

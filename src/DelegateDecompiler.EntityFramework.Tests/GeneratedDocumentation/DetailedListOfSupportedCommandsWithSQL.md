@@ -1,6 +1,6 @@
 Detail With Sql of supported commands
 ============
-## Documentation produced for DelegateDecompiler, version 0.23.0 on Tuesday, 14 March 2017 10:50
+## Documentation produced for DelegateDecompiler, version 0.23.1 on Friday, 13 October 2017 16:15
 
 This file documents what linq commands **DelegateDecompiler** supports when
 working with [Entity Framework v6.1](http://msdn.microsoft.com/en-us/data/aa937723) (EF).
@@ -25,7 +25,7 @@ More will appear as we move forward.*
 ### Group: Basic Features
 #### [Select](../TestGroup05BasicFeatures/Test01Select.cs):
 - Supported
-  * Bool Equals Constant (line 32)
+  * Bool Equals Constant (line 33)
      * T-Sql executed is
 
 ```SQL
@@ -34,7 +34,7 @@ SELECT
     FROM [dbo].[EfParents] AS [Extent1]
 ```
 
-  * Bool Equals Static Variable (line 51)
+  * Bool Equals Static Variable (line 52)
      * T-Sql executed is
 
 ```SQL
@@ -43,7 +43,7 @@ SELECT
     FROM [dbo].[EfParents] AS [Extent1]
 ```
 
-  * Int Equals Constant (line 68)
+  * Int Equals Constant (line 69)
      * T-Sql executed is
 
 ```SQL
@@ -52,7 +52,7 @@ SELECT
     FROM [dbo].[EfParents] AS [Extent1]
 ```
 
-  * Select Property Without Computed Attribute (line 85)
+  * Select Property Without Computed Attribute (line 86)
      * T-Sql executed is
 
 ```SQL
@@ -61,13 +61,23 @@ SELECT
     FROM [dbo].[EfPersons] AS [Extent1]
 ```
 
-  * Select Method Without Computed Attribute (line 102)
+  * Select Method Without Computed Attribute (line 103)
      * T-Sql executed is
 
 ```SQL
 SELECT 
     [Extent1].[FirstName] + N' ' + CASE WHEN ([Extent1].[MiddleName] IS NULL) THEN N'' ELSE [Extent1].[MiddleName] END + N' ' + [Extent1].[LastName] AS [C1]
     FROM [dbo].[EfPersons] AS [Extent1]
+```
+
+  * Select Abstract Member Over Tph Hierarchy (line 120)
+     * T-Sql executed is
+
+```SQL
+SELECT 
+    CASE WHEN ([Extent1].[Discriminator] = N'Dog') THEN N'Canis lupus' WHEN ([Extent1].[Discriminator] = N'HoneyBee') THEN N'Apis mellifera' WHEN ([Extent1].[Discriminator] = N'Person') THEN N'Human' END AS [C1]
+    FROM [dbo].[LivingBeeings] AS [Extent1]
+    WHERE [Extent1].[Discriminator] IN (N'Dog',N'HoneyBee',N'Person')
 ```
 
 
