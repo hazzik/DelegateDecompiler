@@ -1,6 +1,6 @@
 Detail of supported commands
 ============
-## Documentation produced for DelegateDecompiler, version 0.23.1 on Monday, 16 October 2017 11:57
+## Documentation produced for DelegateDecompiler, version 0.23.1 on Monday, 16 October 2017 13:13
 
 This file documents what linq commands **DelegateDecompiler** supports when
 working with [Entity Framework v6.1](http://msdn.microsoft.com/en-us/data/aa937723) (EF).
@@ -32,6 +32,7 @@ More will appear as we move forward.*
   * Select Method Without Computed Attribute (line 104)
   * Select Abstract Member Over Tph Hierarchy (line 121)
   * Select Abstract Member Over Tph Hierarchy After Restricting To Subtype (line 138)
+  * Select Multiple Levels Of Abstract Members Over Tph Hierarchy (line 155)
 
 #### [Select Async](../TestGroup05BasicFeatures/Test02SelectAsync.cs):
 - Supported
@@ -56,9 +57,11 @@ More will appear as we move forward.*
 
 #### [Where](../TestGroup05BasicFeatures/Test05Where.cs):
 - Supported
-  * Where Bool Equals Constant (line 32)
-  * Where Bool Equals Static Variable (line 51)
-  * Where Int Equals Constant (line 68)
+  * Where Bool Equals Constant (line 33)
+  * Where Bool Equals Static Variable (line 52)
+  * Where Int Equals Constant (line 69)
+  * Where Filters On Abstract Members Over Tph Hierarchy (line 86)
+  * Where Filters On Multiple Levels Of Abstract Members Over Tph Hierarchy (line 103)
 
 #### [Single](../TestGroup05BasicFeatures/Test10Single.cs):
 - Supported

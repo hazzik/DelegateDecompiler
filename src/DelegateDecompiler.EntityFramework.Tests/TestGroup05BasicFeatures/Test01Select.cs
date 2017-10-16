@@ -138,5 +138,22 @@ namespace DelegateDecompiler.EntityFramework.Tests.TestGroup05BasicFeatures
                 env.CompareAndLogList(linq, dd);
             }
         }
+
+        [Test]
+        public void TestSelectMultipleLevelsOfAbstractMembersOverTphHierarchy()
+        {
+            using (var env = new MethodEnvironment(classEnv))
+            {
+                //SETUP
+                var linq = env.Db.LivingBeeing.OfType<Animal>().ToList().Select(p => p.Species + " : " + p.IsPet).ToList();
+
+                //ATTEMPT
+                env.AboutToUseDelegateDecompiler();
+                var dd = env.Db.LivingBeeing.OfType<Animal>().Select(p => p.Species + " : " + p.IsPet).Decompile().ToList();
+
+                //VERIFY
+                env.CompareAndLogList(linq, dd);
+            }
+        }
     }
 }
