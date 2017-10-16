@@ -9,8 +9,11 @@ namespace DelegateDecompiler
 {
     public static class MethodBodyDecompiler
     {
-        public static LambdaExpression Decompile(MethodInfo method)
+        public static LambdaExpression Decompile(KeyValuePair<MethodInfo, Type> methodInfoAndType)
         {
+            var method = methodInfoAndType.Key;
+            var mainType = methodInfoAndType.Value;
+
             var args = method.GetParameters()
                 .Select(p => (Address) Expression.Parameter(p.ParameterType, p.Name))
                 .ToList();
@@ -18,12 +21,12 @@ namespace DelegateDecompiler
             if (!method.IsStatic)
                 args.Insert(0, Expression.Parameter(method.DeclaringType, "this"));
 
-            return method.IsAbstract ? DecompileAbstract(method, args) : DecompileConcrete(method, args);
+            return method.IsAbstract ? DecompileAbstract(mainType, method, args) : DecompileConcrete(method, args);
         }
 
-        private static LambdaExpression Decompile(MethodInfo method, List<Address> args)
+        private static LambdaExpression Decompile(Type mainType, MethodInfo method, List<Address> args)
         {
-            return method.IsAbstract ? DecompileAbstract(method, args) : DecompileConcrete(method, args);
+            return method.IsAbstract ? DecompileAbstract(mainType, method, args) : DecompileConcrete(method, args);
         }
 
         private static LambdaExpression DecompileConcrete(MethodInfo method, List<Address> args)
@@ -42,16 +45,16 @@ namespace DelegateDecompiler
             return result;
         }
 
-        private static LambdaExpression DecompileAbstract(MethodInfo method, List<Address> args)
+        private static LambdaExpression DecompileAbstract(Type mainType, MethodInfo method, List<Address> args)
         {
-            var declaringType = method.DeclaringType;
+            var declaringType = mainType ?? method.DeclaringType ?? throw new InvalidOperationException($"Method {method.Name} does not have a declaring type");
             var childrenTypes = declaringType.Assembly.GetTypes().Where(t => t.IsSubclassOf(declaringType) && HasConcrete(t, method));
 
             var childExpressions = new List<KeyValuePair<Type, Expression>>();
             foreach (var childrenType in childrenTypes)
             {
                 var childMethod = GetMethodInfo(childrenType, method);
-                var childExpression = Decompile(childMethod, args);
+                var childExpression = Decompile(mainType, childMethod, args);
                 childExpressions.Add(new KeyValuePair<Type, Expression>(childrenType, childExpression.Body));
             }
 

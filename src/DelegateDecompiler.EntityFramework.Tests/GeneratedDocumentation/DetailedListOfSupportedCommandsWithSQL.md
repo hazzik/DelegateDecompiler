@@ -1,6 +1,6 @@
 Detail With Sql of supported commands
 ============
-## Documentation produced for DelegateDecompiler, version 0.23.1 on Friday, 13 October 2017 16:15
+## Documentation produced for DelegateDecompiler, version 0.23.1 on Monday, 16 October 2017 11:57
 
 This file documents what linq commands **DelegateDecompiler** supports when
 working with [Entity Framework v6.1](http://msdn.microsoft.com/en-us/data/aa937723) (EF).
@@ -25,7 +25,7 @@ More will appear as we move forward.*
 ### Group: Basic Features
 #### [Select](../TestGroup05BasicFeatures/Test01Select.cs):
 - Supported
-  * Bool Equals Constant (line 33)
+  * Bool Equals Constant (line 34)
      * T-Sql executed is
 
 ```SQL
@@ -34,7 +34,7 @@ SELECT
     FROM [dbo].[EfParents] AS [Extent1]
 ```
 
-  * Bool Equals Static Variable (line 52)
+  * Bool Equals Static Variable (line 53)
      * T-Sql executed is
 
 ```SQL
@@ -43,7 +43,7 @@ SELECT
     FROM [dbo].[EfParents] AS [Extent1]
 ```
 
-  * Int Equals Constant (line 69)
+  * Int Equals Constant (line 70)
      * T-Sql executed is
 
 ```SQL
@@ -52,7 +52,7 @@ SELECT
     FROM [dbo].[EfParents] AS [Extent1]
 ```
 
-  * Select Property Without Computed Attribute (line 86)
+  * Select Property Without Computed Attribute (line 87)
      * T-Sql executed is
 
 ```SQL
@@ -61,7 +61,7 @@ SELECT
     FROM [dbo].[EfPersons] AS [Extent1]
 ```
 
-  * Select Method Without Computed Attribute (line 103)
+  * Select Method Without Computed Attribute (line 104)
      * T-Sql executed is
 
 ```SQL
@@ -70,7 +70,7 @@ SELECT
     FROM [dbo].[EfPersons] AS [Extent1]
 ```
 
-  * Select Abstract Member Over Tph Hierarchy (line 120)
+  * Select Abstract Member Over Tph Hierarchy (line 121)
      * T-Sql executed is
 
 ```SQL
@@ -78,6 +78,16 @@ SELECT
     CASE WHEN ([Extent1].[Discriminator] = N'Dog') THEN N'Canis lupus' WHEN ([Extent1].[Discriminator] = N'HoneyBee') THEN N'Apis mellifera' WHEN ([Extent1].[Discriminator] = N'Person') THEN N'Human' END AS [C1]
     FROM [dbo].[LivingBeeings] AS [Extent1]
     WHERE [Extent1].[Discriminator] IN (N'Dog',N'HoneyBee',N'Person')
+```
+
+  * Select Abstract Member Over Tph Hierarchy After Restricting To Subtype (line 138)
+     * T-Sql executed is
+
+```SQL
+SELECT 
+    CASE WHEN ([Extent1].[Discriminator] = N'Dog') THEN N'Canis lupus' WHEN ([Extent1].[Discriminator] = N'HoneyBee') THEN N'Apis mellifera' END AS [C1]
+    FROM [dbo].[LivingBeeings] AS [Extent1]
+    WHERE ([Extent1].[Discriminator] IN (N'Dog',N'HoneyBee',N'Person')) AND ([Extent1].[Discriminator] IN (N'Dog',N'HoneyBee'))
 ```
 
 

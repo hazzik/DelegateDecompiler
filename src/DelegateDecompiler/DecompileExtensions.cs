@@ -9,11 +9,11 @@ namespace DelegateDecompiler
 {
     public static class DecompileExtensions
     {
-        static readonly ConcurrentDictionary<MethodInfo, Lazy<LambdaExpression>> Cache =
-            new ConcurrentDictionary<MethodInfo, Lazy<LambdaExpression>>();
+        static readonly ConcurrentDictionary<KeyValuePair<MethodInfo, Type>, Lazy<LambdaExpression>> Cache =
+            new ConcurrentDictionary<KeyValuePair<MethodInfo, Type>, Lazy<LambdaExpression>>();
 
-        static readonly Func<MethodInfo, Lazy<LambdaExpression>> DecompileDelegate =
-            info => new Lazy<LambdaExpression>(() => MethodBodyDecompiler.Decompile(info));
+        static readonly Func<KeyValuePair<MethodInfo, Type>, Lazy<LambdaExpression>> DecompileDelegate =
+            infoAndType => new Lazy<LambdaExpression>(() => MethodBodyDecompiler.Decompile(infoAndType));
 
         public static LambdaExpression Decompile(this Delegate @delegate)
         {
@@ -30,7 +30,12 @@ namespace DelegateDecompiler
 
         public static LambdaExpression Decompile(this MethodInfo method)
         {
-            return Cache.GetOrAdd(method, DecompileDelegate).Value;
+            return Decompile(method, null);
+        }
+
+        public static LambdaExpression Decompile(this MethodInfo method, Type mainType)
+        {
+            return Cache.GetOrAdd(new KeyValuePair<MethodInfo, Type>(method, mainType), DecompileDelegate).Value;
         }
 
         public static IQueryable<T> Decompile<T>(this IQueryable<T> self)
