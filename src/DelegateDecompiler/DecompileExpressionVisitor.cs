@@ -12,50 +12,50 @@ namespace DelegateDecompiler
             return new DecompileExpressionVisitor().Visit(expression);
         }
 
-		private static readonly object NULL = new object(); // for use as a dictionary key
-		private readonly Dictionary<object, Expression> visitedConstants;
+        private static readonly object NULL = new object(); // for use as a dictionary key
+        private readonly Dictionary<object, Expression> visitedConstants;
 
-		private bool hasAnyChanges = false;
-		public override Expression Visit(Expression node)
-		{
-			var result = base.Visit(node);
-			if (result != node)
-				hasAnyChanges = true;
-			return result;
-		}
+        private bool hasAnyChanges = false;
+        public override Expression Visit(Expression node)
+        {
+            var result = base.Visit(node);
+            if (result != node)
+                hasAnyChanges = true;
+            return result;
+        }
 
-		private DecompileExpressionVisitor(Dictionary<object, Expression> sharedVisitedConstants = null)
-		{
-			this.visitedConstants = sharedVisitedConstants ?? new Dictionary<object, Expression>();
-		}
+        private DecompileExpressionVisitor(Dictionary<object, Expression> sharedVisitedConstants = null)
+        {
+            this.visitedConstants = sharedVisitedConstants ?? new Dictionary<object, Expression>();
+        }
 
-		protected override Expression VisitConstant(ConstantExpression node)
-		{
-			Expression result;
-			if (visitedConstants.TryGetValue(node.Value ?? NULL, out result))
-			{
-				return result; // avoid infinite recursion
-			}
+        protected override Expression VisitConstant(ConstantExpression node)
+        {
+            Expression result;
+            if (visitedConstants.TryGetValue(node.Value ?? NULL, out result))
+            {
+                return result; // avoid infinite recursion
+            }
 
-			if (typeof(IQueryable).IsAssignableFrom(node.Type))
-			{
-				visitedConstants.Add(node.Value ?? NULL, node);
+            if (typeof(IQueryable).IsAssignableFrom(node.Type))
+            {
+                visitedConstants.Add(node.Value ?? NULL, node);
 
-				var value = (IQueryable)node.Value;
-				var childVisitor = new DecompileExpressionVisitor(visitedConstants);
-				result = childVisitor.Visit(value.Expression);
+                var value = (IQueryable)node.Value;
+                var childVisitor = new DecompileExpressionVisitor(visitedConstants);
+                result = childVisitor.Visit(value.Expression);
 
-				if (childVisitor.hasAnyChanges)
-				{
-					result = Expression.Constant(value.Provider.CreateQuery(result), node.Type);
-					visitedConstants[node.Value ?? NULL] = result;
-					return result;
-				}
-			}
+                if (childVisitor.hasAnyChanges)
+                {
+                    result = Expression.Constant(value.Provider.CreateQuery(result), node.Type);
+                    visitedConstants[node.Value ?? NULL] = result;
+                    return result;
+                }
+            }
 
-			return node;
-		}
-
+            return node;
+        }
+        
         protected override Expression VisitMember(MemberExpression node)
         {
             if (ShouldDecompile(node.Member) && node.Member is PropertyInfo property)
