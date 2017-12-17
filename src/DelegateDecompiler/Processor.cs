@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Mono.Reflection;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -6,14 +7,13 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Reflection.Emit;
-using Mono.Reflection;
 using System.Runtime.CompilerServices;
 
 namespace DelegateDecompiler
 {
     internal class Processor
     {
-        class ProcessorState
+        private class ProcessorState
         {
             public IDictionary<FieldInfo, Address> Delegates { get; private set; }
             public Stack<Address> Stack { get; private set; }
@@ -83,11 +83,11 @@ namespace DelegateDecompiler
                        : Stack.Pop();
             }
         }
-  
-        const string cachedAnonymousMethodDelegate = "CS$<>9__CachedAnonymousMethodDelegate";
-        const string cachedAnonymousMethodDelegateRoslyn = "<>9__";
 
-        static readonly MethodInfo StringConcat = typeof(string).GetMethod("Concat", new[] { typeof(object), typeof(object) });
+        private const string cachedAnonymousMethodDelegate = "CS$<>9__CachedAnonymousMethodDelegate";
+        private const string cachedAnonymousMethodDelegateRoslyn = "<>9__";
+
+        private static readonly MethodInfo StringConcat = typeof(string).GetMethod("Concat", new[] { typeof(object), typeof(object) });
 
         public static Expression Process(VariableInfo[] locals, IList<Address> args, Instruction instruction, Type returnType)
         {
@@ -104,26 +104,26 @@ namespace DelegateDecompiler
             return ex;
         }
 
-        readonly Stack<ProcessorState> states = new Stack<ProcessorState>();
+        private readonly Stack<ProcessorState> states = new Stack<ProcessorState>();
 
-        Processor()
+        private Processor()
         {
         }
 
-        Expression Process()
+        private Expression Process()
         {
             ProcessorState state = null;
-            while(states.Count > 0)
+            while (states.Count > 0)
             {
                 state = states.Peek();
 
-                if(state.RunNext != null)
+                if (state.RunNext != null)
                 {
                     state.RunNext();
                     state.RunNext = null;
                 }
 
-                if(state.Instruction != null && state.Instruction != state.Last)
+                if (state.Instruction != null && state.Instruction != state.Last)
                 {
                     Debug.WriteLine(state.Instruction);
 
@@ -154,8 +154,8 @@ namespace DelegateDecompiler
                     }
                     else if (state.Instruction.OpCode == OpCodes.Ldarg_S || state.Instruction.OpCode == OpCodes.Ldarg || state.Instruction.OpCode == OpCodes.Ldarga || state.Instruction.OpCode == OpCodes.Ldarga_S)
                     {
-                        var operand = (ParameterInfo) state.Instruction.Operand;
-                        state.Stack.Push(state.Args.Single(x => ((ParameterExpression) x.Expression).Name == operand.Name));
+                        var operand = (ParameterInfo)state.Instruction.Operand;
+                        state.Stack.Push(state.Args.Single(x => ((ParameterExpression)x.Expression).Name == operand.Name));
                     }
                     else if (state.Instruction.OpCode == OpCodes.Ldlen)
                     {
@@ -198,7 +198,7 @@ namespace DelegateDecompiler
                     else if (state.Instruction.OpCode == OpCodes.Stloc_S ||
                              state.Instruction.OpCode == OpCodes.Stloc)
                     {
-                        var operand = (LocalVariableInfo) state.Instruction.Operand;
+                        var operand = (LocalVariableInfo)state.Instruction.Operand;
                         StLoc(state, operand.LocalIndex);
                     }
                     else if (state.Instruction.OpCode == OpCodes.Stelem ||
@@ -220,11 +220,11 @@ namespace DelegateDecompiler
                     else if (state.Instruction.OpCode == OpCodes.Ldfld || state.Instruction.OpCode == OpCodes.Ldflda)
                     {
                         var instance = state.Stack.Pop();
-                        state.Stack.Push(Expression.Field(instance, (FieldInfo) state.Instruction.Operand));
+                        state.Stack.Push(Expression.Field(instance, (FieldInfo)state.Instruction.Operand));
                     }
                     else if (state.Instruction.OpCode == OpCodes.Ldsfld)
                     {
-                        var field = (FieldInfo) state.Instruction.Operand;
+                        var field = (FieldInfo)state.Instruction.Operand;
                         if (IsCachedAnonymousMethodDelegate(field))
                         {
                             Address address;
@@ -244,7 +244,7 @@ namespace DelegateDecompiler
                     }
                     else if (state.Instruction.OpCode == OpCodes.Stsfld)
                     {
-                        var field = (FieldInfo) state.Instruction.Operand;
+                        var field = (FieldInfo)state.Instruction.Operand;
                         if (IsCachedAnonymousMethodDelegate(field))
                         {
                             state.Delegates[field] = state.Stack.Pop();
@@ -280,15 +280,15 @@ namespace DelegateDecompiler
                     }
                     else if (state.Instruction.OpCode == OpCodes.Ldloc ||
                              state.Instruction.OpCode == OpCodes.Ldloc_S ||
-                             state.Instruction.OpCode == OpCodes.Ldloca || 
+                             state.Instruction.OpCode == OpCodes.Ldloca ||
                              state.Instruction.OpCode == OpCodes.Ldloca_S)
                     {
-                        var operand = (LocalVariableInfo) state.Instruction.Operand;
+                        var operand = (LocalVariableInfo)state.Instruction.Operand;
                         LdLoc(state, operand.LocalIndex);
                     }
                     else if (state.Instruction.OpCode == OpCodes.Ldstr)
                     {
-                        state.Stack.Push(Expression.Constant((string) state.Instruction.Operand));
+                        state.Stack.Push(Expression.Constant((string)state.Instruction.Operand));
                     }
                     else if (state.Instruction.OpCode == OpCodes.Ldc_I4_0)
                     {
@@ -352,7 +352,7 @@ namespace DelegateDecompiler
                     }
                     else if (state.Instruction.OpCode == OpCodes.Br_S || state.Instruction.OpCode == OpCodes.Br)
                     {
-                        state.Instruction = (Instruction) state.Instruction.Operand;
+                        state.Instruction = (Instruction)state.Instruction.Operand;
                         continue;
                     }
                     else if (state.Instruction.OpCode == OpCodes.Brfalse ||
@@ -378,7 +378,7 @@ namespace DelegateDecompiler
                     }
                     else if (state.Instruction.OpCode == OpCodes.Ldftn)
                     {
-                        var method = (MethodInfo) state.Instruction.Operand;
+                        var method = (MethodInfo)state.Instruction.Operand;
                         var decompile = method.Decompile();
 
                         var obj = state.Stack.Pop();
@@ -534,117 +534,117 @@ namespace DelegateDecompiler
                     else if (state.Instruction.OpCode == OpCodes.Conv_I)
                     {
                         var val1 = state.Stack.Pop();
-                        state.Stack.Push(Expression.Convert(val1, typeof (int))); // Support x64?
+                        state.Stack.Push(Expression.Convert(val1, typeof(int))); // Support x64?
                     }
                     else if (state.Instruction.OpCode == OpCodes.Conv_I1)
                     {
                         var val1 = state.Stack.Pop();
-                        state.Stack.Push(Expression.Convert(val1, typeof (sbyte)));
+                        state.Stack.Push(Expression.Convert(val1, typeof(sbyte)));
                     }
                     else if (state.Instruction.OpCode == OpCodes.Conv_I2)
                     {
                         var val1 = state.Stack.Pop();
-                        state.Stack.Push(Expression.Convert(val1, typeof (short)));
+                        state.Stack.Push(Expression.Convert(val1, typeof(short)));
                     }
                     else if (state.Instruction.OpCode == OpCodes.Conv_I4)
                     {
                         var val1 = state.Stack.Pop();
-                        state.Stack.Push(Expression.Convert(val1, typeof (int)));
+                        state.Stack.Push(Expression.Convert(val1, typeof(int)));
                     }
                     else if (state.Instruction.OpCode == OpCodes.Conv_I8)
                     {
                         var val1 = state.Stack.Pop();
-                        state.Stack.Push(Expression.Convert(val1, typeof (long)));
+                        state.Stack.Push(Expression.Convert(val1, typeof(long)));
                     }
                     else if (state.Instruction.OpCode == OpCodes.Conv_U)
                     {
                         var val1 = state.Stack.Pop();
-                        state.Stack.Push(Expression.Convert(val1, typeof (uint))); // Suppot x64?
+                        state.Stack.Push(Expression.Convert(val1, typeof(uint))); // Suppot x64?
                     }
                     else if (state.Instruction.OpCode == OpCodes.Conv_U1)
                     {
                         var val1 = state.Stack.Pop();
-                        state.Stack.Push(Expression.Convert(val1, typeof (byte)));
+                        state.Stack.Push(Expression.Convert(val1, typeof(byte)));
                     }
                     else if (state.Instruction.OpCode == OpCodes.Conv_U2)
                     {
                         var val1 = state.Stack.Pop();
-                        state.Stack.Push(Expression.Convert(val1, typeof (ushort)));
+                        state.Stack.Push(Expression.Convert(val1, typeof(ushort)));
                     }
                     else if (state.Instruction.OpCode == OpCodes.Conv_U4)
                     {
                         var val1 = state.Stack.Pop();
-                        state.Stack.Push(Expression.Convert(val1, typeof (uint)));
+                        state.Stack.Push(Expression.Convert(val1, typeof(uint)));
                     }
                     else if (state.Instruction.OpCode == OpCodes.Conv_U8)
                     {
                         var val1 = state.Stack.Pop();
-                        state.Stack.Push(Expression.Convert(val1, typeof (ulong)));
+                        state.Stack.Push(Expression.Convert(val1, typeof(ulong)));
                     }
                     else if (state.Instruction.OpCode == OpCodes.Conv_Ovf_I || state.Instruction.OpCode == OpCodes.Conv_Ovf_I_Un)
                     {
                         var val1 = state.Stack.Pop();
-                        state.Stack.Push(Expression.ConvertChecked(val1, typeof (int))); // Suppot x64?
+                        state.Stack.Push(Expression.ConvertChecked(val1, typeof(int))); // Suppot x64?
                     }
                     else if (state.Instruction.OpCode == OpCodes.Conv_Ovf_I1 || state.Instruction.OpCode == OpCodes.Conv_Ovf_I1_Un)
                     {
                         var val1 = state.Stack.Pop();
-                        state.Stack.Push(Expression.ConvertChecked(val1, typeof (sbyte)));
+                        state.Stack.Push(Expression.ConvertChecked(val1, typeof(sbyte)));
                     }
                     else if (state.Instruction.OpCode == OpCodes.Conv_Ovf_I2 || state.Instruction.OpCode == OpCodes.Conv_Ovf_I2_Un)
                     {
                         var val1 = state.Stack.Pop();
-                        state.Stack.Push(Expression.ConvertChecked(val1, typeof (short)));
+                        state.Stack.Push(Expression.ConvertChecked(val1, typeof(short)));
                     }
                     else if (state.Instruction.OpCode == OpCodes.Conv_Ovf_I4 || state.Instruction.OpCode == OpCodes.Conv_Ovf_I4_Un)
                     {
                         var val1 = state.Stack.Pop();
-                        state.Stack.Push(Expression.ConvertChecked(val1, typeof (int)));
+                        state.Stack.Push(Expression.ConvertChecked(val1, typeof(int)));
                     }
                     else if (state.Instruction.OpCode == OpCodes.Conv_Ovf_I8 || state.Instruction.OpCode == OpCodes.Conv_Ovf_I8_Un)
                     {
                         var val1 = state.Stack.Pop();
-                        state.Stack.Push(Expression.ConvertChecked(val1, typeof (long)));
+                        state.Stack.Push(Expression.ConvertChecked(val1, typeof(long)));
                     }
                     else if (state.Instruction.OpCode == OpCodes.Conv_Ovf_U || state.Instruction.OpCode == OpCodes.Conv_Ovf_U_Un)
                     {
                         var val1 = state.Stack.Pop();
-                        state.Stack.Push(Expression.ConvertChecked(val1, typeof (uint))); // Suppot x64?
+                        state.Stack.Push(Expression.ConvertChecked(val1, typeof(uint))); // Suppot x64?
                     }
                     else if (state.Instruction.OpCode == OpCodes.Conv_Ovf_U1 || state.Instruction.OpCode == OpCodes.Conv_Ovf_U1_Un)
                     {
                         var val1 = state.Stack.Pop();
-                        state.Stack.Push(Expression.ConvertChecked(val1, typeof (byte)));
+                        state.Stack.Push(Expression.ConvertChecked(val1, typeof(byte)));
                     }
                     else if (state.Instruction.OpCode == OpCodes.Conv_Ovf_U2 || state.Instruction.OpCode == OpCodes.Conv_Ovf_U2_Un)
                     {
                         var val1 = state.Stack.Pop();
-                        state.Stack.Push(Expression.ConvertChecked(val1, typeof (ushort)));
+                        state.Stack.Push(Expression.ConvertChecked(val1, typeof(ushort)));
                     }
                     else if (state.Instruction.OpCode == OpCodes.Conv_Ovf_U4 || state.Instruction.OpCode == OpCodes.Conv_Ovf_U4_Un)
                     {
                         var val1 = state.Stack.Pop();
-                        state.Stack.Push(Expression.ConvertChecked(val1, typeof (uint)));
+                        state.Stack.Push(Expression.ConvertChecked(val1, typeof(uint)));
                     }
                     else if (state.Instruction.OpCode == OpCodes.Conv_Ovf_U8 || state.Instruction.OpCode == OpCodes.Conv_Ovf_U8_Un)
                     {
                         var val1 = state.Stack.Pop();
-                        state.Stack.Push(Expression.ConvertChecked(val1, typeof (ulong)));
+                        state.Stack.Push(Expression.ConvertChecked(val1, typeof(ulong)));
                     }
                     else if (state.Instruction.OpCode == OpCodes.Conv_R4 || state.Instruction.OpCode == OpCodes.Conv_R_Un)
                     {
                         var val1 = state.Stack.Pop();
-                        state.Stack.Push(Expression.ConvertChecked(val1, typeof (float)));
+                        state.Stack.Push(Expression.ConvertChecked(val1, typeof(float)));
                     }
                     else if (state.Instruction.OpCode == OpCodes.Conv_R8)
                     {
                         var val1 = state.Stack.Pop();
-                        state.Stack.Push(Expression.ConvertChecked(val1, typeof (double)));
+                        state.Stack.Push(Expression.ConvertChecked(val1, typeof(double)));
                     }
                     else if (state.Instruction.OpCode == OpCodes.Castclass)
                     {
                         var val1 = state.Stack.Pop();
-                        state.Stack.Push(Expression.Convert(val1, (Type) state.Instruction.Operand));
+                        state.Stack.Push(Expression.Convert(val1, (Type)state.Instruction.Operand));
                     }
                     else if (state.Instruction.OpCode == OpCodes.And)
                     {
@@ -661,22 +661,22 @@ namespace DelegateDecompiler
                     else if (state.Instruction.OpCode == OpCodes.Initobj)
                     {
                         var address = state.Stack.Pop();
-                        var type = (Type) state.Instruction.Operand;
+                        var type = (Type)state.Instruction.Operand;
                         address.Expression = Default(type);
                     }
                     else if (state.Instruction.OpCode == OpCodes.Newarr)
                     {
-                        var operand = (Type) state.Instruction.Operand;
+                        var operand = (Type)state.Instruction.Operand;
                         var expression = state.Stack.Pop();
                         var size = expression.Expression as ConstantExpression;
-                        if (size != null && (int) size.Value == 0) // optimization
+                        if (size != null && (int)size.Value == 0) // optimization
                             state.Stack.Push(Expression.NewArrayInit(operand));
                         else
                             state.Stack.Push(Expression.NewArrayBounds(operand, expression));
                     }
                     else if (state.Instruction.OpCode == OpCodes.Box)
                     {
-                        state.Stack.Push(Box(state.Stack.Pop(), (Type) state.Instruction.Operand));
+                        state.Stack.Push(Box(state.Stack.Pop(), (Type)state.Instruction.Operand));
                     }
                     else if (state.Instruction.OpCode == OpCodes.Newobj)
                     {
@@ -689,7 +689,33 @@ namespace DelegateDecompiler
                         var constructor = state.Instruction.Operand as ConstructorInfo;
                         if (method != null)
                         {
-                            Call(state, method);
+                            //Handling special System.Linq.Expression.xxxEquals calls
+                            if (method.Name.EndsWith("Equal") && method.DeclaringType == typeof(Expression))
+                            {
+                                var eqChkMethod = (MethodInfo)((ConstantExpression)DiscardConversion(state.Stack.Pop())).Value;
+                                bool liftToNull = (bool)((ConstantExpression)AdjustType(state.Stack.Pop(), typeof(bool))).Value;
+                                var rightExpr = state.Stack.Pop();
+                                var leftExpr = state.Stack.Pop();
+                                if (method.Name == "Equal")
+                                {
+                                    state.Stack.Push(Expression.Equal(leftExpr, rightExpr, liftToNull, eqChkMethod));
+                                }
+                                else
+                                {
+                                    state.Stack.Push(Expression.NotEqual(leftExpr, rightExpr, liftToNull, eqChkMethod));
+                                }
+                            }
+                            //////Handling special System.Linq.Expression.Lambda calls
+                            ////else if (method.Name == "Lambda" && method.DeclaringType == typeof(Expression))
+                            ////{
+                            ////    var parameters = state.Stack.Pop();
+                            ////    var body = state.Stack.Pop();
+                            ////    //state.Stack.Push(Expression.Lambda());
+                            ////}
+                            else
+                            {
+                                Call(state, method);
+                            }
                         }
                         else if (constructor != null)
                         {
@@ -745,12 +771,12 @@ namespace DelegateDecompiler
                         if (state.Instruction.Next != null && state.Instruction.Next.OpCode == OpCodes.Ldnull &&
                             state.Instruction.Next.Next != null && state.Instruction.Next.Next.OpCode == OpCodes.Cgt_Un)
                         {
-                            state.Stack.Push(Expression.TypeIs(val, (Type) state.Instruction.Operand));
+                            state.Stack.Push(Expression.TypeIs(val, (Type)state.Instruction.Operand));
                             state.Instruction = state.Instruction.Next.Next;
                         }
                         else
                         {
-                            state.Stack.Push(Expression.TypeAs(val, (Type) state.Instruction.Operand));
+                            state.Stack.Push(Expression.TypeAs(val, (Type)state.Instruction.Operand));
                         }
                     }
                     else if (state.Instruction.OpCode == OpCodes.Ret)
@@ -773,7 +799,7 @@ namespace DelegateDecompiler
             return state == null ? Expression.Empty() : state.Final();
         }
 
-        static object GetRuntimeHandle(object operand)
+        private static object GetRuntimeHandle(object operand)
         {
             var fieldInfo = operand as FieldInfo;
             if (fieldInfo != null)
@@ -793,14 +819,14 @@ namespace DelegateDecompiler
             return null;
         }
 
-        static bool IsCachedAnonymousMethodDelegate(FieldInfo field)
+        private static bool IsCachedAnonymousMethodDelegate(FieldInfo field)
         {
             if (field == null) return false;
-            return field.Name.StartsWith(cachedAnonymousMethodDelegate) && Attribute.IsDefined(field, typeof (CompilerGeneratedAttribute), false) ||
-                   field.Name.StartsWith(cachedAnonymousMethodDelegateRoslyn) && field.DeclaringType != null && Attribute.IsDefined(field.DeclaringType, typeof (CompilerGeneratedAttribute), false);
+            return field.Name.StartsWith(cachedAnonymousMethodDelegate) && Attribute.IsDefined(field, typeof(CompilerGeneratedAttribute), false) ||
+                   field.Name.StartsWith(cachedAnonymousMethodDelegateRoslyn) && field.DeclaringType != null && Attribute.IsDefined(field.DeclaringType, typeof(CompilerGeneratedAttribute), false);
         }
 
-        static BinaryExpression MakeBinaryExpression(Address left, Address right, ExpressionType expressionType)
+        private static BinaryExpression MakeBinaryExpression(Address left, Address right, ExpressionType expressionType)
         {
             var rightType = right.Type;
             var leftType = left.Type;
@@ -813,7 +839,7 @@ namespace DelegateDecompiler
             return Expression.MakeBinary(expressionType, left, right);
         }
 
-        static Expression Box(Expression expression, Type type)
+        private static Expression Box(Expression expression, Type type)
         {
             if (expression.Type == type)
                 return expression;
@@ -831,7 +857,7 @@ namespace DelegateDecompiler
             return expression;
         }
 
-        static Expression ConvertEnumExpressionToUnderlyingType(Expression expression)
+        private static Expression ConvertEnumExpressionToUnderlyingType(Expression expression)
         {
             if (expression.Type.IsEnum)
                 return Expression.Convert(expression, expression.Type.GetEnumUnderlyingType());
@@ -839,23 +865,24 @@ namespace DelegateDecompiler
             return expression;
         }
 
-        static Expression Default(Type type)
+        private static Expression Default(Type type)
         {
             if (type.IsValueType)
             {
-                // LINQ to entities and possibly other providers don't support Expression.Default, so this gets the default value and then uses an Expression.Constant instead
+                // LINQ to entities and possibly other providers don't support Expression.Default, so
+                // this gets the default value and then uses an Expression.Constant instead
                 return Expression.Constant(Activator.CreateInstance(type), type);
             }
 
             return Expression.Constant(null, type);
         }
 
-        Instruction ConditionalBranch(ProcessorState state, Func<Expression, Expression> condition)
+        private Instruction ConditionalBranch(ProcessorState state, Expression<Func<Expression, Expression>> condition)
         {
             var val1 = state.Stack.Pop();
-            var test = condition(val1);
+            var test = condition.Compile().Invoke(val1);
 
-            var left = (Instruction) state.Instruction.Operand;
+            var left = (Instruction)state.Instruction.Operand;
             var right = state.Instruction.Next;
 
             var common = GetJointPoint(state.Instruction);
@@ -871,10 +898,10 @@ namespace DelegateDecompiler
             return common;
         }
 
-        static Instruction GetJointPoint(Instruction instruction)
+        private static Instruction GetJointPoint(Instruction instruction)
         {
             var leftInstructions = FollowGraph(instruction.Next);
-            var rightInstructions = FollowGraph((Instruction) instruction.Operand);
+            var rightInstructions = FollowGraph((Instruction)instruction.Operand);
 
             Instruction common = null;
             foreach (var leftInstruction in leftInstructions)
@@ -887,7 +914,7 @@ namespace DelegateDecompiler
             return common;
         }
 
-        static Stack<Instruction> FollowGraph(Instruction instruction)
+        private static Stack<Instruction> FollowGraph(Instruction instruction)
         {
             var instructions = new Stack<Instruction>();
             while (instruction != null)
@@ -898,16 +925,19 @@ namespace DelegateDecompiler
             return instructions;
         }
 
-        static Instruction GetNextInstruction(Instruction instruction)
+        private static Instruction GetNextInstruction(Instruction instruction)
         {
             switch (instruction.OpCode.FlowControl)
             {
                 case FlowControl.Return:
                     return null;
+
                 case FlowControl.Branch:
-                    return (Instruction) instruction.Operand;
+                    return (Instruction)instruction.Operand;
+
                 case FlowControl.Cond_Branch:
                     return GetJointPoint(instruction);
+
                 default:
                     return instruction.Next;
             }
@@ -915,6 +945,13 @@ namespace DelegateDecompiler
 
         internal static Expression AdjustType(Expression expression, Type type)
         {
+            // WORKAROUND - Handles not checking parameters for Linq.Expression.XXX calls
+            if (typeof(Expression).IsAssignableFrom(type))
+            {
+                return expression;
+            }
+            // END OF WORKAROUND
+
             if (expression.Type == type)
             {
                 return expression;
@@ -934,27 +971,27 @@ namespace DelegateDecompiler
                     {
                         return Expression.Constant(Enum.ToObject(type, constantExpression.Value));
                     }
-                    if (type == typeof (bool))
+                    if (type == typeof(bool))
                     {
                         return Expression.Constant(Convert.ToBoolean(constantExpression.Value));
                     }
-                    if (type == typeof (byte))
+                    if (type == typeof(byte))
                     {
                         return Expression.Constant(Convert.ToByte(constantExpression.Value));
                     }
-                    if (type == typeof (sbyte))
+                    if (type == typeof(sbyte))
                     {
                         return Expression.Constant(Convert.ToSByte(constantExpression.Value));
                     }
-                    if (type == typeof (short))
+                    if (type == typeof(short))
                     {
                         return Expression.Constant(Convert.ToInt16(constantExpression.Value));
                     }
-                    if (type == typeof (ushort))
+                    if (type == typeof(ushort))
                     {
                         return Expression.Constant(Convert.ToUInt16(constantExpression.Value));
                     }
-                    if (type == typeof (uint))
+                    if (type == typeof(uint))
                     {
                         return Expression.Constant(Convert.ToUInt32(constantExpression.Value));
                     }
@@ -962,7 +999,7 @@ namespace DelegateDecompiler
             }
             else
             {
-                if (expression.Type == typeof (int) && type == typeof (bool))
+                if (expression.Type == typeof(int) && type == typeof(bool))
                 {
                     return Expression.NotEqual(expression, Expression.Constant(0));
                 }
@@ -971,7 +1008,7 @@ namespace DelegateDecompiler
             {
                 return Expression.Convert(expression, type);
             }
-            
+
             if (type.IsValueType != expression.Type.IsValueType)
             {
                 return Expression.Convert(expression, type);
@@ -980,9 +1017,9 @@ namespace DelegateDecompiler
             return expression;
         }
 
-        static Expression AdjustBooleanConstant(Expression expression, Type type)
+        private static Expression AdjustBooleanConstant(Expression expression, Type type)
         {
-            if (type == typeof (bool) && expression.Type == typeof (int))
+            if (type == typeof(bool) && expression.Type == typeof(int))
             {
                 var constantExpression = expression as ConstantExpression;
                 if (constantExpression != null)
@@ -994,18 +1031,39 @@ namespace DelegateDecompiler
             return expression;
         }
 
-        static void StElem(ProcessorState state)
+        private static void StElem(ProcessorState state)
         {
             var value = state.Stack.Pop();
             var index = state.Stack.Pop();
             var array = state.Stack.Pop();
+            var constantArray = array.Expression as ConstantExpression;
+
+            // already handled
+            if (constantArray != null && constantArray.Value.GetType() == typeof(List<Expression>))
+            {
+                var list = constantArray.Value as List<Expression>;
+                list.Add(value);
+                return;
+            }
 
             var newArray = array.Expression as NewArrayExpression;
             if (newArray != null)
             {
                 var expressions = CreateArrayInitExpressions(newArray, value, index);
-                var newArrayInit = Expression.NewArrayInit(array.Type.GetElementType(), expressions);
-                array.Expression = newArrayInit;
+                NewArrayExpression newArrayInit;
+                try
+                {
+                    newArrayInit = Expression.NewArrayInit(array.Type.GetElementType(), expressions);
+                    array.Expression = newArrayInit;
+                }
+
+                // WORKAROUND - set array's items expressions as a constant if not assignable as a
+                // NewArrayInit element
+                catch (InvalidOperationException notArrayInitExpressions)
+                {
+                    array.Expression = Expression.Constant(expressions.ToList(), typeof(List<Expression>));
+                }
+                // END OF WORKAROUND
             }
             else
             {
@@ -1013,11 +1071,16 @@ namespace DelegateDecompiler
             }
         }
 
-        static IEnumerable<Expression> CreateArrayInitExpressions(NewArrayExpression newArray, Expression valueExpression, Expression indexExpression)
+        private static IEnumerable<Expression> CreateArrayInitExpressions(NewArrayExpression newArray, Expression valueExpression, Expression indexExpression)
         {
+            if (newArray.Type.GetElementType() != valueExpression.Type)
+            {
+                valueExpression = AdjustType(valueExpression, newArray.Type.GetElementType());
+            }
+
             if (newArray.NodeType == ExpressionType.NewArrayInit)
             {
-                var indexGetter = (Func<int>) Expression.Lambda(indexExpression).Compile();
+                var indexGetter = (Func<int>)Expression.Lambda(indexExpression).Compile();
                 var index = indexGetter();
                 var expressions = newArray.Expressions.ToArray();
 
@@ -1031,40 +1094,44 @@ namespace DelegateDecompiler
                 return expressions;
             }
 
-            return new[] {valueExpression};
+            return new[] { valueExpression };
         }
 
-        static void LdC(ProcessorState state, int i)
+        private static void LdC(ProcessorState state, int i)
         {
             state.Stack.Push(Expression.Constant(i));
         }
 
-        static void LdC(ProcessorState state, long i)
+        private static void LdC(ProcessorState state, long i)
         {
             state.Stack.Push(Expression.Constant(i));
         }
 
-        static void LdC(ProcessorState state, float i)
+        private static void LdC(ProcessorState state, float i)
         {
             state.Stack.Push(Expression.Constant(i));
         }
 
-        static void LdC(ProcessorState state, double i)
+        private static void LdC(ProcessorState state, double i)
         {
             state.Stack.Push(Expression.Constant(i));
         }
 
-        static void Call(ProcessorState state, MethodInfo m)
+        private static void Call(ProcessorState state, MethodInfo m)
         {
+            var debugName = m.Name;
             var mArgs = GetArguments(state, m);
 
             var instance = m.IsStatic ? new Address() : state.Stack.Pop();
-            var result = BuildMethodCallExpression(m, instance, mArgs);
+            var result = m.DeclaringType == typeof(Expression)
+                ? BuildLinqCallExpression(m, instance, mArgs)
+                : BuildMethodCallExpression(m, instance, mArgs);
+            result = TransparentIdentifierRemovingExpressionVisitor.RemoveTransparentIdentifiers(result);
             if (result.Type != typeof(void))
                 state.Stack.Push(result);
         }
 
-        static MemberInitExpression BuildMemberInit(Expression instance, MemberBinding assignment)
+        private static MemberInitExpression BuildMemberInit(Expression instance, MemberBinding assignment)
         {
             if (instance.NodeType == ExpressionType.New)
             {
@@ -1073,7 +1140,7 @@ namespace DelegateDecompiler
 
             if (instance.NodeType == ExpressionType.MemberInit)
             {
-                var memberInitExpression = (MemberInitExpression) instance;
+                var memberInitExpression = (MemberInitExpression)instance;
                 return Expression.MemberInit(
                     memberInitExpression.NewExpression,
                     new List<MemberBinding>(memberInitExpression.Bindings)
@@ -1085,7 +1152,7 @@ namespace DelegateDecompiler
             throw new NotSupportedException();
         }
 
-        static Expression[] GetArguments(ProcessorState state, MethodBase m)
+        private static Expression[] GetArguments(ProcessorState state, MethodBase m)
         {
             var parameterInfos = m.GetParameters();
             var mArgs = new Expression[parameterInfos.Length];
@@ -1099,8 +1166,9 @@ namespace DelegateDecompiler
             return mArgs;
         }
 
-        static Expression BuildMethodCallExpression(MethodInfo m, Address instance, Expression[] arguments)
+        private static Expression BuildMethodCallExpression(MethodInfo m, Address instance, Expression[] arguments)
         {
+            var debugName = m.Name;
             if (m.Name == "Add" && instance.Expression != null && typeof(IEnumerable).IsAssignableFrom(instance.Type))
             {
                 var newExpression = instance.Expression as NewExpression;
@@ -1143,6 +1211,7 @@ namespace DelegateDecompiler
                         {
                             case 1:
                                 return Expression.MakeUnary(type, arguments[0], arguments[0].Type);
+
                             case 2:
                                 return Expression.MakeBinary(type, arguments[0], arguments[1]);
                         }
@@ -1153,8 +1222,10 @@ namespace DelegateDecompiler
                         {
                             case "op_Increment":
                                 return Expression.Add(arguments[0], Expression.Constant(Convert.ChangeType(1, arguments[0].Type)));
+
                             case "op_Decrement":
                                 return Expression.Subtract(arguments[0], Expression.Constant(Convert.ChangeType(1, arguments[0].Type)));
+
                             case "op_Implicit":
                                 return Expression.Convert(arguments[0], m.ReturnType, m);
                         }
@@ -1167,15 +1238,18 @@ namespace DelegateDecompiler
                 {
                     case "Add":
                         return Expression.MakeBinary(ExpressionType.Add, arguments[0], arguments[1]);
+
                     case "Subtract":
                         return Expression.MakeBinary(ExpressionType.Subtract, arguments[0], arguments[1]);
+
                     case "Multiply":
                         return Expression.MakeBinary(ExpressionType.Multiply, arguments[0], arguments[1]);
+
                     case "Divide":
                         return Expression.MakeBinary(ExpressionType.Divide, arguments[0], arguments[1]);
                 }
             }
-            if (m.Name == "Concat" && m.DeclaringType == typeof (string))
+            if (m.Name == "Concat" && m.DeclaringType == typeof(string))
             {
                 var expressions = GetExpressionsForStringConcat(arguments);
                 if (expressions.Count > 1)
@@ -1189,10 +1263,10 @@ namespace DelegateDecompiler
                 }
             }
 
-            if (m.Name == "InitializeArray" && m.DeclaringType == typeof (RuntimeHelpers))
+            if (m.Name == "InitializeArray" && m.DeclaringType == typeof(RuntimeHelpers))
             {
-                var arrayGetter = (Func<Array>) Expression.Lambda(arguments[0]).Compile();
-                var fieldGetter = (Func<RuntimeFieldHandle>) Expression.Lambda(arguments[1]).Compile();
+                var arrayGetter = (Func<Array>)Expression.Lambda(arguments[0]).Compile();
+                var fieldGetter = (Func<RuntimeFieldHandle>)Expression.Lambda(arguments[1]).Compile();
                 var array = arrayGetter();
                 RuntimeHelpers.InitializeArray(array, fieldGetter());
 
@@ -1201,22 +1275,147 @@ namespace DelegateDecompiler
                 return Expression.NewArrayInit(arguments[0].Type.GetElementType(), initializers);
             }
 
+            #region Nested Lambdas decompilation
+
+            if (m.Name == "GetTypeFromHandle" && m.DeclaringType == typeof(Type))
+            {
+                return Expression.Constant(Type.GetTypeFromHandle((RuntimeTypeHandle)(arguments[0] as ConstantExpression).Value));
+            }
+
+            if (m.Name == "GetMethodFromHandle" && m.DeclaringType == typeof(MethodBase))
+            {
+                return Expression.Constant(MethodBase.GetMethodFromHandle((RuntimeMethodHandle)(arguments[0] as ConstantExpression).Value));
+            }
+
+            if (m.Name == "GetFieldFromHandle" && m.DeclaringType == typeof(FieldInfo))
+            {
+                return Expression.Constant(FieldInfo.GetFieldFromHandle((RuntimeFieldHandle)(arguments[0] as ConstantExpression).Value));
+            }
+
+            #endregion
+
             if (instance.Expression != null)
                 return Expression.Call(instance, m, arguments);
 
             return Expression.Call(null, m, arguments);
         }
 
-        static bool TryParseOperator(MethodInfo m, out ExpressionType type)
+        // Converts compiled calls to Expression.xxx into their lambda representation
+        private static Expression BuildLinqCallExpression(MethodInfo m, Address instance, Expression[] arguments)
+        {
+            if (m.Name == "Constant")
+            {
+                var valueType = (Type)(arguments[1] as ConstantExpression).Value;
+                if (!valueType.IsAssignableFrom(arguments[0].GetType())) return arguments[0];
+                return Expression.Constant(arguments[0], valueType);
+            }
+
+            if (m.Name == "Parameter")
+            {
+                return Expression.Parameter((Type)(arguments[0] as ConstantExpression).Value, (string)(arguments[1] as ConstantExpression).Value);
+            }
+
+            if (m.Name == "Field")
+            {
+                return Expression.Field(arguments[0], (FieldInfo)((ConstantExpression)arguments[1]).Value);
+            }
+
+            if (m.Name == "Property")
+            {
+                //TODO check whether the operant cannot be a ConstantExpression
+                var propertyGetter = DiscardConversion(arguments[1]);
+                return BuildMethodCallExpression((MethodInfo)(propertyGetter as ConstantExpression).Value, arguments[0], arguments.Skip(2).ToArray());
+            }
+
+            if (m.Name == "Call")
+            {
+                var method = (MethodInfo)(DiscardConversion(arguments[1]) as ConstantExpression).Value;
+                var debugName = method.Name;
+                var argsInfo = method.GetParameters();
+                var argsArray = arguments[2] as NewArrayExpression;
+
+                List<Expression> args;
+                if (argsArray != null)
+                {
+                    //creates an array of arguments from the method définition
+                    var argList = new List<Expression>();
+                    for (int i = 0; i < argsInfo.Length; i++)
+                    {
+                        var arg = argsInfo[i];
+                        argList.Add(Expression.Parameter(arg.ParameterType, arg.Name));
+                    }
+                    args = argList;
+                }
+                else
+                {
+                    args = (List<Expression>)(arguments[2] as ConstantExpression).Value;
+                }
+
+                Expression targetInstance = method.IsStatic ? null : args.First();
+                int argsOffset = targetInstance == null ? 0 : 1;
+                try
+                {
+                    Expression decompiles = BuildMethodCallExpression(method, targetInstance, args.Skip(argsOffset).ToArray());
+                    return decompiles;
+                }
+                catch (Exception any)
+                {
+                    throw any;
+                }
+            }
+
+            if (m.Name == "Lambda")
+            {
+                var debugName = m.Name;
+                var argsInfo = m.GetParameters();
+                var argsArray = arguments[1] as NewArrayExpression;
+
+                List<Expression> args;
+                if (argsArray != null)
+                {
+                    //creates an array of arguments from the method définition
+                    var argList = new List<Expression>();
+                    for (int i = 0; i < argsInfo.Length; i++)
+                    {
+                        var arg = argsInfo[i];
+                        argList.Add(Expression.Parameter(arg.ParameterType, arg.Name));
+                    }
+                    args = argList;
+                }
+                else
+                {
+                    args = (List<Expression>)(arguments[1] as ConstantExpression).Value;
+                }
+                try
+                {
+                    Expression decompiles = Expression.Lambda(arguments[0], args.Cast<ParameterExpression>().ToArray());
+                    return decompiles;
+                }
+                catch (Exception any)
+                {
+                    throw any;
+                }
+            }
+            try
+            {
+                return (Expression)m.Invoke(null, arguments);
+            }
+            catch (Exception any)
+            {
+                throw any;
+            }
+        }
+
+        private static bool TryParseOperator(MethodInfo m, out ExpressionType type)
         {
             switch (m.Name)
             {
-                /* The complete set of binary operator function names used is as follows: 
-                 * op_Addition, op_Subtraction, op_Multiply, op_Division, op_Modulus, 
-                 * op_BitwiseAnd, op_BitwiseOr, op_ExclusiveOr, op_LeftShift, op_RightShift, 
-                 * op_Equality, op_Inequality, op_LessThan, op_LessThanOrEqual, op_GreaterThan, 
+                /* The complete set of binary operator function names used is as follows:
+                 * op_Addition, op_Subtraction, op_Multiply, op_Division, op_Modulus,
+                 * op_BitwiseAnd, op_BitwiseOr, op_ExclusiveOr, op_LeftShift, op_RightShift,
+                 * op_Equality, op_Inequality, op_LessThan, op_LessThanOrEqual, op_GreaterThan,
                  * and op_GreaterThanOrEqual.
-                 */ 
+                 */
                 case "op_Addition":
                     type = ExpressionType.Add;
                     return true;
@@ -1244,7 +1443,7 @@ namespace DelegateDecompiler
                 case "op_BitwiseOr":
                     type = ExpressionType.Or;
                     return true;
-                
+
                 case "op_ExclusiveOr":
                     type = ExpressionType.ExclusiveOr;
                     return true;
@@ -1256,11 +1455,11 @@ namespace DelegateDecompiler
                 case "op_RightShift":
                     type = ExpressionType.RightShift;
                     return true;
-                
+
                 case "op_Equality":
                     type = ExpressionType.Equal;
                     return true;
-                
+
                 case "op_Inequality":
                     type = ExpressionType.NotEqual;
                     return true;
@@ -1282,7 +1481,7 @@ namespace DelegateDecompiler
                     return true;
 
                 /*
-                 * The complete set of unary operator function names used is as follows: 
+                 * The complete set of unary operator function names used is as follows:
                  * op_UnaryPlus, op_UnaryNegation, op_LogicalNot, op_OnesComplement, op_Increment, op_Decrement, op_True, and op_False.
                  */
                 case "op_UnaryPlus":
@@ -1320,7 +1519,7 @@ namespace DelegateDecompiler
             return Enum.TryParse(m.Name.Substring(3), out type);
         }
 
-        static IList<Expression> GetExpressionsForStringConcat(Expression[] arguments)
+        private static IList<Expression> GetExpressionsForStringConcat(Expression[] arguments)
         {
             if (arguments.Length == 1)
             {
@@ -1336,20 +1535,33 @@ namespace DelegateDecompiler
             return arguments;
         }
 
-        static void LdLoc(ProcessorState state, int index)
+        private static void LdLoc(ProcessorState state, int index)
         {
             state.Stack.Push(state.Locals[index].Address);
         }
 
-        static void StLoc(ProcessorState state, int index)
+        private static void StLoc(ProcessorState state, int index)
         {
             var info = state.Locals[index];
             info.Address = AdjustType(state.Stack.Pop(), info.Type);
         }
 
-        static void LdArg(ProcessorState state, int index)
+        private static void LdArg(ProcessorState state, int index)
         {
             state.Stack.Push(state.Args[index]);
+        }
+
+        private static Expression DiscardConversion(Expression expr)
+        {
+            if (!(expr is UnaryExpression)) return expr;
+            UnaryExpression unwrapped;
+            while ((unwrapped = expr as UnaryExpression) != null)
+            {
+                if (unwrapped.NodeType != ExpressionType.Convert && unwrapped.NodeType != ExpressionType.ConvertChecked)
+                    break;
+                expr = unwrapped.Operand;
+            }
+            return expr;
         }
     }
 }

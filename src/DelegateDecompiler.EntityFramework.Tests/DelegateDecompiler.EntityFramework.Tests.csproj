@@ -6,13 +6,13 @@
     <Copyright>Copyright © Dave Glick 2014, Jon Smith 2014, Alexander Zaytsev 2014 - 2017</Copyright>
   </PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="nunit" Version="3.7.1" />
+  <ItemGroup Condition="'$(TargetFramework)' != 'net40'">
+    <PackageReference Include="NUnit3TestAdapter" Version="3.9.0" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.5.0" />
   </ItemGroup>
 
-  <ItemGroup Condition="'$(TargetFramework)' != 'net40'">
-    <PackageReference Include="NUnit3TestAdapter" Version="3.8.0" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.3.0" />
+  <ItemGroup>
+    <PackageReference Include="NUnit" Version="3.9.0" />
   </ItemGroup>
 
   <ItemGroup>
