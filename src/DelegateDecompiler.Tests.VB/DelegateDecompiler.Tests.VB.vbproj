@@ -2,7 +2,7 @@
   <Import Project="..\..\DelegateDecompiler.props" />
 
   <PropertyGroup>
-    <TargetFramework>net45</TargetFramework>
+    <TargetFramework>net40</TargetFramework>
     <Copyright>Copyright © Alexander Zaytsev 2016 - 2017</Copyright>
     <Description />
   </PropertyGroup>
