@@ -1,6 +1,6 @@
 Detail With Sql of supported commands
 ============
-## Documentation produced for DelegateDecompiler, version 0.23.0 on Tuesday, 14 March 2017 10:50
+## Documentation produced for DelegateDecompiler, version 0.23.1 on Monday, 18 December 2017 13:13
 
 This file documents what linq commands **DelegateDecompiler** supports when
 working with [Entity Framework v6.1](http://msdn.microsoft.com/en-us/data/aa937723) (EF).
@@ -357,7 +357,7 @@ SELECT
             WHERE [Extent1].[EfParentId] = [Extent2].[EfParentId]) AS [C1]
         FROM [dbo].[EfParents] AS [Extent1]
     )  AS [Project1]
-    ORDER BY [Project1].[C1] ASC
+    ORDER BY row_number() OVER (ORDER BY [Project1].[C1] ASC)
     OFFSET 1 ROWS FETCH NEXT 2 ROWS ONLY 
 ```
 
@@ -380,7 +380,7 @@ SELECT
             WHERE [Extent1].[EfParentId] = [Extent2].[EfParentId]
         )
     )  AS [Project2]
-    ORDER BY [Project2].[C1] ASC
+    ORDER BY row_number() OVER (ORDER BY [Project2].[C1] ASC)
     OFFSET 1 ROWS FETCH NEXT 1 ROWS ONLY 
 ```
 
