@@ -2,7 +2,7 @@
   <Import Project="..\..\DelegateDecompiler.props" />
 
   <PropertyGroup>
-    <TargetFramework>net45</TargetFramework>
+    <TargetFramework>net40</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup Condition="'$(TargetFramework)' != 'net40'">
