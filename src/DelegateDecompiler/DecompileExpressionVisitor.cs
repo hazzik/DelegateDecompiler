@@ -170,11 +170,11 @@ namespace DelegateDecompiler
             var implementationsList = new List<KeyValuePair<Type, MethodInfo>>();
             implementationsList.Add(new KeyValuePair<Type, MethodInfo>(method.DeclaringType, method));
             var subclasses = AppDomain.CurrentDomain.GetAssemblies().SelectMany(a => a.GetTypes().Where(t => t.IsSubclassOf(method.DeclaringType))).Where(t => t != null).ToList();
-            subclasses.Sort((t1, t2) => t1 == null || t2 == null ? 0 : t1.IsSubclassOf(t2) ? 1 : -1);
+            subclasses.Sort((t1, t2) => t1.IsSubclassOf(t2) ? 1 : -1);
             foreach (var c in subclasses)
             {
-                MethodInfo impl = c.GetMethod(method.Name, method.GetParameters()?.Select(a => a.ParameterType).ToArray());
-                if (impl?.DeclaringType == c)
+                MethodInfo impl = c.GetMethod(method.Name, method.GetParameters().Select(a => a.ParameterType).ToArray());
+                if (impl.DeclaringType == c)
                 {
                     if (impl.IsGenericMethod)
                     {
