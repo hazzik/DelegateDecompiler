@@ -7,7 +7,7 @@ using System.Reflection;
 
 namespace DelegateDecompiler
 {
-    //TODO minor optimisation : remove explicit TypeAs expressions when redondant with the MemberInfo declaring type ?
+    //TODO minor optimisation : remove explicit TypeAs expressions when redondant with the MemberInfo declaring type
     public class DecompileExpressionVisitor : ExpressionVisitor
     {
         public static Expression Decompile(Expression expression)
@@ -39,7 +39,6 @@ namespace DelegateDecompiler
             Expression instance = node.Object;
             // Check whether the call is symbolic or effective
             bool isExplicitCall = !node.Method.IsVirtual || _virtualCallContexts.Any(vcc => vcc.Item1 == instance);
-            bool shouldDecompile = ShouldDecompile(node.Method) && isExplicitCall;
             if (!isExplicitCall)
             {
                 var castObjects = new HashSet<Expression>();
@@ -47,10 +46,11 @@ namespace DelegateDecompiler
                 {
                     var implementations = GetImplementationsFor(node.Method);
                     _virtualCallContexts.Add(new Tuple<Expression, MethodInfo>(instance, node.Method));
+                    MethodInfo uniqueSpecificImplementation;
                     if (implementations is IEnumerable)
                     {
                         Expression expandedCall = null;
-                        var applicableCalls = (implementations as List<KeyValuePair<Type, MethodInfo>>).Where(vCall => node.Object.Type.IsAssignableFrom(vCall.Key)).GroupBy(kv => kv.Key);
+                        var applicableCalls = (implementations as List<KeyValuePair<Type, MethodInfo>>).Where(vCall => vCall.Key == node.Object.Type || vCall.Key.IsSubclassOf(node.Object.Type)).GroupBy(kv => kv.Key);
                         if (applicableCalls.Any())
                         {
                             bool handleObjectAsSubType = false;
@@ -76,15 +76,15 @@ namespace DelegateDecompiler
                         }
                         else
                         {
-                            shouldDecompile = ShouldDecompile(node.Method);
+                            uniqueSpecificImplementation = (implementations as List<KeyValuePair<Type, MethodInfo>>).Where(vCall => node.Object.Type.IsSubclassOf(vCall.Key)).Select(kv => kv.Value).First();
                         }
                     }
                     else
                     {
-                        var implementation = implementations as MethodInfo;
-                        _virtualCallContexts.Add(new Tuple<Expression, MethodInfo>(node.Object, implementation));
-                        node = Expression.Call(node.Object, implementation, node.Arguments);
+                        uniqueSpecificImplementation = implementations as MethodInfo;
                     }
+                    //_virtualCallContexts.Add(new Tuple<Expression, MethodInfo>(node.Object, uniqueSpecificImplementation));
+                    node = Expression.Call(node.Object, uniqueSpecificImplementation, node.Arguments);
                 }
                 finally
                 {
@@ -92,7 +92,6 @@ namespace DelegateDecompiler
                     _virtualCallContexts.RemoveAll(items => castObjects.Contains(items.Item1));
                 }
             }
-
             try
             {
                 if (node.Method.IsGenericMethod && node.Method.GetGenericMethodDefinition() == typeof(ComputedExtension).GetMethod("Computed", BindingFlags.Static | BindingFlags.Public))
@@ -115,7 +114,7 @@ namespace DelegateDecompiler
                     }
                 }
 
-                if (shouldDecompile)
+                if (ShouldDecompile(node.Method))
                 {
                     return Decompile(node.Method, node.Object, node.Arguments);
                 }
@@ -169,8 +168,8 @@ namespace DelegateDecompiler
             var implementationsList = new List<KeyValuePair<Type, MethodInfo>>();
             bool shouldDecompile = ShouldDecompile(method);
             if (!method.IsAbstract) implementationsList.Add(new KeyValuePair<Type, MethodInfo>(method.DeclaringType, method));
-            var subclasses = AppDomain.CurrentDomain.GetAssemblies().Where(a => !a.IsDynamic).SelectMany(a => a.GetExportedTypes().Where(t => method.DeclaringType.IsAssignableFrom(t))).Where(t => t != null).ToList();
-            subclasses.Sort((t1, t2) => t1 == null || t2 == null ? 0 : t2.IsAssignableFrom(t1) ? 1 : -1);
+            var subclasses = AppDomain.CurrentDomain.GetAssemblies().Where(a => !a.IsDynamic).SelectMany(a => a.GetTypes().Where(t => t.IsSubclassOf(method.DeclaringType))).Where(t => t != null).ToList();
+            subclasses.Sort((t1, t2) => t1 == null || t2 == null ? 0 : t1.IsSubclassOf(t2) ? 1 : -1);
             foreach (var c in subclasses)
             {
                 MethodInfo impl = c.GetMethod(method.Name, method.GetParameters().Select(a => a.ParameterType).ToArray());
