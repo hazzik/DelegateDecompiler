@@ -50,27 +50,34 @@ namespace DelegateDecompiler
                     if (implementations is IEnumerable)
                     {
                         Expression expandedCall = null;
-                        var applicableCalls = (implementations as List<KeyValuePair<Type, MethodInfo>>).Where(vCall => vCall.Key == node.Object.Type || vCall.Key.IsSubclassOf(node.Object.Type));
-                        bool handleObjectAsSubType = false;
-                        foreach (var explicitCalls in applicableCalls.GroupBy(kv => kv.Key))
+                        var applicableCalls = (implementations as List<KeyValuePair<Type, MethodInfo>>).Where(vCall => vCall.Key == node.Object.Type || vCall.Key.IsSubclassOf(node.Object.Type)).GroupBy(kv => kv.Key);
+                        if (applicableCalls.Any())
                         {
-                            var targetInstance = node.Object.Type == explicitCalls.Key ? node.Object : Expression.TypeAs(instance, explicitCalls.Key);
-                            castObjects.Add(targetInstance);
-                            // Register every possible call to base.xxxx from this type hierarchy as
-                            // an explicit call;
-                            _virtualCallContexts.AddRange(explicitCalls.Select(vc => new Tuple<Expression, MethodInfo>(targetInstance, vc.Value)));
-                            // then expand all cases to the the call expression up to the
-                            if (!handleObjectAsSubType)
+                            bool handleObjectAsSubType = false;
+                            foreach (var explicitCalls in applicableCalls)
                             {
-                                expandedCall = base.Visit(Expression.Call(targetInstance, explicitCalls.Select(mostSpecific => mostSpecific.Value).First(), node.Arguments));
-                                handleObjectAsSubType = true;
+                                var targetInstance = node.Object.Type == explicitCalls.Key ? node.Object : Expression.TypeAs(instance, explicitCalls.Key);
+                                castObjects.Add(targetInstance);
+                                // Register every possible call to base.xxxx from this type hierarchy
+                                // as an explicit call;
+                                _virtualCallContexts.AddRange(explicitCalls.Select(vc => new Tuple<Expression, MethodInfo>(targetInstance, vc.Value)));
+                                // then expand all cases to the the call expression up to the
+                                if (!handleObjectAsSubType)
+                                {
+                                    expandedCall = base.Visit(Expression.Call(targetInstance, explicitCalls.Select(mostSpecific => mostSpecific.Value).First(), node.Arguments));
+                                    handleObjectAsSubType = true;
+                                }
+                                else
+                                {
+                                    expandedCall = Expression.Condition(Expression.TypeIs(node.Object, explicitCalls.Key), base.Visit(Expression.Call(targetInstance, explicitCalls.Select(mostSpecific => mostSpecific.Value).First() as MethodInfo, node.Arguments)), expandedCall);
+                                }
                             }
-                            else
-                            {
-                                expandedCall = Expression.Condition(Expression.TypeIs(node.Object, explicitCalls.Key), base.Visit(Expression.Call(targetInstance, explicitCalls.Select(mostSpecific => mostSpecific.Value).First() as MethodInfo, node.Arguments)), expandedCall);
-                            }
+                            return expandedCall;
                         }
-                        return expandedCall;
+                        else
+                        {
+                            shouldDecompile = ShouldDecompile(node.Method);
+                        }
                     }
                     else
                     {
