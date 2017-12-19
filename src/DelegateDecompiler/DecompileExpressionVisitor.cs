@@ -7,7 +7,7 @@ using System.Reflection;
 
 namespace DelegateDecompiler
 {
-    //TODO minor optimisation : remove explicit TypeAs expressions when redondant with the MemberInfo declaring type
+    //TODO minor optimisation : remove explicit TypeAs expressions when redondant with the MemberInfo declaring type ?
     public class DecompileExpressionVisitor : ExpressionVisitor
     {
         public static Expression Decompile(Expression expression)
@@ -50,7 +50,7 @@ namespace DelegateDecompiler
                     if (implementations is IEnumerable)
                     {
                         Expression expandedCall = null;
-                        var applicableCalls = (implementations as List<KeyValuePair<Type, MethodInfo>>).Where(vCall => vCall.Key == node.Object.Type || vCall.Key.IsSubclassOf(node.Object.Type)).GroupBy(kv => kv.Key);
+                        var applicableCalls = (implementations as List<KeyValuePair<Type, MethodInfo>>).Where(vCall => node.Object.Type.IsAssignableFrom(vCall.Key)).GroupBy(kv => kv.Key);
                         if (applicableCalls.Any())
                         {
                             bool handleObjectAsSubType = false;
@@ -169,8 +169,8 @@ namespace DelegateDecompiler
             var implementationsList = new List<KeyValuePair<Type, MethodInfo>>();
             bool shouldDecompile = ShouldDecompile(method);
             if (!method.IsAbstract) implementationsList.Add(new KeyValuePair<Type, MethodInfo>(method.DeclaringType, method));
-            var subclasses = AppDomain.CurrentDomain.GetAssemblies().Where(a => !a.IsDynamic).SelectMany(a => a.GetExportedTypes().Where(t => t.IsSubclassOf(method.DeclaringType))).Where(t => t != null).ToList();
-            subclasses.Sort((t1, t2) => t1 == null || t2 == null ? 0 : t1.IsSubclassOf(t2) ? 1 : -1);
+            var subclasses = AppDomain.CurrentDomain.GetAssemblies().Where(a => !a.IsDynamic).SelectMany(a => a.GetExportedTypes().Where(t => method.DeclaringType.IsAssignableFrom(t))).Where(t => t != null).ToList();
+            subclasses.Sort((t1, t2) => t1 == null || t2 == null ? 0 : t2.IsAssignableFrom(t1) ? 1 : -1);
             foreach (var c in subclasses)
             {
                 MethodInfo impl = c.GetMethod(method.Name, method.GetParameters().Select(a => a.ParameterType).ToArray());
