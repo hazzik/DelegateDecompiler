@@ -7,6 +7,7 @@ using System.Reflection;
 
 namespace DelegateDecompiler
 {
+    //TODO minor optimisation : remove explicit TypeAs expressions when redondant with the MemberInfo declaring type
     public class DecompileExpressionVisitor : ExpressionVisitor
     {
         public static Expression Decompile(Expression expression)
