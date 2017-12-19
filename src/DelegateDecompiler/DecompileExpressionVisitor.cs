@@ -28,8 +28,6 @@ namespace DelegateDecompiler
             return base.VisitMember(node);
         }
 
-        private Dictionary<Tuple<Expression, string>, Type> _methodInheritanceContext = new Dictionary<Tuple<Expression, string>, Type>();
-
         private List<Tuple<Expression, MethodInfo>> _virtualCallContexts = new List<Tuple<Expression, MethodInfo>>();
 
         protected override Expression VisitMethodCall(MethodCallExpression node)
@@ -38,11 +36,6 @@ namespace DelegateDecompiler
             // specific method for the object when a Computed method is overriden
 
             Expression instance = node.Object;
-            // Si _virtualCallContexts contient des items avec le paramètre comme clé
-            // => on a déjà développé l'appel, on se contente de le decompiler
-            // => à la fin, Sinon on génère une expression iif(...) et on pipe les contextes d'appel
-            // on visite l'expression
-
             // Check whether the call is symbolic or effective
             bool isExplicitCall = !node.Method.IsVirtual || _virtualCallContexts.Any(vcc => vcc.Item1 == instance);
             bool shouldDecompile = ShouldDecompile(node.Method) && isExplicitCall;
@@ -57,25 +50,23 @@ namespace DelegateDecompiler
                     {
                         Expression expandedCall = null;
                         var applicableCalls = (implementations as List<KeyValuePair<Type, MethodInfo>>).Where(vCall => vCall.Key == node.Object.Type || vCall.Key.IsSubclassOf(node.Object.Type));
-                        bool handleObjecasSubType = false;
+                        bool handleObjectAsSubType = false;
                         foreach (var explicitCalls in applicableCalls.GroupBy(kv => kv.Key))
                         {
-                            var explicitCast = node.Object;
-                            if (handleObjecasSubType) explicitCast = Expression.TypeAs(instance, explicitCalls.Key);
-                            castObjects.Add(explicitCast);
+                            var targetInstance = node.Object.Type == explicitCalls.Key ? node.Object : Expression.TypeAs(instance, explicitCalls.Key);
+                            castObjects.Add(targetInstance);
                             // Register every possible call to base.xxxx from this type hierarchy as
                             // an explicit call;
-                            _virtualCallContexts.AddRange(explicitCalls.Select(vc => new Tuple<Expression, MethodInfo>(explicitCast, vc.Value)));
-                            // then expand all cases to the the call expression
-                            if (!handleObjecasSubType)
+                            _virtualCallContexts.AddRange(explicitCalls.Select(vc => new Tuple<Expression, MethodInfo>(targetInstance, vc.Value)));
+                            // then expand all cases to the the call expression up to the
+                            if (!handleObjectAsSubType)
                             {
-                                expandedCall = base.Visit(Expression.Call(explicitCast, explicitCalls.Select(mostSpecific => mostSpecific.Value).First() as MethodInfo, node.Arguments));
-                                handleObjecasSubType = true;
+                                expandedCall = base.Visit(Expression.Call(targetInstance, explicitCalls.Select(mostSpecific => mostSpecific.Value).First(), node.Arguments));
+                                handleObjectAsSubType = true;
                             }
                             else
                             {
-                                //TODO check whether to use TypeIs or TypeEquals
-                                expandedCall = Expression.Condition(Expression.TypeIs(node.Object, explicitCalls.Key), base.Visit(Expression.Call(explicitCast, explicitCalls.Select(mostSpecific => mostSpecific.Value).First() as MethodInfo, node.Arguments)), expandedCall);
+                                expandedCall = Expression.Condition(Expression.TypeIs(node.Object, explicitCalls.Key), base.Visit(Expression.Call(targetInstance, explicitCalls.Select(mostSpecific => mostSpecific.Value).First() as MethodInfo, node.Arguments)), expandedCall);
                             }
                         }
                         return expandedCall;
@@ -168,7 +159,8 @@ namespace DelegateDecompiler
                 return implementations;
             }
             var implementationsList = new List<KeyValuePair<Type, MethodInfo>>();
-            implementationsList.Add(new KeyValuePair<Type, MethodInfo>(method.DeclaringType, method));
+            bool shouldDecompile = ShouldDecompile(method);
+            if (!method.IsAbstract) implementationsList.Add(new KeyValuePair<Type, MethodInfo>(method.DeclaringType, method));
             var subclasses = AppDomain.CurrentDomain.GetAssemblies().SelectMany(a => a.GetTypes().Where(t => t.IsSubclassOf(method.DeclaringType))).Where(t => t != null).ToList();
             subclasses.Sort((t1, t2) => t1 == null || t2 == null ? 0 : t1.IsSubclassOf(t2) ? 1 : -1);
             foreach (var c in subclasses)
@@ -180,6 +172,7 @@ namespace DelegateDecompiler
                     {
                         impl = method.MakeGenericMethod(impl.GetGenericArguments());
                     }
+                    if (shouldDecompile) Configuration.Instance.RegisterDecompileableMember(impl);
                     implementationsList.Add(new KeyValuePair<Type, MethodInfo>(c, impl));
                 }
             };
