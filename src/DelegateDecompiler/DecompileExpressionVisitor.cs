@@ -7,7 +7,6 @@ using System.Reflection;
 
 namespace DelegateDecompiler
 {
-    //TODO minor optimisation : remove explicit TypeAs expressions when redondant with the MemberInfo declaring type
     public class DecompileExpressionVisitor : ExpressionVisitor
     {
         public static Expression Decompile(Expression expression)
@@ -29,15 +28,17 @@ namespace DelegateDecompiler
             return base.VisitMember(node);
         }
 
+        // A list of all possible overridden method calls from a base MethodCallExpression
         private List<Tuple<Expression, MethodInfo>> _virtualCallContexts = new List<Tuple<Expression, MethodInfo>>();
 
         protected override Expression VisitMethodCall(MethodCallExpression node)
         {
-            // PROBLEM - the MethodCallExpression does not always (?never?) point to the most
-            // specific method for the object when a Computed method is overriden
+            // PROBLEM - the MethodCallExpression passed by the first ExpressionVisitor.Visit()
+            // points to the least specific MethodInfo ie the method declared as virtual
 
             Expression instance = node.Object;
-            // Check whether the call is symbolic or effective
+            // Check whether the call is issued by ExpressionVisitor.Visit() or specific
+            // implementations have already been resolved
             bool isExplicitCall = !node.Method.IsVirtual || _virtualCallContexts.Any(vcc => vcc.Item1 == instance);
             if (!isExplicitCall)
             {
@@ -46,45 +47,48 @@ namespace DelegateDecompiler
                 {
                     var implementations = GetImplementationsFor(node.Method);
                     _virtualCallContexts.Add(new Tuple<Expression, MethodInfo>(instance, node.Method));
-                    MethodInfo uniqueSpecificImplementation;
+                    MethodInfo mostSpecificImplementation;
                     if (implementations is IEnumerable)
                     {
                         Expression expandedCall = null;
-                        var applicableCalls = (implementations as List<KeyValuePair<Type, MethodInfo>>).Where(vCall => vCall.Key == node.Object.Type || vCall.Key.IsSubclassOf(node.Object.Type)).GroupBy(kv => kv.Key);
-                        if (applicableCalls.Any())
+                        mostSpecificImplementation = (implementations as List<KeyValuePair<Type, MethodInfo>>).Where(vCall => vCall.Key.IsAssignableFrom(node.Object.Type)).Select(kv => kv.Value).LastOrDefault();
+
+                        var overridingImplementations = (implementations as List<KeyValuePair<Type, MethodInfo>>).Where(vCall => vCall.Key.IsSubclassOf(node.Object.Type)).GroupBy(kv => kv.Key);
+                        if (overridingImplementations.Any())
                         {
-                            bool handleObjectAsSubType = false;
-                            foreach (var explicitCalls in applicableCalls)
+                            bool requiresConditional = false;
+                            if (mostSpecificImplementation != null)
                             {
-                                var targetInstance = node.Object.Type == explicitCalls.Key ? node.Object : Expression.TypeAs(instance, explicitCalls.Key);
+                                //var targetInstance = node.Object.Type == mostSpecificImplementation.DeclaringType ? node.Object : Expression.TypeAs(instance, mostSpecificImplementation.DeclaringType);
+                                var targetInstance = mostSpecificImplementation.DeclaringType.IsAssignableFrom(node.Object.Type) ? node.Object : Expression.TypeAs(instance, mostSpecificImplementation.DeclaringType);
                                 castObjects.Add(targetInstance);
-                                // Register every possible call to base.xxxx from this type hierarchy
-                                // as an explicit call;
-                                _virtualCallContexts.AddRange(explicitCalls.Select(vc => new Tuple<Expression, MethodInfo>(targetInstance, vc.Value)));
-                                // then expand all cases to the the call expression up to the
-                                if (!handleObjectAsSubType)
+                                _virtualCallContexts.Add(new Tuple<Expression, MethodInfo>(targetInstance, mostSpecificImplementation));
+                                expandedCall = base.Visit(Expression.Call(targetInstance, mostSpecificImplementation, node.Arguments));
+                                requiresConditional = true;
+                            }
+                            foreach (var explicitCall in overridingImplementations)
+                            {
+                                var targetInstance = node.Object.Type == explicitCall.Key ? node.Object : Expression.TypeAs(instance, explicitCall.Key);
+                                castObjects.Add(targetInstance);
+                                _virtualCallContexts.AddRange(explicitCall.Select(vc => new Tuple<Expression, MethodInfo>(targetInstance, vc.Value)));
+                                if (!requiresConditional)
                                 {
-                                    expandedCall = base.Visit(Expression.Call(targetInstance, explicitCalls.Select(mostSpecific => mostSpecific.Value).First(), node.Arguments));
-                                    handleObjectAsSubType = true;
+                                    expandedCall = base.Visit(Expression.Call(targetInstance, explicitCall.Select(mostSpecific => mostSpecific.Value).First(), node.Arguments));
+                                    requiresConditional = true;
                                 }
                                 else
                                 {
-                                    expandedCall = Expression.Condition(Expression.TypeIs(node.Object, explicitCalls.Key), base.Visit(Expression.Call(targetInstance, explicitCalls.Select(mostSpecific => mostSpecific.Value).First() as MethodInfo, node.Arguments)), expandedCall);
+                                    expandedCall = Expression.Condition(Expression.TypeIs(node.Object, explicitCall.Key), base.Visit(Expression.Call(targetInstance, explicitCall.Select(mostSpecific => mostSpecific.Value).First() as MethodInfo, node.Arguments)), expandedCall);
                                 }
                             }
                             return expandedCall;
                         }
-                        else
-                        {
-                            uniqueSpecificImplementation = (implementations as List<KeyValuePair<Type, MethodInfo>>).Where(vCall => node.Object.Type.IsSubclassOf(vCall.Key)).Select(kv => kv.Value).First();
-                        }
                     }
                     else
                     {
-                        uniqueSpecificImplementation = implementations as MethodInfo;
+                        mostSpecificImplementation = implementations as MethodInfo;
                     }
-                    //_virtualCallContexts.Add(new Tuple<Expression, MethodInfo>(node.Object, uniqueSpecificImplementation));
-                    node = Expression.Call(node.Object, uniqueSpecificImplementation, node.Arguments);
+                    node = Expression.Call(node.Object, mostSpecificImplementation, node.Arguments);
                 }
                 finally
                 {
