@@ -59,7 +59,6 @@ namespace DelegateDecompiler
                             bool requiresConditional = false;
                             if (mostSpecificImplementation != null)
                             {
-                                //var targetInstance = node.Object.Type == mostSpecificImplementation.DeclaringType ? node.Object : Expression.TypeAs(instance, mostSpecificImplementation.DeclaringType);
                                 var targetInstance = mostSpecificImplementation.DeclaringType.IsAssignableFrom(node.Object.Type) ? node.Object : Expression.TypeAs(instance, mostSpecificImplementation.DeclaringType);
                                 castObjects.Add(targetInstance);
                                 _virtualCallContexts.Add(new Tuple<Expression, MethodInfo>(targetInstance, mostSpecificImplementation));
@@ -173,7 +172,7 @@ namespace DelegateDecompiler
             bool shouldDecompile = ShouldDecompile(method);
             if (!method.IsAbstract) implementationsList.Add(new KeyValuePair<Type, MethodInfo>(method.DeclaringType, method));
             var subclasses = AppDomain.CurrentDomain.GetAssemblies().Where(a => !a.IsDynamic).SelectMany(a => a.GetTypes().Where(t => t.IsSubclassOf(method.DeclaringType))).Where(t => t != null).ToList();
-            subclasses.Sort((t1, t2) => t1 == null || t2 == null ? 0 : t1.IsSubclassOf(t2) ? 1 : -1);
+            subclasses.Sort((t1, t2) => t1 == null || t2 == null ? 0 : t1.IsSubclassOf(t2) ? 1 : t1.FullName.CompareTo(t2.FullName));
             foreach (var c in subclasses)
             {
                 MethodInfo impl = c.GetMethod(method.Name, method.GetParameters().Select(a => a.ParameterType).ToArray());
