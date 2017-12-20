@@ -689,8 +689,8 @@ namespace DelegateDecompiler
                         var constructor = state.Instruction.Operand as ConstructorInfo;
                         if (method != null)
                         {
-                            //Handling special System.Linq.Expression.xxxEquals calls
-                            if (method.Name.EndsWith("Equal") && method.DeclaringType == typeof(Expression))
+                            //Handling special System.Linq.Expression.xxxEquals(,,,) calls
+                            if (method.Name.EndsWith("Equal") && method.DeclaringType == typeof(Expression) && method.GetParameters().Count() == 4)
                             {
                                 var eqChkMethod = (MethodInfo)((ConstantExpression)DiscardConversion(state.Stack.Pop())).Value;
                                 bool liftToNull = (bool)((ConstantExpression)AdjustType(state.Stack.Pop(), typeof(bool))).Value;
@@ -705,13 +705,6 @@ namespace DelegateDecompiler
                                     state.Stack.Push(Expression.NotEqual(leftExpr, rightExpr, liftToNull, eqChkMethod));
                                 }
                             }
-                            //////Handling special System.Linq.Expression.Lambda calls
-                            ////else if (method.Name == "Lambda" && method.DeclaringType == typeof(Expression))
-                            ////{
-                            ////    var parameters = state.Stack.Pop();
-                            ////    var body = state.Stack.Pop();
-                            ////    //state.Stack.Push(Expression.Lambda());
-                            ////}
                             else
                             {
                                 Call(state, method);
