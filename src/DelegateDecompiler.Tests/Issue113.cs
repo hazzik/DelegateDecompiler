@@ -7,7 +7,7 @@ namespace DelegateDecompiler.Tests
     [TestFixture]
     public class Issue113 : DecompilerTestsBase
     {
-        private abstract class BaseClass
+        public abstract class BaseClass
         {
             public int Property { get; set; }
 
@@ -15,7 +15,7 @@ namespace DelegateDecompiler.Tests
             public abstract int GetTotal();
         }
 
-        private class ConcreteClassBase
+        public class ConcreteClassBase
             : BaseClass
         {
             [Computed]
@@ -25,7 +25,7 @@ namespace DelegateDecompiler.Tests
             }
         }
 
-        private class ConcreteClass1
+        public class ConcreteClass1
             : ConcreteClassBase
         {
             public int OtherProperty { get; set; }
@@ -37,7 +37,7 @@ namespace DelegateDecompiler.Tests
             }
         }
 
-        private class ConcreteClass2
+        public class ConcreteClass2
             : ConcreteClass1
         {
             [Computed]
@@ -47,12 +47,12 @@ namespace DelegateDecompiler.Tests
             }
         }
 
-        private class ConcreteClass3_NotOverridden
+        public class ConcreteClass3_NotOverridden
             : ConcreteClassBase
         {
         }
 
-        private class ConcreteClass4_OverrideWithGap
+        public class ConcreteClass4_OverrideWithGap
         : ConcreteClass3_NotOverridden
         {
             [Computed]
