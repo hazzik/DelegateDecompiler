@@ -689,26 +689,7 @@ namespace DelegateDecompiler
                         var constructor = state.Instruction.Operand as ConstructorInfo;
                         if (method != null)
                         {
-                            //Handling special System.Linq.Expression.xxxEquals(,,,) calls
-                            if (method.Name.EndsWith("Equal") && method.DeclaringType == typeof(Expression) && method.GetParameters().Count() == 4)
-                            {
-                                var eqChkMethod = (MethodInfo)((ConstantExpression)DiscardConversion(state.Stack.Pop())).Value;
-                                bool liftToNull = (bool)((ConstantExpression)AdjustType(state.Stack.Pop(), typeof(bool))).Value;
-                                var rightExpr = state.Stack.Pop();
-                                var leftExpr = state.Stack.Pop();
-                                if (method.Name == "Equal")
-                                {
-                                    state.Stack.Push(Expression.Equal(leftExpr, rightExpr, liftToNull, eqChkMethod));
-                                }
-                                else
-                                {
-                                    state.Stack.Push(Expression.NotEqual(leftExpr, rightExpr, liftToNull, eqChkMethod));
-                                }
-                            }
-                            else
-                            {
-                                Call(state, method);
-                            }
+                            Call(state, method);
                         }
                         else if (constructor != null)
                         {
@@ -1113,10 +1094,13 @@ namespace DelegateDecompiler
         private static void Call(ProcessorState state, MethodInfo m)
         {
             var debugName = m.Name;
-            var mArgs = GetArguments(state, m);
+            bool methodIsMemberOfExpressionClass = m.DeclaringType == typeof(Expression) /*? && m.IsStatic ?*/;
+            // When calling ?static? Expression.xxx calls non-Expression arguments should be received
+            // as ConstantExpressions and then replaced by their real value
+            var mArgs = GetArguments(state, m, !methodIsMemberOfExpressionClass);
 
             var instance = m.IsStatic ? new Address() : state.Stack.Pop();
-            var result = m.DeclaringType == typeof(Expression)
+            var result = methodIsMemberOfExpressionClass
                 ? BuildLinqCallExpression(m, instance, mArgs)
                 : BuildMethodCallExpression(m, instance, mArgs);
             result = TransparentIdentifierRemovingExpressionVisitor.RemoveTransparentIdentifiers(result);
@@ -1145,7 +1129,7 @@ namespace DelegateDecompiler
             throw new NotSupportedException();
         }
 
-        private static Expression[] GetArguments(ProcessorState state, MethodBase m)
+        private static Expression[] GetArguments(ProcessorState state, MethodBase m, bool adjustType = true)
         {
             var parameterInfos = m.GetParameters();
             var mArgs = new Expression[parameterInfos.Length];
@@ -1154,7 +1138,7 @@ namespace DelegateDecompiler
                 var argument = state.Stack.Pop();
                 var parameter = parameterInfos[i];
                 var parameterType = parameter.ParameterType;
-                mArgs[i] = AdjustType(argument, parameterType);
+                mArgs[i] = adjustType ? AdjustType(argument, parameterType) : argument.Expression;
             }
             return mArgs;
         }
@@ -1296,102 +1280,104 @@ namespace DelegateDecompiler
         // Converts compiled calls to Expression.xxx into their lambda representation
         private static Expression BuildLinqCallExpression(MethodInfo m, Address instance, Expression[] arguments)
         {
-            if (m.Name == "Constant")
+            var expectedParameters = m.GetParameters();
+            object[] convertedArguments = new object[expectedParameters.Length];
+            for (int i = 0; i < expectedParameters.Count(); i++)
             {
-                var valueType = (Type)(arguments[1] as ConstantExpression).Value;
-                if (!valueType.IsAssignableFrom(arguments[0].GetType())) return arguments[0];
-                return Expression.Constant(arguments[0], valueType);
+                convertedArguments[i] = typeof(Expression).IsAssignableFrom(expectedParameters[i].ParameterType) ? arguments[i] : (arguments[i] as ConstantExpression).Value;
             }
+            //if (m.Name == "Constant")
+            //{
+            //    var valueType = (Type)(arguments[1] as ConstantExpression).Value;
+            //    if (!valueType.IsAssignableFrom(arguments[0].GetType())) return arguments[0];
+            //    return Expression.Constant(arguments[0], valueType);
+            //}
 
-            if (m.Name == "Parameter")
-            {
-                return Expression.Parameter((Type)(arguments[0] as ConstantExpression).Value, (string)(arguments[1] as ConstantExpression).Value);
-            }
+            //if (m.Name == "Parameter")
+            //{
+            //    return Expression.Parameter((Type)(arguments[0] as ConstantExpression).Value, (string)(arguments[1] as ConstantExpression).Value);
+            //}
 
-            if (m.Name == "Field")
-            {
-                return Expression.Field(arguments[0], (FieldInfo)((ConstantExpression)arguments[1]).Value);
-            }
+            //if (m.Name == "Field")
+            //{
+            //    return Expression.Field(arguments[0], (FieldInfo)((ConstantExpression)arguments[1]).Value);
+            //}
 
-            if (m.Name == "Property")
-            {
-                //TODO check whether the operant cannot be a ConstantExpression
-                var propertyGetter = DiscardConversion(arguments[1]);
-                return BuildMethodCallExpression((MethodInfo)(propertyGetter as ConstantExpression).Value, arguments[0], arguments.Skip(2).ToArray());
-            }
+            //if (m.Name == "Property")
+            //{
+            //    //TODO check whether the operant cannot be a ConstantExpression
+            //    var propertyGetter = DiscardConversion(arguments[1]);
+            //    return BuildMethodCallExpression((MethodInfo)(propertyGetter as ConstantExpression).Value, arguments[0], arguments.Skip(2).ToArray());
+            //}
 
-            if (m.Name == "Call")
-            {
-                var method = (MethodInfo)(DiscardConversion(arguments[1]) as ConstantExpression).Value;
-                var debugName = method.Name;
-                var argsInfo = method.GetParameters();
-                var argsArray = arguments[2] as NewArrayExpression;
+            //if (m.Name == "Call")
+            //{
+            //    var method = (MethodInfo)(DiscardConversion(arguments[1]) as ConstantExpression).Value;
+            //    var debugName = method.Name;
+            //    var argsInfo = method.GetParameters();
+            //    var argsArray = arguments[2] as NewArrayExpression;
 
-                List<Expression> args;
-                if (argsArray != null)
-                {
-                    //creates an array of arguments from the method définition
-                    var argList = new List<Expression>();
-                    for (int i = 0; i < argsInfo.Length; i++)
-                    {
-                        var arg = argsInfo[i];
-                        argList.Add(Expression.Parameter(arg.ParameterType, arg.Name));
-                    }
-                    args = argList;
-                }
-                else
-                {
-                    args = (List<Expression>)(arguments[2] as ConstantExpression).Value;
-                }
+            // List<Expression> args; if (argsArray != null) { //creates an array of arguments from
+            // the method définition var argList = new List<Expression>(); for (int i = 0; i <
+            // argsInfo.Length; i++) { var arg = argsInfo[i];
+            // argList.Add(Expression.Parameter(arg.ParameterType, arg.Name)); } args = argList; }
+            // else { args = (List<Expression>)(arguments[2] as ConstantExpression).Value; }
 
-                Expression targetInstance = method.IsStatic ? null : args.First();
-                int argsOffset = targetInstance == null ? 0 : 1;
-                try
-                {
-                    Expression decompiles = BuildMethodCallExpression(method, targetInstance, args.Skip(argsOffset).ToArray());
-                    return decompiles;
-                }
-                catch (Exception any)
-                {
-                    throw any;
-                }
-            }
+            //    Expression targetInstance = method.IsStatic ? null : args.First();
+            //    int argsOffset = targetInstance == null ? 0 : 1;
+            //    try
+            //    {
+            //        Expression decompiles = BuildMethodCallExpression(method, targetInstance, args.Skip(argsOffset).ToArray());
+            //        return decompiles;
+            //    }
+            //    catch (Exception any)
+            //    {
+            //        throw any;
+            //    }
+            //}
 
-            if (m.Name == "Lambda")
-            {
-                var debugName = m.Name;
-                var argsInfo = m.GetParameters();
-                var argsArray = arguments[1] as NewArrayExpression;
+            //if (m.Name == "Lambda")
+            //{
+            //    var debugName = m.Name;
+            //    var argsInfo = m.GetParameters();
+            //    var argsArray = arguments[1] as NewArrayExpression;
 
-                List<Expression> args;
-                if (argsArray != null)
-                {
-                    //creates an array of arguments from the method définition
-                    var argList = new List<Expression>();
-                    for (int i = 0; i < argsInfo.Length; i++)
-                    {
-                        var arg = argsInfo[i];
-                        argList.Add(Expression.Parameter(arg.ParameterType, arg.Name));
-                    }
-                    args = argList;
-                }
-                else
-                {
-                    args = (List<Expression>)(arguments[1] as ConstantExpression).Value;
-                }
-                try
-                {
-                    Expression decompiles = Expression.Lambda(arguments[0], args.Cast<ParameterExpression>().ToArray());
-                    return decompiles;
-                }
-                catch (Exception any)
-                {
-                    throw any;
-                }
-            }
+            //    List<Expression> args;
+            //    if (argsArray != null)
+            //    {
+            //        //creates an array of arguments from the method définition
+            //        var argList = new List<Expression>();
+            //        for (int i = 0; i < argsInfo.Length; i++)
+            //        {
+            //            var arg = argsInfo[i];
+            //            argList.Add(Expression.Parameter(arg.ParameterType, arg.Name));
+            //        }
+            //        args = argList;
+            //    }
+            //    else
+            //    {
+            //        args = (List<Expression>)(arguments[1] as ConstantExpression).Value;
+            //    }
+            //    try
+            //    {
+            //        Expression decompiles = Expression.Lambda(arguments[0], args.Cast<ParameterExpression>().ToArray());
+            //        return decompiles;
+            //    }
+            //    catch (Exception any)
+            //    {
+            //        throw any;
+            //    }
+            //}
             try
             {
-                return (Expression)m.Invoke(null, arguments);
+                if (m.IsStatic)
+                {
+                    return (Expression)m.Invoke(null, convertedArguments);
+                }
+                else
+                {
+                    return (Expression)m.Invoke(convertedArguments[0], convertedArguments.Skip(1).ToArray());
+                }
             }
             catch (Exception any)
             {
