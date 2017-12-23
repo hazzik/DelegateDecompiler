@@ -260,8 +260,8 @@ namespace DelegateDecompiler
                         var value = state.Stack.Pop();
                         var instance = state.Stack.Pop();
                         var field = (FieldInfo)state.Instruction.Operand;
-                        // FIX - If instance is not an initialisation, we bypass the call and keep
-                        // the instance as the current element
+                        // FIX - If instance is not an initialisation, we bypass the instruction and
+                        // keep the current instance as is
                         if (instance.Expression.NodeType == ExpressionType.MemberInit || instance.Expression.NodeType == ExpressionType.New)
                             instance.Expression = BuildMemberInit(instance.Expression, Expression.Bind(field, value));
                     }

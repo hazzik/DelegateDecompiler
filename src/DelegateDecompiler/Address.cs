@@ -4,7 +4,7 @@ using System.Linq.Expressions;
 
 namespace DelegateDecompiler
 {
-    class Address
+    internal class Address
     {
         public Expression Expression { get; set; }
 
@@ -20,7 +20,7 @@ namespace DelegateDecompiler
 
         public static implicit operator Address(Expression expression)
         {
-            return new Address {Expression = expression};
+            return new Address { Expression = expression };
         }
 
         public Address Clone(IDictionary<Address, Address> map)
@@ -49,6 +49,14 @@ namespace DelegateDecompiler
                 var right = address2.Expression ?? Expression.Default(address1.Type);
                 left = Processor.AdjustType(left, right.Type);
                 right = Processor.AdjustType(right, left.Type);
+                if (left.Type.IsSubclassOf(right.Type))
+                {
+                    left = Expression.Convert(left, right.Type);
+                }
+                else if (right.Type.IsSubclassOf(left.Type))
+                {
+                    right = Expression.Convert(right, left.Type);
+                }
                 result = Expression.Condition(test, left, right);
             }
             map[addresses] = result;
