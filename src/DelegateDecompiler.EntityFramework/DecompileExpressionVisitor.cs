@@ -26,7 +26,6 @@ namespace DelegateDecompiler.EntityFramework
         {
             #region Auto-detect the ObjectContext to use
 
-            //TODO check if it is safe to assume that only one objectcontext can be used in a single queryable
             if (typeof(ObjectQuery).IsAssignableFrom(node.Type))
             {
                 var targetContext = (node.Value as ObjectQuery).Context;
@@ -43,11 +42,11 @@ namespace DelegateDecompiler.EntityFramework
 
             else if (IsEntityType(node.Type) || (node.Type.IsGenericType && typeof(IEnumerable).IsAssignableFrom(node.Type) && IsEntityType(node.Type.GetGenericArguments().First())))
             {
-                // first check whether the constant is an entity or an entitySet
+                // first check whether the constant is an entity or a collection of constants
                 bool isCollection = !IsEntityType(node.Type);
-                if (isCollection) throw new NotSupportedException($"Unable to create a collection of constant values of type '{node.Type.GetGenericArguments().First()}'. Use an ObjectQuery from the current context instead.");
 
-                var constantEntity = node.Value;
+                //TODO try later to solve this case with performance in mind
+                if (isCollection) throw new NotSupportedException($"Yet unable to create a collection of constant '{node.Type.GetGenericArguments().First()}' instances. Use an ObjectQuery from the current context instead.");
 
                 // Build the base ObjectQuery
                 string sqlQuery = $"SELECT VALUE entity FROM {_underlyingTables[node.Type]} as entity";
@@ -55,8 +54,8 @@ namespace DelegateDecompiler.EntityFramework
                 var queryableType = typeof(ObjectQuery<>).MakeGenericType(node.Type);
 
                 // Build a PrimaryKey match predicate
-                var lookupPVariable = Expression.Parameter(node.Type, "lookupValue");
-                var matchEntityPredicate = Expression.Lambda(this.VisitBinary(Expression.Equal(lookupPVariable, node)), lookupPVariable);
+                var comparableParameter = Expression.Parameter(node.Type, "item");
+                var matchEntityPredicate = Expression.Lambda(this.VisitBinary(Expression.Equal(comparableParameter, node)), comparableParameter);
 
                 // Extend the ObjectQuery with .FirstOrDefault(predicate) call
                 var firstOrDefaultMethod = typeof(Queryable).GetMethods().Where(m => m.Name == "FirstOrDefault" && m.GetParameters().Length == 2).First().MakeGenericMethod(node.Type);
