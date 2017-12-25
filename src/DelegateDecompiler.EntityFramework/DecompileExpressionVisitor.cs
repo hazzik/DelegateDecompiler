@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Data.Entity.Core.Metadata.Edm;
@@ -19,6 +20,7 @@ namespace DelegateDecompiler.EntityFramework
         private ObjectContext _objectContext = null;
 
         private Dictionary<Type, List<PropertyInfo>> _entityToKeyEqualityCache = new Dictionary<Type, List<PropertyInfo>>();
+        private Dictionary<Type, string> _underlyingTables = new Dictionary<Type, string>();
 
         protected override Expression VisitConstant(ConstantExpression node)
         {
@@ -37,28 +39,81 @@ namespace DelegateDecompiler.EntityFramework
 
             #endregion
 
-            /* TODO resolve closure entity or entity collection constants either by brute force
-             * or lookup against the _objectContext by primaryKey.
-             * This would mean replacing the constant by one of the followin expressions :
-             *  => ObjectQuery<T>().Where(o => o == constant)
-             *  => ObjectQuery<T>().Where(o => constantIsCollection.Any(constantItem => o == constantItem))
-             */
+            #region Resolve entity constants by an object query
+
+            else if (IsEntityType(node.Type) || (node.Type.IsGenericType && typeof(IEnumerable).IsAssignableFrom(node.Type) && IsEntityType(node.Type.GetGenericArguments().First())))
+            {
+                // first check whether the constant is an entity or an entitySet
+                bool isCollection = !IsEntityType(node.Type);
+                if (isCollection) throw new NotSupportedException($"Unable to create a collection of constant values of type '{node.Type.GetGenericArguments().First()}'. Use an ObjectQuery from the current context instead.");
+
+                var constantEntity = node.Value;
+
+                // Build the base ObjectQuery
+                string sqlQuery = $"SELECT VALUE entity FROM {_underlyingTables[node.Type]} as entity";
+                var createQueryMethod = _objectContext.GetType().GetMethod("CreateQuery", BindingFlags.Public | BindingFlags.Instance).MakeGenericMethod(node.Type);
+                var queryableType = typeof(ObjectQuery<>).MakeGenericType(node.Type);
+
+                // Build a PrimaryKey match predicate
+                var lookupPVariable = Expression.Parameter(node.Type, "lookupValue");
+                var matchEntityPredicate = Expression.Lambda(this.VisitBinary(Expression.Equal(lookupPVariable, node)), lookupPVariable);
+
+                // Extend the ObjectQuery with .FirstOrDefault(predicate) call
+                var firstOrDefaultMethod = typeof(Queryable).GetMethods().Where(m => m.Name == "FirstOrDefault" && m.GetParameters().Length == 2).First().MakeGenericMethod(node.Type);
+                var constant = Expression.Call(null,
+                        firstOrDefaultMethod,
+                        Expression.Constant(createQueryMethod.Invoke(_objectContext, new object[] { sqlQuery, new ObjectParameter[0] }), queryableType),
+                        matchEntityPredicate
+                    );
+                return constant;
+            }
+
+            #endregion
+
             return base.VisitConstant(node);
         }
 
         protected override Expression VisitMember(MemberExpression node)
         {
+            #region EF annoying limitation lift : Unable to create a constant value of type T, where T entity
+
+            //node = node.Update(base.Visit(node.Expression));
+            if (node.Expression != null && node.Expression.NodeType == ExpressionType.Constant)
+            {
+                var targetInstance = (node.Expression as ConstantExpression).Value;
+                var fieldInfo = node.Member as FieldInfo;
+                var propertyInfo = node.Member as PropertyInfo;
+                if ((fieldInfo != null && !fieldInfo.IsStatic) || (propertyInfo != null && !propertyInfo.GetMethod.IsStatic))
+                {
+                    if (targetInstance != null)
+                    {
+                        var value = fieldInfo != null && !fieldInfo.IsStatic
+                            ? fieldInfo.GetValue(targetInstance)
+                            : propertyInfo != null && !propertyInfo.GetMethod.IsStatic
+                            ? propertyInfo.GetValue(targetInstance)
+                            : null /*??? MethodInfo ???*/;
+                        Expression result = Expression.Constant(value, node.Type);
+                        return Visit(result);
+                    }
+                    else
+                    {
+                        return GetDefaultValue(node.Type);
+                    }
+                }
+            }
+
+            #endregion
+
             return base.VisitMember(node);
         }
 
         protected override Expression VisitBinary(BinaryExpression node)
         {
             var operandType = node.Left.Type;
-            var isOperandAnEntity = !operandType.IsValueType && operandType.GetCustomAttribute<ComplexTypeAttribute>(true) == null;
 
             #region EF annoying limitation lift : replace Entities' comparison Expressions by comparison of their PrimaryKey
 
-            if ((node.NodeType == ExpressionType.Equal || node.NodeType == ExpressionType.NotEqual) && isOperandAnEntity)
+            if ((node.NodeType == ExpressionType.Equal || node.NodeType == ExpressionType.NotEqual) && IsEntityType(operandType))
             {
                 Expression translated = null;
                 List<PropertyInfo> primaryKeyDefinition = GetPrimaryKeyProperties(operandType);
@@ -109,6 +164,7 @@ namespace DelegateDecompiler.EntityFramework
                         var instance = Activator.CreateInstance(entityType);
                         var keyProperties = _objectContext.CreateEntityKey(setName, instance).EntityKeyValues.Select(k => k.Key).ToList();
                         properties = entityType.GetProperties().Where(ppty => keyProperties.Contains(ppty.Name)).ToList();
+                        _underlyingTables[entityType] = container.Name /*???Table???*/;
                     }
                     _entityToKeyEqualityCache[entityType] = properties;
                 }
