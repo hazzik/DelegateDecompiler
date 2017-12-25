@@ -9,7 +9,6 @@ using System.Reflection;
 
 namespace DelegateDecompiler.EntityFramework
 {
-    //TODO override every VisitXxx method to first resolve constants using node.Update within the current call context since EntityFramework do not support resolution of non-primitive or non-enum constants
     public class DecompileExpressionVisitor
         : DelegateDecompiler.DecompileExpressionVisitor
     {
@@ -17,7 +16,7 @@ namespace DelegateDecompiler.EntityFramework
         {
         }
 
-        private ObjectContext _objectContext;
+        private ObjectContext _objectContext = null;
 
         private Dictionary<Type, List<PropertyInfo>> _entityToKeyEqualityCache = new Dictionary<Type, List<PropertyInfo>>();
 
@@ -38,33 +37,34 @@ namespace DelegateDecompiler.EntityFramework
 
             #endregion
 
+            /* TODO resolve closure entity or entity collection constants either by brute force
+             * or lookup against the _objectContext by primaryKey.
+             * This would mean replacing the constant by one of the followin expressions :
+             *  => ObjectQuery<T>().Where(o => o == constant)
+             *  => ObjectQuery<T>().Where(o => constantIsCollection.Any(constantItem => o == constantItem))
+             */
             return base.VisitConstant(node);
         }
 
-        protected override Expression VisitUnary(UnaryExpression node)
+        protected override Expression VisitMember(MemberExpression node)
         {
-            node = node.Update(base.Visit(node.Operand));
-            if (node.NodeType == ExpressionType.TypeAs && node.Operand is ConstantExpression)
-            {
-                return Expression.Constant((node.Operand as ConstantExpression).Value, node.Type);
-            }
-            return base.VisitUnary(node);
+            return base.VisitMember(node);
         }
 
         protected override Expression VisitBinary(BinaryExpression node)
         {
             var operandType = node.Left.Type;
+            var isOperandAnEntity = !operandType.IsValueType && operandType.GetCustomAttribute<ComplexTypeAttribute>(true) == null;
 
             #region EF annoying limitation lift : replace Entities' comparison Expressions by comparison of their PrimaryKey
 
-            if (IsEntityType(operandType) && (node.NodeType == ExpressionType.Equal || node.NodeType == ExpressionType.NotEqual))
+            if ((node.NodeType == ExpressionType.Equal || node.NodeType == ExpressionType.NotEqual) && isOperandAnEntity)
             {
-                node = node.Update(base.Visit(node.Left), null, base.Visit(node.Right));
                 Expression translated = null;
                 List<PropertyInfo> primaryKeyDefinition = GetPrimaryKeyProperties(operandType);
                 foreach (PropertyInfo keyPpty in primaryKeyDefinition)
                 {
-                    var keyComponentEquality = Expression.Equal(Expression.MakeMemberAccess(base.Visit(node.Left), keyPpty), Expression.MakeMemberAccess(base.Visit(node.Right), keyPpty));
+                    var keyComponentEquality = Expression.Equal(Expression.MakeMemberAccess(node.Left, keyPpty), Expression.MakeMemberAccess(node.Right, keyPpty));
                     translated = translated == null ? keyComponentEquality : Expression.AndAlso(translated, keyComponentEquality);
                 }
                 if (node.NodeType == ExpressionType.NotEqual)
@@ -79,50 +79,7 @@ namespace DelegateDecompiler.EntityFramework
             return base.VisitBinary(node);
         }
 
-        protected override Expression VisitMember(MemberExpression node)
-        {
-            #region EF annoying limitation lift : Unable to create a constant value of type T, where T entity
-
-            node = node.Update(base.Visit(node.Expression));
-            if (node.Expression != null && node.Expression.NodeType == ExpressionType.Constant)
-            {
-                var targetInstance = (node.Expression as ConstantExpression).Value;
-                var fieldInfo = node.Member as FieldInfo;
-                var propertyInfo = node.Member as PropertyInfo;
-                if ((fieldInfo != null && !fieldInfo.IsStatic) || (propertyInfo != null && !propertyInfo.GetMethod.IsStatic))
-                {
-                    if (targetInstance != null)
-                    {
-                        var value = fieldInfo != null && !fieldInfo.IsStatic
-                            ? fieldInfo.GetValue(targetInstance)
-                            : propertyInfo != null && !propertyInfo.GetMethod.IsStatic
-                            ? propertyInfo.GetValue(targetInstance)
-                            : null /*??? MethodInfo ???*/;
-                        Expression result = Expression.Constant(value, node.Type);
-                        return result;
-                    }
-                    else
-                    {
-                        return GetDefaultValue(node.Type);
-                    }
-                }
-            }
-
-            #endregion
-
-            return base.VisitMember(node);
-        }
-
-        protected override Expression VisitMethodCall(MethodCallExpression node)
-        {
-            node = node.Update(base.Visit(node.Object), node.Arguments.Select(arg => base.Visit(arg)).ToArray());
-            // It seems Entityframework does not forward null method calls
-            if (node.Object == null && !node.Method.IsStatic)
-            {
-                return GetDefaultValue(node.Method.ReturnType);
-            }
-            return base.VisitMethodCall(node);
-        }
+        #region helpers
 
         private ConstantExpression GetDefaultValue(Type type)
         {
@@ -162,5 +119,7 @@ namespace DelegateDecompiler.EntityFramework
             }
             return properties;
         }
+
+        #endregion
     }
 }
