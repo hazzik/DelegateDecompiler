@@ -9,13 +9,14 @@ using System.Threading.Tasks;
 
 namespace DelegateDecompiler.EntityFramework
 {
-    class AsyncDecompiledQueryProvider : DecompiledQueryProvider, IDbAsyncQueryProvider
+    internal class AsyncDecompiledQueryProvider : DecompiledQueryProvider, IDbAsyncQueryProvider
     {
-        static readonly MethodInfo openGenericCreateQueryMethod =
+        private static readonly MethodInfo openGenericCreateQueryMethod =
             typeof(AsyncDecompiledQueryProvider)
             .GetMethods(BindingFlags.Public | BindingFlags.Instance)
             .Single(method => method.Name == "CreateQuery" && method.IsGenericMethod);
-        readonly IQueryProvider inner;
+
+        private readonly IQueryProvider inner;
 
         protected internal AsyncDecompiledQueryProvider(IQueryProvider inner)
             : base(inner)
@@ -43,7 +44,7 @@ namespace DelegateDecompiler.EntityFramework
 
         public override IQueryable<TElement> CreateQuery<TElement>(Expression expression)
         {
-            var decompiled = DecompileExpressionVisitor.Decompile(expression);
+            var decompiled = new DecompileExpressionVisitor().Visit(expression);
             return new AsyncDecompiledQueryable<TElement>(this, inner.CreateQuery<TElement>(decompiled));
         }
 
@@ -54,7 +55,7 @@ namespace DelegateDecompiler.EntityFramework
             {
                 throw new InvalidOperationException("The source IQueryProvider doesn't implement IDbAsyncQueryProvider.");
             }
-            var decompiled = DecompileExpressionVisitor.Decompile(expression);
+            var decompiled = new DecompileExpressionVisitor().Visit(expression);
             return asyncProvider.ExecuteAsync(decompiled, cancellationToken);
         }
 
@@ -65,7 +66,7 @@ namespace DelegateDecompiler.EntityFramework
             {
                 throw new InvalidOperationException("The source IQueryProvider doesn't implement IDbAsyncQueryProvider.");
             }
-            var decompiled = DecompileExpressionVisitor.Decompile(expression);
+            var decompiled = new DecompileExpressionVisitor().Visit(expression);
             return asyncProvider.ExecuteAsync<TResult>(decompiled, cancellationToken);
         }
     }
