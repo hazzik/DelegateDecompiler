@@ -1,12 +1,14 @@
 ﻿using System;
+using System.Data.Entity.Core.Objects;
 using System.Data.Entity.Infrastructure;
 using System.Linq;
 
 namespace DelegateDecompiler.EntityFramework
 {
-    class AsyncDecompiledQueryable<T> : DecompiledQueryable<T>, IDbAsyncEnumerable<T>
+    internal class AsyncDecompiledQueryable<T> : DecompiledQueryable<T>, IDbAsyncEnumerable<T>
     {
         private readonly IQueryable<T> inner;
+        internal MergeOption MergeOption { get; private set; }
 
         protected internal AsyncDecompiledQueryable(IQueryProvider provider, IQueryable<T> inner)
             : base(provider, inner)
@@ -14,10 +16,16 @@ namespace DelegateDecompiler.EntityFramework
             this.inner = inner;
         }
 
+        public IQueryable<T> AsNoTracking()
+        {
+            MergeOption = MergeOption.NoTracking;
+            return this;
+        }
+
         IDbAsyncEnumerator IDbAsyncEnumerable.GetAsyncEnumerator()
         {
             IDbAsyncEnumerable<T> asyncEnumerable = inner as IDbAsyncEnumerable<T>;
-            if(asyncEnumerable == null)
+            if (asyncEnumerable == null)
             {
                 throw new InvalidOperationException("The source IQueryable doesn't implement IDbAsyncEnumerable<T>.");
             }

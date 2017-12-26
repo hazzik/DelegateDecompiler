@@ -14,21 +14,48 @@ namespace DelegateDecompiler.EntityFramework
         : DelegateDecompiler.DecompileExpressionVisitor
     {
         public DecompileExpressionVisitor()
+            : this(null)
         {
+        }
+
+        private DecompileExpressionVisitor(Dictionary<object, Expression> sharedVisitedConstants)
+        {
+            this.visitedConstants = sharedVisitedConstants ?? new Dictionary<object, Expression>();
         }
 
         private ObjectContext _objectContext = null;
 
+        private static readonly object NULL = new object(); // for use as a dictionary key
+        private readonly Dictionary<object, Expression> visitedConstants;
+
+        private bool hasAnyChanges = false;
+
         private Dictionary<Type, List<PropertyInfo>> _entityToKeyEqualityCache = new Dictionary<Type, List<PropertyInfo>>();
         private Dictionary<Type, string> _underlyingTables = new Dictionary<Type, string>();
 
+        public override Expression Visit(Expression node)
+        {
+            var result = base.Visit(node);
+            if (result != node)
+                hasAnyChanges = true;
+            return result;
+        }
+
         protected override Expression VisitConstant(ConstantExpression node)
         {
+            Expression result;
+            if (visitedConstants.TryGetValue(node.Value ?? NULL, out result))
+            {
+                return result; // avoid infinite recursion
+            }
+
             #region Auto-detect the ObjectContext to use
 
             if (typeof(ObjectQuery).IsAssignableFrom(node.Type))
             {
-                var targetContext = (node.Value as ObjectQuery).Context;
+                var objectQuery = (node.Value as ObjectQuery);
+                //objectQuery.MergeOption = DecompileExtensions.CurrentMergeOption;
+                var targetContext = objectQuery.Context;
                 if (_objectContext != null && _objectContext != targetContext)
                 {
                     throw new NotSupportedException("Cannot use different ObjectContext instances in the same query");
@@ -69,6 +96,26 @@ namespace DelegateDecompiler.EntityFramework
 
             #endregion
 
+            // Include changes from PR#53
+            if (typeof(IQueryable).IsAssignableFrom(node.Type))
+            {
+                visitedConstants.Add(node.Value ?? NULL, node);
+
+                var value = (IQueryable)node.Value;
+                var childVisitor = this;// new DecompileExpressionVisitor(visitedConstants);
+                result = childVisitor.Visit(value.Expression);
+
+                if (childVisitor.hasAnyChanges)
+                {
+                    var query = value.Provider.CreateQuery(result);
+                    var objectQuery = (query as ObjectQuery);
+                    if (objectQuery != null) objectQuery.MergeOption = DecompileExtensions.CurrentMergeOption;
+                    result = Expression.Constant(query, node.Type);
+                    visitedConstants[node.Value ?? NULL] = result;
+                    return result;
+                }
+            }
+
             return base.VisitConstant(node);
         }
 
@@ -103,6 +150,21 @@ namespace DelegateDecompiler.EntityFramework
             #endregion
 
             return base.VisitMember(node);
+        }
+
+        protected override Expression VisitMethodCall(MethodCallExpression node)
+        {
+            if (node.Method.Name == "MergeAs")
+            {
+                DecompileExtensions.CurrentMergeOption = (MergeOption)(node.Arguments[0] as ConstantExpression).Value;
+                node = node.Update(node.Object, new Expression[] { Expression.Constant(DecompileExtensions.CurrentMergeOption) });
+            }
+            return base.VisitMethodCall(node);
+        }
+
+        protected override Expression VisitUnary(UnaryExpression node)
+        {
+            return base.VisitUnary(node);
         }
 
         protected override Expression VisitBinary(BinaryExpression node)
