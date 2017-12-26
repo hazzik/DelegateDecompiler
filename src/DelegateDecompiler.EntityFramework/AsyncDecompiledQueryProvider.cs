@@ -16,12 +16,14 @@ namespace DelegateDecompiler.EntityFramework
             .GetMethods(BindingFlags.Public | BindingFlags.Instance)
             .Single(method => method.Name == "CreateQuery" && method.IsGenericMethod);
 
-        private readonly IQueryProvider inner;
+        private readonly IQueryProvider _inner;
+        private readonly DecompileExpressionVisitor _visitor;
 
         protected internal AsyncDecompiledQueryProvider(IQueryProvider inner)
             : base(inner)
         {
-            this.inner = inner;
+            this._inner = inner;
+            this._visitor = new DecompileExpressionVisitor();
         }
 
         public override IQueryable CreateQuery(Expression expression)
@@ -45,12 +47,12 @@ namespace DelegateDecompiler.EntityFramework
         public override IQueryable<TElement> CreateQuery<TElement>(Expression expression)
         {
             var decompiled = new DecompileExpressionVisitor().Visit(expression);
-            return new AsyncDecompiledQueryable<TElement>(this, inner.CreateQuery<TElement>(decompiled));
+            return new AsyncDecompiledQueryable<TElement>(this, _inner.CreateQuery<TElement>(decompiled));
         }
 
         public Task<object> ExecuteAsync(Expression expression, CancellationToken cancellationToken)
         {
-            IDbAsyncQueryProvider asyncProvider = inner as IDbAsyncQueryProvider;
+            IDbAsyncQueryProvider asyncProvider = _inner as IDbAsyncQueryProvider;
             if (asyncProvider == null)
             {
                 throw new InvalidOperationException("The source IQueryProvider doesn't implement IDbAsyncQueryProvider.");
@@ -61,7 +63,7 @@ namespace DelegateDecompiler.EntityFramework
 
         public Task<TResult> ExecuteAsync<TResult>(Expression expression, CancellationToken cancellationToken)
         {
-            IDbAsyncQueryProvider asyncProvider = inner as IDbAsyncQueryProvider;
+            IDbAsyncQueryProvider asyncProvider = _inner as IDbAsyncQueryProvider;
             if (asyncProvider == null)
             {
                 throw new InvalidOperationException("The source IQueryProvider doesn't implement IDbAsyncQueryProvider.");

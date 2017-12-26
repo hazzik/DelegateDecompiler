@@ -48,6 +48,7 @@ namespace DelegateDecompiler.EntityFramework
             {
                 return result; // avoid infinite recursion
             }
+            visitedConstants.Add(node.Value ?? NULL, node);
 
             #region Auto-detect the ObjectContext to use
 
@@ -91,6 +92,7 @@ namespace DelegateDecompiler.EntityFramework
                         Expression.Constant(createQueryMethod.Invoke(_objectContext, new object[] { sqlQuery, new ObjectParameter[0] }), queryableType),
                         matchEntityPredicate
                     );
+                visitedConstants[node.Value ?? NULL] = constant;
                 return constant;
             }
 
@@ -99,8 +101,6 @@ namespace DelegateDecompiler.EntityFramework
             // Include changes from PR#53
             if (typeof(IQueryable).IsAssignableFrom(node.Type))
             {
-                visitedConstants.Add(node.Value ?? NULL, node);
-
                 var value = (IQueryable)node.Value;
                 var childVisitor = this;// new DecompileExpressionVisitor(visitedConstants);
                 result = childVisitor.Visit(value.Expression);
@@ -108,8 +108,6 @@ namespace DelegateDecompiler.EntityFramework
                 if (childVisitor.hasAnyChanges)
                 {
                     var query = value.Provider.CreateQuery(result);
-                    var objectQuery = (query as ObjectQuery);
-                    if (objectQuery != null) objectQuery.MergeOption = DecompileExtensions.CurrentMergeOption;
                     result = Expression.Constant(query, node.Type);
                     visitedConstants[node.Value ?? NULL] = result;
                     return result;
@@ -154,11 +152,6 @@ namespace DelegateDecompiler.EntityFramework
 
         protected override Expression VisitMethodCall(MethodCallExpression node)
         {
-            if (node.Method.Name == "MergeAs")
-            {
-                DecompileExtensions.CurrentMergeOption = (MergeOption)(node.Arguments[0] as ConstantExpression).Value;
-                node = node.Update(node.Object, new Expression[] { Expression.Constant(DecompileExtensions.CurrentMergeOption) });
-            }
             return base.VisitMethodCall(node);
         }
 
