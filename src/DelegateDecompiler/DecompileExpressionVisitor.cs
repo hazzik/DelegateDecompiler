@@ -189,5 +189,18 @@ namespace DelegateDecompiler
             _specificImplementations[method] = implementationsList;
             return implementationsList;
         }
+
+        protected Type GetMostSpecificType(Type t1, Type t2)
+        {
+            if (t1.IsAssignableFrom(t2))
+            {
+                return t2;
+            }
+            else if (t2.IsAssignableFrom(t1))
+            {
+                return t1;
+            }
+            throw new ArgumentException($"Types {t1.FullName} and {t2.FullName} do not belong to the same type hierarchy");
+        }
     }
 }

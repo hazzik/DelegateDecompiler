@@ -38,7 +38,7 @@ namespace DelegateDecompiler.EntityFramework
 
             #endregion
 
-            #region Resolve entity constants by an object query
+            #region Resolve entity constants by an object query filtered on primary key
 
             else if (IsEntityType(node.Type) || (node.Type.IsGenericType && typeof(IEnumerable).IsAssignableFrom(node.Type) && IsEntityType(node.Type.GetGenericArguments().First())))
             {
@@ -46,10 +46,10 @@ namespace DelegateDecompiler.EntityFramework
                 bool isCollection = !IsEntityType(node.Type);
 
                 //TODO try later to solve this case with performance in mind
-                if (isCollection) throw new NotSupportedException($"Yet unable to create a collection of constant '{node.Type.GetGenericArguments().First()}' instances. Use an ObjectQuery from the current context instead.");
+                if (isCollection) throw new NotSupportedException($"Yet unable to create a collection of '{node.Type.GetGenericArguments().First()}' constant values. Use an ObjectQuery from the current context instead.");
 
                 // Build the base ObjectQuery
-                string sqlQuery = $"SELECT VALUE entity FROM {_underlyingTables[node.Type]} as entity";
+                string sqlQuery = $"SELECT VALUE {node.Type.Name} FROM {_underlyingTables[node.Type]} as {node.Type.Name}";
                 var createQueryMethod = _objectContext.GetType().GetMethod("CreateQuery", BindingFlags.Public | BindingFlags.Instance).MakeGenericMethod(node.Type);
                 var queryableType = typeof(ObjectQuery<>).MakeGenericType(node.Type);
 
@@ -76,7 +76,6 @@ namespace DelegateDecompiler.EntityFramework
         {
             #region EF annoying limitation lift : Unable to create a constant value of type T, where T entity
 
-            //node = node.Update(base.Visit(node.Expression));
             if (node.Expression != null && node.Expression.NodeType == ExpressionType.Constant)
             {
                 var targetInstance = (node.Expression as ConstantExpression).Value;
@@ -108,24 +107,37 @@ namespace DelegateDecompiler.EntityFramework
 
         protected override Expression VisitBinary(BinaryExpression node)
         {
-            var operandType = node.Left.Type;
+            var operandType = GetMostSpecificType(node.Left.Type, node.Right.Type);
 
             #region EF annoying limitation lift : replace Entities' comparison Expressions by comparison of their PrimaryKey
 
             if ((node.NodeType == ExpressionType.Equal || node.NodeType == ExpressionType.NotEqual) && IsEntityType(operandType))
             {
                 Expression translated = null;
-                List<PropertyInfo> primaryKeyDefinition = GetPrimaryKeyProperties(operandType);
-                foreach (PropertyInfo keyPpty in primaryKeyDefinition)
+                // First check whether left or right is null
+                var left = (node.Left as ConstantExpression);
+                var right = (node.Right as ConstantExpression);
+                var compareWithNull = (left != null && left.Value == null) || (right != null && right.Value == null);
+                if (compareWithNull)
                 {
-                    var keyComponentEquality = Expression.Equal(Expression.MakeMemberAccess(node.Left, keyPpty), Expression.MakeMemberAccess(node.Right, keyPpty));
-                    translated = translated == null ? keyComponentEquality : Expression.AndAlso(translated, keyComponentEquality);
+                    translated = Expression.Equal(left ?? base.Visit(node.Left), right ?? base.Visit(node.Right));
+                }
+                else
+                {
+                    // Otherwise compare the operands by primary key
+                    List<PropertyInfo> primaryKeyDefinition = GetPrimaryKeyProperties(operandType);
+                    foreach (PropertyInfo keyPpty in primaryKeyDefinition)
+                    {
+                        var keyComponentEquality = Expression.Equal(Expression.MakeMemberAccess(node.Left, keyPpty), Expression.MakeMemberAccess(node.Right, keyPpty));
+                        translated = translated == null ? keyComponentEquality : Expression.AndAlso(translated, keyComponentEquality);
+                    }
+                    translated = base.Visit(translated);
                 }
                 if (node.NodeType == ExpressionType.NotEqual)
                 {
                     translated = Expression.Not(translated);
                 }
-                return base.Visit(translated);
+                return translated;
             }
 
             #endregion
