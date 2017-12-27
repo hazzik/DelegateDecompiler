@@ -34,10 +34,10 @@ namespace DelegateDecompiler
 
         IEnumerator IEnumerable.GetEnumerator()
         {
-            return inner.GetEnumerator();
+            return GetEnumerator();
         }
 
-        public IEnumerator<T> GetEnumerator()
+        public virtual IEnumerator<T> GetEnumerator()
         {
             return inner.GetEnumerator();
         }

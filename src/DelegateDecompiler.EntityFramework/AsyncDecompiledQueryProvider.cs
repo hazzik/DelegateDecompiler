@@ -17,13 +17,11 @@ namespace DelegateDecompiler.EntityFramework
             .Single(method => method.Name == "CreateQuery" && method.IsGenericMethod);
 
         private readonly IQueryProvider _inner;
-        private readonly DecompileExpressionVisitor _visitor;
 
         protected internal AsyncDecompiledQueryProvider(IQueryProvider inner)
             : base(inner)
         {
-            this._inner = inner;
-            this._visitor = new DecompileExpressionVisitor();
+            _inner = inner;
         }
 
         public override IQueryable CreateQuery(Expression expression)
