@@ -41,9 +41,9 @@ namespace DelegateDecompiler.EntityFramework
                 #endregion
             }
 
-            #region Resolve entity constants by an object query filtered on primary key
+            #region Resolve entity constants by an object query filtered on primary key(s)
 
-            else if (IsEntityType(node.Type) || (node.Type.IsGenericType && typeof(IEnumerable).IsAssignableFrom(node.Type) && IsEntityType(node.Type.GetGenericArguments().First())))
+            else if (IsEntityType(node.Type) || (!typeof(Queryable).IsAssignableFrom(node.Type) && node.Type.IsGenericType && typeof(IEnumerable).IsAssignableFrom(node.Type) && IsEntityType(node.Type.GetGenericArguments().First())))
             {
                 // first check whether the constant is an entity or a collection of constants
                 bool isCollection = !IsEntityType(node.Type);
