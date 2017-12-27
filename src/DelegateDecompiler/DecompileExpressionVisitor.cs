@@ -14,6 +14,42 @@ namespace DelegateDecompiler
             return new DecompileExpressionVisitor().Visit(expression);
         }
 
+        private bool hasAnyChanges = false;
+        private readonly Dictionary<object, Expression> visitedConstants = new Dictionary<object, Expression>();
+        private static readonly object NULL = new object(); // for use as a dictionary key
+
+        public override Expression Visit(Expression node)
+        {
+            var result = base.Visit(node);
+            hasAnyChanges = (result != node);
+            return result;
+        }
+
+        protected override Expression VisitConstant(ConstantExpression node)
+        {
+            Expression result;
+            if (visitedConstants.TryGetValue(node.Value ?? NULL, out result))
+            {
+                return result; // avoid infinite recursion
+            }
+
+            visitedConstants.Add(node.Value ?? NULL, node);
+
+            if (typeof(IQueryable).IsAssignableFrom(node.Type))
+            {
+                var value = (IQueryable)node.Value;
+                result = this.Visit(value.Expression);
+                if (hasAnyChanges)
+                {
+                    var query = value.Provider.CreateQuery(result);
+                    result = Expression.Constant(query, node.Type);
+                    visitedConstants[node.Value ?? NULL] = result;
+                    return result;
+                }
+            }
+            return base.VisitConstant(node);
+        }
+
         protected override Expression VisitMember(MemberExpression node)
         {
             if (ShouldDecompile(node.Member))
