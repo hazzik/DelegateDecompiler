@@ -49,8 +49,11 @@ namespace DelegateDecompiler.EntityFramework
                 bool isCollection = !IsEntityType(node.Type);
 
                 //TODO try later to solve this case with performance in mind
-                if (isCollection) throw new NotSupportedException($"Yet unable to create a collection of '{node.Type.GetGenericArguments().First()}' constant values. Use an ObjectQuery from the current context instead.");
-
+                if (isCollection)
+                {
+                    if (node.Value == null) return node;
+                    throw new NotSupportedException($"Yet unable to create a collection of '{node.Type.GetGenericArguments().First()}' constant values. Use an ObjectQuery from the current context instead.");
+                }
                 // Build the base ObjectQuery
                 string sqlQuery = $"SELECT VALUE {node.Type.Name} FROM {_underlyingTables[node.Type]} as {node.Type.Name}";
                 var createQueryMethod = _objectContext.GetType().GetMethod("CreateQuery", BindingFlags.Public | BindingFlags.Instance).MakeGenericMethod(node.Type);

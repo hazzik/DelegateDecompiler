@@ -8,9 +8,9 @@ namespace DelegateDecompiler.EntityFramework
         {
             // Minor optimisation : avoid stacking multiple instances when chaining multiple calls to Decompile
             var provider = self.Provider;
-            if (provider.GetType() != typeof(AsyncDecompiledQueryProvider)) provider = new AsyncDecompiledQueryProvider(self.Provider);
-            AsyncDecompiledQueryable<T> decompiled = (AsyncDecompiledQueryable<T>)provider.CreateQuery<T>(self.Expression);
-            if (self is AsyncDecompiledQueryable<T>) decompiled.MergeOption = ((AsyncDecompiledQueryable<T>)self).MergeOption;
+            if (provider.GetType() != typeof(EfDecompiledQueryProvider)) provider = new EfDecompiledQueryProvider(self.Provider);
+            EfDecompiledQueryable<T> decompiled = (EfDecompiledQueryable<T>)provider.CreateQuery<T>(self.Expression);
+            if (self is EfDecompiledQueryable<T>) decompiled.MergeOption = ((EfDecompiledQueryable<T>)self).MergeOption;
             return decompiled;
         }
 

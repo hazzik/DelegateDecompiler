@@ -19,4 +19,8 @@
     <ProjectReference Include="..\DelegateDecompiler\DelegateDecompiler.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+  </ItemGroup>
+
 </Project>

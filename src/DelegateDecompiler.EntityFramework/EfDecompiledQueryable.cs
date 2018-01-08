@@ -8,15 +8,19 @@ using System.Linq;
 
 namespace DelegateDecompiler.EntityFramework
 {
-    internal class AsyncDecompiledQueryable<T> : DecompiledQueryable<T>, IDbAsyncEnumerable<T>, IEnumerable
+    internal class EfDecompiledQueryable<T> : DecompiledQueryable<T>, IDbAsyncEnumerable<T>, IEnumerable
     {
-        private readonly IQueryable<T> inner;
         internal MergeOption MergeOption { get; set; }
 
-        protected internal AsyncDecompiledQueryable(IQueryProvider provider, IQueryable<T> inner)
+        protected internal EfDecompiledQueryable(IQueryProvider provider, IQueryable<T> inner)
             : base(provider, inner)
         {
-            this.inner = inner;
+            //this.inner = inner;
+        }
+
+        public IQueryable<T> Include(string path)
+        {
+            return inner.Include(path).Decompile();
         }
 
         public IQueryable<T> AsNoTracking()

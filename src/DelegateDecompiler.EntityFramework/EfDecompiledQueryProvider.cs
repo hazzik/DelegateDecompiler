@@ -9,16 +9,16 @@ using System.Threading.Tasks;
 
 namespace DelegateDecompiler.EntityFramework
 {
-    internal class AsyncDecompiledQueryProvider : DecompiledQueryProvider, IDbAsyncQueryProvider
+    public class EfDecompiledQueryProvider : DecompiledQueryProvider, IDbAsyncQueryProvider
     {
         private static readonly MethodInfo openGenericCreateQueryMethod =
-            typeof(AsyncDecompiledQueryProvider)
+            typeof(EfDecompiledQueryProvider)
             .GetMethods(BindingFlags.Public | BindingFlags.Instance)
             .Single(method => method.Name == "CreateQuery" && method.IsGenericMethod);
 
         private readonly IQueryProvider _inner;
 
-        protected internal AsyncDecompiledQueryProvider(IQueryProvider inner)
+        protected internal EfDecompiledQueryProvider(IQueryProvider inner)
             : base(inner)
         {
             _inner = inner;
@@ -45,7 +45,7 @@ namespace DelegateDecompiler.EntityFramework
         public override IQueryable<TElement> CreateQuery<TElement>(Expression expression)
         {
             var decompiled = new DecompileExpressionVisitor().Visit(expression);
-            return new AsyncDecompiledQueryable<TElement>(this, _inner.CreateQuery<TElement>(decompiled));
+            return new EfDecompiledQueryable<TElement>(this, _inner.CreateQuery<TElement>(decompiled));
         }
 
         public Task<object> ExecuteAsync(Expression expression, CancellationToken cancellationToken)
