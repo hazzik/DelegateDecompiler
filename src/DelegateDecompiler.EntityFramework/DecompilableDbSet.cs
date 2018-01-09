@@ -13,66 +13,71 @@ namespace ML.WebEnseignes.AppCore.EntityFramework
         : IDbSet<T>
         where T : class
     {
-        internal IDbSet<T> _baseSet;
+        protected IDbSet<T> inner;
 
         public DecompilableDbSet(IDbSet<T> baseSet)
         {
-            _baseSet = baseSet;
+            inner = baseSet;
         }
 
-        public ObservableCollection<T> Local => _baseSet.Local;
+        public ObservableCollection<T> Local => inner.Local;
 
-        public Expression Expression => _baseSet.Decompile().Expression;
+        public Expression Expression => inner.Decompile().Expression;
 
-        public Type ElementType => _baseSet.ElementType;
+        public Type ElementType => inner.ElementType;
 
-        public IQueryProvider Provider => new EfDecompiledQueryProvider(_baseSet.Provider);
+        public IQueryProvider Provider => new EfDecompiledQueryProvider(inner.Provider);
 
         public virtual T Add(T entity)
         {
-            return _baseSet.Add(entity);
+            return inner.Add(entity);
         }
 
         public virtual T Attach(T entity)
         {
-            return _baseSet.Attach(entity);
+            return inner.Attach(entity);
         }
 
         public virtual T Create()
         {
-            return _baseSet.Create();
+            return inner.Create();
         }
 
         public T Find(params object[] keyValues)
         {
-            return _baseSet.Create();
+            return inner.Create();
         }
 
         public IEnumerator<T> GetEnumerator()
         {
-            return _baseSet.GetEnumerator();
+            return inner.GetEnumerator();
         }
 
         public T Remove(T entity)
         {
-            return _baseSet.Remove(entity);
+            return inner.Remove(entity);
         }
 
         TDerivedEntity IDbSet<T>.Create<TDerivedEntity>()
         {
-            return _baseSet.Create<TDerivedEntity>();
+            return inner.Create<TDerivedEntity>();
         }
 
         IEnumerator IEnumerable.GetEnumerator()
         {
-            return _baseSet.GetEnumerator();
+            return inner.GetEnumerator();
         }
 
         #region Linq overrides
 
         public IQueryable<T> Include(string path)
         {
-            return _baseSet.Include(path).Decompile();
+            return inner.Include(path).Decompile();
+        }
+
+        public IQueryable<T> AsNoTracking()
+        {
+            return ((IQueryable<T>)((IQueryable)inner).AsNoTracking()).Decompile();
         }
 
         #endregion

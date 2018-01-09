@@ -1,6 +1,6 @@
 Detail With Sql of supported commands
 ============
-## Documentation produced for DelegateDecompiler, version 0.23.1 on Monday, 18 December 2017 15:06
+## Documentation produced for DelegateDecompiler, version 0.23.1 on Tuesday, 09 January 2018 12:02
 
 This file documents what linq commands **DelegateDecompiler** supports when
 working with [Entity Framework v6.1](http://msdn.microsoft.com/en-us/data/aa937723) (EF).
@@ -503,14 +503,11 @@ SELECT
 
 ```SQL
 SELECT 
-    [Project1].[C1] AS [C1]
-    FROM ( SELECT 
-        (SELECT 
-            COUNT(1) AS [A1]
-            FROM [dbo].[EfChilds] AS [Extent2]
-            WHERE ([Extent1].[EfParentId] = [Extent2].[EfParentId]) AND ([Extent2].[ChildInt] = @p__linq__0)) AS [C1]
-        FROM [dbo].[EfParents] AS [Extent1]
-    )  AS [Project1]
+    (SELECT 
+        COUNT(1) AS [A1]
+        FROM [dbo].[EfChilds] AS [Extent2]
+        WHERE ([Extent1].[EfParentId] = [Extent2].[EfParentId]) AND (123 = [Extent2].[ChildInt])) AS [C1]
+    FROM [dbo].[EfParents] AS [Extent1]
 ```
 
   * Count Children With Filter By External Closure2 (line 108)
@@ -518,14 +515,11 @@ SELECT
 
 ```SQL
 SELECT 
-    [Project1].[C1] AS [C1]
-    FROM ( SELECT 
-        (SELECT 
-            COUNT(1) AS [A1]
-            FROM [dbo].[EfChilds] AS [Extent2]
-            WHERE ([Extent1].[EfParentId] = [Extent2].[EfParentId]) AND ([Extent2].[ChildInt] = @p__linq__0) AND ([Extent2].[EfParentId] = @p__linq__1)) AS [C1]
-        FROM [dbo].[EfParents] AS [Extent1]
-    )  AS [Project1]
+    (SELECT 
+        COUNT(1) AS [A1]
+        FROM [dbo].[EfChilds] AS [Extent2]
+        WHERE ([Extent1].[EfParentId] = [Extent2].[EfParentId]) AND (123 = [Extent2].[ChildInt]) AND (456 = [Extent2].[EfParentId])) AS [C1]
+    FROM [dbo].[EfParents] AS [Extent1]
 ```
 
   * Singleton Count Children With Filter (line 126)
