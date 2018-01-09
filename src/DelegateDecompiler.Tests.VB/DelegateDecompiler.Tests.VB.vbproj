@@ -2,23 +2,28 @@
   <Import Project="..\..\DelegateDecompiler.props" />
 
   <PropertyGroup>
-    <TargetFramework>net40</TargetFramework>
+    <TargetFramework>net45</TargetFramework>
     <Copyright>Copyright © Alexander Zaytsev 2016 - 2017</Copyright>
     <Description />
   </PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="nunit" Version="3.7.1" />
-  </ItemGroup>
-
   <ItemGroup Condition="'$(TargetFramework)' != 'net40'">
     <PackageReference Include="NUnit3TestAdapter" Version="3.8.0" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.3.0" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.5.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="NUnit" Version="3.9.0" />
+    <PackageReference Include="NUnit3TestAdapter" Version="3.9.0" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\DelegateDecompiler.Tests\DelegateDecompiler.Tests.csproj" />
     <ProjectReference Include="..\DelegateDecompiler\DelegateDecompiler.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="System.ComponentModel.DataAnnotations" />
   </ItemGroup>
 
 </Project>

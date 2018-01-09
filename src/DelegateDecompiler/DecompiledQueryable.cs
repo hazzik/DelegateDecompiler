@@ -8,8 +8,8 @@ namespace DelegateDecompiler
 {
     public class DecompiledQueryable<T> : IOrderedQueryable<T>
     {
-        private readonly IQueryable<T> inner;
-        private readonly IQueryProvider provider;
+        protected readonly IQueryable<T> inner;
+        protected readonly IQueryProvider provider;
 
         protected internal DecompiledQueryable(IQueryProvider provider, IQueryable<T> inner)
         {
@@ -34,10 +34,10 @@ namespace DelegateDecompiler
 
         IEnumerator IEnumerable.GetEnumerator()
         {
-            return inner.GetEnumerator();
+            return GetEnumerator();
         }
 
-        public IEnumerator<T> GetEnumerator()
+        public virtual IEnumerator<T> GetEnumerator()
         {
             return inner.GetEnumerator();
         }

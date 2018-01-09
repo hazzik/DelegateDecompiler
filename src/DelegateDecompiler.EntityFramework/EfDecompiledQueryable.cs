@@ -1,27 +1,22 @@
 ﻿using System;
+using System.Collections;
+using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
 using System.Linq;
 
 namespace DelegateDecompiler.EntityFramework
 {
-    class AsyncDecompiledQueryable<T> : DecompiledQueryable<T>, IDbAsyncEnumerable<T>
+    internal class EfDecompiledQueryable<T>
+        : DecompiledQueryable<T>, IDbAsyncEnumerable<T>, IEnumerable
     {
-        private readonly IQueryable<T> inner;
-
-        protected internal AsyncDecompiledQueryable(IQueryProvider provider, IQueryable<T> inner)
+        protected internal EfDecompiledQueryable(IQueryProvider provider, IQueryable<T> inner)
             : base(provider, inner)
         {
-            this.inner = inner;
         }
 
         IDbAsyncEnumerator IDbAsyncEnumerable.GetAsyncEnumerator()
         {
-            IDbAsyncEnumerable<T> asyncEnumerable = inner as IDbAsyncEnumerable<T>;
-            if(asyncEnumerable == null)
-            {
-                throw new InvalidOperationException("The source IQueryable doesn't implement IDbAsyncEnumerable<T>.");
-            }
-            return asyncEnumerable.GetAsyncEnumerator();
+            return GetAsyncEnumerator();
         }
 
         public IDbAsyncEnumerator<T> GetAsyncEnumerator()
@@ -33,5 +28,19 @@ namespace DelegateDecompiler.EntityFramework
             }
             return asyncEnumerable.GetAsyncEnumerator();
         }
+
+        #region Linq overrides
+
+        public IQueryable<T> Include(string path)
+        {
+            return inner.Include(path).Decompile();
+        }
+
+        public IQueryable<T> AsNoTracking()
+        {
+            return ((IQueryable<T>)((IQueryable)inner).AsNoTracking()).Decompile();
+        }
+
+        #endregion
     }
 }
