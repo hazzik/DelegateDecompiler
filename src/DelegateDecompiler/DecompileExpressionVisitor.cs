@@ -87,8 +87,8 @@ namespace DelegateDecompiler
                     {
                         mostSpecificImplementation = implementations as MethodInfo;
                     }
-                    if (mostSpecificImplementation == null) return node;
-                    node = Expression.Call(node.Object, mostSpecificImplementation, node.Arguments);
+                    if (mostSpecificImplementation != null)
+                        node = Expression.Call(node.Object, mostSpecificImplementation, node.Arguments);
                 }
                 finally
                 {
