@@ -52,7 +52,6 @@ namespace DelegateDecompiler
                     {
                         Expression expandedCall = null;
                         mostSpecificImplementation = (implementations as List<KeyValuePair<Type, MethodInfo>>).Where(vCall => vCall.Key.IsAssignableFrom(node.Object.Type)).Select(kv => kv.Value).LastOrDefault();
-                        if (mostSpecificImplementation == null) return node;
 
                         var overridingImplementations = (implementations as List<KeyValuePair<Type, MethodInfo>>).Where(vCall => vCall.Key.IsSubclassOf(node.Object.Type)).GroupBy(kv => kv.Key);
                         if (overridingImplementations.Any())
@@ -88,6 +87,7 @@ namespace DelegateDecompiler
                     {
                         mostSpecificImplementation = implementations as MethodInfo;
                     }
+                    if (mostSpecificImplementation == null) return node;
                     node = Expression.Call(node.Object, mostSpecificImplementation, node.Arguments);
                 }
                 finally
