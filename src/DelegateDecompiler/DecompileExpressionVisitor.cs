@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -9,45 +7,9 @@ namespace DelegateDecompiler
 {
     public class DecompileExpressionVisitor : ExpressionVisitor
     {
-        private readonly Type expressionMainType;
-
         public static Expression Decompile(Expression expression)
         {
-            return new DecompileExpressionVisitor(GetExpressionMainType(expression)).Visit(expression);
-        }
-
-        /// <summary>
-        /// Returns the best expression type from which to handle any abstract calls
-        /// </summary>
-        private static Type GetExpressionMainType(Expression expression)
-        {
-            switch (expression.NodeType)
-            {
-                case ExpressionType.Call:
-                    var methodCallInstanceType = (expression as MethodCallExpression).Arguments.First().Type;
-                    return GetExpressionMainType(methodCallInstanceType);
-                default:
-                    return GetExpressionMainType(expression.Type);
-            }
-        }
-
-        /// <summary>
-        /// Returns the type itself or the element's type if it represents an Enumeration type
-        /// </summary>
-        /// <param name="type">The type from which to get best expression main type</param>
-        private static Type GetExpressionMainType(Type type)
-        {
-            if (type.GetInterfaces().Any(i => i.IsGenericType && typeof(IEnumerable).IsAssignableFrom(i)))
-            {
-                //return the element type
-                return type.GetGenericArguments().First();
-            }
-            return type;
-        }
-
-        private DecompileExpressionVisitor(Type expressionMainType)
-        {
-            this.expressionMainType = expressionMainType ?? throw new ArgumentNullException(nameof(expressionMainType));
+            return new DecompileExpressionVisitor().Visit(expression);
         }
 
         protected override Expression VisitMember(MemberExpression node)
@@ -101,7 +63,7 @@ namespace DelegateDecompiler
 
         Expression Decompile(MethodInfo method, Expression instance, IList<Expression> arguments)
         {
-            var expression = method.Decompile();
+            var expression = method.Decompile(instance?.Type);
 
             var expressions = new Dictionary<Expression, Expression>();
             var argIndex = 0;

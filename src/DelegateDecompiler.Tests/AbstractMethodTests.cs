@@ -1,13 +1,11 @@
 ﻿using System;
-using System.ComponentModel;
 using System.Linq.Expressions;
-using System.Security.Cryptography.X509Certificates;
 using NUnit.Framework;
 
 namespace DelegateDecompiler.Tests
 {
     [TestFixture]
-    public class AbstractMethodTests:DecompilerTestsBase
+    public class AbstractMethodTests : DecompilerTestsBase
     {
         public abstract class A
         {
@@ -19,9 +17,9 @@ namespace DelegateDecompiler.Tests
         public class B : A
         {
             public string Me = "B";
-            
+
             public override string M1() => "B";
-            
+
             public override string M2() => Me;
         }
 
@@ -30,14 +28,14 @@ namespace DelegateDecompiler.Tests
             public string Me = "C";
 
             public override string M1() => "C";
-           
+
             public override string M2() => Me;
         }
 
         public class D : C
         {
             public string Me = "C";
-            
+
             public override string M1() => "D";
 
             public override string M2() => Me;
@@ -46,9 +44,9 @@ namespace DelegateDecompiler.Tests
         public abstract class E : C
         {
             public string Me = "C";
-            
+
             public override string M1() => "E";
-        
+
             public override string M2() => Me;
         }
 

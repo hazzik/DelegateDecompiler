@@ -1,6 +1,6 @@
 Detail With Sql of supported commands
 ============
-## Documentation produced for DelegateDecompiler, version 0.23.1 on Monday, 16 October 2017 13:13
+## Documentation produced for DelegateDecompiler, version 0.23.1 on Saturday, 28 April 2018 21:03
 
 This file documents what linq commands **DelegateDecompiler** supports when
 working with [Entity Framework v6.1](http://msdn.microsoft.com/en-us/data/aa937723) (EF).
@@ -75,27 +75,27 @@ SELECT
 
 ```SQL
 SELECT 
-    CASE WHEN ([Extent1].[Discriminator] = N'Dog') THEN N'Canis lupus' WHEN ([Extent1].[Discriminator] = N'HoneyBee') THEN N'Apis mellifera' WHEN ([Extent1].[Discriminator] = N'Person') THEN N'Human' END AS [C1]
+    CASE WHEN ([Extent1].[Discriminator] = N'Person') THEN N'Human' WHEN ([Extent1].[Discriminator] = N'HoneyBee') THEN N'Apis mellifera' WHEN ([Extent1].[Discriminator] = N'Dog') THEN N'Canis lupus' END AS [C1]
     FROM [dbo].[LivingBeeings] AS [Extent1]
     WHERE [Extent1].[Discriminator] IN (N'Dog',N'HoneyBee',N'Person')
 ```
 
-  * Select Abstract Member Over Tph Hierarchy After Restricting To Subtype (line 138)
+  * Select Abstract Member Over Tph Hierarchy After Restricting To Subtype (line 140)
      * T-Sql executed is
 
 ```SQL
 SELECT 
-    CASE WHEN ([Extent1].[Discriminator] = N'Dog') THEN N'Canis lupus' WHEN ([Extent1].[Discriminator] = N'HoneyBee') THEN N'Apis mellifera' END AS [C1]
+    CASE WHEN ([Extent1].[Discriminator] = N'HoneyBee') THEN N'Apis mellifera' WHEN ([Extent1].[Discriminator] = N'Dog') THEN N'Canis lupus' END AS [C1]
     FROM [dbo].[LivingBeeings] AS [Extent1]
     WHERE ([Extent1].[Discriminator] IN (N'Dog',N'HoneyBee',N'Person')) AND ([Extent1].[Discriminator] IN (N'Dog',N'HoneyBee'))
 ```
 
-  * Select Multiple Levels Of Abstract Members Over Tph Hierarchy (line 155)
+  * Select Multiple Levels Of Abstract Members Over Tph Hierarchy (line 157)
      * T-Sql executed is
 
 ```SQL
 SELECT 
-    CASE WHEN (CASE WHEN ([Extent1].[Discriminator] = N'Dog') THEN N'Canis lupus' WHEN ([Extent1].[Discriminator] = N'HoneyBee') THEN N'Apis mellifera' END IS NULL) THEN N'' WHEN ([Extent1].[Discriminator] = N'Dog') THEN N'Canis lupus' WHEN ([Extent1].[Discriminator] = N'HoneyBee') THEN N'Apis mellifera' END + N' : ' + CASE WHEN ((CASE WHEN ([Extent1].[Discriminator] = N'Dog') THEN cast(1 as bit) ELSE cast(0 as bit) END) = 1) THEN N'True' WHEN ((CASE WHEN ([Extent1].[Discriminator] = N'Dog') THEN cast(1 as bit) ELSE cast(0 as bit) END) = 0) THEN N'False' ELSE N'' END AS [C1]
+    CASE WHEN (CASE WHEN ([Extent1].[Discriminator] = N'HoneyBee') THEN N'Apis mellifera' WHEN ([Extent1].[Discriminator] = N'Dog') THEN N'Canis lupus' END IS NULL) THEN N'' WHEN ([Extent1].[Discriminator] = N'HoneyBee') THEN N'Apis mellifera' WHEN ([Extent1].[Discriminator] = N'Dog') THEN N'Canis lupus' END + N' : ' + CASE WHEN ((CASE WHEN ([Extent1].[Discriminator] = N'HoneyBee') THEN cast(0 as bit) WHEN ([Extent1].[Discriminator] = N'Dog') THEN cast(1 as bit) ELSE cast(0 as bit) END) = 1) THEN N'True' WHEN ((CASE WHEN ([Extent1].[Discriminator] = N'HoneyBee') THEN cast(0 as bit) WHEN ([Extent1].[Discriminator] = N'Dog') THEN cast(1 as bit) ELSE cast(0 as bit) END) = 0) THEN N'False' ELSE N'' END AS [C1]
     FROM [dbo].[LivingBeeings] AS [Extent1]
     WHERE ([Extent1].[Discriminator] IN (N'Dog',N'HoneyBee',N'Person')) AND ([Extent1].[Discriminator] IN (N'Dog',N'HoneyBee'))
 ```
@@ -257,7 +257,7 @@ SELECT
 SELECT 
     [Extent1].[Id] AS [Id]
     FROM [dbo].[LivingBeeings] AS [Extent1]
-    WHERE ([Extent1].[Discriminator] IN (N'Dog',N'HoneyBee',N'Person')) AND (N'Human' = (CASE WHEN ([Extent1].[Discriminator] = N'Dog') THEN N'Canis lupus' WHEN ([Extent1].[Discriminator] = N'HoneyBee') THEN N'Apis mellifera' WHEN ([Extent1].[Discriminator] = N'Person') THEN N'Human' END))
+    WHERE ([Extent1].[Discriminator] IN (N'Dog',N'HoneyBee',N'Person')) AND (N'Human' = (CASE WHEN ([Extent1].[Discriminator] = N'Person') THEN N'Human' WHEN ([Extent1].[Discriminator] = N'HoneyBee') THEN N'Apis mellifera' WHEN ([Extent1].[Discriminator] = N'Dog') THEN N'Canis lupus' END))
 ```
 
   * Where Filters On Multiple Levels Of Abstract Members Over Tph Hierarchy (line 103)
@@ -267,7 +267,7 @@ SELECT
 SELECT 
     [Extent1].[Id] AS [Id]
     FROM [dbo].[LivingBeeings] AS [Extent1]
-    WHERE ([Extent1].[Discriminator] IN (N'Dog',N'HoneyBee',N'Person')) AND ([Extent1].[Discriminator] IN (N'Dog',N'HoneyBee')) AND (N'Apis mellifera : False' = (CASE WHEN (CASE WHEN ([Extent1].[Discriminator] = N'Dog') THEN N'Canis lupus' WHEN ([Extent1].[Discriminator] = N'HoneyBee') THEN N'Apis mellifera' END IS NULL) THEN N'' WHEN ([Extent1].[Discriminator] = N'Dog') THEN N'Canis lupus' WHEN ([Extent1].[Discriminator] = N'HoneyBee') THEN N'Apis mellifera' END + N' : ' + CASE WHEN ((CASE WHEN ([Extent1].[Discriminator] = N'Dog') THEN cast(1 as bit) ELSE cast(0 as bit) END) = 1) THEN N'True' WHEN ((CASE WHEN ([Extent1].[Discriminator] = N'Dog') THEN cast(1 as bit) ELSE cast(0 as bit) END) = 0) THEN N'False' ELSE N'' END))
+    WHERE ([Extent1].[Discriminator] IN (N'Dog',N'HoneyBee',N'Person')) AND ([Extent1].[Discriminator] IN (N'Dog',N'HoneyBee')) AND (N'Apis mellifera : False' = (CASE WHEN (CASE WHEN ([Extent1].[Discriminator] = N'HoneyBee') THEN N'Apis mellifera' WHEN ([Extent1].[Discriminator] = N'Dog') THEN N'Canis lupus' END IS NULL) THEN N'' WHEN ([Extent1].[Discriminator] = N'HoneyBee') THEN N'Apis mellifera' WHEN ([Extent1].[Discriminator] = N'Dog') THEN N'Canis lupus' END + N' : ' + CASE WHEN ((CASE WHEN ([Extent1].[Discriminator] = N'HoneyBee') THEN cast(0 as bit) WHEN ([Extent1].[Discriminator] = N'Dog') THEN cast(1 as bit) ELSE cast(0 as bit) END) = 1) THEN N'True' WHEN ((CASE WHEN ([Extent1].[Discriminator] = N'HoneyBee') THEN cast(0 as bit) WHEN ([Extent1].[Discriminator] = N'Dog') THEN cast(1 as bit) ELSE cast(0 as bit) END) = 0) THEN N'False' ELSE N'' END))
 ```
 
 

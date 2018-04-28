@@ -11,15 +11,21 @@ namespace DelegateDecompiler
     {
         public static LambdaExpression Decompile(MethodInfo method)
         {
+            return Decompile(method, null);
+        }
+
+        public static LambdaExpression Decompile(MethodInfo method, Type declaringType)
+        {
             var args = method.GetParameters()
                 .Select(p => (Address) Expression.Parameter(p.ParameterType, p.Name))
                 .ToList();
 
+            var methodType = declaringType ?? method.DeclaringType;
             if (!method.IsStatic)
-                args.Insert(0, Expression.Parameter(method.DeclaringType, "this"));
+                args.Insert(0, Expression.Parameter(methodType, "this"));
 
             var expression = method.IsVirtual
-                ? DecompileAbstract(method.GetBaseDefinition(), args)
+                ? DecompileVirtual(methodType, method, args)
                 : DecompileConcrete(method, args);
 
             var optimizedExpression = new OptimizeExpressionVisitor().Visit(expression);
@@ -39,11 +45,11 @@ namespace DelegateDecompiler
             return Processor.Process(locals, args, instructions.First(), method.ReturnType);
         }
 
-        static Expression DecompileAbstract(MethodInfo method, IList<Address> args)
+        static Expression DecompileVirtual(Type declaringType, MethodInfo method, IList<Address> args)
         {
-            var declaringType = method.DeclaringType ??
-                                throw new InvalidOperationException($"Method {method.Name} does not have a declaring type");
-           
+            if (declaringType == null)
+                throw new InvalidOperationException($"Method {method.Name} does not have a declaring type");
+
             var defaultValueExpression = ExpressionHelper.Default(method.ReturnType);
 
             var @this = args[0].Expression;
