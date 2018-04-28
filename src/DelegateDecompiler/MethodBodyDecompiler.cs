@@ -50,18 +50,15 @@ namespace DelegateDecompiler
             if (declaringType == null)
                 throw new InvalidOperationException($"Method {method.Name} does not have a declaring type");
 
-            var defaultValueExpression = ExpressionHelper.Default(method.ReturnType);
-
             var @this = args[0].Expression;
 
-            var result = defaultValueExpression;
+            var result = GetDefaultImplementation(declaringType, method, args);
 
             var childrenTypes = AppDomain.CurrentDomain.GetAssemblies()
                 .SelectMany(a => a.GetTypes())
                 .Where(t => t.IsSubclassOf(declaringType))
                 .OrderBy(t => t, new TypeHierarchyComparer());
 
-            //Create a global is-as expression for all children types;
             foreach (var type in childrenTypes)
             {
                 var declaredMethod = GetDeclaredMethod(type, method);
@@ -77,6 +74,20 @@ namespace DelegateDecompiler
             }
 
             return result;
+        }
+
+        private static Expression GetDefaultImplementation(Type declaringType, MethodInfo method, IList<Address> args)
+        {
+            for (var type = declaringType; type != null && type != typeof(object); type = type.BaseType)
+            {
+                var declaredMethod = GetDeclaredMethod(type, method);
+                if (declaredMethod != null && !declaredMethod.IsAbstract)
+                {
+                    return DecompileConcrete(declaredMethod, args);
+                }
+            }
+
+            return ExpressionHelper.Default(method.ReturnType);
         }
 
         static MethodInfo GetDeclaredMethod(Type type, MethodInfo method)
