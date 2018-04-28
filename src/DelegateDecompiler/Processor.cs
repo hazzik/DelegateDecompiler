@@ -358,7 +358,7 @@ namespace DelegateDecompiler
                     else if (state.Instruction.OpCode == OpCodes.Brfalse ||
                              state.Instruction.OpCode == OpCodes.Brfalse_S)
                     {
-                        state.Instruction = ConditionalBranch(state, val => Expression.Equal(val, Default(val.Type)));
+                        state.Instruction = ConditionalBranch(state, val => Expression.Equal(val, ExpressionHelper.Default(val.Type)));
                         continue;
                     }
                     else if (state.Instruction.OpCode == OpCodes.Brtrue ||
@@ -372,7 +372,7 @@ namespace DelegateDecompiler
                         }
                         else
                         {
-                            state.Instruction = ConditionalBranch(state, val => val.Type == typeof(bool) ? val : Expression.NotEqual(val, Default(val.Type)));
+                            state.Instruction = ConditionalBranch(state, val => val.Type == typeof(bool) ? val : Expression.NotEqual(val, ExpressionHelper.Default(val.Type)));
                             continue;
                         }
                     }
@@ -662,7 +662,7 @@ namespace DelegateDecompiler
                     {
                         var address = state.Stack.Pop();
                         var type = (Type) state.Instruction.Operand;
-                        address.Expression = Default(type);
+                        address.Expression = ExpressionHelper.Default(type);
                     }
                     else if (state.Instruction.OpCode == OpCodes.Newarr)
                     {
@@ -837,17 +837,6 @@ namespace DelegateDecompiler
                 return Expression.Convert(expression, expression.Type.GetEnumUnderlyingType());
 
             return expression;
-        }
-
-        static Expression Default(Type type)
-        {
-            if (type.IsValueType)
-            {
-                // LINQ to entities and possibly other providers don't support Expression.Default, so this gets the default value and then uses an Expression.Constant instead
-                return Expression.Constant(Activator.CreateInstance(type), type);
-            }
-
-            return Expression.Constant(null, type);
         }
 
         Instruction ConditionalBranch(ProcessorState state, Func<Expression, Expression> condition)

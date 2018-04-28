@@ -1,6 +1,8 @@
 ﻿// Contributed by @JonPSmith (GitHub) www.thereformedprogrammer.com
 
 using System.Data.Entity;
+using DelegateDecompiler.EntityFramework.Tests.EfItems.Abstracts;
+using DelegateDecompiler.EntityFramework.Tests.EfItems.Concretes;
 
 namespace DelegateDecompiler.EntityFramework.Tests.EfItems
 {
@@ -18,6 +20,8 @@ namespace DelegateDecompiler.EntityFramework.Tests.EfItems
         public DbSet<EfGrandChild> EfGrandChildren { get; set; }
 
         public DbSet<EfPerson> EfPersons { get; set; }
+
+        public DbSet<LivingBeeing> LivingBeeing { get; set; }
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {

@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <Import Project="..\..\DelegateDecompiler.props" />
 
   <PropertyGroup>
@@ -11,5 +11,4 @@
   <ItemGroup>
     <PackageReference Include="mono.reflection" Version="1.1.0" />
   </ItemGroup>
-
 </Project>

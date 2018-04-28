@@ -2,7 +2,7 @@
 
 using System.ComponentModel.DataAnnotations;
 
-namespace DelegateDecompiler.EntityFramework.Tests.EfItems
+namespace DelegateDecompiler.EntityFramework.Tests.EfItems.Concretes
 {
     public class EfPerson
     {

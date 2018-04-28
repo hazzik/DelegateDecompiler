@@ -3,7 +3,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace DelegateDecompiler.EntityFramework.Tests.EfItems
+namespace DelegateDecompiler.EntityFramework.Tests.EfItems.Concretes
 {
     public class EfChild
     {
