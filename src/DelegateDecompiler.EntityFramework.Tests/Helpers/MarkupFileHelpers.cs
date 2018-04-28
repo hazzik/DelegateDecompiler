@@ -65,8 +65,10 @@ namespace DelegateDecompiler.EntityFramework.Tests.Helpers
             {
                 @"\bin\debug",
                 @"\bin\debug\net45",
+                @"\bin\debug\netcoreapp2.0",
                 @"\bin\release",
-                @"\bin\release\net45"
+                @"\bin\release\net45",
+                @"\bin\release\netcoreapp2.0"
             };
             foreach (var ending in endings)
             {

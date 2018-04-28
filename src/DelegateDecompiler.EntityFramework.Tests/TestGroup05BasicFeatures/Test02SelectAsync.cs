@@ -1,10 +1,15 @@
 ﻿// Contributed by @JonPSmith (GitHub) www.thereformedprogrammer.com
 
-using System.Data.Entity;
 using System.Linq;
 using System.Threading.Tasks;
 using DelegateDecompiler.EntityFramework.Tests.Helpers;
 using NUnit.Framework;
+#if EF_CORE
+using DelegateDecompiler.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
+#else
+using System.Data.Entity;
+#endif
 
 namespace DelegateDecompiler.EntityFramework.Tests.TestGroup05BasicFeatures
 {

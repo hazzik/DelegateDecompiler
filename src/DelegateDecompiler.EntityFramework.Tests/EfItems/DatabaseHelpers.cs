@@ -94,23 +94,22 @@ namespace DelegateDecompiler.EntityFramework.Tests.EfItems
 
         private static ICollection<LivingBeeing> InitializeLivingBeeings()
         {
-            var animal1 = new Dog {Id = 1, Age = 2};
-            var animal2 = new Dog {Id = 2, Age = 3};
+            var animal1 = new Dog { Age = 2};
+            var animal2 = new Dog { Age = 3};
             return new List<LivingBeeing>
             {
                 animal1,
                 animal2,
-                new HoneyBee {Id = 3},
-                new HoneyBee {Id = 4},
-                new Person {Id = 3, Age = 1, Birthdate = new DateTime(1900, 1, 1), Name = "Joseph"},
-                new Person {Id = 4, Age = 2, Birthdate = new DateTime(1900, 1, 2), Name = "Maria"},
+                new HoneyBee(),
+                new HoneyBee(),
+                new Person {Age = 1, Birthdate = new DateTime(1900, 1, 1), Name = "Joseph"},
+                new Person {Age = 2, Birthdate = new DateTime(1900, 1, 2), Name = "Maria"},
                 new Person
                 {
-                    Id = 5,
                     Age = 3,
                     Birthdate = new DateTime(1900, 1, 2),
                     Name = "John Doe",
-                    Animals = new List<Animal> { animal1, animal2 }
+                    Animals = new List<Animal> {animal1, animal2}
                 }
             };
         }
