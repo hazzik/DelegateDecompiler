@@ -1,10 +1,11 @@
 ﻿// Contributed by @JonPSmith (GitHub) www.thereformedprogrammer.com
 
 using System.ComponentModel.DataAnnotations;
+using DelegateDecompiler.EntityFramework.Tests.EfItems.Abstracts;
 
 namespace DelegateDecompiler.EntityFramework.Tests.EfItems.Concretes
 {
-    public class EfPerson
+    public class EfPerson : IPerson
     {
         public int EfPersonId { get; set; }
 

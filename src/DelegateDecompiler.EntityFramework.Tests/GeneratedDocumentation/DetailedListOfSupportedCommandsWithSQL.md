@@ -1,6 +1,6 @@
 Detail With Sql of supported commands
 ============
-## Documentation produced for DelegateDecompiler, version 0.23.1 on Saturday, 28 April 2018 21:03
+## Documentation produced for DelegateDecompiler, version 0.23.1 on Saturday, 28 April 2018 22:35
 
 This file documents what linq commands **DelegateDecompiler** supports when
 working with [Entity Framework v6.1](http://msdn.microsoft.com/en-us/data/aa937723) (EF).
@@ -80,7 +80,7 @@ SELECT
     WHERE [Extent1].[Discriminator] IN (N'Dog',N'HoneyBee',N'Person')
 ```
 
-  * Select Abstract Member Over Tph Hierarchy After Restricting To Subtype (line 140)
+  * Select Abstract Member Over Tph Hierarchy After Restricting To Subtype (line 138)
      * T-Sql executed is
 
 ```SQL
@@ -90,7 +90,7 @@ SELECT
     WHERE ([Extent1].[Discriminator] IN (N'Dog',N'HoneyBee',N'Person')) AND ([Extent1].[Discriminator] IN (N'Dog',N'HoneyBee'))
 ```
 
-  * Select Multiple Levels Of Abstract Members Over Tph Hierarchy (line 157)
+  * Select Multiple Levels Of Abstract Members Over Tph Hierarchy (line 155)
      * T-Sql executed is
 
 ```SQL
@@ -670,6 +670,15 @@ SELECT
 ```SQL
 SELECT 
     CASE WHEN ([Extent1].[NameOrder] = 1) THEN [Extent1].[LastName] + N', ' + [Extent1].[FirstName] + CASE WHEN (CASE WHEN ([Extent1].[MiddleName] IS NULL) THEN N'' ELSE N' ' END IS NULL) THEN N'' WHEN ([Extent1].[MiddleName] IS NULL) THEN N'' ELSE N' ' END ELSE [Extent1].[FirstName] + CASE WHEN (CASE WHEN ([Extent1].[MiddleName] IS NULL) THEN N'' ELSE N' ' END IS NULL) THEN N'' WHEN ([Extent1].[MiddleName] IS NULL) THEN N'' ELSE N' ' END + CASE WHEN ([Extent1].[MiddleName] IS NULL) THEN N'' ELSE [Extent1].[MiddleName] END + N' ' + [Extent1].[LastName] END AS [C1]
+    FROM [dbo].[EfPersons] AS [Extent1]
+```
+
+  * Generic Method Person Handle (line 85)
+     * T-Sql executed is
+
+```SQL
+SELECT 
+    [Extent1].[FirstName] + CASE WHEN (CASE WHEN ([Extent1].[MiddleName] IS NULL) THEN N'' ELSE N' ' END IS NULL) THEN N'' WHEN ([Extent1].[MiddleName] IS NULL) THEN N'' ELSE N' ' END + CASE WHEN ([Extent1].[MiddleName] IS NULL) THEN N'' ELSE [Extent1].[MiddleName] END + N' ' + [Extent1].[LastName] AS [C1]
     FROM [dbo].[EfPersons] AS [Extent1]
 ```
 
