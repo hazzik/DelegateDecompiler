@@ -60,13 +60,17 @@ Again, the `FullName` property will be decompiled:
 bool exists = db.Employees.Any(employee => (employee.FirstName + " " + employee.LastName) == "Test User");
 ```
 
-## Using with [EntityFramework](https://www.nuget.org/packages/DelegateDecompiler.EntityFramework) and other ORMs
+## Using with EntityFramework and other ORMs
 
 If you are using ORM specific features, like EF's `Include`, `AsNoTracking` or NH's `Fetch` then `Decompile` method should be called after all ORM specific methods, otherwise it may not work. Ideally use `Decompile` extension method just before materialization methods such as `ToList`, `ToArray`, `First`, `FirstOrDefault`, `Count`, `Any`, and etc.
 
-### Async Support with [EntityFramework](https://www.nuget.org/packages/DelegateDecompiler.EntityFramework)
+### Async Support with [EntityFramework 6](https://www.nuget.org/packages/DelegateDecompiler.EntityFramework)
 
 The [DelegateDecompiler.EntityFramework](https://nuget.org/packages/DelegateDecompiler.EntityFramework) package provides `DecompileAsync` extension method which adds support for EF's Async operations.
+ 
+### Async Support with [EntityFramework Core](https://www.nuget.org/packages/DelegateDecompiler.EntityFrameworkCore)
+
+The [DelegateDecompiler.EntityFrameworkCore](https://nuget.org/packages/DelegateDecompiler.EntityFrameworkCore) package provides `DecompileAsync` extension method which adds support for EF's Async operations.
  
 # Installation
 
@@ -74,6 +78,7 @@ Available on [NuGet](https://nuget.org/)
 
 * Install-Package [DelegateDecompiler](https://nuget.org/packages/DelegateDecompiler)
 * Install-Package [DelegateDecompiler.EntityFramework](https://nuget.org/packages/DelegateDecompiler.EntityFramework)
+* Install-Package [DelegateDecompiler.EntityFrameworkCore](https://nuget.org/packages/DelegateDecompiler.EntityFrameworkCore)
 
 # License
 
