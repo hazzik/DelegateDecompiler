@@ -7,8 +7,15 @@ namespace DelegateDecompiler.Tests
     [TestFixture]
     public class AbstractMethodTests : DecompilerTestsBase
     {
-        public abstract class A
+        public interface IA
         {
+            string M();
+        }
+
+        public abstract class A : IA
+        {
+            public string M() => "A";
+
             public abstract string M1();
 
             public abstract string M2();
@@ -109,6 +116,14 @@ namespace DelegateDecompiler.Tests
             Expression<Func<A, string>> e = @this => "A";
 
             Test(e, typeof(A).GetMethod(nameof(A.M4)));
+        }
+
+        [Test]
+        public void DecompileInterfaceMethod()
+        {
+            Expression<Func<IA, string>> e = @this => @this is A ? "A" : null;
+
+            Test(e, typeof(IA).GetMethod(nameof(IA.M)));
         }
     }
 }

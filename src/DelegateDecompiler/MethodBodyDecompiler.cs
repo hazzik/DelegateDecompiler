@@ -56,7 +56,7 @@ namespace DelegateDecompiler
 
             var childrenTypes = AppDomain.CurrentDomain.GetAssemblies()
                 .SelectMany(a => a.GetTypes())
-                .Where(t => t.IsSubclassOf(declaringType))
+                .Where(t => declaringType.IsAssignableFrom(t) && t != declaringType)
                 .OrderBy(t => t, new TypeHierarchyComparer());
 
             foreach (var type in childrenTypes)
