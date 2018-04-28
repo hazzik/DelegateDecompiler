@@ -259,8 +259,12 @@ namespace DelegateDecompiler
                     {
                         var value = state.Stack.Pop();
                         var instance = state.Stack.Pop();
-                        var field = (FieldInfo)state.Instruction.Operand;
-                        instance.Expression = BuildMemberInit(instance.Expression, Expression.Bind(field, value));
+                        var field = (FieldInfo) state.Instruction.Operand;
+                        var expression = BuildAssignment(instance.Expression, field, value, out var push);
+                        if (push)
+                            state.Stack.Push(expression);
+                        else
+                            instance.Expression = expression;
                     }
                     else if (state.Instruction.OpCode == OpCodes.Ldloc_0)
                     {
@@ -358,7 +362,7 @@ namespace DelegateDecompiler
                     else if (state.Instruction.OpCode == OpCodes.Brfalse ||
                              state.Instruction.OpCode == OpCodes.Brfalse_S)
                     {
-                        state.Instruction = ConditionalBranch(state, val => Expression.Equal(val, Default(val.Type)));
+                        state.Instruction = ConditionalBranch(state, val => Expression.Equal(val, ExpressionHelper.Default(val.Type)));
                         continue;
                     }
                     else if (state.Instruction.OpCode == OpCodes.Brtrue ||
@@ -372,7 +376,7 @@ namespace DelegateDecompiler
                         }
                         else
                         {
-                            state.Instruction = ConditionalBranch(state, val => val.Type == typeof(bool) ? val : Expression.NotEqual(val, Default(val.Type)));
+                            state.Instruction = ConditionalBranch(state, val => val.Type == typeof(bool) ? val : Expression.NotEqual(val, ExpressionHelper.Default(val.Type)));
                             continue;
                         }
                     }
@@ -662,7 +666,7 @@ namespace DelegateDecompiler
                     {
                         var address = state.Stack.Pop();
                         var type = (Type) state.Instruction.Operand;
-                        address.Expression = Default(type);
+                        address.Expression = ExpressionHelper.Default(type);
                     }
                     else if (state.Instruction.OpCode == OpCodes.Newarr)
                     {
@@ -837,17 +841,6 @@ namespace DelegateDecompiler
                 return Expression.Convert(expression, expression.Type.GetEnumUnderlyingType());
 
             return expression;
-        }
-
-        static Expression Default(Type type)
-        {
-            if (type.IsValueType)
-            {
-                // LINQ to entities and possibly other providers don't support Expression.Default, so this gets the default value and then uses an Expression.Constant instead
-                return Expression.Constant(Activator.CreateInstance(type), type);
-            }
-
-            return Expression.Constant(null, type);
         }
 
         Instruction ConditionalBranch(ProcessorState state, Func<Expression, Expression> condition)
@@ -1064,25 +1057,28 @@ namespace DelegateDecompiler
                 state.Stack.Push(result);
         }
 
-        static MemberInitExpression BuildMemberInit(Expression instance, MemberBinding assignment)
+        static Expression BuildAssignment(Expression instance, MemberInfo member, Expression value, out bool push)
         {
             if (instance.NodeType == ExpressionType.New)
             {
-                return Expression.MemberInit((NewExpression)instance, assignment);
+                push = false;
+                return Expression.MemberInit((NewExpression) instance, Expression.Bind(member, value));
             }
 
             if (instance.NodeType == ExpressionType.MemberInit)
             {
                 var memberInitExpression = (MemberInitExpression) instance;
+                push = false;
                 return Expression.MemberInit(
                     memberInitExpression.NewExpression,
                     new List<MemberBinding>(memberInitExpression.Bindings)
                     {
-                        assignment
+                        Expression.Bind(member, value)
                     });
             }
 
-            throw new NotSupportedException();
+            push = true;
+            return Expression.Assign(Expression.MakeMemberAccess(instance, member), value);
         }
 
         static Expression[] GetArguments(ProcessorState state, MethodBase m)
@@ -1122,16 +1118,25 @@ namespace DelegateDecompiler
             }
             if (m.IsSpecialName)
             {
-                if (m.Name.StartsWith("get_"))
+                if (m.Name.StartsWith("get_") && arguments.Length == 0)
                 {
                     return Expression.Property(instance, m);
                 }
 
-                if (m.Name.StartsWith("set_"))
+                if (m.Name.StartsWith("set_") && arguments.Length == 1)
                 {
-                    var assignment = Expression.Bind(m, arguments.Single());
-                    instance.Expression = BuildMemberInit(instance.Expression, assignment);
-                    return Expression.Empty();
+                    var value = arguments.Single();
+                    var property = Expression.Property(instance, m).Member;
+                    var expression = BuildAssignment(instance.Expression, property, value, out bool push);
+                    if (push)
+                    {
+                        return expression;
+                    }
+                    else
+                    {
+                        instance.Expression = expression;
+                        return Expression.Empty();
+                    }
                 }
 
                 if (m.Name.StartsWith("op_"))

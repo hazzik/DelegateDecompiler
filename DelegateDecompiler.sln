@@ -1,23 +1,30 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+# Visual Studio 15
+VisualStudioVersion = 15.0.26730.3
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DelegateDecompiler", "src\DelegateDecompiler\DelegateDecompiler.csproj", "{11F42698-BB34-4175-9DA8-80BD62171D02}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DelegateDecompiler", "src\DelegateDecompiler\DelegateDecompiler.csproj", "{11F42698-BB34-4175-9DA8-80BD62171D02}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DelegateDecompiler.Tests", "src\DelegateDecompiler.Tests\DelegateDecompiler.Tests.csproj", "{9531F38F-9E2C-4487-B76E-1EEA3AAB5B83}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DelegateDecompiler.Tests", "src\DelegateDecompiler.Tests\DelegateDecompiler.Tests.csproj", "{9531F38F-9E2C-4487-B76E-1EEA3AAB5B83}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{CF17DF9B-3430-4159-9BF3-8F56C6E9887C}"
 	ProjectSection(SolutionItems) = preProject
+		build.cmd = build.cmd
+		DelegateDecompiler.props = DelegateDecompiler.props
 		LICENSE.txt = LICENSE.txt
 		README.md = README.md
+		test.cmd = test.cmd
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DelegateDecompiler.EntityFramework.Tests", "src\DelegateDecompiler.EntityFramework.Tests\DelegateDecompiler.EntityFramework.Tests.csproj", "{CC1F2D70-08F7-4DA0-963C-E1915F233C45}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DelegateDecompiler.EntityFramework.Tests", "src\DelegateDecompiler.EntityFramework.Tests\DelegateDecompiler.EntityFramework.Tests.csproj", "{CC1F2D70-08F7-4DA0-963C-E1915F233C45}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DelegateDecompiler.EntityFramework", "src\DelegateDecompiler.EntityFramework\DelegateDecompiler.EntityFramework.csproj", "{9ACA1ACA-7334-42E3-9FBD-336D4AB5BDF7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DelegateDecompiler.EntityFramework", "src\DelegateDecompiler.EntityFramework\DelegateDecompiler.EntityFramework.csproj", "{9ACA1ACA-7334-42E3-9FBD-336D4AB5BDF7}"
 EndProject
-Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "DelegateDecompiler.Tests.VB", "src\DelegateDecompiler.Tests.VB\DelegateDecompiler.Tests.VB.vbproj", "{19EC81F1-783D-4F53-BCB8-4F87BA3A28EC}"
+Project("{778DAE3C-4631-46EA-AA77-85C1314464D9}") = "DelegateDecompiler.Tests.VB", "src\DelegateDecompiler.Tests.VB\DelegateDecompiler.Tests.VB.vbproj", "{19EC81F1-783D-4F53-BCB8-4F87BA3A28EC}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DelegateDecompiler.EntityFrameworkCore", "src\DelegateDecompiler.EntityFrameworkCore\DelegateDecompiler.EntityFrameworkCore.csproj", "{B0FE6AA7-2C34-42B7-9684-FB1229442761}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DelegateDecompiler.EntityFrameworkCore.Tests", "src\DelegateDecompiler.EntityFrameworkCore.Tests\DelegateDecompiler.EntityFrameworkCore.Tests.csproj", "{BE231144-9777-4DBD-B40D-BE65B24C04B4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -45,8 +52,19 @@ Global
 		{19EC81F1-783D-4F53-BCB8-4F87BA3A28EC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{19EC81F1-783D-4F53-BCB8-4F87BA3A28EC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{19EC81F1-783D-4F53-BCB8-4F87BA3A28EC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B0FE6AA7-2C34-42B7-9684-FB1229442761}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B0FE6AA7-2C34-42B7-9684-FB1229442761}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B0FE6AA7-2C34-42B7-9684-FB1229442761}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B0FE6AA7-2C34-42B7-9684-FB1229442761}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BE231144-9777-4DBD-B40D-BE65B24C04B4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BE231144-9777-4DBD-B40D-BE65B24C04B4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BE231144-9777-4DBD-B40D-BE65B24C04B4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BE231144-9777-4DBD-B40D-BE65B24C04B4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {597F2252-1B98-4351-A9EA-E0712A33B79C}
 	EndGlobalSection
 EndGlobal

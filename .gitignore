@@ -4,6 +4,8 @@ _ReSharper.*
 *.suo
 *.user
 packages
-/src/DelegateDecompiler.EfTests/GeneratedDocumentation/Test file - please ignore.txt
+/src/DelegateDecompiler.EntityFramework.Tests/GeneratedDocumentation/Test file - please ignore.txt
 *.sln.ide
 .vs/
+.vscode/
+.idea/

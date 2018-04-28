@@ -1,6 +1,8 @@
 ﻿// Contributed by @JonPSmith (GitHub) www.thereformedprogrammer.com
 
+using System;
 using System.Linq;
+using DelegateDecompiler.EntityFramework.Tests.EfItems.Abstracts;
 using DelegateDecompiler.EntityFramework.Tests.Helpers;
 using NUnit.Framework;
 
@@ -97,6 +99,57 @@ namespace DelegateDecompiler.EntityFramework.Tests.TestGroup05BasicFeatures
                 //ATTEMPT
                 env.AboutToUseDelegateDecompiler();
                 var dd = env.Db.EfPersons.Select(x => x.GetFullNameNoAttibute()).Decompile().ToList();
+
+                //VERIFY
+                env.CompareAndLogList(linq, dd);
+            }
+        }
+
+        [Test]
+        public void TestSelectAbstractMemberOverTphHierarchy()
+        {
+            using (var env = new MethodEnvironment(classEnv))
+            {
+                //SETUP
+                var linq = env.Db.LivingBeeing.ToList().Select(l => l.Species).ToList();
+
+                //ATTEMPT
+                env.AboutToUseDelegateDecompiler();
+                var dd = env.Db.LivingBeeing.Select(p => p.Species).Decompile().ToList();
+
+                //VERIFY
+                env.CompareAndLogList(linq, dd);
+            }
+        }
+
+        [Test]
+        public void TestSelectAbstractMemberOverTphHierarchyAfterRestrictingToSubtype()
+        {
+            using (var env = new MethodEnvironment(classEnv))
+            {
+                //SETUP
+                var linq = env.Db.LivingBeeing.OfType<Animal>().ToList().Select(p => p.Species).ToList();
+
+                //ATTEMPT
+                env.AboutToUseDelegateDecompiler();
+                var dd = env.Db.LivingBeeing.OfType<Animal>().Select(p => p.Species).Decompile().ToList();
+
+                //VERIFY
+                env.CompareAndLogList(linq, dd);
+            }
+        }
+
+        [Test]
+        public void TestSelectMultipleLevelsOfAbstractMembersOverTphHierarchy()
+        {
+            using (var env = new MethodEnvironment(classEnv))
+            {
+                //SETUP
+                var linq = env.Db.LivingBeeing.OfType<Animal>().ToList().Select(p => p.Species + " : " + p.IsPet).ToList();
+
+                //ATTEMPT
+                env.AboutToUseDelegateDecompiler();
+                var dd = env.Db.LivingBeeing.OfType<Animal>().Select(p => p.Species + " : " + p.IsPet).Decompile().ToList();
 
                 //VERIFY
                 env.CompareAndLogList(linq, dd);

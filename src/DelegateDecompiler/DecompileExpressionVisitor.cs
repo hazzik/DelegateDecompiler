@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -65,7 +63,7 @@ namespace DelegateDecompiler
 
         Expression Decompile(MethodInfo method, Expression instance, IList<Expression> arguments)
         {
-            var expression = method.Decompile();
+            var expression = method.Decompile(instance?.Type);
 
             var expressions = new Dictionary<Expression, Expression>();
             var argIndex = 0;

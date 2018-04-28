@@ -1,0 +1,21 @@
+<Project>
+  <PropertyGroup>
+    <Product>DelegateDecompiler</Product>
+    <Description />
+
+    <Version>0.24.0</Version>
+    <AssemblyVersion>1.0.0.0</AssemblyVersion>
+    <Authors>Alexander Zaytsev</Authors>
+    <Copyright>Copyright (c) Alexander Zaytsev 2012 - 2018</Copyright>
+
+    <PackageLicenseUrl>http://www.opensource.org/licenses/mit-license.php</PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/hazzik/DelegateDecompiler</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/hazzik/DelegateDecompiler.git</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>$(SolutionDir)\DelegateDecompiler.snk</AssemblyOriginatorKeyFile>
+
+    <FileVersion>$(Version)</FileVersion>
+  </PropertyGroup>
+</Project>

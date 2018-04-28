@@ -1,0 +1,45 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="..\..\DelegateDecompiler.props" />
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.0</TargetFramework>
+    <Copyright>Copyright © Dave Glick 2014, Jon Smith 2014, Alexander Zaytsev 2014 - 2018</Copyright>
+    <DefineConstants>$(DefineConstants);EF_CORE</DefineConstants>
+    <RootNamespace>DelegateDecompiler.EntityFramework.Tests</RootNamespace>
+  </PropertyGroup>
+
+
+  <ItemGroup>
+    <Compile Include="..\DelegateDecompiler.EntityFramework.Tests\**\*.cs" Exclude="..\DelegateDecompiler.EntityFramework.Tests\obj\**">
+      <Link>%(Name)</Link>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="..\DelegateDecompiler.EntityFramework.Tests\EntityTypeConfigurationExtensionsTests.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="NUnit" Version="3.10.1" />
+    <PackageReference Include="System.Configuration.ConfigurationManager" Version="4.4.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="2.0.0" PrivateAssets="All" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="2.0.0" PrivateAssets="All" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="2.0.0" />
+    <PackageReference Include="NUnit3TestAdapter" Version="3.10.0" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.7.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <DotNetCliToolReference Include="Microsoft.EntityFrameworkCore.Tools.DotNet" Version="2.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\DelegateDecompiler.EntityFramework.Tests\App.config" Link="App.config" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\DelegateDecompiler.EntityFrameworkCore\DelegateDecompiler.EntityFrameworkCore.csproj" />
+    <ProjectReference Include="..\DelegateDecompiler.Tests\DelegateDecompiler.Tests.csproj" />
+  </ItemGroup>
+
+</Project>
