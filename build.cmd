@@ -1,1 +1,1 @@
-dotnet msbuild DelegateDecompiler.sln /p:Configuration=Release
+dotnet build -c Release DelegateDecompiler.sln

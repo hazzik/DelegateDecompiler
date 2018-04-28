@@ -1,19 +1,19 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <Import Project="..\..\DelegateDecompiler.props" />
 
   <PropertyGroup>
-    <TargetFramework>net40</TargetFramework>
-    <Copyright>Copyright © Alexander Zaytsev 2016 - 2017</Copyright>
+    <TargetFrameworks>net40;net45;netcoreapp2.0</TargetFrameworks>
+    <Copyright>Copyright © Alexander Zaytsev 2016 - 2018</Copyright>
     <Description />
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="nunit" Version="3.7.1" />
+    <PackageReference Include="NUnit" Version="3.10.1" />
   </ItemGroup>
 
-  <ItemGroup Condition="'$(TargetFramework)' != 'net40'">
-    <PackageReference Include="NUnit3TestAdapter" Version="3.8.0" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.3.0" />
+  <ItemGroup Condition="'$(TargetFramework)' == 'netcoreapp2.0'">
+    <PackageReference Include="NUnit3TestAdapter" Version="3.10.0" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.7.0" />
   </ItemGroup>
 
   <ItemGroup>
