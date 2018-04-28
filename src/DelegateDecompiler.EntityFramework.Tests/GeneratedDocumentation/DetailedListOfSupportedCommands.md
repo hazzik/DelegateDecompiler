@@ -1,6 +1,6 @@
 Detail of supported commands
 ============
-## Documentation produced for DelegateDecompiler, version 0.23.1 on Saturday, 28 April 2018 22:35
+## Documentation produced for DelegateDecompiler, version 0.24.0 on Saturday, 28 April 2018 22:35
 
 This file documents what linq commands **DelegateDecompiler** supports when
 working with [Entity Framework v6.1](http://msdn.microsoft.com/en-us/data/aa937723) (EF).
