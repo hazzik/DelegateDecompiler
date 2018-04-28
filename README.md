@@ -3,8 +3,6 @@ DelegateDecompiler
 
 A tool which is able to decompile a delegate or a method body to its lambda representation
 
-<a href='https://pledgie.com/campaigns/27088'><img alt='Click here to lend your support to: DelegateDecompiler and make a donation at pledgie.com !' src='https://pledgie.com/campaigns/27088.png?skin_name=chrome' border='0' ></a>
-
 ## Examples
 
 ### Using computed properties in linq.
