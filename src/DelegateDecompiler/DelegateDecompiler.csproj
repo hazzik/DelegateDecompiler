@@ -1,15 +1,12 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <Import Project="..\..\DelegateDecompiler.props" />
-
   <PropertyGroup>
     <TargetFramework>net40</TargetFramework>
     <Description>A library which is able to decompile a delegate or a method body to its lambda representation</Description>
     <PackageTags>LINQ computed-properties computedproperties decompiler decompilation computed properties expressions expression-tree IL</PackageTags>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
-
   <ItemGroup>
     <PackageReference Include="mono.reflection" Version="1.1.0" />
   </ItemGroup>
-
 </Project>

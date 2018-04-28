@@ -101,7 +101,7 @@ namespace DelegateDecompiler
 
         Expression Decompile(MethodInfo method, Expression instance, IList<Expression> arguments)
         {
-            var expression = method.Decompile(expressionMainType);
+            var expression = method.Decompile();
 
             var expressions = new Dictionary<Expression, Expression>();
             var argIndex = 0;
