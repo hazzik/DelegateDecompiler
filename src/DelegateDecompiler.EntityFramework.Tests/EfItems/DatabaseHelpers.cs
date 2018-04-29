@@ -94,15 +94,16 @@ namespace DelegateDecompiler.EntityFramework.Tests.EfItems
 
         private static ICollection<LivingBeeing> InitializeLivingBeeings()
         {
-            var animal1 = new Dog { Age = 2 };
-            var animal2 = new Dog { Age = 3 };
+            var dog1 = new Dog { Age = 2 };
+            var dog2 = new Dog { Age = 3 };
+            var cat1 = new Cat() { Age = 7 };
             return new List<LivingBeeing>
             {
-                animal1,
-                animal2,
+                dog1,
+                dog2,
+                cat1,
                 new HoneyBee(),
                 new HoneyBee(),
-                new Cat() { Age = 7 },
                 new Cat() { Age = 3 },
                 new HoneyBee(),
                 new Person {Age = 1, Birthdate = new DateTime(1900, 1, 1), Name = "Joseph"},
@@ -112,7 +113,7 @@ namespace DelegateDecompiler.EntityFramework.Tests.EfItems
                     Age = 3,
                     Birthdate = new DateTime(1900, 1, 2),
                     Name = "John Doe",
-                    Animals = new List<Animal> {animal1, animal2}
+                    Animals = new List<Animal> {dog1, dog2, cat1, }
                 }
             };
         }

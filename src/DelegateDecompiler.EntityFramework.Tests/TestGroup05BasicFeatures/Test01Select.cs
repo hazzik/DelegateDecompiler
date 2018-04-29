@@ -155,8 +155,8 @@ namespace DelegateDecompiler.EntityFramework.Tests.TestGroup05BasicFeatures
             }
         }
 
-        [Test]
-        public void TestSelectWithBaseMembersOverTphHierarchy()
+        [Test] //TODO handle this case : it should currently fail due to base.Species call
+        public void TestSelectWithCallToBaseMembersOverTphHierarchy()
         {
             using (var env = new MethodEnvironment(classEnv))
             {
@@ -170,6 +170,18 @@ namespace DelegateDecompiler.EntityFramework.Tests.TestGroup05BasicFeatures
 
                 //VERIFY
                 env.CompareAndLogList(linq, dd);
+            }
+        }
+
+        [Test] //TODO handle this case  : it should currently fail due to Linq method call
+        public void TestCanUseLinqFunctionsInLambda()
+        {
+            using (var env = new MethodEnvironment(classEnv))
+            {
+                env.AboutToUseDelegateDecompiler();
+                var persons = env.Db.Set<Person>();
+                var expr = env.Db.Set<Cat>().Where(Cat.IsAdopted(persons)).Decompile();
+                var result = expr.ToList();
             }
         }
     }

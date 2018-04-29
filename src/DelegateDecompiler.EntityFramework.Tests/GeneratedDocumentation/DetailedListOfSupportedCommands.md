@@ -1,6 +1,6 @@
 Detail of supported commands
 ============
-## Documentation produced for DelegateDecompiler, version 0.24.0 on Saturday, 28 April 2018 22:35
+## Documentation produced for DelegateDecompiler, version 0.24.0 on Sunday, 29 April 2018 09:31
 
 This file documents what linq commands **DelegateDecompiler** supports when
 working with [Entity Framework v6.1](http://msdn.microsoft.com/en-us/data/aa937723) (EF).
@@ -30,15 +30,18 @@ More will appear as we move forward.*
   * Int Equals Constant (line 70)
   * Select Property Without Computed Attribute (line 87)
   * Select Method Without Computed Attribute (line 104)
-  * Select Abstract Member Over Tph Hierarchy (line 121)
-  * Select Abstract Member Over Tph Hierarchy After Restricting To Subtype (line 138)
-  * Select Multiple Levels Of Abstract Members Over Tph Hierarchy (line 155)
+- **Not Supported**
+  * Select Abstract Member Over Tph Hierarchy (line 117)
+  * Select Abstract Member Over Tph Hierarchy After Restricting To Subtype (line 134)
+  * Select Multiple Levels Of Abstract Members Over Tph Hierarchy (line 151)
+  * Select With Call To Base Members Over Tph Hierarchy (line 168)
+  * Can Use Linq Functions In Lambda (line 182)
 
 #### [Select Async](../TestGroup05BasicFeatures/Test02SelectAsync.cs):
 - Supported
-  * Bool Equals Constant Async (line 34)
-  * Bool Equals Static Variable To Array Async (line 53)
-  * Int Equals Constant (line 70)
+  * Bool Equals Constant Async (line 39)
+  * Bool Equals Static Variable To Array Async (line 58)
+  * Int Equals Constant (line 75)
 
 #### [Equals And Not Equals](../TestGroup05BasicFeatures/Test03EqualsAndNotEquals.cs):
 - Supported
@@ -60,8 +63,9 @@ More will appear as we move forward.*
   * Where Bool Equals Constant (line 33)
   * Where Bool Equals Static Variable (line 52)
   * Where Int Equals Constant (line 69)
-  * Where Filters On Abstract Members Over Tph Hierarchy (line 86)
-  * Where Filters On Multiple Levels Of Abstract Members Over Tph Hierarchy (line 103)
+- **Not Supported**
+  * Where Filters On Abstract Members Over Tph Hierarchy (line 82)
+  * Where Filters On Multiple Levels Of Abstract Members Over Tph Hierarchy (line 99)
 
 #### [Single](../TestGroup05BasicFeatures/Test10Single.cs):
 - Supported
@@ -69,7 +73,7 @@ More will appear as we move forward.*
 
 #### [Single Async](../TestGroup05BasicFeatures/Test11SingleAsync.cs):
 - Supported
-  * Single Int Equals Unique Value Async (line 41)
+  * Single Int Equals Unique Value Async (line 46)
 
 
 ### Group: Order Take

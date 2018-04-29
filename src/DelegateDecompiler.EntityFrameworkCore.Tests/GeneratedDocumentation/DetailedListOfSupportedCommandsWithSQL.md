@@ -1,6 +1,6 @@
 Detail With Sql of supported commands
 ============
-## Documentation produced for DelegateDecompiler, version 0.24.0 on Sunday, 29 April 2018 02:03
+## Documentation produced for DelegateDecompiler, version 0.24.0 on Sunday, 29 April 2018 09:32
 
 This file documents what linq commands **DelegateDecompiler** supports when
 working with [Entity Framework Core](https://docs.microsoft.com/en-us/ef/core/) (EF).
@@ -60,6 +60,12 @@ More will appear as we move forward.*
 
 ```
 
+- **Not Supported**
+  * Select Abstract Member Over Tph Hierarchy (line 121)
+  * Select Abstract Member Over Tph Hierarchy After Restricting To Subtype (line 138)
+  * Select Multiple Levels Of Abstract Members Over Tph Hierarchy (line 155)
+  * Select With Call To Base Members Over Tph Hierarchy (line 173)
+  * Can Use Linq Functions In Lambda (line 182)
 
 #### [Select Async](../TestGroup05BasicFeatures/Test02SelectAsync.cs):
 - Supported
@@ -177,6 +183,20 @@ More will appear as we move forward.*
 
 ```
 
+  * Where Filters On Abstract Members Over Tph Hierarchy (line 86)
+     * T-Sql executed is
+
+```SQL
+
+```
+
+  * Where Filters On Multiple Levels Of Abstract Members Over Tph Hierarchy (line 103)
+     * T-Sql executed is
+
+```SQL
+
+```
+
 
 #### [Single](../TestGroup05BasicFeatures/Test10Single.cs):
 - Supported
@@ -201,16 +221,82 @@ More will appear as we move forward.*
 
 ### Group: Order Take
 #### [Order By](../TestGroup10OrderTake/Test01OrderBy.cs):
+- Supported
+  * Order By Children Count (line 33)
+     * T-Sql executed is
+
+```SQL
+
+```
+
+  * Order By Children Count Then By String Length (line 51)
+     * T-Sql executed is
+
+```SQL
+
+```
+
+  * Where Any Children Then Order By Children Count (line 69)
+     * T-Sql executed is
+
+```SQL
+
+```
+
 
 #### [Skip Take](../TestGroup10OrderTake/Test02SkipTake.cs):
+- Supported
+  * Order By Children Count Then Take (line 33)
+     * T-Sql executed is
+
+```SQL
+
+```
+
+  * Order By Children Count Then Skip And Take (line 51)
+     * T-Sql executed is
+
+```SQL
+
+```
+
+  * Where Any Children Then Order By Then Skip Take (line 69)
+     * T-Sql executed is
+
+```SQL
+
+```
+
 
 
 ### Group: Quantifier Operators
 #### [Any](../TestGroup12QuantifierOperators/Test01Any.cs):
+- Supported
+  * Any Children (line 32)
+     * T-Sql executed is
+
+```SQL
+
+```
+
+  * Any Children With Filter (line 49)
+     * T-Sql executed is
+
+```SQL
+
+```
+
 
 #### [All](../TestGroup12QuantifierOperators/Test02All.cs):
 - Supported
   * Singleton All Filter (line 32)
+     * T-Sql executed is
+
+```SQL
+
+```
+
+  * All Filter On Children Int (line 49)
      * T-Sql executed is
 
 ```SQL
@@ -231,8 +317,66 @@ More will appear as we move forward.*
 
 ### Group: Aggregation
 #### [Count](../TestGroup15Aggregation/Test01Count.cs):
+- Supported
+  * Count Children (line 33)
+     * T-Sql executed is
+
+```SQL
+
+```
+
+  * Count Children With Filter (line 51)
+     * T-Sql executed is
+
+```SQL
+
+```
+
+  * Count Children With Filter By Closure (line 69)
+     * T-Sql executed is
+
+```SQL
+
+```
+
+  * Count Children With Filter By External Closure (line 88)
+     * T-Sql executed is
+
+```SQL
+
+```
+
+  * Count Children With Filter By External Closure2 (line 108)
+     * T-Sql executed is
+
+```SQL
+
+```
+
+  * Singleton Count Children With Filter (line 126)
+     * T-Sql executed is
+
+```SQL
+
+```
+
 
 #### [Sum](../TestGroup15Aggregation/Test02Sum.cs):
+- Supported
+  * Singleton Sum Children (line 33)
+     * T-Sql executed is
+
+```SQL
+
+```
+
+  * Sum Count In Children Where Children Can Be None (line 51)
+     * T-Sql executed is
+
+```SQL
+
+```
+
 
 
 ### Group: Types
