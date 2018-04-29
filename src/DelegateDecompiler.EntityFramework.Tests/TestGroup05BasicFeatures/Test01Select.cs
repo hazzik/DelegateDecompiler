@@ -180,7 +180,7 @@ namespace DelegateDecompiler.EntityFramework.Tests.TestGroup05BasicFeatures
             {
                 env.AboutToUseDelegateDecompiler();
                 var persons = env.Db.Set<Person>();
-                var expr = env.Db.Set<Cat>().Where(Cat.IsAdopted(persons)).Decompile();
+                var expr = env.Db.Set<Cat>().Where(c => c.IsAdopted(persons)).Decompile();
                 var result = expr.ToList();
             }
         }

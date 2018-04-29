@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
+﻿using System.Linq;
 
 namespace DelegateDecompiler.EntityFramework.Tests.EfItems.Abstracts
 {
@@ -11,7 +8,10 @@ namespace DelegateDecompiler.EntityFramework.Tests.EfItems.Abstracts
 
         public override bool IsPet => true;
 
-        public static Expression<Func<Cat, bool>> IsAdopted(IEnumerable<Person> persons)
-            => c => persons.Any(p => p.Animals.OfType<Cat>().Contains(c));
+        [Computed]
+        public bool IsAdopted(IQueryable<Person> persons)
+        {
+            return persons.Any(p => p.Animals.OfType<Cat>().Contains(this));
+        }
     }
 }
