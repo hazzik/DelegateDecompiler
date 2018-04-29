@@ -2,7 +2,7 @@
 {
     public class Cat : Feline
     {
-        public override string Species => base.Species + " domesticus";
+        public override string Species => base.Species + " silvestris";
         public override bool IsPet => true;
     }
 }

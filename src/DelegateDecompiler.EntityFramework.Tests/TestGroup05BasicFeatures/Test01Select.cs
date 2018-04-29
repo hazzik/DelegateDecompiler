@@ -165,7 +165,8 @@ namespace DelegateDecompiler.EntityFramework.Tests.TestGroup05BasicFeatures
 
                 //ATTEMPT
                 env.AboutToUseDelegateDecompiler();
-                var dd = env.Db.LivingBeeing.OfType<Cat>().Select(p => p.Species + " : " + p.Age).Decompile().ToList();
+                var ddExpr = env.Db.LivingBeeing.OfType<Cat>().Select(p => p.Species + " : " + p.Age).Decompile();
+                var dd = ddExpr.ToList();
 
                 //VERIFY
                 env.CompareAndLogList(linq, dd);
