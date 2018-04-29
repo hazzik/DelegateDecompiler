@@ -1,14 +1,13 @@
 ﻿// Contributed by @JonPSmith (GitHub) www.thereformedprogrammer.com
 
-using System;
-using System.Linq;
 using DelegateDecompiler.EntityFramework.Tests.EfItems.Abstracts;
 using DelegateDecompiler.EntityFramework.Tests.Helpers;
 using NUnit.Framework;
+using System.Linq;
 
 namespace DelegateDecompiler.EntityFramework.Tests.TestGroup05BasicFeatures
 {
-    class Test01Select
+    internal class Test01Select
     {
         private ClassEnvironment classEnv;
 
@@ -150,6 +149,23 @@ namespace DelegateDecompiler.EntityFramework.Tests.TestGroup05BasicFeatures
                 //ATTEMPT
                 env.AboutToUseDelegateDecompiler();
                 var dd = env.Db.LivingBeeing.OfType<Animal>().Select(p => p.Species + " : " + p.IsPet).Decompile().ToList();
+
+                //VERIFY
+                env.CompareAndLogList(linq, dd);
+            }
+        }
+
+        [Test]
+        public void TestSelectWithBaseMembersOverTphHierarchy()
+        {
+            using (var env = new MethodEnvironment(classEnv))
+            {
+                //SETUP
+                var linq = env.Db.LivingBeeing.OfType<Cat>().ToList().Select(p => p.Species + " : " + p.Age).ToList();
+
+                //ATTEMPT
+                env.AboutToUseDelegateDecompiler();
+                var dd = env.Db.LivingBeeing.OfType<Cat>().Select(p => p.Species + " : " + p.Age).Decompile().ToList();
 
                 //VERIFY
                 env.CompareAndLogList(linq, dd);

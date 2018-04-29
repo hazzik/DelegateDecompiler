@@ -1,0 +1,8 @@
+version: '3'
+
+services:
+  delegatedecompiler.entityframeworkcore.tests:
+    image: delegatedecompilerentityframeworkcoretests
+    build:
+      context: .
+      dockerfile: src\DelegateDecompiler.EntityFrameworkCore.Tests\Dockerfile

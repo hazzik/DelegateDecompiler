@@ -1,10 +1,10 @@
 ﻿// Contributed by @JonPSmith (GitHub) www.thereformedprogrammer.com
 
+using DelegateDecompiler.EntityFramework.Tests.EfItems.Abstracts;
+using DelegateDecompiler.EntityFramework.Tests.EfItems.Concretes;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using DelegateDecompiler.EntityFramework.Tests.EfItems.Abstracts;
-using DelegateDecompiler.EntityFramework.Tests.EfItems.Concretes;
 
 namespace DelegateDecompiler.EntityFramework.Tests.EfItems
 {
@@ -94,13 +94,16 @@ namespace DelegateDecompiler.EntityFramework.Tests.EfItems
 
         private static ICollection<LivingBeeing> InitializeLivingBeeings()
         {
-            var animal1 = new Dog { Age = 2};
-            var animal2 = new Dog { Age = 3};
+            var animal1 = new Dog { Age = 2 };
+            var animal2 = new Dog { Age = 3 };
             return new List<LivingBeeing>
             {
                 animal1,
                 animal2,
                 new HoneyBee(),
+                new HoneyBee(),
+                new Cat() { Age = 7 },
+                new Cat() { Age = 3 },
                 new HoneyBee(),
                 new Person {Age = 1, Birthdate = new DateTime(1900, 1, 1), Name = "Joseph"},
                 new Person {Age = 2, Birthdate = new DateTime(1900, 1, 2), Name = "Maria"},
@@ -113,7 +116,6 @@ namespace DelegateDecompiler.EntityFramework.Tests.EfItems
                 }
             };
         }
-
 
         public static void ResetDatabaseContent(this EfTestDbContext db)
         {
