@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
@@ -55,7 +55,7 @@ namespace DelegateDecompiler
             var result = GetDefaultImplementation(declaringType, method, args);
 
             var childrenTypes = AppDomain.CurrentDomain.GetAssemblies()
-                .SelectMany(a => a.GetTypes())
+                .SelectMany(a => SafeGetTypes(a))
                 .Where(t => declaringType.IsAssignableFrom(t) && t != declaringType)
                 .OrderBy(t => t, new TypeHierarchyComparer());
 
@@ -76,7 +76,19 @@ namespace DelegateDecompiler
             return result;
         }
 
-        private static Expression GetDefaultImplementation(Type declaringType, MethodInfo method, IList<Address> args)
+        static IEnumerable<Type> SafeGetTypes(Assembly a)
+        {
+            try
+            {
+                return a.GetTypes();
+            }
+            catch (ReflectionTypeLoadException e)
+            {
+                return e.Types;
+            }
+        }
+
+        static Expression GetDefaultImplementation(Type declaringType, MethodInfo method, IList<Address> args)
         {
             for (var type = declaringType; type != null && type != typeof(object); type = type.BaseType)
             {
