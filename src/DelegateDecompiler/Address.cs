@@ -27,7 +27,7 @@ namespace DelegateDecompiler
         {
             if (map.ContainsKey(this))
                 return map[this];
-            var result = new Address() { Expression = this.Expression };
+            var result = new Address { Expression = Expression };
             map[this] = result;
             return result;
         }
