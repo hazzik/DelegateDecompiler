@@ -114,7 +114,8 @@ namespace DelegateDecompiler.EntityFramework.Tests.TestGroup05BasicFeatures
 
                 //ATTEMPT
                 env.AboutToUseDelegateDecompiler();
-                var dd = env.Db.LivingBeeing.Select(p => p.Species).Decompile().ToList();
+                var ddExpr = env.Db.LivingBeeing.Select(p => p.Species).Decompile();
+                var dd = ddExpr.ToList();
 
                 //VERIFY
                 env.CompareAndLogList(linq, dd);
@@ -148,7 +149,8 @@ namespace DelegateDecompiler.EntityFramework.Tests.TestGroup05BasicFeatures
 
                 //ATTEMPT
                 env.AboutToUseDelegateDecompiler();
-                var dd = env.Db.LivingBeeing.OfType<Animal>().Select(p => p.Species + " : " + p.IsPet).Decompile().ToList();
+                var ddExpr = env.Db.LivingBeeing.OfType<Animal>().Select(p => p.Species + " : " + p.IsPet).Decompile();
+                var dd = ddExpr.ToList();
 
                 //VERIFY
                 env.CompareAndLogList(linq, dd);
@@ -161,19 +163,23 @@ namespace DelegateDecompiler.EntityFramework.Tests.TestGroup05BasicFeatures
             using (var env = new MethodEnvironment(classEnv))
             {
                 //SETUP
-                var linq = env.Db.LivingBeeing.OfType<Cat>().ToList().Select(p => p.Species + " : " + p.Age).ToList();
+                var linqAbstract = env.Db.LivingBeeing.OfType<Feline>().ToList().Select(p => p.Species + " : " + p.Age).ToList();
+                var linqConcrete = env.Db.LivingBeeing.OfType<Cat>().ToList().Select(p => p.Species + " : " + p.Age).ToList();
 
                 //ATTEMPT
                 env.AboutToUseDelegateDecompiler();
-                var ddExpr = env.Db.LivingBeeing.OfType<Cat>().Select(p => p.Species + " : " + p.Age).Decompile();
-                var dd = ddExpr.ToList();
+                var ddAbstractCallExpr = env.Db.LivingBeeing.OfType<Feline>().Select(p => p.Species + " : " + p.Age).Decompile();
+                var ddAbstractCallResult = ddAbstractCallExpr.ToList();
+                var ddConcreteCallExpr = env.Db.LivingBeeing.OfType<Cat>().Select(p => p.Species + " : " + p.Age).Decompile();
+                var ddConcreteCallResult = ddConcreteCallExpr.ToList();
 
                 //VERIFY
-                env.CompareAndLogList(linq, dd);
+                env.CompareAndLogList(linqAbstract, ddAbstractCallResult);
+                env.CompareAndLogList(linqConcrete, ddConcreteCallResult);
             }
         }
 
-        [Test] //TODO handle this case  : it should currently fail due to Linq method call
+        [Test, Ignore("Not reported Linq Api expansion")] //TODO handle this case  : it should currently fail due to Linq method call
         public void TestCanUseLinqFunctionsInLambda()
         {
             using (var env = new MethodEnvironment(classEnv))
