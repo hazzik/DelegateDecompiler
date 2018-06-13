@@ -185,19 +185,16 @@ namespace DelegateDecompiler.EntityFramework.Tests.TestGroup05BasicFeatures
             using (var env = new MethodEnvironment(classEnv))
             {
                 //SETUP
-                var linqAbstract = env.Db.LivingBeeing.OfType<Feline>().ToList().Select(p => p.Species + " : " + p.Age).ToList();
-                var linqConcrete = env.Db.LivingBeeing.OfType<Cat>().ToList().Select(p => p.Species + " : " + p.Age).ToList();
+                var owner = env.Db.LivingBeeing.OfType<Person>().FirstOrDefault();
+                var linq = env.Db.LivingBeeing.OfType<Animal>().ToList().Select(p => p.IsAdoptedBy(owner)).ToList();
 
                 //ATTEMPT
                 env.AboutToUseDelegateDecompiler();
-                var ddAbstractCallExpr = env.Db.LivingBeeing.OfType<Feline>().Select(p => p.Species + " : " + p.Age).Decompile();
-                var ddAbstractCallResult = ddAbstractCallExpr.ToList();
-                var ddConcreteCallExpr = env.Db.LivingBeeing.OfType<Cat>().Select(p => p.Species + " : " + p.Age).Decompile();
-                var ddConcreteCallResult = ddConcreteCallExpr.ToList();
+                var ddExpr = env.Db.LivingBeeing.OfType<Animal>().Select(p => p.IsAdoptedBy(owner)).Decompile();
+                var dd = ddExpr.ToList();
 
                 //VERIFY
-                env.CompareAndLogList(linqAbstract, ddAbstractCallResult);
-                env.CompareAndLogList(linqConcrete, ddConcreteCallResult);
+                env.CompareAndLogList(linq, dd);
             }
         }
 

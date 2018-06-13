@@ -17,7 +17,8 @@ namespace DelegateDecompiler.EntityFramework.Tests.EfItems.Abstracts
 
         public override bool IsAdoptedBy(Person person)
         {
-            return base.IsAdoptedBy(person) || person.Animals.OfType<Cat>().Contains(this);
+            //simple override to check wether call to base method are supported
+            return base.IsAdoptedBy(person);
         }
     }
 }
