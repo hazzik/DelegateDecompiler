@@ -1,6 +1,6 @@
 Detail With Sql of supported commands
 ============
-## Documentation produced for DelegateDecompiler, version 0.24.0 on Sunday, 29 April 2018 09:31
+## Documentation produced for DelegateDecompiler, version 0.24.0 on Tuesday, 12 June 2018 09:24
 
 This file documents what linq commands **DelegateDecompiler** supports when
 working with [Entity Framework v6.1](http://msdn.microsoft.com/en-us/data/aa937723) (EF).
@@ -25,7 +25,7 @@ More will appear as we move forward.*
 ### Group: Basic Features
 #### [Select](../TestGroup05BasicFeatures/Test01Select.cs):
 - Supported
-  * Bool Equals Constant (line 34)
+  * Bool Equals Constant (line 33)
      * T-Sql executed is
 
 ```SQL
@@ -34,7 +34,7 @@ SELECT
     FROM [dbo].[EfParents] AS [Extent1]
 ```
 
-  * Bool Equals Static Variable (line 53)
+  * Bool Equals Static Variable (line 52)
      * T-Sql executed is
 
 ```SQL
@@ -43,7 +43,7 @@ SELECT
     FROM [dbo].[EfParents] AS [Extent1]
 ```
 
-  * Int Equals Constant (line 70)
+  * Int Equals Constant (line 69)
      * T-Sql executed is
 
 ```SQL
@@ -52,7 +52,7 @@ SELECT
     FROM [dbo].[EfParents] AS [Extent1]
 ```
 
-  * Select Property Without Computed Attribute (line 87)
+  * Select Property Without Computed Attribute (line 86)
      * T-Sql executed is
 
 ```SQL
@@ -61,7 +61,7 @@ SELECT
     FROM [dbo].[EfPersons] AS [Extent1]
 ```
 
-  * Select Method Without Computed Attribute (line 104)
+  * Select Method Without Computed Attribute (line 103)
      * T-Sql executed is
 
 ```SQL
@@ -70,12 +70,64 @@ SELECT
     FROM [dbo].[EfPersons] AS [Extent1]
 ```
 
-- **Not Supported**
-  * Select Abstract Member Over Tph Hierarchy (line 117)
-  * Select Abstract Member Over Tph Hierarchy After Restricting To Subtype (line 134)
-  * Select Multiple Levels Of Abstract Members Over Tph Hierarchy (line 151)
-  * Select With Call To Base Members Over Tph Hierarchy (line 168)
-  * Can Use Linq Functions In Lambda (line 182)
+  * Select Abstract Member Over Tph Hierarchy (line 121)
+     * T-Sql executed is
+
+```SQL
+SELECT 
+    CASE WHEN ([Extent1].[Discriminator] = N'Cat') THEN N'Felis' + N' silvestris' WHEN ([Extent1].[Discriminator] IN (N'Feline',N'Cat')) THEN N'Felis' WHEN ([Extent1].[Discriminator] = N'Dog') THEN N'Canis lupus' WHEN ([Extent1].[Discriminator] = N'Person') THEN N'Human' WHEN ([Extent1].[Discriminator] = N'HoneyBee') THEN N'Apis mellifera' END AS [C1]
+    FROM [dbo].[LivingBeeings] AS [Extent1]
+    WHERE [Extent1].[Discriminator] IN (N'Dog',N'Feline',N'Cat',N'HoneyBee',N'Person')
+```
+
+  * Select Abstract Member Over Tph Hierarchy After Restricting To Subtype (line 138)
+     * T-Sql executed is
+
+```SQL
+SELECT 
+    CASE WHEN ([Extent1].[Discriminator] = N'Dog') THEN N'Canis lupus' WHEN ([Extent1].[Discriminator] = N'HoneyBee') THEN N'Apis mellifera' WHEN ([Extent1].[Discriminator] = N'Cat') THEN N'Felis' + N' silvestris' WHEN ([Extent1].[Discriminator] IN (N'Feline',N'Cat')) THEN N'Felis' END AS [C1]
+    FROM [dbo].[LivingBeeings] AS [Extent1]
+    WHERE ([Extent1].[Discriminator] IN (N'Dog',N'Feline',N'Cat',N'HoneyBee',N'Person')) AND ([Extent1].[Discriminator] IN (N'Dog',N'Feline',N'Cat',N'HoneyBee'))
+```
+
+  * Select Multiple Levels Of Abstract Members Over Tph Hierarchy (line 156)
+     * T-Sql executed is
+
+```SQL
+SELECT 
+    CASE WHEN (CASE WHEN ([Extent1].[Discriminator] = N'Dog') THEN N'Canis lupus' WHEN ([Extent1].[Discriminator] = N'HoneyBee') THEN N'Apis mellifera' WHEN ([Extent1].[Discriminator] = N'Cat') THEN N'Felis' + N' silvestris' WHEN ([Extent1].[Discriminator] IN (N'Feline',N'Cat')) THEN N'Felis' END IS NULL) THEN N'' WHEN ([Extent1].[Discriminator] = N'Dog') THEN N'Canis lupus' WHEN ([Extent1].[Discriminator] = N'HoneyBee') THEN N'Apis mellifera' WHEN ([Extent1].[Discriminator] = N'Cat') THEN N'Felis' + N' silvestris' WHEN ([Extent1].[Discriminator] IN (N'Feline',N'Cat')) THEN N'Felis' END + N' : ' + CASE WHEN (CASE WHEN ((CASE WHEN ([Extent1].[Discriminator] = N'Dog') THEN cast(1 as bit) WHEN ([Extent1].[Discriminator] = N'HoneyBee') THEN cast(0 as bit) WHEN ([Extent1].[Discriminator] = N'Cat') THEN cast(1 as bit) ELSE cast(0 as bit) END) = 1) THEN N'True' ELSE N'False' END IS NULL) THEN N'' WHEN ((CASE WHEN ([Extent1].[Discriminator] = N'Dog') THEN cast(1 as bit) WHEN ([Extent1].[Discriminator] = N'HoneyBee') THEN cast(0 as bit) WHEN ([Extent1].[Discriminator] = N'Cat') THEN cast(1 as bit) ELSE cast(0 as bit) END) = 1) THEN N'True' ELSE N'False' END AS [C1]
+    FROM [dbo].[LivingBeeings] AS [Extent1]
+    WHERE ([Extent1].[Discriminator] IN (N'Dog',N'Feline',N'Cat',N'HoneyBee',N'Person')) AND ([Extent1].[Discriminator] IN (N'Dog',N'Feline',N'Cat',N'HoneyBee'))
+```
+
+  * Select With Call To Base Members Over Tph Hierarchy (line 177)
+     * T-Sql executed is
+
+```SQL
+SELECT 
+    CASE WHEN (CASE WHEN ([Extent1].[Discriminator] = N'Cat') THEN N'Felis' + N' silvestris' ELSE N'Felis' END IS NULL) THEN N'' WHEN ([Extent1].[Discriminator] = N'Cat') THEN N'Felis' + N' silvestris' ELSE N'Felis' END + N' : ' +  CAST( [Extent1].[Age] AS nvarchar(max)) AS [C1]
+    FROM [dbo].[LivingBeeings] AS [Extent1]
+    WHERE [Extent1].[Discriminator] IN (N'Feline',N'Cat')
+SELECT 
+    N'Felis' + N' silvestris' + N' : ' +  CAST( [Extent1].[Age] AS nvarchar(max)) AS [C1]
+    FROM [dbo].[LivingBeeings] AS [Extent1]
+    WHERE [Extent1].[Discriminator] = N'Cat'
+```
+
+  * Select With Call To Base Members Over Tph Hierarchy (line 178)
+     * T-Sql executed is
+
+```SQL
+SELECT 
+    CASE WHEN (CASE WHEN ([Extent1].[Discriminator] = N'Cat') THEN N'Felis' + N' silvestris' ELSE N'Felis' END IS NULL) THEN N'' WHEN ([Extent1].[Discriminator] = N'Cat') THEN N'Felis' + N' silvestris' ELSE N'Felis' END + N' : ' +  CAST( [Extent1].[Age] AS nvarchar(max)) AS [C1]
+    FROM [dbo].[LivingBeeings] AS [Extent1]
+    WHERE [Extent1].[Discriminator] IN (N'Feline',N'Cat')
+SELECT 
+    N'Felis' + N' silvestris' + N' : ' +  CAST( [Extent1].[Age] AS nvarchar(max)) AS [C1]
+    FROM [dbo].[LivingBeeings] AS [Extent1]
+    WHERE [Extent1].[Discriminator] = N'Cat'
+```
+
 
 #### [Select Async](../TestGroup05BasicFeatures/Test02SelectAsync.cs):
 - Supported
@@ -226,9 +278,26 @@ SELECT
     WHERE 123 = [Extent1].[ParentInt]
 ```
 
-- **Not Supported**
-  * Where Filters On Abstract Members Over Tph Hierarchy (line 82)
-  * Where Filters On Multiple Levels Of Abstract Members Over Tph Hierarchy (line 99)
+  * Where Filters On Abstract Members Over Tph Hierarchy (line 86)
+     * T-Sql executed is
+
+```SQL
+SELECT 
+    [Extent1].[Id] AS [Id]
+    FROM [dbo].[LivingBeeings] AS [Extent1]
+    WHERE ([Extent1].[Discriminator] IN (N'Dog',N'Feline',N'Cat',N'HoneyBee',N'Person')) AND (N'Human' = (CASE WHEN ([Extent1].[Discriminator] = N'Cat') THEN N'Felis' + N' silvestris' WHEN ([Extent1].[Discriminator] IN (N'Feline',N'Cat')) THEN N'Felis' WHEN ([Extent1].[Discriminator] = N'Dog') THEN N'Canis lupus' WHEN ([Extent1].[Discriminator] = N'Person') THEN N'Human' WHEN ([Extent1].[Discriminator] = N'HoneyBee') THEN N'Apis mellifera' END))
+```
+
+  * Where Filters On Multiple Levels Of Abstract Members Over Tph Hierarchy (line 103)
+     * T-Sql executed is
+
+```SQL
+SELECT 
+    [Extent1].[Id] AS [Id]
+    FROM [dbo].[LivingBeeings] AS [Extent1]
+    WHERE ([Extent1].[Discriminator] IN (N'Dog',N'Feline',N'Cat',N'HoneyBee',N'Person')) AND ([Extent1].[Discriminator] IN (N'Dog',N'Feline',N'Cat',N'HoneyBee')) AND (N'Apis mellifera : False' = (CASE WHEN (CASE WHEN ([Extent1].[Discriminator] = N'Dog') THEN N'Canis lupus' WHEN ([Extent1].[Discriminator] = N'HoneyBee') THEN N'Apis mellifera' WHEN ([Extent1].[Discriminator] = N'Cat') THEN N'Felis' + N' silvestris' WHEN ([Extent1].[Discriminator] IN (N'Feline',N'Cat')) THEN N'Felis' END IS NULL) THEN N'' WHEN ([Extent1].[Discriminator] = N'Dog') THEN N'Canis lupus' WHEN ([Extent1].[Discriminator] = N'HoneyBee') THEN N'Apis mellifera' WHEN ([Extent1].[Discriminator] = N'Cat') THEN N'Felis' + N' silvestris' WHEN ([Extent1].[Discriminator] IN (N'Feline',N'Cat')) THEN N'Felis' END + N' : ' + CASE WHEN (CASE WHEN ((CASE WHEN ([Extent1].[Discriminator] = N'Dog') THEN cast(1 as bit) WHEN ([Extent1].[Discriminator] = N'HoneyBee') THEN cast(0 as bit) WHEN ([Extent1].[Discriminator] = N'Cat') THEN cast(1 as bit) ELSE cast(0 as bit) END) = 1) THEN N'True' ELSE N'False' END IS NULL) THEN N'' WHEN ((CASE WHEN ([Extent1].[Discriminator] = N'Dog') THEN cast(1 as bit) WHEN ([Extent1].[Discriminator] = N'HoneyBee') THEN cast(0 as bit) WHEN ([Extent1].[Discriminator] = N'Cat') THEN cast(1 as bit) ELSE cast(0 as bit) END) = 1) THEN N'True' ELSE N'False' END))
+```
+
 
 #### [Single](../TestGroup05BasicFeatures/Test10Single.cs):
 - Supported

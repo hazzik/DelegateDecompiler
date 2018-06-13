@@ -11,7 +11,13 @@ namespace DelegateDecompiler.EntityFramework.Tests.EfItems.Abstracts
         [Computed]
         public bool IsAdopted(IQueryable<Person> persons)
         {
-            return persons.Any(p => p.Animals.OfType<Cat>().Contains(this));
+            //return persons.Any(p => p.Animals.OfType<Cat>().Contains(this));
+            return persons.Any(p => this.IsAdoptedBy(p));
+        }
+
+        public override bool IsAdoptedBy(Person person)
+        {
+            return base.IsAdoptedBy(person) || person.Animals.OfType<Cat>().Contains(this);
         }
     }
 }

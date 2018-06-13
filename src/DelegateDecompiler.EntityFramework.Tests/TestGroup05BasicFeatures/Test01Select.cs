@@ -145,11 +145,11 @@ namespace DelegateDecompiler.EntityFramework.Tests.TestGroup05BasicFeatures
             using (var env = new MethodEnvironment(classEnv))
             {
                 //SETUP
-                var linq = env.Db.LivingBeeing.OfType<Animal>().ToList().Select(p => p.Species + " : " + p.IsPet).ToList();
+                var linq = env.Db.LivingBeeing.OfType<Animal>().ToList().Select(p => p.Species + " : " + (p.IsPet ? "True" : "False")).ToList();
 
                 //ATTEMPT
                 env.AboutToUseDelegateDecompiler();
-                var ddExpr = env.Db.LivingBeeing.OfType<Animal>().Select(p => p.Species + " : " + p.IsPet).Decompile();
+                var ddExpr = env.Db.LivingBeeing.OfType<Animal>().Select(p => p.Species + " : " + (p.IsPet ? "True" : "False")).Decompile();
                 var dd = ddExpr.ToList();
 
                 //VERIFY
@@ -157,8 +157,30 @@ namespace DelegateDecompiler.EntityFramework.Tests.TestGroup05BasicFeatures
             }
         }
 
-        [Test] //TODO handle this case : it should currently fail due to base.Species call
-        public void TestSelectWithCallToBaseMembersOverTphHierarchy()
+        [Test]
+        public void TestSelectWithCallToBasePropertyOverTphHierarchy()
+        {
+            using (var env = new MethodEnvironment(classEnv))
+            {
+                //SETUP
+                var linqAbstract = env.Db.LivingBeeing.OfType<Feline>().ToList().Select(p => p.Species + " : " + p.Age).ToList();
+                var linqConcrete = env.Db.LivingBeeing.OfType<Cat>().ToList().Select(p => p.Species + " : " + p.Age).ToList();
+
+                //ATTEMPT
+                env.AboutToUseDelegateDecompiler();
+                var ddAbstractCallExpr = env.Db.LivingBeeing.OfType<Feline>().Select(p => p.Species + " : " + p.Age).Decompile();
+                var ddAbstractCallResult = ddAbstractCallExpr.ToList();
+                var ddConcreteCallExpr = env.Db.LivingBeeing.OfType<Cat>().Select(p => p.Species + " : " + p.Age).Decompile();
+                var ddConcreteCallResult = ddConcreteCallExpr.ToList();
+
+                //VERIFY
+                env.CompareAndLogList(linqAbstract, ddAbstractCallResult);
+                env.CompareAndLogList(linqConcrete, ddConcreteCallResult);
+            }
+        }
+
+        [Test]
+        public void TestSelectWithCallToBaseMethodOverTphHierarchy()
         {
             using (var env = new MethodEnvironment(classEnv))
             {

@@ -50,9 +50,9 @@ namespace DelegateDecompiler
                     .SelectMany(a => a.GetTypes())
                     .Where(t => t.IsAssignableFrom(declaringType) && t != declaringType)
                     .OrderBy(t => t, new TypeHierarchyComparer())
-                    .Select(t => t.GetMethod(method.Name, method.GetParameters().Select(p => p.ParameterType).ToArray()))
+                    .Select(t => GetDeclaredMethod(t, method))
+                    .Where(m => m != null && m.ReflectedType == m.DeclaringType && !m.IsAbstract)
                     .Distinct()
-                    //.Where(m => m.ReflectedType == m.DeclaringType && !m.IsAbstract)
                     .Select(m => new Tuple<object, MethodInfo>(args.First(), m))
                 );
                 foreach (var call in baseCalls)
@@ -124,7 +124,10 @@ namespace DelegateDecompiler
         private static MethodInfo GetDeclaredMethod(Type type, MethodInfo method)
         {
             return type.GetMethod(method.Name,
-                BindingFlags.DeclaredOnly | BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+                BindingFlags.DeclaredOnly | BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic,
+                null,
+                method.GetParameters().Select(p => p.ParameterType).ToArray(),
+                null);
         }
     }
 }

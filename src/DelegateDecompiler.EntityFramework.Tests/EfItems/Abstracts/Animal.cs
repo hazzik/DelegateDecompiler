@@ -4,5 +4,11 @@
     {
         [Computed]
         public abstract bool IsPet { get; }
+
+        [Computed]
+        public virtual bool IsAdoptedBy(Person person)
+        {
+            return false;
+        }
     }
 }

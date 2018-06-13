@@ -1,6 +1,6 @@
 Detail With Sql of supported commands
 ============
-## Documentation produced for DelegateDecompiler, version 0.24.0 on Sunday, 29 April 2018 09:32
+## Documentation produced for DelegateDecompiler, version 0.24.0 on Tuesday, 12 June 2018 09:24
 
 This file documents what linq commands **DelegateDecompiler** supports when
 working with [Entity Framework Core](https://docs.microsoft.com/en-us/ef/core/) (EF).
@@ -25,47 +25,76 @@ More will appear as we move forward.*
 ### Group: Basic Features
 #### [Select](../TestGroup05BasicFeatures/Test01Select.cs):
 - Supported
-  * Bool Equals Constant (line 34)
+  * Bool Equals Constant (line 33)
      * T-Sql executed is
 
 ```SQL
 
 ```
 
-  * Bool Equals Static Variable (line 53)
+  * Bool Equals Static Variable (line 52)
      * T-Sql executed is
 
 ```SQL
 
 ```
 
-  * Int Equals Constant (line 70)
+  * Int Equals Constant (line 69)
      * T-Sql executed is
 
 ```SQL
 
 ```
 
-  * Select Property Without Computed Attribute (line 87)
+  * Select Property Without Computed Attribute (line 86)
      * T-Sql executed is
 
 ```SQL
 
 ```
 
-  * Select Method Without Computed Attribute (line 104)
+  * Select Method Without Computed Attribute (line 103)
      * T-Sql executed is
 
 ```SQL
 
 ```
 
-- **Not Supported**
   * Select Abstract Member Over Tph Hierarchy (line 121)
+     * T-Sql executed is
+
+```SQL
+
+```
+
   * Select Abstract Member Over Tph Hierarchy After Restricting To Subtype (line 138)
-  * Select Multiple Levels Of Abstract Members Over Tph Hierarchy (line 155)
-  * Select With Call To Base Members Over Tph Hierarchy (line 173)
-  * Can Use Linq Functions In Lambda (line 182)
+     * T-Sql executed is
+
+```SQL
+
+```
+
+  * Select Multiple Levels Of Abstract Members Over Tph Hierarchy (line 156)
+     * T-Sql executed is
+
+```SQL
+
+```
+
+  * Select With Call To Base Members Over Tph Hierarchy (line 177)
+     * T-Sql executed is
+
+```SQL
+
+```
+
+  * Select With Call To Base Members Over Tph Hierarchy (line 178)
+     * T-Sql executed is
+
+```SQL
+
+```
+
 
 #### [Select Async](../TestGroup05BasicFeatures/Test02SelectAsync.cs):
 - Supported
