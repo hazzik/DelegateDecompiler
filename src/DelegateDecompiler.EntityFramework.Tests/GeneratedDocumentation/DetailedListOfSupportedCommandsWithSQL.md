@@ -1,6 +1,6 @@
 Detail With Sql of supported commands
 ============
-## Documentation produced for DelegateDecompiler, version 0.24.0 on Tuesday, 12 June 2018 09:24
+## Documentation produced for DelegateDecompiler, version 0.24.0 on Friday, 15 June 2018 11:50
 
 This file documents what linq commands **DelegateDecompiler** supports when
 working with [Entity Framework v6.1](http://msdn.microsoft.com/en-us/data/aa937723) (EF).
@@ -100,7 +100,7 @@ SELECT
     WHERE ([Extent1].[Discriminator] IN (N'Dog',N'Feline',N'Cat',N'HoneyBee',N'Person')) AND ([Extent1].[Discriminator] IN (N'Dog',N'Feline',N'Cat',N'HoneyBee'))
 ```
 
-  * Select With Call To Base Members Over Tph Hierarchy (line 177)
+  * Select With Call To Base Property Over Tph Hierarchy (line 177)
      * T-Sql executed is
 
 ```SQL
@@ -114,7 +114,7 @@ SELECT
     WHERE [Extent1].[Discriminator] = N'Cat'
 ```
 
-  * Select With Call To Base Members Over Tph Hierarchy (line 178)
+  * Select With Call To Base Property Over Tph Hierarchy (line 178)
      * T-Sql executed is
 
 ```SQL
@@ -126,6 +126,16 @@ SELECT
     N'Felis' + N' silvestris' + N' : ' +  CAST( [Extent1].[Age] AS nvarchar(max)) AS [C1]
     FROM [dbo].[LivingBeeings] AS [Extent1]
     WHERE [Extent1].[Discriminator] = N'Cat'
+```
+
+  * Select With Call To Base Method Over Tph Hierarchy (line 197)
+     * T-Sql executed is
+
+```SQL
+SELECT 
+    CASE WHEN ([Extent1].[Discriminator] = N'Dog') THEN cast(1 as bit) ELSE cast(0 as bit) END AS [C1]
+    FROM [dbo].[LivingBeeings] AS [Extent1]
+    WHERE ([Extent1].[Discriminator] IN (N'Dog',N'Feline',N'Cat',N'HoneyBee',N'Person')) AND ([Extent1].[Discriminator] IN (N'Dog',N'Feline',N'Cat',N'HoneyBee'))
 ```
 
 

@@ -1,6 +1,6 @@
 Detail of supported commands
 ============
-## Documentation produced for DelegateDecompiler, version 0.24.0 on Tuesday, 12 June 2018 09:24
+## Documentation produced for DelegateDecompiler, version 0.24.0 on Friday, 15 June 2018 11:50
 
 This file documents what linq commands **DelegateDecompiler** supports when
 working with [Entity Framework v6.1](http://msdn.microsoft.com/en-us/data/aa937723) (EF).
@@ -33,8 +33,9 @@ More will appear as we move forward.*
   * Select Abstract Member Over Tph Hierarchy (line 121)
   * Select Abstract Member Over Tph Hierarchy After Restricting To Subtype (line 138)
   * Select Multiple Levels Of Abstract Members Over Tph Hierarchy (line 156)
-  * Select With Call To Base Members Over Tph Hierarchy (line 177)
-  * Select With Call To Base Members Over Tph Hierarchy (line 178)
+  * Select With Call To Base Property Over Tph Hierarchy (line 177)
+  * Select With Call To Base Property Over Tph Hierarchy (line 178)
+  * Select With Call To Base Method Over Tph Hierarchy (line 197)
 
 #### [Select Async](../TestGroup05BasicFeatures/Test02SelectAsync.cs):
 - Supported

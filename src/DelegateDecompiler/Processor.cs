@@ -911,6 +911,13 @@ namespace DelegateDecompiler
 
         internal static Expression AdjustType(Expression expression, Type type)
         {
+            // WORKAROUND - Handles not checking parameters for Linq.Expression.XXX calls
+            if (typeof(Expression).IsAssignableFrom(type))
+            {
+                return expression;
+            }
+            // END OF WORKAROUND
+
             if (expression.Type == type)
             {
                 return expression;
@@ -1052,10 +1059,17 @@ namespace DelegateDecompiler
 
         private static void Call(ProcessorState state, MethodInfo m)
         {
-            var mArgs = GetArguments(state, m);
+            bool methodIsMemberOfExpressionClass = m.DeclaringType == typeof(Expression) /*? && m.IsStatic ?*/;
+            // When calling ?static? Expression.xxx calls non-Expression arguments should be received
+            // as ConstantExpressions and then replaced by their real value
+            var mArgs = GetArguments(state, m, !methodIsMemberOfExpressionClass);
 
             var instance = m.IsStatic ? new Address() : state.Stack.Pop();
-            var result = BuildMethodCallExpression(m, instance, mArgs);
+            var result = methodIsMemberOfExpressionClass
+                ? BuildLinqCallExpression(m, instance, mArgs)
+                : //TODO ignore whatever is specific to .Net (notably eventhandlers...)
+                    BuildMethodCallExpression(m, instance, mArgs);
+            result = TransparentIdentifierRemovingExpressionVisitor.RemoveTransparentIdentifiers(result);
             if (result.Type != typeof(void))
                 state.Stack.Push(result);
         }
@@ -1084,7 +1098,7 @@ namespace DelegateDecompiler
             return Expression.Assign(Expression.MakeMemberAccess(instance, member), value);
         }
 
-        private static Expression[] GetArguments(ProcessorState state, MethodBase m)
+        private static Expression[] GetArguments(ProcessorState state, MethodBase m, bool adjustType = true)
         {
             var parameterInfos = m.GetParameters();
             var mArgs = new Expression[parameterInfos.Length];
@@ -1093,9 +1107,35 @@ namespace DelegateDecompiler
                 var argument = state.Stack.Pop();
                 var parameter = parameterInfos[i];
                 var parameterType = parameter.ParameterType;
-                mArgs[i] = AdjustType(argument, parameterType);
+                mArgs[i] = adjustType ? AdjustType(argument, parameterType) : argument.Expression;
             }
             return mArgs;
+        }
+
+        // Converts compiled calls to Expression.xxx into their lambda representation
+        private static Expression BuildLinqCallExpression(MethodInfo m, Address instance, Expression[] arguments)
+        {
+            var expectedParameters = m.GetParameters();
+            object[] convertedArguments = new object[expectedParameters.Length];
+            for (int i = 0; i < expectedParameters.Count(); i++)
+            {
+                convertedArguments[i] = typeof(Expression).IsAssignableFrom(expectedParameters[i].ParameterType) ? arguments[i] : (arguments[i] as ConstantExpression).Value;
+            }
+            try
+            {
+                if (m.IsStatic)
+                {
+                    return (Expression)m.Invoke(null, convertedArguments);
+                }
+                else
+                {
+                    return (Expression)m.Invoke(convertedArguments[0], convertedArguments.Skip(1).ToArray());
+                }
+            }
+            catch (Exception any)
+            {
+                throw any;
+            }
         }
 
         private static Expression BuildMethodCallExpression(MethodInfo m, Address instance, Expression[] arguments)
@@ -1218,6 +1258,25 @@ namespace DelegateDecompiler
 
                 return Expression.NewArrayInit(arguments[0].Type.GetElementType(), initializers);
             }
+
+            #region Nested Lambdas decompilation
+
+            if (m.Name == "GetTypeFromHandle" && m.DeclaringType == typeof(Type))
+            {
+                return Expression.Constant(Type.GetTypeFromHandle((RuntimeTypeHandle)(arguments[0] as ConstantExpression).Value));
+            }
+
+            if (m.Name == "GetMethodFromHandle" && m.DeclaringType == typeof(MethodBase))
+            {
+                return Expression.Constant(MethodBase.GetMethodFromHandle((RuntimeMethodHandle)(arguments[0] as ConstantExpression).Value));
+            }
+
+            if (m.Name == "GetFieldFromHandle" && m.DeclaringType == typeof(FieldInfo))
+            {
+                return Expression.Constant(FieldInfo.GetFieldFromHandle((RuntimeFieldHandle)(arguments[0] as ConstantExpression).Value));
+            }
+
+            #endregion
 
             if (instance.Expression != null)
                 return Expression.Call(instance, m, arguments);
@@ -1368,6 +1427,19 @@ namespace DelegateDecompiler
         private static void LdArg(ProcessorState state, int index)
         {
             state.Stack.Push(state.Args[index]);
+        }
+
+        private static Expression DiscardConversion(Expression expr)
+        {
+            if (!(expr is UnaryExpression)) return expr;
+            UnaryExpression unwrapped;
+            while ((unwrapped = expr as UnaryExpression) != null)
+            {
+                if (unwrapped.NodeType != ExpressionType.Convert && unwrapped.NodeType != ExpressionType.ConvertChecked)
+                    break;
+                expr = unwrapped.Operand;
+            }
+            return expr;
         }
     }
 }

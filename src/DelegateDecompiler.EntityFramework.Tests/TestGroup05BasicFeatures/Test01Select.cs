@@ -198,14 +198,14 @@ namespace DelegateDecompiler.EntityFramework.Tests.TestGroup05BasicFeatures
             }
         }
 
-        [Test, Ignore("Not reported Linq Api expansion")] //TODO handle this case  : it should currently fail due to Linq method call
+        [Test/*, Ignore("Not reported Linq Api expansion")*/] //TODO handle this case  : it should currently fail due to Linq method call
         public void TestCanUseLinqFunctionsInLambda()
         {
             using (var env = new MethodEnvironment(classEnv))
             {
                 env.AboutToUseDelegateDecompiler();
                 var persons = env.Db.Set<Person>(); //env.Db.LivingBeeing.OfType<Person>();
-                var expr = env.Db.Set<Cat>().Where(c => c.IsAdopted(persons)).Decompile();
+                var expr = env.Db.Set<Cat>().Decompile().Where(c => c.IsAdopted(persons));
                 var result = expr.ToList();
             }
         }
