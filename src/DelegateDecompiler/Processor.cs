@@ -1002,13 +1002,34 @@ namespace DelegateDecompiler
             var value = state.Stack.Pop();
             var index = state.Stack.Pop();
             var array = state.Stack.Pop();
+            var constantArray = array.Expression as ConstantExpression;
+
+            // already handled
+            if (constantArray != null && constantArray.Value.GetType() == typeof(List<Expression>))
+            {
+                var list = constantArray.Value as List<Expression>;
+                list.Add(value);
+                return;
+            }
 
             var newArray = array.Expression as NewArrayExpression;
             if (newArray != null)
             {
                 var expressions = CreateArrayInitExpressions(newArray, value, index);
-                var newArrayInit = Expression.NewArrayInit(array.Type.GetElementType(), expressions);
-                array.Expression = newArrayInit;
+                NewArrayExpression newArrayInit;
+                try
+                {
+                    newArrayInit = Expression.NewArrayInit(array.Type.GetElementType(), expressions);
+                    array.Expression = newArrayInit;
+                }
+
+                // WORKAROUND - set array's items expressions as a constant if not assignable as a
+                // NewArrayInit element
+                catch (InvalidOperationException notArrayInitExpressions)
+                {
+                    array.Expression = Expression.Constant(expressions.ToList(), typeof(List<Expression>));
+                }
+                // END OF WORKAROUND
             }
             else
             {
@@ -1018,6 +1039,11 @@ namespace DelegateDecompiler
 
         private static IEnumerable<Expression> CreateArrayInitExpressions(NewArrayExpression newArray, Expression valueExpression, Expression indexExpression)
         {
+            if (newArray.Type.GetElementType() != valueExpression.Type)
+            {
+                valueExpression = AdjustType(valueExpression, newArray.Type.GetElementType());
+            }
+
             if (newArray.NodeType == ExpressionType.NewArrayInit)
             {
                 var indexGetter = (Func<int>)Expression.Lambda(indexExpression).Compile();
@@ -1117,10 +1143,34 @@ namespace DelegateDecompiler
         {
             var expectedParameters = m.GetParameters();
             object[] convertedArguments = new object[expectedParameters.Length];
+            //TODO work a way to resolve non expression parameters into the expected type without resorting to a switch on the methodname if possible
             for (int i = 0; i < expectedParameters.Count(); i++)
             {
-                convertedArguments[i] = typeof(Expression).IsAssignableFrom(expectedParameters[i].ParameterType) ? arguments[i] : (arguments[i] as ConstantExpression).Value;
+                object arg = arguments[i];
+                bool shouldResolve = !typeof(Expression).IsAssignableFrom(expectedParameters[i].ParameterType);
+                if (shouldResolve)
+                {
+                    if (arg is UnaryExpression && !((arg as UnaryExpression).Operand is IConvertible)) arg = (arg as UnaryExpression).Operand;
+                    if (arg is ConstantExpression) arg = (arg as ConstantExpression).Value;
+                    if (arg is IConvertible && !expectedParameters[i].ParameterType.IsAssignableFrom(arg.GetType())) arg = Convert.ChangeType(arg, expectedParameters[i].ParameterType);
+                    if (arg is IEnumerable<Expression>) arg = (arg as IEnumerable<Expression>).ToArray();
+                }
+                convertedArguments[i] = arg;
             }
+            //WORKAROUND Decompiled instructions may call Expression.Constant with first parameter other than a constant
+            if (m.Name == "Constant" && convertedArguments.First() is Expression)
+            {
+                return convertedArguments.First() as Expression;
+            }
+            //COMPLETION Unwrap the list of ParameterExpressions into an array
+            if (m.Name == "Lambda")
+            {
+                convertedArguments[1] = (convertedArguments[1] as List<Expression>).Cast<ParameterExpression>().ToArray();
+            }
+            //if (m.Name == "Call")
+            //{
+            //    return BuildLinqCallExpression(convertedArguments.ElementAt(1) as MethodInfo, convertedArguments.ElementAt(0) as Expression, convertedArguments.Skip(2).First() as Expression[]);
+            //}
             try
             {
                 if (m.IsStatic)
