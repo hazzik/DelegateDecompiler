@@ -835,6 +835,15 @@ namespace DelegateDecompiler
             return expression;
         }
 
+        private static Expression Unbox(Expression expression)
+        {
+            if (expression.NodeType == ExpressionType.Convert || expression.NodeType == ExpressionType.Convert)
+            {
+                return (expression as UnaryExpression).Operand;
+            }
+            return expression;
+        }
+
         private static Expression ConvertEnumExpressionToUnderlyingType(Expression expression)
         {
             if (expression.Type.IsEnum)
@@ -1150,11 +1159,8 @@ namespace DelegateDecompiler
             if (m.Name == "Call")
             {
                 if ((convertedArguments[1] as MethodInfo).IsStatic) convertedArguments[0] = null;
-                var callParameters = convertedArguments[2] as Expression[];
-                for (int i = 0; i < callParameters.Length; i++)
-                {
-                    callParameters[i] = (Expression)((ConstantExpression)callParameters[i]).Value;
-                }
+                convertedArguments[2] = (convertedArguments[2] as IEnumerable<Expression>)
+                    .Select(e => (e as ConstantExpression).Value as Expression).ToArray();
             }
             try
             {
@@ -1178,7 +1184,7 @@ namespace DelegateDecompiler
         {
             if (DelegateDecompiler.DecompileExtensions.ConcreteCalls.ContainsKey(new Tuple<object, MethodInfo>(instance, m)))
             {
-                return MethodBodyDecompiler.DecompileConcrete(m, new List<Address>() { instance }.Union(arguments.Select(a => (Address)a)).ToList());
+                return MethodBodyDecompiler.DecompileConcrete(m, new List<Address>() { Unbox(instance) }.Union(arguments.Select(a => (Address)a)).ToList());
             }
             if (m.Name == "Add" && instance.Expression != null && typeof(IEnumerable).IsAssignableFrom(instance.Type))
             {

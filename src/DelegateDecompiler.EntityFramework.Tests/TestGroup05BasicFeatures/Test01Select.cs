@@ -185,11 +185,12 @@ namespace DelegateDecompiler.EntityFramework.Tests.TestGroup05BasicFeatures
             using (var env = new MethodEnvironment(classEnv))
             {
                 //SETUP
-                var owner = env.Db.LivingBeeing.OfType<Person>().FirstOrDefault();
+                var owner = env.Db.LivingBeeing.OfType<Person>();
                 var linq = env.Db.LivingBeeing.OfType<Animal>().ToList().Select(p => p.IsAdoptedBy(owner)).ToList();
 
                 //ATTEMPT
                 env.AboutToUseDelegateDecompiler();
+                owner = env.Db.LivingBeeing.OfType<Person>();
                 var ddExpr = env.Db.LivingBeeing.OfType<Animal>().Select(p => p.IsAdoptedBy(owner)).Decompile();
                 var dd = ddExpr.ToList();
 
@@ -198,14 +199,14 @@ namespace DelegateDecompiler.EntityFramework.Tests.TestGroup05BasicFeatures
             }
         }
 
-        [Test/*, Ignore("Not reported Linq Api expansion")*/] //TODO handle this case  : it should currently fail due to Linq method call
+        [Test]
         public void TestCanUseLinqFunctionsInLambda()
         {
             using (var env = new MethodEnvironment(classEnv))
             {
                 env.AboutToUseDelegateDecompiler();
-                var persons = env.Db.Set<Person>().Include("Animals"); //env.Db.LivingBeeing.OfType<Person>();
-                var expr = env.Db.Set<Cat>().Decompile().Where(c => c.IsAdopted(persons));
+                var persons = env.Db.Set<Person>(); //env.Db.LivingBeeing.OfType<Person>();
+                var expr = env.Db.Set<Cat>().Where(c => c.IsAdoptedBy(persons)).Decompile();
                 var result = expr.ToList();
             }
         }

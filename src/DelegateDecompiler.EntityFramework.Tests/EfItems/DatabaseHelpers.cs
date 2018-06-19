@@ -97,6 +97,7 @@ namespace DelegateDecompiler.EntityFramework.Tests.EfItems
             var dog1 = new Dog { Age = 2 };
             var dog2 = new Dog { Age = 3 };
             var cat1 = new Cat() { Age = 7 };
+            var cat2 = new Cat() { Age = 3 };
             return new List<LivingBeeing>
             {
                 dog1,
@@ -104,10 +105,15 @@ namespace DelegateDecompiler.EntityFramework.Tests.EfItems
                 cat1,
                 new HoneyBee(),
                 new HoneyBee(),
-                new Cat() { Age = 3 },
+                cat2,
                 new HoneyBee(),
                 new Person {Age = 1, Birthdate = new DateTime(1900, 1, 1), Name = "Joseph"},
-                new Person {Age = 2, Birthdate = new DateTime(1900, 1, 2), Name = "Maria"},
+                new Person {
+                    Age = 2,
+                    Birthdate = new DateTime(1900, 1, 2),
+                    Name = "Maria",
+                    Animals = new List<Animal> {cat2,}
+                },
                 new Person
                 {
                     Age = 3,
