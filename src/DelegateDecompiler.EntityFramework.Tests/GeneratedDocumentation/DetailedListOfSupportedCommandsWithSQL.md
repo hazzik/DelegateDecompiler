@@ -1,6 +1,6 @@
 Detail With Sql of supported commands
 ============
-## Documentation produced for DelegateDecompiler, version 0.24.0 on Friday, 15 June 2018 11:50
+## Documentation produced for DelegateDecompiler, version 0.24.0 on Tuesday, 19 June 2018 15:25
 
 This file documents what linq commands **DelegateDecompiler** supports when
 working with [Entity Framework v6.1](http://msdn.microsoft.com/en-us/data/aa937723) (EF).
@@ -128,16 +128,34 @@ SELECT
     WHERE [Extent1].[Discriminator] = N'Cat'
 ```
 
-  * Select With Call To Base Method Over Tph Hierarchy (line 197)
+  * Select With Call To Base Method Over Tph Hierarchy (line 198)
      * T-Sql executed is
 
 ```SQL
 SELECT 
-    CASE WHEN ([Extent1].[Discriminator] = N'Dog') THEN cast(1 as bit) ELSE cast(0 as bit) END AS [C1]
-    FROM [dbo].[LivingBeeings] AS [Extent1]
-    WHERE ([Extent1].[Discriminator] IN (N'Dog',N'Feline',N'Cat',N'HoneyBee',N'Person')) AND ([Extent1].[Discriminator] IN (N'Dog',N'Feline',N'Cat',N'HoneyBee'))
+    CASE WHEN ( EXISTS (SELECT 
+        1 AS [C1]
+        FROM [dbo].[LivingBeeings] AS [Extent2]
+        WHERE ([Extent2].[Discriminator] = N'Person') AND ((CASE WHEN ([Project1].[C1] LIKE '0X0X0X%') THEN cast(1 as bit) WHEN ([Project1].[C1] LIKE '0X0X1X0X%') THEN CASE WHEN ( EXISTS (SELECT 
+            1 AS [C1]
+            FROM [dbo].[LivingBeeings] AS [Extent3]
+            WHERE ([Extent3].[Discriminator] IN (N'Dog',N'Feline',N'Cat',N'HoneyBee',N'Person')) AND (CASE WHEN ([Extent3].[Discriminator] = N'Dog') THEN '0X0X0X' WHEN ([Extent3].[Discriminator] = N'Feline') THEN '0X0X1X' WHEN ([Extent3].[Discriminator] = N'Cat') THEN '0X0X1X0X' WHEN ([Extent3].[Discriminator] = N'HoneyBee') THEN '0X0X2X' ELSE '0X1X' END LIKE '0X0X%') AND ([Extent2].[Id] = [Extent3].[Person_Id]) AND (([Extent3].[Id] = [Project1].[Id]) OR (([Extent3].[Id] IS NULL) AND ([Project1].[Id] IS NULL)))
+        )) THEN cast(1 as bit) ELSE cast(0 as bit) END WHEN ( EXISTS (SELECT 
+            1 AS [C1]
+            FROM [dbo].[LivingBeeings] AS [Extent4]
+            WHERE ([Extent4].[Discriminator] IN (N'Dog',N'Feline',N'Cat',N'HoneyBee',N'Person')) AND (CASE WHEN ([Extent4].[Discriminator] = N'Dog') THEN '0X0X0X' WHEN ([Extent4].[Discriminator] = N'Feline') THEN '0X0X1X' WHEN ([Extent4].[Discriminator] = N'Cat') THEN '0X0X1X0X' WHEN ([Extent4].[Discriminator] = N'HoneyBee') THEN '0X0X2X' ELSE '0X1X' END LIKE '0X0X%') AND ([Extent2].[Id] = [Extent4].[Person_Id]) AND (([Extent4].[Id] = [Project1].[Id]) OR (([Extent4].[Id] IS NULL) AND ([Project1].[Id] IS NULL)))
+        )) THEN cast(1 as bit) ELSE cast(0 as bit) END) = 1)
+    )) THEN cast(1 as bit) ELSE cast(0 as bit) END AS [C1]
+    FROM ( SELECT 
+        [Extent1].[Id] AS [Id], 
+        CASE WHEN ([Extent1].[Discriminator] = N'Dog') THEN '0X0X0X' WHEN ([Extent1].[Discriminator] = N'Feline') THEN '0X0X1X' WHEN ([Extent1].[Discriminator] = N'Cat') THEN '0X0X1X0X' WHEN ([Extent1].[Discriminator] = N'HoneyBee') THEN '0X0X2X' ELSE '0X1X' END AS [C1]
+        FROM [dbo].[LivingBeeings] AS [Extent1]
+        WHERE ([Extent1].[Discriminator] IN (N'Dog',N'Feline',N'Cat',N'HoneyBee',N'Person')) AND (CASE WHEN ([Extent1].[Discriminator] = N'Dog') THEN '0X0X0X' WHEN ([Extent1].[Discriminator] = N'Feline') THEN '0X0X1X' WHEN ([Extent1].[Discriminator] = N'Cat') THEN '0X0X1X0X' WHEN ([Extent1].[Discriminator] = N'HoneyBee') THEN '0X0X2X' ELSE '0X1X' END LIKE '0X0X%')
+    )  AS [Project1]
 ```
 
+- **Not Supported**
+  * Can Use Linq Functions In Lambda (line 207)
 
 #### [Select Async](../TestGroup05BasicFeatures/Test02SelectAsync.cs):
 - Supported

@@ -835,15 +835,6 @@ namespace DelegateDecompiler
             return expression;
         }
 
-        private static Expression Unbox(Expression expression)
-        {
-            if (expression.NodeType == ExpressionType.Convert || expression.NodeType == ExpressionType.Convert)
-            {
-                return (expression as UnaryExpression).Operand;
-            }
-            return expression;
-        }
-
         private static Expression ConvertEnumExpressionToUnderlyingType(Expression expression)
         {
             if (expression.Type.IsEnum)
@@ -920,13 +911,6 @@ namespace DelegateDecompiler
 
         internal static Expression AdjustType(Expression expression, Type type)
         {
-            // WORKAROUND - Handles not checking parameters for Linq.Expression.XXX calls
-            if (typeof(Expression).IsAssignableFrom(type))
-            {
-                return expression;
-            }
-            // END OF WORKAROUND
-
             if (expression.Type == type)
             {
                 return expression;
@@ -1015,11 +999,6 @@ namespace DelegateDecompiler
             var newArray = array.Expression as NewArrayExpression;
             if (newArray != null)
             {
-                //if (newArray.Type.GetElementType() == typeof(Expression))
-                //{
-                //    array.Expression = Expression.NewArrayInit(typeof(Expression[]), array.Expression);
-                //    return;
-                //}
                 var expressions = CreateArrayInitExpressions(newArray, value, index);
                 NewArrayExpression newArrayInit = Expression.NewArrayInit(array.Type.GetElementType(), expressions);
                 array.Expression = newArrayInit;
@@ -1145,11 +1124,11 @@ namespace DelegateDecompiler
                 }
                 convertedArguments[i] = arg;
             }
-            //WORKAROUND Decompiled instructions may call Expression.Constant with first parameter other than a constant
-            if (m.Name == "Constant" && convertedArguments.First() is Expression)
-            {
-                return convertedArguments.First() as Expression;
-            }
+            ////WORKAROUND Decompiled instructions may call Expression.Constant with first parameter other than a constant
+            //if (m.Name == "Constant" && convertedArguments.First() is Expression)
+            //{
+            //    return convertedArguments.First() as Expression;
+            //}
             //COMPLETION Unwrap the list of ParameterExpressions into an array
             if (m.Name == "Lambda")
             {
@@ -1184,7 +1163,7 @@ namespace DelegateDecompiler
         {
             if (DelegateDecompiler.DecompileExtensions.ConcreteCalls.ContainsKey(new Tuple<object, MethodInfo>(instance, m)))
             {
-                return MethodBodyDecompiler.DecompileConcrete(m, new List<Address>() { Unbox(instance) }.Union(arguments.Select(a => (Address)a)).ToList());
+                return MethodBodyDecompiler.DecompileConcrete(m, new List<Address>() { DiscardConversion(instance) }.Union(arguments.Select(a => (Address)a)).ToList());
             }
             if (m.Name == "Add" && instance.Expression != null && typeof(IEnumerable).IsAssignableFrom(instance.Type))
             {
