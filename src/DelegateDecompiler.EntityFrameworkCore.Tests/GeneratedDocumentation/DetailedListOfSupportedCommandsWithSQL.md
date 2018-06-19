@@ -1,6 +1,6 @@
 Detail With Sql of supported commands
 ============
-## Documentation produced for DelegateDecompiler, version 0.24.0 on Sunday, 29 April 2018 02:03
+## Documentation produced for DelegateDecompiler, version 0.24.0 on Tuesday, 12 June 2018 09:24
 
 This file documents what linq commands **DelegateDecompiler** supports when
 working with [Entity Framework Core](https://docs.microsoft.com/en-us/ef/core/) (EF).
@@ -25,35 +25,70 @@ More will appear as we move forward.*
 ### Group: Basic Features
 #### [Select](../TestGroup05BasicFeatures/Test01Select.cs):
 - Supported
-  * Bool Equals Constant (line 34)
+  * Bool Equals Constant (line 33)
      * T-Sql executed is
 
 ```SQL
 
 ```
 
-  * Bool Equals Static Variable (line 53)
+  * Bool Equals Static Variable (line 52)
      * T-Sql executed is
 
 ```SQL
 
 ```
 
-  * Int Equals Constant (line 70)
+  * Int Equals Constant (line 69)
      * T-Sql executed is
 
 ```SQL
 
 ```
 
-  * Select Property Without Computed Attribute (line 87)
+  * Select Property Without Computed Attribute (line 86)
      * T-Sql executed is
 
 ```SQL
 
 ```
 
-  * Select Method Without Computed Attribute (line 104)
+  * Select Method Without Computed Attribute (line 103)
+     * T-Sql executed is
+
+```SQL
+
+```
+
+  * Select Abstract Member Over Tph Hierarchy (line 121)
+     * T-Sql executed is
+
+```SQL
+
+```
+
+  * Select Abstract Member Over Tph Hierarchy After Restricting To Subtype (line 138)
+     * T-Sql executed is
+
+```SQL
+
+```
+
+  * Select Multiple Levels Of Abstract Members Over Tph Hierarchy (line 156)
+     * T-Sql executed is
+
+```SQL
+
+```
+
+  * Select With Call To Base Members Over Tph Hierarchy (line 177)
+     * T-Sql executed is
+
+```SQL
+
+```
+
+  * Select With Call To Base Members Over Tph Hierarchy (line 178)
      * T-Sql executed is
 
 ```SQL
@@ -177,6 +212,20 @@ More will appear as we move forward.*
 
 ```
 
+  * Where Filters On Abstract Members Over Tph Hierarchy (line 86)
+     * T-Sql executed is
+
+```SQL
+
+```
+
+  * Where Filters On Multiple Levels Of Abstract Members Over Tph Hierarchy (line 103)
+     * T-Sql executed is
+
+```SQL
+
+```
+
 
 #### [Single](../TestGroup05BasicFeatures/Test10Single.cs):
 - Supported
@@ -201,16 +250,82 @@ More will appear as we move forward.*
 
 ### Group: Order Take
 #### [Order By](../TestGroup10OrderTake/Test01OrderBy.cs):
+- Supported
+  * Order By Children Count (line 33)
+     * T-Sql executed is
+
+```SQL
+
+```
+
+  * Order By Children Count Then By String Length (line 51)
+     * T-Sql executed is
+
+```SQL
+
+```
+
+  * Where Any Children Then Order By Children Count (line 69)
+     * T-Sql executed is
+
+```SQL
+
+```
+
 
 #### [Skip Take](../TestGroup10OrderTake/Test02SkipTake.cs):
+- Supported
+  * Order By Children Count Then Take (line 33)
+     * T-Sql executed is
+
+```SQL
+
+```
+
+  * Order By Children Count Then Skip And Take (line 51)
+     * T-Sql executed is
+
+```SQL
+
+```
+
+  * Where Any Children Then Order By Then Skip Take (line 69)
+     * T-Sql executed is
+
+```SQL
+
+```
+
 
 
 ### Group: Quantifier Operators
 #### [Any](../TestGroup12QuantifierOperators/Test01Any.cs):
+- Supported
+  * Any Children (line 32)
+     * T-Sql executed is
+
+```SQL
+
+```
+
+  * Any Children With Filter (line 49)
+     * T-Sql executed is
+
+```SQL
+
+```
+
 
 #### [All](../TestGroup12QuantifierOperators/Test02All.cs):
 - Supported
   * Singleton All Filter (line 32)
+     * T-Sql executed is
+
+```SQL
+
+```
+
+  * All Filter On Children Int (line 49)
      * T-Sql executed is
 
 ```SQL
@@ -231,8 +346,66 @@ More will appear as we move forward.*
 
 ### Group: Aggregation
 #### [Count](../TestGroup15Aggregation/Test01Count.cs):
+- Supported
+  * Count Children (line 33)
+     * T-Sql executed is
+
+```SQL
+
+```
+
+  * Count Children With Filter (line 51)
+     * T-Sql executed is
+
+```SQL
+
+```
+
+  * Count Children With Filter By Closure (line 69)
+     * T-Sql executed is
+
+```SQL
+
+```
+
+  * Count Children With Filter By External Closure (line 88)
+     * T-Sql executed is
+
+```SQL
+
+```
+
+  * Count Children With Filter By External Closure2 (line 108)
+     * T-Sql executed is
+
+```SQL
+
+```
+
+  * Singleton Count Children With Filter (line 126)
+     * T-Sql executed is
+
+```SQL
+
+```
+
 
 #### [Sum](../TestGroup15Aggregation/Test02Sum.cs):
+- Supported
+  * Singleton Sum Children (line 33)
+     * T-Sql executed is
+
+```SQL
+
+```
+
+  * Sum Count In Children Where Children Can Be None (line 51)
+     * T-Sql executed is
+
+```SQL
+
+```
+
 
 
 ### Group: Types

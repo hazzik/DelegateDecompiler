@@ -1,13 +1,13 @@
 ﻿// Contributed by @JonPSmith (GitHub) www.thereformedprogrammer.com
 
-using System.Linq;
 using DelegateDecompiler.EntityFramework.Tests.EfItems.Abstracts;
 using DelegateDecompiler.EntityFramework.Tests.Helpers;
 using NUnit.Framework;
+using System.Linq;
 
 namespace DelegateDecompiler.EntityFramework.Tests.TestGroup05BasicFeatures
 {
-    class Test05Where
+    internal class Test05Where
     {
         private ClassEnvironment classEnv;
 
@@ -23,7 +23,7 @@ namespace DelegateDecompiler.EntityFramework.Tests.TestGroup05BasicFeatures
             using (var env = new MethodEnvironment(classEnv))
             {
                 //SETUP
-                var linq = env.Db.EfParents.Where(x => x.ParentBool == true).Select( x => x.EfParentId).ToList();
+                var linq = env.Db.EfParents.Where(x => x.ParentBool == true).Select(x => x.EfParentId).ToList();
 
                 //ATTEMPT
                 env.AboutToUseDelegateDecompiler();
@@ -93,11 +93,11 @@ namespace DelegateDecompiler.EntityFramework.Tests.TestGroup05BasicFeatures
             using (var env = new MethodEnvironment(classEnv))
             {
                 //SETUP
-                var linq = env.Db.LivingBeeing.OfType<Animal>().ToList().Where(p => p.Species + " : " + p.IsPet == "Apis mellifera : False").Select(x => x.Id).ToList();
+                var linq = env.Db.LivingBeeing.OfType<Animal>().ToList().Where(p => p.Species + " : " + (p.IsPet ? "True" : "False") == "Apis mellifera : False").Select(x => x.Id).ToList();
 
                 //ATTEMPT
                 env.AboutToUseDelegateDecompiler();
-                var dd = env.Db.LivingBeeing.OfType<Animal>().Where(p => p.Species + " : " + p.IsPet == "Apis mellifera : False").Select(x => x.Id).Decompile().ToList();
+                var dd = env.Db.LivingBeeing.OfType<Animal>().Where(p => p.Species + " : " + (p.IsPet ? "True" : "False") == "Apis mellifera : False").Select(x => x.Id).Decompile().ToList();
 
                 //VERIFY
                 env.CompareAndLogList(linq, dd);

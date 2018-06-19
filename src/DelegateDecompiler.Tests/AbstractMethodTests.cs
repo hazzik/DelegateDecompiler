@@ -1,6 +1,6 @@
-﻿using System;
+﻿using NUnit.Framework;
+using System;
 using System.Linq.Expressions;
-using NUnit.Framework;
 
 namespace DelegateDecompiler.Tests
 {
@@ -32,7 +32,7 @@ namespace DelegateDecompiler.Tests
             public override string M1() => "B";
 
             public override string M2() => Me;
-            
+
             public override string M3() => "B";
         }
 
@@ -73,8 +73,8 @@ namespace DelegateDecompiler.Tests
         public void DecompileMethod()
         {
             Expression<Func<A, string>> e = @this =>
-                @this is E ? "E"
-                : @this is D ? "D"
+                @this is D ? "D"
+                : @this is E ? "E"
                 : @this is C ? "C"
                 : @this is B ? "B"
                 : null;
@@ -87,10 +87,10 @@ namespace DelegateDecompiler.Tests
         {
             // ReSharper disable MergeCastWithTypeCheck
             Expression<Func<A, string>> e = @this =>
-                @this is E ? ((E) @this).Me
-                : @this is D ? ((D) @this).Me
-                : @this is C ? ((C) @this).Me
-                : @this is B ? ((B) @this).Me
+                @this is D ? ((D)@this).Me
+                : @this is E ? ((E)@this).Me
+                : @this is C ? ((C)@this).Me
+                : @this is B ? ((B)@this).Me
                 : null;
             // ReSharper restore MergeCastWithTypeCheck
 
@@ -101,8 +101,8 @@ namespace DelegateDecompiler.Tests
         public void DecompileVirtualMethod()
         {
             Expression<Func<A, string>> e = @this =>
-                @this is E ? "E"
-                : @this is D ? "D"
+                @this is D ? "D"
+                : @this is E ? "E"
                 : @this is C ? "C"
                 : @this is B ? "B"
                 : "A";
