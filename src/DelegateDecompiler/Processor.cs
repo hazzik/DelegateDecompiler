@@ -1002,19 +1002,15 @@ namespace DelegateDecompiler
             var value = state.Stack.Pop();
             var index = state.Stack.Pop();
             var array = state.Stack.Pop();
-            var constantArray = array.Expression as ConstantExpression;
-
-            // already handled
-            if (constantArray != null && constantArray.Value.GetType() == typeof(List<Expression>))
-            {
-                var list = constantArray.Value as List<Expression>;
-                list.Add(value);
-                return;
-            }
 
             var newArray = array.Expression as NewArrayExpression;
             if (newArray != null)
             {
+                if (newArray.Type.GetElementType() == typeof(Expression))
+                {
+                    array.Expression = Expression.NewArrayInit(typeof(Expression[]), array.Expression);
+                    return;
+                }
                 var expressions = CreateArrayInitExpressions(newArray, value, index);
                 NewArrayExpression newArrayInit;
                 try
@@ -1039,11 +1035,6 @@ namespace DelegateDecompiler
 
         private static IEnumerable<Expression> CreateArrayInitExpressions(NewArrayExpression newArray, Expression valueExpression, Expression indexExpression)
         {
-            if (newArray.Type.GetElementType() != valueExpression.Type)
-            {
-                valueExpression = AdjustType(valueExpression, newArray.Type.GetElementType());
-            }
-
             if (newArray.NodeType == ExpressionType.NewArrayInit)
             {
                 var indexGetter = (Func<int>)Expression.Lambda(indexExpression).Compile();
@@ -1059,7 +1050,10 @@ namespace DelegateDecompiler
 
                 return expressions;
             }
-
+            //if (newArray.Type.GetElementType() == typeof(Expression))
+            //{
+            //    return new[] { new[] { valueExpression } };
+            //}
             return new[] { valueExpression };
         }
 
@@ -1150,10 +1144,10 @@ namespace DelegateDecompiler
                 bool shouldResolve = !typeof(Expression).IsAssignableFrom(expectedParameters[i].ParameterType);
                 if (shouldResolve)
                 {
+                    if (arg is NewArrayExpression) arg = (arg as NewArrayExpression).Expressions.ToArray();
                     if (arg is UnaryExpression && !((arg as UnaryExpression).Operand is IConvertible)) arg = (arg as UnaryExpression).Operand;
                     if (arg is ConstantExpression) arg = (arg as ConstantExpression).Value;
                     if (arg is IConvertible && !expectedParameters[i].ParameterType.IsAssignableFrom(arg.GetType())) arg = Convert.ChangeType(arg, expectedParameters[i].ParameterType);
-                    if (arg is IEnumerable<Expression>) arg = (arg as IEnumerable<Expression>).ToArray();
                 }
                 convertedArguments[i] = arg;
             }
@@ -1167,12 +1161,12 @@ namespace DelegateDecompiler
             {
                 convertedArguments[1] = (convertedArguments[1] as List<Expression>).Cast<ParameterExpression>().ToArray();
             }
-            //if (m.Name == "Call")
-            //{
-            //    return BuildLinqCallExpression(convertedArguments.ElementAt(1) as MethodInfo, convertedArguments.ElementAt(0) as Expression, convertedArguments.Skip(2).First() as Expression[]);
-            //}
             try
             {
+                //if (m.Name == "Call")
+                //{
+                //    return Expression.Call(instance, m, arguments);
+                //}
                 if (m.IsStatic)
                 {
                     return (Expression)m.Invoke(null, convertedArguments);
