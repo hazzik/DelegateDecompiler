@@ -1006,26 +1006,14 @@ namespace DelegateDecompiler
             var newArray = array.Expression as NewArrayExpression;
             if (newArray != null)
             {
-                if (newArray.Type.GetElementType() == typeof(Expression))
-                {
-                    array.Expression = Expression.NewArrayInit(typeof(Expression[]), array.Expression);
-                    return;
-                }
+                //if (newArray.Type.GetElementType() == typeof(Expression))
+                //{
+                //    array.Expression = Expression.NewArrayInit(typeof(Expression[]), array.Expression);
+                //    return;
+                //}
                 var expressions = CreateArrayInitExpressions(newArray, value, index);
-                NewArrayExpression newArrayInit;
-                try
-                {
-                    newArrayInit = Expression.NewArrayInit(array.Type.GetElementType(), expressions);
-                    array.Expression = newArrayInit;
-                }
-
-                // WORKAROUND - set array's items expressions as a constant if not assignable as a
-                // NewArrayInit element
-                catch (InvalidOperationException notArrayInitExpressions)
-                {
-                    array.Expression = Expression.Constant(expressions.ToList(), typeof(List<Expression>));
-                }
-                // END OF WORKAROUND
+                NewArrayExpression newArrayInit = Expression.NewArrayInit(array.Type.GetElementType(), expressions);
+                array.Expression = newArrayInit;
             }
             else
             {
@@ -1035,6 +1023,7 @@ namespace DelegateDecompiler
 
         private static IEnumerable<Expression> CreateArrayInitExpressions(NewArrayExpression newArray, Expression valueExpression, Expression indexExpression)
         {
+            if (typeof(IEnumerable<Expression>).IsAssignableFrom(newArray.Type)) valueExpression = Expression.Constant(valueExpression);
             if (newArray.NodeType == ExpressionType.NewArrayInit)
             {
                 var indexGetter = (Func<int>)Expression.Lambda(indexExpression).Compile();
@@ -1050,10 +1039,6 @@ namespace DelegateDecompiler
 
                 return expressions;
             }
-            //if (newArray.Type.GetElementType() == typeof(Expression))
-            //{
-            //    return new[] { new[] { valueExpression } };
-            //}
             return new[] { valueExpression };
         }
 
@@ -1159,17 +1144,24 @@ namespace DelegateDecompiler
             //COMPLETION Unwrap the list of ParameterExpressions into an array
             if (m.Name == "Lambda")
             {
-                convertedArguments[1] = (convertedArguments[1] as List<Expression>).Cast<ParameterExpression>().ToArray();
+                convertedArguments[1] = (convertedArguments[1] as IEnumerable<Expression>)
+                    .Select(e => (e as ConstantExpression).Value as ParameterExpression).ToArray();
+            }
+            if (m.Name == "Call")
+            {
+                if ((convertedArguments[1] as MethodInfo).IsStatic) convertedArguments[0] = null;
+                var callParameters = convertedArguments[2] as Expression[];
+                for (int i = 0; i < callParameters.Length; i++)
+                {
+                    callParameters[i] = (Expression)((ConstantExpression)callParameters[i]).Value;
+                }
             }
             try
             {
-                //if (m.Name == "Call")
-                //{
-                //    return Expression.Call(instance, m, arguments);
-                //}
                 if (m.IsStatic)
                 {
-                    return (Expression)m.Invoke(null, convertedArguments);
+                    var result = (Expression)m.Invoke(null, convertedArguments);
+                    return result;
                 }
                 else
                 {
