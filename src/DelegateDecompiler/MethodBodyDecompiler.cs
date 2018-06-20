@@ -45,6 +45,7 @@ namespace DelegateDecompiler
 
             if (!method.IsStatic)
             {
+                var concreteInstance = Processor.DiscardConversion(args[0]);
                 var declaringType = method.DeclaringType;
                 baseCalls.UnionWith(AppDomain.CurrentDomain.GetAssemblies()
                     .SelectMany(a => a.GetTypes())

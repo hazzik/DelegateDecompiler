@@ -1166,9 +1166,10 @@ namespace DelegateDecompiler
 
         private static Expression BuildMethodCallExpression(MethodInfo m, Address instance, Expression[] arguments)
         {
-            if (DelegateDecompiler.DecompileExtensions.ConcreteCalls.ContainsKey(new Tuple<object, MethodInfo>(instance, m)))
+            var concreteInstance = DiscardConversion(instance);
+            if (DelegateDecompiler.DecompileExtensions.ConcreteCalls.ContainsKey(new Tuple<object, MethodInfo>(concreteInstance, m)))
             {
-                return MethodBodyDecompiler.DecompileConcrete(m, new List<Address>() { DiscardConversion(instance) }.Union(arguments.Select(a => (Address)a)).ToList());
+                return MethodBodyDecompiler.DecompileConcrete(m, new List<Address>() { DiscardConversion(concreteInstance) }.Union(arguments.Select(a => (Address)a)).ToList());
             }
             if (m.Name == "Add" && instance.Expression != null && typeof(IEnumerable).IsAssignableFrom(instance.Type))
             {
@@ -1455,7 +1456,7 @@ namespace DelegateDecompiler
             state.Stack.Push(state.Args[index]);
         }
 
-        private static Expression DiscardConversion(Expression expr)
+        internal static Expression DiscardConversion(Expression expr)
         {
             if (!(expr is UnaryExpression)) return expr;
             UnaryExpression unwrapped;
