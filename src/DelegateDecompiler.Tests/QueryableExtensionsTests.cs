@@ -1,6 +1,6 @@
-﻿using System;
+﻿using NUnit.Framework;
+using System;
 using System.Linq;
-using NUnit.Framework;
 
 namespace DelegateDecompiler.Tests
 {
@@ -18,7 +18,7 @@ namespace DelegateDecompiler.Tests
 
             var actual = (from employee in employees.AsQueryable()
                           where employee.FullNameWithoutAttribute.Computed() == "Test User"
-                          select employee).Decompile();
+                          select employee).Decompile().AsQueryable();
 
             Assert.AreEqual(expected.Expression.ToString(), actual.Expression.ToString());
         }
@@ -34,7 +34,7 @@ namespace DelegateDecompiler.Tests
 
             var actual = (from employee in employees.AsQueryable()
                           where employee.FullName == "Test User"
-                          select employee).Decompile();
+                          select employee).Decompile().AsQueryable();
 
             Assert.AreEqual(expected.Expression.ToString(), actual.Expression.ToString());
         }
@@ -50,7 +50,7 @@ namespace DelegateDecompiler.Tests
 
             var actual = (from employee in employees.AsQueryable()
                           where employee.FromTo == "0-100"
-                          select employee).Decompile();
+                          select employee).Decompile().AsQueryable();
 
             Assert.AreEqual(expected.Expression.ToString(), actual.Expression.ToString());
         }
@@ -65,10 +65,10 @@ namespace DelegateDecompiler.Tests
                             orderby (employee.FirstName + " " + employee.LastName)
                             select employee);
 
-            var actual = (from employee in employees.AsQueryable().Decompile()
+            var actual = (from employee in employees.AsQueryable()
                           where employee.FullName == "Test User"
                           orderby employee.FullName
-                          select employee);
+                          select employee).Decompile().AsQueryable();
 
             Assert.AreEqual(expected.Expression.ToString(), actual.Expression.ToString());
         }
@@ -83,10 +83,10 @@ namespace DelegateDecompiler.Tests
                             orderby (employee.FirstName + " " + employee.LastName)
                             select employee).ThenBy(x => true);
 
-            var actual = (from employee in employees.AsQueryable().Decompile()
+            var actual = (from employee in employees.AsQueryable()
                           where employee.FullName == "Test User"
-                          orderby employee.FullName 
-                          select employee).ThenBy(x => x.IsActive);
+                          orderby employee.FullName
+                          select employee).ThenBy(x => x.IsActive).Decompile().AsQueryable();
 
             Assert.AreEqual(expected.Expression.ToString(), actual.Expression.ToString());
         }
@@ -102,7 +102,7 @@ namespace DelegateDecompiler.Tests
 
             var actual = (from employee in employees.AsQueryable()
                           where employee.IsActive
-                          select employee).Decompile();
+                          select employee).Decompile().AsQueryable();
 
             Assert.AreEqual(expected.Expression.ToString(), actual.Expression.ToString());
         }
@@ -113,12 +113,12 @@ namespace DelegateDecompiler.Tests
             var employees = new[] { new Employee { FirstName = "Test", LastName = "User" } };
 
             var expected = (from employee in employees.AsQueryable()
-                where employee.Reference.Count == 0
-                select employee);
+                            where employee.Reference.Count == 0
+                            select employee);
 
             var actual = (from employee in employees.AsQueryable()
-                where employee.Count == 0
-                select employee).Decompile();
+                          where employee.Count == 0
+                          select employee).Decompile().AsQueryable();
 
             Assert.AreEqual(expected.Expression.ToString(), actual.Expression.ToString());
         }
@@ -134,7 +134,7 @@ namespace DelegateDecompiler.Tests
 
             var actual = (from employee in employees.AsQueryable()
                           where employee.TooDeepName == "Test User"
-                          select employee).Decompile();
+                          select employee).Decompile().AsQueryable();
 
             Assert.AreEqual(expected.Expression.ToString(), actual.Expression.ToString());
         }
@@ -151,7 +151,7 @@ namespace DelegateDecompiler.Tests
 
             var actual = (from employee in employees.AsQueryable()
                           where employee.FullName == fullname
-                          select employee).Decompile();
+                          select employee).Decompile().AsQueryable();
 
             Console.WriteLine(expected);
             Assert.AreEqual(expected.Expression.ToString(), actual.Expression.ToString());
@@ -168,7 +168,7 @@ namespace DelegateDecompiler.Tests
 
             var actual = (from employee in employees.AsQueryable()
                           where employee.FullNameMethod() == "Test User"
-                          select employee).Decompile();
+                          select employee).Decompile().AsQueryable();
 
             Assert.AreEqual(expected.Expression.ToString(), actual.Expression.ToString());
         }
@@ -184,7 +184,7 @@ namespace DelegateDecompiler.Tests
 
             var actual = (from employee in employees.AsQueryable()
                           where employee.FullNameMethod("Mr ") == "Mr Test User"
-                          select employee).Decompile();
+                          select employee).Decompile().AsQueryable();
 
             Assert.AreEqual(expected.Expression.ToString(), actual.Expression.ToString());
         }
@@ -200,7 +200,7 @@ namespace DelegateDecompiler.Tests
 
             var actual = (from employee in employees.AsQueryable()
                           where employee.FullNameMethod("Mr ", " Jr.") == "Mr Test User Jr."
-                          select employee).Decompile();
+                          select employee).Decompile().AsQueryable();
 
             Assert.AreEqual(expected.Expression.ToString(), actual.Expression.ToString());
         }
@@ -216,7 +216,7 @@ namespace DelegateDecompiler.Tests
 
             var actual = (from employee in employees.AsQueryable()
                           where employee.Test
-                          select employee).Decompile();
+                          select employee).Decompile().AsQueryable();
 
             Assert.AreEqual(expected.Expression.ToString(), actual.Expression.ToString());
         }
@@ -228,7 +228,7 @@ namespace DelegateDecompiler.Tests
 
             var expected = employees.AsQueryable().Where(_ => (_.Id <= 3 ? (_.Id > 3 ? 3 : 2) : 1) == 1);
 
-            var actual = employees.AsQueryable().Where(_ => _.ComplexProperty == 1).Decompile();
+            var actual = employees.AsQueryable().Where(_ => _.ComplexProperty == 1).Decompile().AsQueryable();
 
             Assert.AreEqual(expected.Expression.ToString(), actual.Expression.ToString());
         }
@@ -244,7 +244,7 @@ namespace DelegateDecompiler.Tests
 
             var actual = (from employee in employees.AsQueryable()
                           where employee.FullName().Computed() == "Test User"
-                          select employee).Decompile();
+                          select employee).Decompile().AsQueryable();
 
             Assert.AreEqual(expected.Expression.ToString(), actual.Expression.ToString());
         }
@@ -259,10 +259,10 @@ namespace DelegateDecompiler.Tests
                             orderby (employee.FirstName + " " + employee.LastName)
                             select employee);
 
-            var actual = (from employee in employees.AsQueryable().Decompile()
+            var actual = (from employee in employees.AsQueryable()
                           where employee.FullName().Computed() == "Test User"
-                          orderby employee.FullName ().Computed()
-                          select employee);
+                          orderby employee.FullName().Computed()
+                          select employee).Decompile().AsQueryable();
 
             Assert.AreEqual(expected.Expression.ToString(), actual.Expression.ToString());
         }
@@ -277,10 +277,10 @@ namespace DelegateDecompiler.Tests
                             orderby (employee.FirstName + " " + employee.LastName)
                             select employee).ThenBy(x => true);
 
-            var actual = (from employee in employees.AsQueryable().Decompile()
+            var actual = (from employee in employees.AsQueryable()
                           where employee.FullName().Computed() == "Test User"
                           orderby employee.FullName().Computed()
-                          select employee).ThenBy(x => x.IsActive);
+                          select employee).ThenBy(x => x.IsActive).Decompile().AsQueryable();
 
             Assert.AreEqual(expected.Expression.ToString(), actual.Expression.ToString());
         }
@@ -294,9 +294,9 @@ namespace DelegateDecompiler.Tests
                             where (employee.MyField.HasValue ? employee.MyField.Value : (short)0) > 0
                             select employee);
 
-            var actual = (from employee in employees.AsQueryable().Decompile()
+            var actual = (from employee in employees.AsQueryable()
                           where employee.TheBad > (short)0
-                          select employee);
+                          select employee).Decompile().AsQueryable();
 
             Assert.AreEqual(expected.Expression.ToString(), actual.Expression.ToString());
         }
@@ -310,9 +310,9 @@ namespace DelegateDecompiler.Tests
                             where (employee.MyField.HasValue ? (short)0 : (short)1) > (short)0
                             select employee);
 
-            var actual = (from employee in employees.AsQueryable().Decompile()
+            var actual = (from employee in employees.AsQueryable()
                           where (employee.MyField.HasValue ? (short)0 : (short)1) > 0
-                          select employee);
+                          select employee).Decompile().AsQueryable();
 
             Assert.AreEqual(expected.Expression.ToString(), actual.Expression.ToString());
         }
@@ -326,7 +326,7 @@ namespace DelegateDecompiler.Tests
                 ? e.DurationHours ?? new decimal(100)
                 : DbFunctions.DiffMinutes(e.StartTimeOfDay, e.EndTimeOfDay) / new decimal(60) ?? new decimal(100));
 
-            var actual = employees.AsQueryable().Select(e => e.TotalHoursDb).Decompile();
+            var actual = employees.AsQueryable().Select(e => e.TotalHoursDb).Decompile().AsQueryable();
 
             Assert.AreEqual(expected.Expression.ToString(), actual.Expression.ToString());
         }

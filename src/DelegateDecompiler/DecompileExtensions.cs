@@ -41,10 +41,10 @@ namespace DelegateDecompiler
             return Cache.GetOrAdd(Tuple.Create(declaringType, method), DecompileDelegate).Value;
         }
 
-        public static IQueryable<T> Decompile<T>(this IQueryable<T> self)
+        public static IEnumerable<T> Decompile<T>(this IEnumerable<T> self)
         {
-            var provider = new DecompiledQueryProvider(self.Provider);
-            return provider.CreateQuery<T>(self.Expression);
+            var provider = new DecompiledQueryProvider(self.AsQueryable().Provider);
+            return provider.CreateQuery<T>(self.AsQueryable().Expression);
         }
     }
 }
