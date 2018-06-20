@@ -1,6 +1,6 @@
 Detail With Sql of supported commands
 ============
-## Documentation produced for DelegateDecompiler, version 0.24.0 on Wednesday, 20 June 2018 10:33
+## Documentation produced for DelegateDecompiler, version 0.24.0 on Wednesday, 20 June 2018 12:33
 
 This file documents what linq commands **DelegateDecompiler** supports when
 working with [Entity Framework v6.1](http://msdn.microsoft.com/en-us/data/aa937723) (EF).
@@ -347,7 +347,7 @@ SELECT
 
 #### [Single Async](../TestGroup05BasicFeatures/Test11SingleAsync.cs):
 - Supported
-  * Single Int Equals Unique Value Async (line 46)
+  * Single Int Equals Unique Value Async (line 49)
      * T-Sql executed is
 
 ```SQL

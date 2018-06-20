@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -8,15 +9,25 @@ namespace DelegateDecompiler
 {
     public class DecompiledQueryProvider : IQueryProvider
     {
-        static readonly MethodInfo openGenericCreateQueryMethod =
+        private static readonly MethodInfo openGenericCreateQueryMethod =
             typeof(DecompiledQueryProvider)
             .GetMethods(BindingFlags.Public | BindingFlags.Instance)
             .Single(method => method.Name == "CreateQuery" && method.IsGenericMethod);
-        readonly IQueryProvider inner;
 
-        protected internal DecompiledQueryProvider(IQueryProvider inner)
+        protected readonly IQueryProvider inner;
+        protected readonly Type visitorType;
+        protected readonly Type queryableType;
+
+        protected internal DecompiledQueryProvider(IQueryProvider inner, Type visitorType = null, Type queryableType = null)
         {
             this.inner = inner;
+            this.visitorType = visitorType ?? typeof(DecompileExpressionVisitor);
+            this.queryableType = queryableType ?? typeof(DecompiledQueryable<>);
+        }
+
+        protected Expression Decompile(Expression expression)
+        {
+            return ((ExpressionVisitor)Activator.CreateInstance(visitorType)).Visit(expression);
         }
 
         public virtual IQueryable CreateQuery(Expression expression)
@@ -39,20 +50,20 @@ namespace DelegateDecompiler
 
         public virtual IQueryable<TElement> CreateQuery<TElement>(Expression expression)
         {
-            var decompiled = DecompileExpressionVisitor.Decompile(expression);
-            return new DecompiledQueryable<TElement>(this, inner.CreateQuery<TElement>(decompiled));
+            var decompiled = Decompile(expression);
+            var queryable = queryableType.MakeGenericType(typeof(TElement));
+            return (IQueryable<TElement>)Activator.CreateInstance(queryable, BindingFlags.NonPublic | BindingFlags.Instance, null, new object[] { this, inner.CreateQuery<TElement>(decompiled) }, CultureInfo.CurrentCulture);
         }
 
-        public object Execute(Expression expression)
+        public virtual object Execute(Expression expression)
         {
-            var decompiled = DecompileExpressionVisitor.Decompile(expression);
+            var decompiled = Decompile(expression);
             return inner.Execute(decompiled);
         }
 
-        public TResult Execute<TResult>(Expression expression)
+        public virtual TResult Execute<TResult>(Expression expression)
         {
-            var decompiled = DecompileExpressionVisitor.Decompile(expression);
-            return inner.Execute<TResult>(decompiled);
+            return (TResult)Execute(expression);
         }
     }
 }

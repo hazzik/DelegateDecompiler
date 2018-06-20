@@ -9,10 +9,10 @@ namespace DelegateDecompiler
     //TODO find a way to not decompile eventhandlers and pure specific runtime features
     public class DecompileExpressionVisitor : ExpressionVisitor
     {
-        public static Expression Decompile(Expression expression)
-        {
-            return new DecompileExpressionVisitor().Visit(expression);
-        }
+        //public static Expression Decompile(Expression expression)
+        //{
+        //    return new DecompileExpressionVisitor().Visit(expression);
+        //}
 
         private bool hasAnyChanges = false;
         private readonly Dictionary<object, Expression> visitedConstants = new Dictionary<object, Expression>();
