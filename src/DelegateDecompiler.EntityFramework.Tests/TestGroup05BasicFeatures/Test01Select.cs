@@ -205,11 +205,12 @@ namespace DelegateDecompiler.EntityFramework.Tests.TestGroup05BasicFeatures
             using (var env = new MethodEnvironment(classEnv))
             {
                 env.AboutToUseDelegateDecompiler();
-                int toto = 5;
-                Person persons = env.Db.Set<Person>().FirstOrDefault();
+                var persons = env.Db.Set<Person>().OrderBy(p => p.Id).Skip(1);
                 var expr = env.Db.Set<Animal>().Where(c => c.IsAdoptedBy(persons)).Select(c => c.Owner.Name + " : " + c.Species + " (" + c.Age + ")");
                 expr = expr.Decompile();
                 var result = expr.ToList();
+
+                Assert.AreEqual(3, result.Count);
             }
         }
     }

@@ -11,9 +11,9 @@ namespace DelegateDecompiler.EntityFramework.Tests.EfItems.Abstracts
         public override string Species => "Canis lupus";
         public override bool IsPet => true;
 
-        public override bool IsAdoptedBy(Person person)
-        {
-            return true;
-        }
+        //public override bool IsAdoptedBy(Person person)
+        //{
+        //    return true;
+        //}
     }
 }

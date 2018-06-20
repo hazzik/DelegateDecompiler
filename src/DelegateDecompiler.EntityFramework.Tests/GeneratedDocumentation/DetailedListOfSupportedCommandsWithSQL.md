@@ -1,6 +1,6 @@
 Detail With Sql of supported commands
 ============
-## Documentation produced for DelegateDecompiler, version 0.24.0 on Wednesday, 20 June 2018 17:16
+## Documentation produced for DelegateDecompiler, version 0.24.0 on Wednesday, 20 June 2018 17:27
 
 This file documents what linq commands **DelegateDecompiler** supports when
 working with [Entity Framework v6.1](http://msdn.microsoft.com/en-us/data/aa937723) (EF).
@@ -136,7 +136,7 @@ SELECT
     CASE WHEN ( EXISTS (SELECT 
         1 AS [C1]
         FROM [dbo].[LivingBeeings] AS [Extent2]
-        WHERE ([Extent2].[Discriminator] = N'Person') AND ((CASE WHEN ([Project1].[C1] LIKE '0X1X0X%') THEN cast(1 as bit) WHEN ([Project1].[C1] LIKE '0X1X1X0X%') THEN CASE WHEN ( EXISTS (SELECT 
+        WHERE ([Extent2].[Discriminator] = N'Person') AND ((CASE WHEN ([Project1].[C1] LIKE '0X1X1X0X%') THEN CASE WHEN ( EXISTS (SELECT 
             1 AS [C1]
             FROM [dbo].[LivingBeeings] AS [Extent3]
             WHERE ([Extent3].[Discriminator] IN (N'Person',N'Dog',N'Feline',N'Cat',N'HoneyBee')) AND (CASE WHEN ([Extent3].[Discriminator] = N'Person') THEN '0X0X' WHEN ([Extent3].[Discriminator] = N'Dog') THEN '0X1X0X' WHEN ([Extent3].[Discriminator] = N'Feline') THEN '0X1X1X' WHEN ([Extent3].[Discriminator] = N'Cat') THEN '0X1X1X0X' ELSE '0X1X2X' END LIKE '0X1X%') AND ([Extent2].[Id] = [Extent3].[Owner_Id]) AND (([Extent3].[Id] = [Project1].[Id]) OR (([Extent3].[Id] IS NULL) AND ([Project1].[Id] IS NULL)))
