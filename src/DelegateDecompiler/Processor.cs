@@ -1011,7 +1011,7 @@ namespace DelegateDecompiler
 
         private static IEnumerable<Expression> CreateArrayInitExpressions(NewArrayExpression newArray, Expression valueExpression, Expression indexExpression)
         {
-            if (typeof(IEnumerable<Expression>).IsAssignableFrom(newArray.Type)) valueExpression = Expression.Constant(valueExpression);
+            if (typeof(Expression).IsAssignableFrom(newArray.Type.GetElementType())) valueExpression = Expression.Constant(valueExpression);
             if (newArray.NodeType == ExpressionType.NewArrayInit)
             {
                 var indexGetter = (Func<int>)Expression.Lambda(indexExpression).Compile();
@@ -1110,26 +1110,30 @@ namespace DelegateDecompiler
         {
             var expectedParameters = m.GetParameters();
             object[] convertedArguments = new object[expectedParameters.Length];
-            //TODO work a way to resolve non expression parameters into the expected type without resorting to a switch on the methodname if possible
             for (int i = 0; i < expectedParameters.Count(); i++)
             {
+                var expectedType = expectedParameters[i].ParameterType;
                 object arg = arguments[i];
-                bool shouldResolve = !typeof(Expression).IsAssignableFrom(expectedParameters[i].ParameterType);
-                if (shouldResolve)
+                if (arg is NewArrayExpression)
                 {
-                    if (arg is NewArrayExpression) arg = (arg as NewArrayExpression).Expressions.ToArray();
-                    if (arg is UnaryExpression && !((arg as UnaryExpression).Operand is IConvertible)) arg = (arg as UnaryExpression).Operand;
+                    arg = (arg as NewArrayExpression).Expressions.ToArray();
+                }
+                // if the expected argument is not an expression we must compute the expression's value
+                //TODO check exhaustivity
+                else if (arg != null && !typeof(Expression).IsAssignableFrom(expectedType))
+                {
+                    arg = DiscardConversion(arg as Expression);
                     if (arg is ConstantExpression) arg = (arg as ConstantExpression).Value;
-                    if (arg is IConvertible && !expectedParameters[i].ParameterType.IsAssignableFrom(arg.GetType())) arg = Convert.ChangeType(arg, expectedParameters[i].ParameterType);
+                    if (arg is IConvertible && !expectedType.IsAssignableFrom(arg.GetType())) arg = Convert.ChangeType(arg, expectedType);
                 }
                 convertedArguments[i] = arg;
             }
-            ////WORKAROUND Decompiled instructions may call Expression.Constant with first parameter other than a constant
-            //if (m.Name == "Constant" && convertedArguments.First() is Expression)
-            //{
-            //    return convertedArguments.First() as Expression;
-            //}
-            //COMPLETION Unwrap the list of ParameterExpressions into an array
+            //BUGFIX Decompiled instructions may call Expression.Constant with first parameter other than a constant value
+            if (m.Name == "Constant" && convertedArguments.First() is Expression)
+            {
+                return convertedArguments.First() as Expression;
+            }
+            // Unwraps the ConstantExpression[] arguments into their real value
             if (m.Name == "Lambda")
             {
                 convertedArguments[1] = (convertedArguments[1] as IEnumerable<Expression>)
@@ -1137,9 +1141,10 @@ namespace DelegateDecompiler
             }
             if (m.Name == "Call")
             {
-                if ((convertedArguments[1] as MethodInfo).IsStatic) convertedArguments[0] = null;
                 convertedArguments[2] = (convertedArguments[2] as IEnumerable<Expression>)
                     .Select(e => (e as ConstantExpression).Value as Expression).ToArray();
+                // replace Constant.NULL into null for static calls
+                if ((convertedArguments[1] as MethodInfo).IsStatic) convertedArguments[0] = null;
             }
             try
             {
