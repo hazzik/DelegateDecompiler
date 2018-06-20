@@ -1051,7 +1051,18 @@ namespace DelegateDecompiler
         {
             var mArgs = GetArguments(state, m);
 
-            var instance = m.IsStatic ? new Address() : state.Stack.Pop();
+            // Hack: If the method was InitializeArray it is preceeded by newarr and dup. The actual InitializeArray
+            // returns void, so the newarr-before-dup would be on the stack and newarr-after-dup would be consumed
+            // by InitializeArray. However, the implementation of BuildMethodCallExpression has special handling for
+            // the InitializeArray call, which returns an expression of type Array and as such will get pushed onto
+            // the stack. The runtime implementation would have the newarr-before-dup left on the stack and it's
+            // memory would have been initialized by the call to RuntimeHelpers.InitializeArray. This hack will Pop
+            // the newarr-before-dup to achieve the same behavior.
+            var instance =
+                m.IsStatic && !(m.Name == nameof(RuntimeHelpers.InitializeArray) &&
+                    m.DeclaringType == typeof(RuntimeHelpers))
+                    ? new Address()
+                    : state.Stack.Pop();
             var result = BuildMethodCallExpression(m, instance, mArgs);
             if (result.Type != typeof(void))
                 state.Stack.Push(result);
