@@ -52,7 +52,7 @@ namespace DelegateDecompiler
         {
             var decompiled = Decompile(expression);
             var queryable = queryableType.MakeGenericType(typeof(TElement));
-            return (IQueryable<TElement>)Activator.CreateInstance(queryable, BindingFlags.NonPublic | BindingFlags.Instance, null, new object[] { this, inner.CreateQuery<TElement>(decompiled) }, CultureInfo.CurrentCulture);
+            return (IQueryable<TElement>)Activator.CreateInstance(queryable, BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance, null, new object[] { this, inner.CreateQuery<TElement>(decompiled) }, CultureInfo.CurrentCulture);
         }
 
         public virtual object Execute(Expression expression)

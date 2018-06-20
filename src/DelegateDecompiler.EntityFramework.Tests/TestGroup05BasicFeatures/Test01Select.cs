@@ -205,8 +205,9 @@ namespace DelegateDecompiler.EntityFramework.Tests.TestGroup05BasicFeatures
             using (var env = new MethodEnvironment(classEnv))
             {
                 env.AboutToUseDelegateDecompiler();
-                var persons = env.Db.Set<Person>();
-                var expr = env.Db.Set<Animal>().Where(c => c.IsAdoptedBy(persons));
+                int toto = 5;
+                Person persons = env.Db.Set<Person>().FirstOrDefault();
+                var expr = env.Db.Set<Cat>().Where(c => c.IsAdoptedBy(persons));
                 expr = expr.Decompile();
                 var result = expr.ToList();
             }

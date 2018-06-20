@@ -1,6 +1,6 @@
 Detail With Sql of supported commands
 ============
-## Documentation produced for DelegateDecompiler, version 0.24.0 on Wednesday, 20 June 2018 12:33
+## Documentation produced for DelegateDecompiler, version 0.24.0 on Wednesday, 20 June 2018 16:50
 
 This file documents what linq commands **DelegateDecompiler** supports when
 working with [Entity Framework v6.1](http://msdn.microsoft.com/en-us/data/aa937723) (EF).
@@ -39,7 +39,7 @@ SELECT
 
 ```SQL
 SELECT 
-    CASE WHEN ([Extent1].[ParentBool] = @p__linq__0) THEN cast(1 as bit) WHEN ([Extent1].[ParentBool] <> @p__linq__0) THEN cast(0 as bit) END AS [C1]
+    CASE WHEN (1 = [Extent1].[ParentBool]) THEN cast(1 as bit) WHEN (1 <> [Extent1].[ParentBool]) THEN cast(0 as bit) END AS [C1]
     FROM [dbo].[EfParents] AS [Extent1]
 ```
 
@@ -173,7 +173,7 @@ SELECT
 
 ```SQL
 SELECT 
-    CASE WHEN ([Extent1].[ParentBool] = @p__linq__0) THEN cast(1 as bit) WHEN ([Extent1].[ParentBool] <> @p__linq__0) THEN cast(0 as bit) END AS [C1]
+    CASE WHEN (1 = [Extent1].[ParentBool]) THEN cast(1 as bit) WHEN (1 <> [Extent1].[ParentBool]) THEN cast(0 as bit) END AS [C1]
     FROM [dbo].[EfParents] AS [Extent1]
 ```
 
@@ -203,7 +203,7 @@ SELECT
 
 ```SQL
 SELECT 
-    CASE WHEN ([Extent1].[ParentInt] = @p__linq__0) THEN cast(1 as bit) WHEN ([Extent1].[ParentInt] <> @p__linq__0) THEN cast(0 as bit) END AS [C1]
+    CASE WHEN (123 = [Extent1].[ParentInt]) THEN cast(1 as bit) WHEN (123 <> [Extent1].[ParentInt]) THEN cast(0 as bit) END AS [C1]
     FROM [dbo].[EfParents] AS [Extent1]
 ```
 
@@ -242,7 +242,7 @@ SELECT
 
 ```SQL
 SELECT 
-    CASE WHEN (([Extent1].[ParentNullableInt] = @p__linq__0) OR (([Extent1].[ParentNullableInt] IS NULL) AND (@p__linq__0 IS NULL))) THEN cast(1 as bit) WHEN ( NOT (([Extent1].[ParentNullableInt] = @p__linq__0) AND ((CASE WHEN ([Extent1].[ParentNullableInt] IS NULL) THEN cast(1 as bit) ELSE cast(0 as bit) END) = (CASE WHEN (@p__linq__0 IS NULL) THEN cast(1 as bit) ELSE cast(0 as bit) END)))) THEN cast(0 as bit) END AS [C1]
+    CASE WHEN ([Extent1].[ParentNullableInt] IS NULL) THEN cast(1 as bit) ELSE cast(0 as bit) END AS [C1]
     FROM [dbo].[EfParents] AS [Extent1]
 ```
 
@@ -293,7 +293,7 @@ SELECT
 SELECT 
     [Extent1].[EfParentId] AS [EfParentId]
     FROM [dbo].[EfParents] AS [Extent1]
-    WHERE [Extent1].[ParentBool] = @p__linq__0
+    WHERE 1 = [Extent1].[ParentBool]
 ```
 
   * Where Int Equals Constant (line 69)
@@ -609,14 +609,11 @@ SELECT
 
 ```SQL
 SELECT 
-    [Project1].[C1] AS [C1]
-    FROM ( SELECT 
-        (SELECT 
-            COUNT(1) AS [A1]
-            FROM [dbo].[EfChilds] AS [Extent2]
-            WHERE ([Extent1].[EfParentId] = [Extent2].[EfParentId]) AND ([Extent2].[ChildInt] = @p__linq__0)) AS [C1]
-        FROM [dbo].[EfParents] AS [Extent1]
-    )  AS [Project1]
+    (SELECT 
+        COUNT(1) AS [A1]
+        FROM [dbo].[EfChilds] AS [Extent2]
+        WHERE ([Extent1].[EfParentId] = [Extent2].[EfParentId]) AND (123 = [Extent2].[ChildInt])) AS [C1]
+    FROM [dbo].[EfParents] AS [Extent1]
 ```
 
   * Count Children With Filter By External Closure2 (line 108)
@@ -624,14 +621,11 @@ SELECT
 
 ```SQL
 SELECT 
-    [Project1].[C1] AS [C1]
-    FROM ( SELECT 
-        (SELECT 
-            COUNT(1) AS [A1]
-            FROM [dbo].[EfChilds] AS [Extent2]
-            WHERE ([Extent1].[EfParentId] = [Extent2].[EfParentId]) AND ([Extent2].[ChildInt] = @p__linq__0) AND ([Extent2].[EfParentId] = @p__linq__1)) AS [C1]
-        FROM [dbo].[EfParents] AS [Extent1]
-    )  AS [Project1]
+    (SELECT 
+        COUNT(1) AS [A1]
+        FROM [dbo].[EfChilds] AS [Extent2]
+        WHERE ([Extent1].[EfParentId] = [Extent2].[EfParentId]) AND (123 = [Extent2].[ChildInt]) AND (456 = [Extent2].[EfParentId])) AS [C1]
+    FROM [dbo].[EfParents] AS [Extent1]
 ```
 
   * Singleton Count Children With Filter (line 126)
@@ -748,7 +742,7 @@ SELECT
 SELECT 
     [Extent1].[StartDate] AS [StartDate]
     FROM [dbo].[EfParents] AS [Extent1]
-    WHERE [Extent1].[StartDate] > @p__linq__0
+    WHERE [Extent1].[StartDate] > convert(datetime2, '2000-01-01 00:00:00.0000000', 121)
 ```
 
 

@@ -1169,7 +1169,7 @@ namespace DelegateDecompiler
             var concreteInstance = DiscardConversion(instance);
             if (DelegateDecompiler.DecompileExtensions.ConcreteCalls.ContainsKey(new Tuple<object, MethodInfo>(concreteInstance, m)))
             {
-                return MethodBodyDecompiler.DecompileConcrete(m, new List<Address>() { DiscardConversion(concreteInstance) }.Union(arguments.Select(a => (Address)a)).ToList());
+                return MethodBodyDecompiler.DecompileConcrete(m, new List<Address>() { concreteInstance }.Union(arguments.Select(a => (Address)a)).ToList());
             }
             if (m.Name == "Add" && instance.Expression != null && typeof(IEnumerable).IsAssignableFrom(instance.Type))
             {

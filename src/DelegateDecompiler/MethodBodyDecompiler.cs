@@ -54,7 +54,7 @@ namespace DelegateDecompiler
                     .Select(t => GetDeclaredMethod(t, method))
                     .Where(m => m != null && m.ReflectedType == m.DeclaringType && !m.IsAbstract)
                     .Distinct()
-                    .Select(m => new Tuple<object, MethodInfo>(args.First(), m))
+                    .Select(m => new Tuple<object, MethodInfo>(concreteInstance, m))
                 );
                 foreach (var call in baseCalls)
                 {

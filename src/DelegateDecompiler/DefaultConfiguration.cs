@@ -5,13 +5,14 @@ namespace DelegateDecompiler
 {
     public class DefaultConfiguration : Configuration
     {
-        readonly HashSet<MemberInfo> computedMembers = new HashSet<MemberInfo>();
+        private readonly HashSet<MemberInfo> computedMembers = new HashSet<MemberInfo>();
 
         public override bool ShouldDecompile(MemberInfo memberInfo)
         {
-            return memberInfo.GetCustomAttributes(typeof(DecompileAttribute), true).Length > 0 ||
-                   memberInfo.GetCustomAttributes(typeof(ComputedAttribute), true).Length > 0 ||
-                   computedMembers.Contains(memberInfo);
+            return computedMembers.Contains(memberInfo)
+                || memberInfo.GetCustomAttributes(typeof(DecompileAttribute), true).Length > 0
+                || memberInfo.GetCustomAttributes(typeof(ComputedAttribute), true).Length > 0
+                ;
         }
 
         public override void RegisterDecompileableMember(MemberInfo property)
