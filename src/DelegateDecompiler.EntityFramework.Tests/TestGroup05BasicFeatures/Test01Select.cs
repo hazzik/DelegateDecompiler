@@ -207,7 +207,7 @@ namespace DelegateDecompiler.EntityFramework.Tests.TestGroup05BasicFeatures
                 env.AboutToUseDelegateDecompiler();
                 int toto = 5;
                 Person persons = env.Db.Set<Person>().FirstOrDefault();
-                var expr = env.Db.Set<Cat>().Where(c => c.IsAdoptedBy(persons));
+                var expr = env.Db.Set<Animal>().Where(c => c.IsAdoptedBy(persons)).Select(c => c.Owner.Name + " : " + c.Species + " (" + c.Age + ")");
                 expr = expr.Decompile();
                 var result = expr.ToList();
             }

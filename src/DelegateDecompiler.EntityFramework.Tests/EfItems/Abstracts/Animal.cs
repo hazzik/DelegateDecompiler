@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 
 namespace DelegateDecompiler.EntityFramework.Tests.EfItems.Abstracts
@@ -19,5 +20,8 @@ namespace DelegateDecompiler.EntityFramework.Tests.EfItems.Abstracts
         {
             return person.Animals.Contains(this);
         }
+
+        [InverseProperty("Animals")]
+        public Person Owner { get; set; }
     }
 }
