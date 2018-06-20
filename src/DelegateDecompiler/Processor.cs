@@ -78,9 +78,13 @@ namespace DelegateDecompiler
 
             public Expression Final()
             {
-                return Stack.Count == 0
-                       ? Expression.Empty()
-                       : Stack.Pop();
+                switch (Stack.Count)
+                {
+                    case 0: return Expression.Empty();
+                    case 1: return Stack.Pop();
+                    default:
+                        return Expression.Block(Stack.Reverse().Select(address => address.Expression));
+                }
             }
         }
   
