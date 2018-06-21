@@ -54,12 +54,13 @@ namespace DelegateDecompiler
 
             var result = GetDefaultImplementation(declaringType, method, args);
 
-            var childrenTypes = AppDomain.CurrentDomain.GetAssemblies()
+            var descendants = AppDomain.CurrentDomain.GetAssemblies()
                 .SelectMany(a => SafeGetTypes(a))
-                .Where(t => declaringType.IsAssignableFrom(t) && t != declaringType)
-                .OrderBy(t => t, new TypeHierarchyComparer());
+                .Where(t => declaringType.IsAssignableFrom(t) && t != declaringType);
 
-            foreach (var type in childrenTypes)
+            var sorted = TypeHierarchy.Traverse(declaringType, descendants);
+
+            foreach (var type in sorted)
             {
                 var declaredMethod = GetDeclaredMethod(type, method);
                 if (declaredMethod != null && !declaredMethod.IsAbstract)
