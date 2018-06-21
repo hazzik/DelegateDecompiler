@@ -55,6 +55,7 @@ namespace DelegateDecompiler
             var result = GetDefaultImplementation(declaringType, method, args);
 
             var descendants = AppDomain.CurrentDomain.GetAssemblies()
+                .Where(a => !a.IsDynamic)
                 .SelectMany(a => SafeGetTypes(a))
                 .Where(t => declaringType.IsAssignableFrom(t) && t != declaringType);
 
