@@ -1,10 +1,10 @@
 ﻿// Contributed by @JonPSmith (GitHub) www.thereformedprogrammer.com
 
+using DelegateDecompiler.EntityFramework.Tests.EfItems.Abstracts;
+using DelegateDecompiler.EntityFramework.Tests.EfItems.Concretes;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using DelegateDecompiler.EntityFramework.Tests.EfItems.Abstracts;
-using DelegateDecompiler.EntityFramework.Tests.EfItems.Concretes;
 
 namespace DelegateDecompiler.EntityFramework.Tests.EfItems
 {
@@ -94,26 +94,35 @@ namespace DelegateDecompiler.EntityFramework.Tests.EfItems
 
         private static ICollection<LivingBeeing> InitializeLivingBeeings()
         {
-            var animal1 = new Dog { Age = 2};
-            var animal2 = new Dog { Age = 3};
+            var dog1 = new Dog { Age = 2 };
+            var dog2 = new Dog { Age = 3 };
+            var cat1 = new Cat() { Age = 7 };
+            var cat2 = new Cat() { Age = 3 };
             return new List<LivingBeeing>
             {
-                animal1,
-                animal2,
+                dog1,
+                dog2,
+                cat1,
                 new HoneyBee(),
+                new HoneyBee(),
+                cat2,
                 new HoneyBee(),
                 new Person {Age = 1, Birthdate = new DateTime(1900, 1, 1), Name = "Joseph"},
-                new Person {Age = 2, Birthdate = new DateTime(1900, 1, 2), Name = "Maria"},
+                new Person {
+                    Age = 2,
+                    Birthdate = new DateTime(1900, 1, 2),
+                    Name = "Maria",
+                    Animals = new List<Animal> {cat2,}
+                },
                 new Person
                 {
                     Age = 3,
                     Birthdate = new DateTime(1900, 1, 2),
                     Name = "John Doe",
-                    Animals = new List<Animal> {animal1, animal2}
+                    Animals = new List<Animal> {dog1, dog2, cat1, }
                 }
             };
         }
-
 
         public static void ResetDatabaseContent(this EfTestDbContext db)
         {
