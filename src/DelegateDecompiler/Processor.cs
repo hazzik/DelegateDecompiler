@@ -1455,18 +1455,5 @@ namespace DelegateDecompiler
         {
             state.Stack.Push(state.Args[index]);
         }
-
-        internal static Expression DiscardConversion(Expression expr)
-        {
-            if (!(expr is UnaryExpression)) return expr;
-            UnaryExpression unwrapped;
-            while ((unwrapped = expr as UnaryExpression) != null)
-            {
-                if (unwrapped.NodeType != ExpressionType.Convert && unwrapped.NodeType != ExpressionType.ConvertChecked)
-                    break;
-                expr = unwrapped.Operand;
-            }
-            return expr;
-        }
     }
 }

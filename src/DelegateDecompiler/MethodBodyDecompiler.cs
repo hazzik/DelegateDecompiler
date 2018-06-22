@@ -1,4 +1,4 @@
-﻿using Mono.Reflection;
+using Mono.Reflection;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -43,14 +43,13 @@ namespace DelegateDecompiler
                 addresses[i] = new VariableInfo(body.LocalVariables[i].LocalType);
             var locals = addresses.ToArray();
 
-            if (!method.IsStatic)
+            if (!method.IsStatic && !)
             {
-                var concreteInstance = Processor.DiscardConversion(args[0]);
                 var declaringType = method.DeclaringType;
                 baseCalls.UnionWith(AppDomain.CurrentDomain.GetAssemblies()
-                    .SelectMany(a => a.GetTypes())
+                    .Where(a => !a.IsDynamic)
+                    .SelectMany(a => SafeGetTypes(a))
                     .Where(t => t.IsAssignableFrom(declaringType) && t != declaringType)
-                    .OrderBy(t => t, new TypeHierarchyComparer())
                     .Select(t => GetDeclaredMethod(t, method))
                     .Where(m => m != null && m.ReflectedType == m.DeclaringType && !m.IsAbstract)
                     .Distinct()
@@ -86,12 +85,14 @@ namespace DelegateDecompiler
 
             var result = GetDefaultImplementation(declaringType, method, args);
 
-            var childrenTypes = AppDomain.CurrentDomain.GetAssemblies()
-                .SelectMany(a => a.GetTypes())
-                .Where(t => declaringType.IsAssignableFrom(t) && t != declaringType)
-                .OrderBy(t => t, new TypeHierarchyComparer());
+            var descendants = AppDomain.CurrentDomain.GetAssemblies()
+                .Where(a => !a.IsDynamic)
+                .SelectMany(a => SafeGetTypes(a))
+                .Where(t => declaringType.IsAssignableFrom(t) && t != declaringType);
 
-            foreach (var type in childrenTypes)
+            var sorted = TypeHierarchy.Traverse(declaringType, descendants);
+
+            foreach (var type in sorted)
             {
                 var declaredMethod = GetDeclaredMethod(type, method);
                 if (declaredMethod != null && !declaredMethod.IsAbstract)
@@ -106,6 +107,18 @@ namespace DelegateDecompiler
             }
 
             return result;
+        }
+
+        private static IEnumerable<Type> SafeGetTypes(Assembly a)
+        {
+            try
+            {
+                return a.GetTypes();
+            }
+            catch (ReflectionTypeLoadException e)
+            {
+                return e.Types;
+            }
         }
 
         private static Expression GetDefaultImplementation(Type declaringType, MethodInfo method, IList<Address> args)
