@@ -1,6 +1,6 @@
 Detail With Sql of supported commands
 ============
-## Documentation produced for DelegateDecompiler, version 0.24.0 on Wednesday, 20 June 2018 17:27
+## Documentation produced for DelegateDecompiler, version 0.24.0 on Friday, 22 June 2018 12:00
 
 This file documents what linq commands **DelegateDecompiler** supports when
 working with [Entity Framework v6.1](http://msdn.microsoft.com/en-us/data/aa937723) (EF).
@@ -75,7 +75,7 @@ SELECT
 
 ```SQL
 SELECT 
-    CASE WHEN ([Extent1].[Discriminator] = N'Cat') THEN N'Felis' + N' silvestris' WHEN ([Extent1].[Discriminator] IN (N'Feline',N'Cat')) THEN N'Felis' WHEN ([Extent1].[Discriminator] = N'Dog') THEN N'Canis lupus' WHEN ([Extent1].[Discriminator] = N'Person') THEN N'Human' WHEN ([Extent1].[Discriminator] = N'HoneyBee') THEN N'Apis mellifera' END AS [C1]
+    CASE WHEN ([Extent1].[Discriminator] = N'Person') THEN N'Human' WHEN ([Extent1].[Discriminator] = N'HoneyBee') THEN N'Apis mellifera' WHEN ([Extent1].[Discriminator] = N'Cat') THEN N'Felis' + N' silvestris' WHEN ([Extent1].[Discriminator] IN (N'Feline',N'Cat')) THEN N'Felis' WHEN ([Extent1].[Discriminator] = N'Dog') THEN N'Canis lupus' END AS [C1]
     FROM [dbo].[LivingBeeings] AS [Extent1]
     WHERE [Extent1].[Discriminator] IN (N'Person',N'Dog',N'Feline',N'Cat',N'HoneyBee')
 ```
@@ -85,7 +85,7 @@ SELECT
 
 ```SQL
 SELECT 
-    CASE WHEN ([Extent1].[Discriminator] = N'Dog') THEN N'Canis lupus' WHEN ([Extent1].[Discriminator] = N'HoneyBee') THEN N'Apis mellifera' WHEN ([Extent1].[Discriminator] = N'Cat') THEN N'Felis' + N' silvestris' WHEN ([Extent1].[Discriminator] IN (N'Feline',N'Cat')) THEN N'Felis' END AS [C1]
+    CASE WHEN ([Extent1].[Discriminator] = N'HoneyBee') THEN N'Apis mellifera' WHEN ([Extent1].[Discriminator] = N'Cat') THEN N'Felis' + N' silvestris' WHEN ([Extent1].[Discriminator] IN (N'Feline',N'Cat')) THEN N'Felis' WHEN ([Extent1].[Discriminator] = N'Dog') THEN N'Canis lupus' END AS [C1]
     FROM [dbo].[LivingBeeings] AS [Extent1]
     WHERE ([Extent1].[Discriminator] IN (N'Person',N'Dog',N'Feline',N'Cat',N'HoneyBee')) AND ([Extent1].[Discriminator] IN (N'Dog',N'Feline',N'Cat',N'HoneyBee'))
 ```
@@ -95,7 +95,7 @@ SELECT
 
 ```SQL
 SELECT 
-    CASE WHEN (CASE WHEN ([Extent1].[Discriminator] = N'Dog') THEN N'Canis lupus' WHEN ([Extent1].[Discriminator] = N'HoneyBee') THEN N'Apis mellifera' WHEN ([Extent1].[Discriminator] = N'Cat') THEN N'Felis' + N' silvestris' WHEN ([Extent1].[Discriminator] IN (N'Feline',N'Cat')) THEN N'Felis' END IS NULL) THEN N'' WHEN ([Extent1].[Discriminator] = N'Dog') THEN N'Canis lupus' WHEN ([Extent1].[Discriminator] = N'HoneyBee') THEN N'Apis mellifera' WHEN ([Extent1].[Discriminator] = N'Cat') THEN N'Felis' + N' silvestris' WHEN ([Extent1].[Discriminator] IN (N'Feline',N'Cat')) THEN N'Felis' END + N' : ' + CASE WHEN (CASE WHEN ((CASE WHEN ([Extent1].[Discriminator] = N'Dog') THEN cast(1 as bit) WHEN ([Extent1].[Discriminator] = N'HoneyBee') THEN cast(0 as bit) WHEN ([Extent1].[Discriminator] = N'Cat') THEN cast(1 as bit) ELSE cast(0 as bit) END) = 1) THEN N'True' ELSE N'False' END IS NULL) THEN N'' WHEN ((CASE WHEN ([Extent1].[Discriminator] = N'Dog') THEN cast(1 as bit) WHEN ([Extent1].[Discriminator] = N'HoneyBee') THEN cast(0 as bit) WHEN ([Extent1].[Discriminator] = N'Cat') THEN cast(1 as bit) ELSE cast(0 as bit) END) = 1) THEN N'True' ELSE N'False' END AS [C1]
+    CASE WHEN (CASE WHEN ([Extent1].[Discriminator] = N'HoneyBee') THEN N'Apis mellifera' WHEN ([Extent1].[Discriminator] = N'Cat') THEN N'Felis' + N' silvestris' WHEN ([Extent1].[Discriminator] IN (N'Feline',N'Cat')) THEN N'Felis' WHEN ([Extent1].[Discriminator] = N'Dog') THEN N'Canis lupus' END IS NULL) THEN N'' WHEN ([Extent1].[Discriminator] = N'HoneyBee') THEN N'Apis mellifera' WHEN ([Extent1].[Discriminator] = N'Cat') THEN N'Felis' + N' silvestris' WHEN ([Extent1].[Discriminator] IN (N'Feline',N'Cat')) THEN N'Felis' WHEN ([Extent1].[Discriminator] = N'Dog') THEN N'Canis lupus' END + N' : ' + CASE WHEN (CASE WHEN ((CASE WHEN ([Extent1].[Discriminator] = N'HoneyBee') THEN cast(0 as bit) WHEN ([Extent1].[Discriminator] = N'Cat') THEN cast(1 as bit) WHEN ([Extent1].[Discriminator] IN (N'Feline',N'Cat')) THEN cast(0 as bit) WHEN ([Extent1].[Discriminator] = N'Dog') THEN cast(1 as bit) ELSE cast(0 as bit) END) = 1) THEN N'True' ELSE N'False' END IS NULL) THEN N'' WHEN ((CASE WHEN ([Extent1].[Discriminator] = N'HoneyBee') THEN cast(0 as bit) WHEN ([Extent1].[Discriminator] = N'Cat') THEN cast(1 as bit) WHEN ([Extent1].[Discriminator] IN (N'Feline',N'Cat')) THEN cast(0 as bit) WHEN ([Extent1].[Discriminator] = N'Dog') THEN cast(1 as bit) ELSE cast(0 as bit) END) = 1) THEN N'True' ELSE N'False' END AS [C1]
     FROM [dbo].[LivingBeeings] AS [Extent1]
     WHERE ([Extent1].[Discriminator] IN (N'Person',N'Dog',N'Feline',N'Cat',N'HoneyBee')) AND ([Extent1].[Discriminator] IN (N'Dog',N'Feline',N'Cat',N'HoneyBee'))
 ```
@@ -313,7 +313,7 @@ SELECT
 SELECT 
     [Extent1].[Id] AS [Id]
     FROM [dbo].[LivingBeeings] AS [Extent1]
-    WHERE ([Extent1].[Discriminator] IN (N'Person',N'Dog',N'Feline',N'Cat',N'HoneyBee')) AND (N'Human' = (CASE WHEN ([Extent1].[Discriminator] = N'Cat') THEN N'Felis' + N' silvestris' WHEN ([Extent1].[Discriminator] IN (N'Feline',N'Cat')) THEN N'Felis' WHEN ([Extent1].[Discriminator] = N'Dog') THEN N'Canis lupus' WHEN ([Extent1].[Discriminator] = N'Person') THEN N'Human' WHEN ([Extent1].[Discriminator] = N'HoneyBee') THEN N'Apis mellifera' END))
+    WHERE ([Extent1].[Discriminator] IN (N'Person',N'Dog',N'Feline',N'Cat',N'HoneyBee')) AND (N'Human' = (CASE WHEN ([Extent1].[Discriminator] = N'Person') THEN N'Human' WHEN ([Extent1].[Discriminator] = N'HoneyBee') THEN N'Apis mellifera' WHEN ([Extent1].[Discriminator] = N'Cat') THEN N'Felis' + N' silvestris' WHEN ([Extent1].[Discriminator] IN (N'Feline',N'Cat')) THEN N'Felis' WHEN ([Extent1].[Discriminator] = N'Dog') THEN N'Canis lupus' END))
 ```
 
   * Where Filters On Multiple Levels Of Abstract Members Over Tph Hierarchy (line 103)
@@ -323,7 +323,7 @@ SELECT
 SELECT 
     [Extent1].[Id] AS [Id]
     FROM [dbo].[LivingBeeings] AS [Extent1]
-    WHERE ([Extent1].[Discriminator] IN (N'Person',N'Dog',N'Feline',N'Cat',N'HoneyBee')) AND ([Extent1].[Discriminator] IN (N'Dog',N'Feline',N'Cat',N'HoneyBee')) AND (N'Apis mellifera : False' = (CASE WHEN (CASE WHEN ([Extent1].[Discriminator] = N'Dog') THEN N'Canis lupus' WHEN ([Extent1].[Discriminator] = N'HoneyBee') THEN N'Apis mellifera' WHEN ([Extent1].[Discriminator] = N'Cat') THEN N'Felis' + N' silvestris' WHEN ([Extent1].[Discriminator] IN (N'Feline',N'Cat')) THEN N'Felis' END IS NULL) THEN N'' WHEN ([Extent1].[Discriminator] = N'Dog') THEN N'Canis lupus' WHEN ([Extent1].[Discriminator] = N'HoneyBee') THEN N'Apis mellifera' WHEN ([Extent1].[Discriminator] = N'Cat') THEN N'Felis' + N' silvestris' WHEN ([Extent1].[Discriminator] IN (N'Feline',N'Cat')) THEN N'Felis' END + N' : ' + CASE WHEN (CASE WHEN ((CASE WHEN ([Extent1].[Discriminator] = N'Dog') THEN cast(1 as bit) WHEN ([Extent1].[Discriminator] = N'HoneyBee') THEN cast(0 as bit) WHEN ([Extent1].[Discriminator] = N'Cat') THEN cast(1 as bit) ELSE cast(0 as bit) END) = 1) THEN N'True' ELSE N'False' END IS NULL) THEN N'' WHEN ((CASE WHEN ([Extent1].[Discriminator] = N'Dog') THEN cast(1 as bit) WHEN ([Extent1].[Discriminator] = N'HoneyBee') THEN cast(0 as bit) WHEN ([Extent1].[Discriminator] = N'Cat') THEN cast(1 as bit) ELSE cast(0 as bit) END) = 1) THEN N'True' ELSE N'False' END))
+    WHERE ([Extent1].[Discriminator] IN (N'Person',N'Dog',N'Feline',N'Cat',N'HoneyBee')) AND ([Extent1].[Discriminator] IN (N'Dog',N'Feline',N'Cat',N'HoneyBee')) AND (N'Apis mellifera : False' = (CASE WHEN (CASE WHEN ([Extent1].[Discriminator] = N'HoneyBee') THEN N'Apis mellifera' WHEN ([Extent1].[Discriminator] = N'Cat') THEN N'Felis' + N' silvestris' WHEN ([Extent1].[Discriminator] IN (N'Feline',N'Cat')) THEN N'Felis' WHEN ([Extent1].[Discriminator] = N'Dog') THEN N'Canis lupus' END IS NULL) THEN N'' WHEN ([Extent1].[Discriminator] = N'HoneyBee') THEN N'Apis mellifera' WHEN ([Extent1].[Discriminator] = N'Cat') THEN N'Felis' + N' silvestris' WHEN ([Extent1].[Discriminator] IN (N'Feline',N'Cat')) THEN N'Felis' WHEN ([Extent1].[Discriminator] = N'Dog') THEN N'Canis lupus' END + N' : ' + CASE WHEN (CASE WHEN ((CASE WHEN ([Extent1].[Discriminator] = N'HoneyBee') THEN cast(0 as bit) WHEN ([Extent1].[Discriminator] = N'Cat') THEN cast(1 as bit) WHEN ([Extent1].[Discriminator] IN (N'Feline',N'Cat')) THEN cast(0 as bit) WHEN ([Extent1].[Discriminator] = N'Dog') THEN cast(1 as bit) ELSE cast(0 as bit) END) = 1) THEN N'True' ELSE N'False' END IS NULL) THEN N'' WHEN ((CASE WHEN ([Extent1].[Discriminator] = N'HoneyBee') THEN cast(0 as bit) WHEN ([Extent1].[Discriminator] = N'Cat') THEN cast(1 as bit) WHEN ([Extent1].[Discriminator] IN (N'Feline',N'Cat')) THEN cast(0 as bit) WHEN ([Extent1].[Discriminator] = N'Dog') THEN cast(1 as bit) ELSE cast(0 as bit) END) = 1) THEN N'True' ELSE N'False' END))
 ```
 
 

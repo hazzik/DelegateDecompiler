@@ -1122,7 +1122,7 @@ namespace DelegateDecompiler
                 //TODO check exhaustivity
                 else if (arg != null && !typeof(Expression).IsAssignableFrom(expectedType))
                 {
-                    arg = DiscardConversion(arg as Expression);
+                    arg = (arg as Expression).DiscardConversion();
                     if (arg is ConstantExpression) arg = (arg as ConstantExpression).Value;
                     if (arg is IConvertible && !expectedType.IsAssignableFrom(arg.GetType())) arg = Convert.ChangeType(arg, expectedType);
                 }
@@ -1166,7 +1166,7 @@ namespace DelegateDecompiler
 
         private static Expression BuildMethodCallExpression(MethodInfo m, Address instance, Expression[] arguments)
         {
-            var concreteInstance = DiscardConversion(instance);
+            var concreteInstance = instance.Expression.DiscardConversion();
             if (DelegateDecompiler.DecompileExtensions.ConcreteCalls.ContainsKey(new Tuple<object, MethodInfo>(concreteInstance, m)))
             {
                 return MethodBodyDecompiler.DecompileConcrete(m, new List<Address>() { concreteInstance }.Union(arguments.Select(a => (Address)a)).ToList());

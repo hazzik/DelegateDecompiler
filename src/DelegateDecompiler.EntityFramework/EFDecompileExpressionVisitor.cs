@@ -115,7 +115,7 @@ namespace DelegateDecompiler.EntityFramework
                         ? propertyInfo.GetValue(targetInstance)
                         : null;
                     ConstantExpression result = Expression.Constant(value, node.Type);
-                    if (value!=null && IsEntityType(value.GetType()))
+                    if (value != null && IsEntityType(value.GetType()))
                     {
                         return Visit(result);// node = node.Update(result);
                     }
@@ -140,7 +140,7 @@ namespace DelegateDecompiler.EntityFramework
 
         protected override Expression VisitBinary(BinaryExpression node)
         {
-            var operandType = new TypeHierarchyComparer().Compare(node.Left.Type, node.Right.Type) <= 0 ? node.Left.Type : node.Right.Type;
+            var operandType = node.Left.Type.IsAssignableFrom(node.Right.Type) ? node.Right.Type : node.Left.Type;
 
             #region EF annoying limitation lift : replace Entities' comparison Expressions by comparison of their PrimaryKey
 

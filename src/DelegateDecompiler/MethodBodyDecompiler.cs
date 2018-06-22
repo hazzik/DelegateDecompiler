@@ -43,7 +43,8 @@ namespace DelegateDecompiler
                 addresses[i] = new VariableInfo(body.LocalVariables[i].LocalType);
             var locals = addresses.ToArray();
 
-            if (!method.IsStatic && !)
+            var concreteInstance = args[0].Expression.DiscardConversion();
+            if (!method.IsStatic && !DelegateDecompiler.DecompileExtensions.ConcreteCalls.ContainsKey(new Tuple<object, MethodInfo>(concreteInstance, method)))
             {
                 var declaringType = method.DeclaringType;
                 baseCalls.UnionWith(AppDomain.CurrentDomain.GetAssemblies()
