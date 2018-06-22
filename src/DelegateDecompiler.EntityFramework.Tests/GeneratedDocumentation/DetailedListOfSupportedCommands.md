@@ -1,6 +1,6 @@
 Detail of supported commands
 ============
-## Documentation produced for DelegateDecompiler, version 0.24.0 on Saturday, 28 April 2018 22:35
+## Documentation produced for DelegateDecompiler, version 0.24.0 on Friday, 22 June 2018 11:35
 
 This file documents what linq commands **DelegateDecompiler** supports when
 working with [Entity Framework v6.1](http://msdn.microsoft.com/en-us/data/aa937723) (EF).
@@ -25,20 +25,24 @@ More will appear as we move forward.*
 ### Group: Basic Features
 #### [Select](../TestGroup05BasicFeatures/Test01Select.cs):
 - Supported
-  * Bool Equals Constant (line 34)
-  * Bool Equals Static Variable (line 53)
-  * Int Equals Constant (line 70)
-  * Select Property Without Computed Attribute (line 87)
-  * Select Method Without Computed Attribute (line 104)
-  * Select Abstract Member Over Tph Hierarchy (line 121)
-  * Select Abstract Member Over Tph Hierarchy After Restricting To Subtype (line 138)
-  * Select Multiple Levels Of Abstract Members Over Tph Hierarchy (line 155)
+  * Bool Equals Constant (line 33)
+  * Bool Equals Static Variable (line 52)
+  * Int Equals Constant (line 69)
+  * Select Property Without Computed Attribute (line 86)
+  * Select Method Without Computed Attribute (line 103)
+  * Select Abstract Member Over Tph Hierarchy (line 120)
+  * Select Abstract Member Over Tph Hierarchy After Restricting To Subtype (line 137)
+  * Select Multiple Levels Of Abstract Members Over Tph Hierarchy (line 154)
+  * Select With Call To Base Property Over Tph Hierarchy (line 175)
+  * Select With Call To Base Property Over Tph Hierarchy (line 176)
+- **Not Supported**
+  * Select With Call To Base Method Over Tph Hierarchy (line 190)
 
 #### [Select Async](../TestGroup05BasicFeatures/Test02SelectAsync.cs):
 - Supported
-  * Bool Equals Constant Async (line 34)
-  * Bool Equals Static Variable To Array Async (line 53)
-  * Int Equals Constant (line 70)
+  * Bool Equals Constant Async (line 39)
+  * Bool Equals Static Variable To Array Async (line 58)
+  * Int Equals Constant (line 75)
 
 #### [Equals And Not Equals](../TestGroup05BasicFeatures/Test03EqualsAndNotEquals.cs):
 - Supported
@@ -69,7 +73,7 @@ More will appear as we move forward.*
 
 #### [Single Async](../TestGroup05BasicFeatures/Test11SingleAsync.cs):
 - Supported
-  * Single Int Equals Unique Value Async (line 41)
+  * Single Int Equals Unique Value Async (line 46)
 
 
 ### Group: Order Take

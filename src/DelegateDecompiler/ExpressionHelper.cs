@@ -13,7 +13,7 @@ namespace DelegateDecompiler
         internal static Expression DiscardConversion(this Expression expr)
         {
             if (!(expr is UnaryExpression)) return expr;
-            while (expr is UnaryExpression && expr.NodeType == ExpressionType.Convert)
+            while (expr is UnaryExpression && (expr.NodeType == ExpressionType.Convert || expr.NodeType == ExpressionType.ConvertChecked))
             {
                 expr = (expr as UnaryExpression).Operand;
             }

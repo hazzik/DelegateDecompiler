@@ -43,7 +43,7 @@ namespace DelegateDecompiler
                 addresses[i] = new VariableInfo(body.LocalVariables[i].LocalType);
             var locals = addresses.ToArray();
 
-            if (!method.IsStatic && DelegateDecompiler.DecompileExtensions.ConcreteCalls.ContainsKey(new Tuple<object, MethodInfo>(args.First().DiscardConversion(), method)))
+            if (!method.IsStatic)
             {
                 var declaringType = method.DeclaringType;
                 baseCalls.UnionWith(AppDomain.CurrentDomain.GetAssemblies()
@@ -53,7 +53,7 @@ namespace DelegateDecompiler
                     .Select(t => GetDeclaredMethod(t, method))
                     .Where(m => m != null && m.ReflectedType == m.DeclaringType && !m.IsAbstract)
                     .Distinct()
-                    .Select(m => new Tuple<object, MethodInfo>(args.First().DiscardConversion(), m))
+                    .Select(m => new Tuple<object, MethodInfo>(args[0], m))
                 );
                 foreach (var call in baseCalls)
                 {

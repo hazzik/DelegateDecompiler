@@ -1100,10 +1100,9 @@ namespace DelegateDecompiler
 
         private static Expression BuildMethodCallExpression(MethodInfo m, Address instance, Expression[] arguments)
         {
-            var concreteInstance = instance.DiscardConversion();
-            if (DelegateDecompiler.DecompileExtensions.ConcreteCalls.ContainsKey(new Tuple<object, MethodInfo>(concreteInstance, m)))
+            if (DelegateDecompiler.DecompileExtensions.ConcreteCalls.ContainsKey(new Tuple<object, MethodInfo>(instance, m)))
             {
-                return MethodBodyDecompiler.DecompileConcrete(m, new List<Address>() { concreteInstance }.Union(arguments.Select(a => (Address)a)).ToList());
+                return MethodBodyDecompiler.DecompileConcrete(m, new List<Address>() { instance }.Union(arguments.Select(a => (Address)a)).ToList());
             }
             if (m.Name == "Add" && instance.Expression != null && typeof(IEnumerable).IsAssignableFrom(instance.Type))
             {
