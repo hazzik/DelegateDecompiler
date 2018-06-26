@@ -11,9 +11,9 @@ using System.Runtime.CompilerServices;
 
 namespace DelegateDecompiler
 {
-    internal class Processor
+    class Processor
     {
-        private class ProcessorState
+        class ProcessorState
         {
             public IDictionary<FieldInfo, Address> Delegates { get; private set; }
             public Stack<Address> Stack { get; private set; }
@@ -84,10 +84,10 @@ namespace DelegateDecompiler
             }
         }
 
-        private const string cachedAnonymousMethodDelegate = "CS$<>9__CachedAnonymousMethodDelegate";
-        private const string cachedAnonymousMethodDelegateRoslyn = "<>9__";
+        const string cachedAnonymousMethodDelegate = "CS$<>9__CachedAnonymousMethodDelegate";
+        const string cachedAnonymousMethodDelegateRoslyn = "<>9__";
 
-        private static readonly MethodInfo StringConcat = typeof(string).GetMethod("Concat", new[] { typeof(object), typeof(object) });
+        static readonly MethodInfo StringConcat = typeof(string).GetMethod("Concat", new[] { typeof(object), typeof(object) });
 
         public static Expression Process(VariableInfo[] locals, IList<Address> args, Instruction instruction, Type returnType)
         {
@@ -104,13 +104,13 @@ namespace DelegateDecompiler
             return ex;
         }
 
-        private readonly Stack<ProcessorState> states = new Stack<ProcessorState>();
+        readonly Stack<ProcessorState> states = new Stack<ProcessorState>();
 
-        private Processor()
+        Processor()
         {
         }
 
-        private Expression Process()
+        Expression Process()
         {
             ProcessorState state = null;
             while (states.Count > 0)
@@ -777,7 +777,7 @@ namespace DelegateDecompiler
             return state == null ? Expression.Empty() : state.Final();
         }
 
-        private static object GetRuntimeHandle(object operand)
+        static object GetRuntimeHandle(object operand)
         {
             var fieldInfo = operand as FieldInfo;
             if (fieldInfo != null)
@@ -797,14 +797,14 @@ namespace DelegateDecompiler
             return null;
         }
 
-        private static bool IsCachedAnonymousMethodDelegate(FieldInfo field)
+        static bool IsCachedAnonymousMethodDelegate(FieldInfo field)
         {
             if (field == null) return false;
             return field.Name.StartsWith(cachedAnonymousMethodDelegate) && Attribute.IsDefined(field, typeof(CompilerGeneratedAttribute), false) ||
                    field.Name.StartsWith(cachedAnonymousMethodDelegateRoslyn) && field.DeclaringType != null && Attribute.IsDefined(field.DeclaringType, typeof(CompilerGeneratedAttribute), false);
         }
 
-        private static BinaryExpression MakeBinaryExpression(Address left, Address right, ExpressionType expressionType)
+        static BinaryExpression MakeBinaryExpression(Address left, Address right, ExpressionType expressionType)
         {
             var rightType = right.Type;
             var leftType = left.Type;
@@ -817,7 +817,7 @@ namespace DelegateDecompiler
             return Expression.MakeBinary(expressionType, left, right);
         }
 
-        private static Expression Box(Expression expression, Type type)
+        static Expression Box(Expression expression, Type type)
         {
             if (expression.Type == type)
                 return expression;
@@ -835,7 +835,7 @@ namespace DelegateDecompiler
             return expression;
         }
 
-        private static Expression ConvertEnumExpressionToUnderlyingType(Expression expression)
+        static Expression ConvertEnumExpressionToUnderlyingType(Expression expression)
         {
             if (expression.Type.IsEnum)
                 return Expression.Convert(expression, expression.Type.GetEnumUnderlyingType());
@@ -843,7 +843,7 @@ namespace DelegateDecompiler
             return expression;
         }
 
-        private Instruction ConditionalBranch(ProcessorState state, Func<Expression, Expression> condition)
+        Instruction ConditionalBranch(ProcessorState state, Func<Expression, Expression> condition)
         {
             var val1 = state.Stack.Pop();
             var test = condition(val1);
@@ -864,7 +864,7 @@ namespace DelegateDecompiler
             return common;
         }
 
-        private static Instruction GetJointPoint(Instruction instruction)
+        static Instruction GetJointPoint(Instruction instruction)
         {
             var leftInstructions = FollowGraph(instruction.Next);
             var rightInstructions = FollowGraph((Instruction)instruction.Operand);
@@ -880,7 +880,7 @@ namespace DelegateDecompiler
             return common;
         }
 
-        private static Stack<Instruction> FollowGraph(Instruction instruction)
+        static Stack<Instruction> FollowGraph(Instruction instruction)
         {
             var instructions = new Stack<Instruction>();
             while (instruction != null)
@@ -891,7 +891,7 @@ namespace DelegateDecompiler
             return instructions;
         }
 
-        private static Instruction GetNextInstruction(Instruction instruction)
+        static Instruction GetNextInstruction(Instruction instruction)
         {
             switch (instruction.OpCode.FlowControl)
             {
@@ -976,7 +976,7 @@ namespace DelegateDecompiler
             return expression;
         }
 
-        private static Expression AdjustBooleanConstant(Expression expression, Type type)
+        static Expression AdjustBooleanConstant(Expression expression, Type type)
         {
             if (type == typeof(bool) && expression.Type == typeof(int))
             {
@@ -990,7 +990,7 @@ namespace DelegateDecompiler
             return expression;
         }
 
-        private static void StElem(ProcessorState state)
+        static void StElem(ProcessorState state)
         {
             var value = state.Stack.Pop();
             var index = state.Stack.Pop();
@@ -1009,7 +1009,7 @@ namespace DelegateDecompiler
             }
         }
 
-        private static IEnumerable<Expression> CreateArrayInitExpressions(NewArrayExpression newArray, Expression valueExpression, Expression indexExpression)
+        static IEnumerable<Expression> CreateArrayInitExpressions(NewArrayExpression newArray, Expression valueExpression, Expression indexExpression)
         {
             if (newArray.NodeType == ExpressionType.NewArrayInit)
             {
@@ -1030,27 +1030,27 @@ namespace DelegateDecompiler
             return new[] { valueExpression };
         }
 
-        private static void LdC(ProcessorState state, int i)
+        static void LdC(ProcessorState state, int i)
         {
             state.Stack.Push(Expression.Constant(i));
         }
 
-        private static void LdC(ProcessorState state, long i)
+        static void LdC(ProcessorState state, long i)
         {
             state.Stack.Push(Expression.Constant(i));
         }
 
-        private static void LdC(ProcessorState state, float i)
+        static void LdC(ProcessorState state, float i)
         {
             state.Stack.Push(Expression.Constant(i));
         }
 
-        private static void LdC(ProcessorState state, double i)
+        static void LdC(ProcessorState state, double i)
         {
             state.Stack.Push(Expression.Constant(i));
         }
 
-        private static void Call(ProcessorState state, MethodInfo m)
+        static void Call(ProcessorState state, MethodInfo m)
         {
             var mArgs = GetArguments(state, m);
 
@@ -1060,7 +1060,7 @@ namespace DelegateDecompiler
                 state.Stack.Push(result);
         }
 
-        private static Expression BuildAssignment(Expression instance, MemberInfo member, Expression value, out bool push)
+        static Expression BuildAssignment(Expression instance, MemberInfo member, Expression value, out bool push)
         {
             if (instance.NodeType == ExpressionType.New)
             {
@@ -1084,7 +1084,7 @@ namespace DelegateDecompiler
             return Expression.Assign(Expression.MakeMemberAccess(instance, member), value);
         }
 
-        private static Expression[] GetArguments(ProcessorState state, MethodBase m)
+        static Expression[] GetArguments(ProcessorState state, MethodBase m)
         {
             var parameterInfos = m.GetParameters();
             var mArgs = new Expression[parameterInfos.Length];
@@ -1098,7 +1098,7 @@ namespace DelegateDecompiler
             return mArgs;
         }
 
-        private static Expression BuildMethodCallExpression(MethodInfo m, Address instance, Expression[] arguments)
+        static Expression BuildMethodCallExpression(MethodInfo m, Address instance, Expression[] arguments)
         {
             if (DelegateDecompiler.DecompileExtensions.ConcreteCalls.ContainsKey(new Tuple<object, MethodInfo>(instance, m)))
             {
@@ -1225,7 +1225,7 @@ namespace DelegateDecompiler
             return Expression.Call(null, m, arguments);
         }
 
-        private static bool TryParseOperator(MethodInfo m, out ExpressionType type)
+        static bool TryParseOperator(MethodInfo m, out ExpressionType type)
         {
             switch (m.Name)
             {
@@ -1338,7 +1338,7 @@ namespace DelegateDecompiler
             return Enum.TryParse(m.Name.Substring(3), out type);
         }
 
-        private static IList<Expression> GetExpressionsForStringConcat(Expression[] arguments)
+        static IList<Expression> GetExpressionsForStringConcat(Expression[] arguments)
         {
             if (arguments.Length == 1)
             {
@@ -1354,18 +1354,18 @@ namespace DelegateDecompiler
             return arguments;
         }
 
-        private static void LdLoc(ProcessorState state, int index)
+        static void LdLoc(ProcessorState state, int index)
         {
             state.Stack.Push(state.Locals[index].Address);
         }
 
-        private static void StLoc(ProcessorState state, int index)
+        static void StLoc(ProcessorState state, int index)
         {
             var info = state.Locals[index];
             info.Address = AdjustType(state.Stack.Pop(), info.Type);
         }
 
-        private static void LdArg(ProcessorState state, int index)
+        static void LdArg(ProcessorState state, int index)
         {
             state.Stack.Push(state.Args[index]);
         }

@@ -8,7 +8,7 @@ using System.Linq;
 
 namespace DelegateDecompiler.EntityFramework.Tests.EfItems
 {
-    internal static class DatabaseHelpers
+    static class DatabaseHelpers
     {
         public const int ParentIntUniqueValue = 987;
 
@@ -94,10 +94,10 @@ namespace DelegateDecompiler.EntityFramework.Tests.EfItems
 
         private static ICollection<LivingBeeing> InitializeLivingBeeings()
         {
-            var dog1 = new Dog { Age = 2 };
-            var dog2 = new Dog { Age = 3 };
-            var cat1 = new Cat() { Age = 7 };
-            var cat2 = new Cat() { Age = 3 };
+            var dog1 = new Dog {Age = 2};
+            var dog2 = new Dog {Age = 3};
+            var cat1 = new Cat() {Age = 7};
+            var cat2 = new Cat() {Age = 3};
             return new List<LivingBeeing>
             {
                 dog1,
@@ -108,7 +108,8 @@ namespace DelegateDecompiler.EntityFramework.Tests.EfItems
                 cat2,
                 new HoneyBee(),
                 new Person {Age = 1, Birthdate = new DateTime(1900, 1, 1), Name = "Joseph"},
-                new Person {
+                new Person
+                {
                     Age = 2,
                     Birthdate = new DateTime(1900, 1, 2),
                     Name = "Maria",
@@ -119,7 +120,7 @@ namespace DelegateDecompiler.EntityFramework.Tests.EfItems
                     Age = 3,
                     Birthdate = new DateTime(1900, 1, 2),
                     Name = "John Doe",
-                    Animals = new List<Animal> {dog1, dog2, cat1, }
+                    Animals = new List<Animal> {dog1, dog2, cat1,}
                 }
             };
         }

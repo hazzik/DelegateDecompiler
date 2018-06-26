@@ -12,10 +12,10 @@ namespace DelegateDecompiler
         internal static readonly ConcurrentDictionary<Tuple<object, MethodInfo>, bool> ConcreteCalls =
             new ConcurrentDictionary<Tuple<object, MethodInfo>, bool>();
 
-        private static readonly ConcurrentDictionary<Tuple<Type, MethodInfo>, Lazy<LambdaExpression>> Cache =
+        static readonly ConcurrentDictionary<Tuple<Type, MethodInfo>, Lazy<LambdaExpression>> Cache =
             new ConcurrentDictionary<Tuple<Type, MethodInfo>, Lazy<LambdaExpression>>();
 
-        private static readonly Func<Tuple<Type, MethodInfo>, Lazy<LambdaExpression>> DecompileDelegate =
+        static readonly Func<Tuple<Type, MethodInfo>, Lazy<LambdaExpression>> DecompileDelegate =
             t => new Lazy<LambdaExpression>(() => MethodBodyDecompiler.Decompile(t.Item2, t.Item1));
 
         public static LambdaExpression Decompile(this Delegate @delegate)

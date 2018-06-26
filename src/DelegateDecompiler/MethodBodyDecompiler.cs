@@ -17,25 +17,27 @@ namespace DelegateDecompiler
         public static LambdaExpression Decompile(MethodInfo method, Type declaringType)
         {
             var args = method.GetParameters()
-                .Select(p => (Address)Expression.Parameter(p.ParameterType, p.Name))
+                .Select(p => (Address) Expression.Parameter(p.ParameterType, p.Name))
                 .ToList();
 
             var methodType = declaringType ?? method.DeclaringType;
             if (!method.IsStatic)
                 args.Insert(0, Expression.Parameter(methodType, "this"));
 
-            var expression = method.IsVirtual && !DecompileExtensions.ConcreteCalls.ContainsKey(new Tuple<object, MethodInfo>(args.FirstOrDefault(), method))
+            var expression = method.IsVirtual &&
+                             !DecompileExtensions.ConcreteCalls.ContainsKey(
+                                 new Tuple<object, MethodInfo>(args.FirstOrDefault(), method))
                 ? DecompileVirtual(methodType, method, args)
                 : DecompileConcrete(method, args);
 
             var optimizedExpression = new OptimizeExpressionVisitor().Visit(expression);
 
-            return Expression.Lambda(optimizedExpression, args.Select(x => (ParameterExpression)x.Expression));
+            return Expression.Lambda(optimizedExpression, args.Select(x => (ParameterExpression) x.Expression));
         }
 
         internal static Expression DecompileConcrete(MethodInfo method, IList<Address> args)
         {
-            HashSet<Tuple<object, MethodInfo>> baseCalls = new HashSet<Tuple<object, MethodInfo>>();
+            var baseCalls = new HashSet<Tuple<object, MethodInfo>>();
 
             var body = method.GetMethodBody();
             var addresses = new VariableInfo[body.LocalVariables.Count];
@@ -70,13 +72,12 @@ namespace DelegateDecompiler
             {
                 foreach (var call in baseCalls)
                 {
-                    bool value;
-                    DecompileExtensions.ConcreteCalls.TryRemove(call, out value);
+                    DecompileExtensions.ConcreteCalls.TryRemove(call, out _);
                 }
             }
         }
 
-        private static Expression DecompileVirtual(Type declaringType, MethodInfo method, IList<Address> args)
+        static Expression DecompileVirtual(Type declaringType, MethodInfo method, IList<Address> args)
         {
             if (declaringType == null)
                 throw new InvalidOperationException($"Method {method.Name} does not have a declaring type");
@@ -109,7 +110,7 @@ namespace DelegateDecompiler
             return result;
         }
 
-        private static IEnumerable<Type> SafeGetTypes(Assembly a)
+        static IEnumerable<Type> SafeGetTypes(Assembly a)
         {
             try
             {
@@ -121,7 +122,7 @@ namespace DelegateDecompiler
             }
         }
 
-        private static Expression GetDefaultImplementation(Type declaringType, MethodInfo method, IList<Address> args)
+        static Expression GetDefaultImplementation(Type declaringType, MethodInfo method, IList<Address> args)
         {
             for (var type = declaringType; type != null && type != typeof(object); type = type.BaseType)
             {
@@ -135,7 +136,7 @@ namespace DelegateDecompiler
             return ExpressionHelper.Default(method.ReturnType);
         }
 
-        private static MethodInfo GetDeclaredMethod(Type type, MethodInfo method)
+        static MethodInfo GetDeclaredMethod(Type type, MethodInfo method)
         {
             return type.GetMethod(method.Name,
                 BindingFlags.DeclaredOnly | BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic,

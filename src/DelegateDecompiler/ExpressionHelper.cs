@@ -3,7 +3,7 @@ using System.Linq.Expressions;
 
 namespace DelegateDecompiler
 {
-    internal static class ExpressionHelper
+    static class ExpressionHelper
     {
         internal static Expression Default(Type type) =>
             // LINQ to entities and possibly other providers don't support Expression.Default, so

@@ -7,9 +7,9 @@ using System.Linq;
 
 namespace DelegateDecompiler.EntityFramework.Tests.TestGroup05BasicFeatures
 {
-    internal class Test01Select
+    class Test01Select
     {
-        private ClassEnvironment classEnv;
+        ClassEnvironment classEnv;
 
         [OneTimeSetUp]
         public void SetUpFixture()
@@ -34,7 +34,7 @@ namespace DelegateDecompiler.EntityFramework.Tests.TestGroup05BasicFeatures
             }
         }
 
-        private static bool staticBool = true;
+        static bool staticBool = true;
 
         [Test]
         public void TestBoolEqualsStaticVariable()
