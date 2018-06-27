@@ -53,6 +53,8 @@ namespace DelegateDecompiler.Tests
             public virtual string M3() => "A";
 
             public virtual string M4() => "A";
+
+            public virtual string M6() => "A";
         }
 
         public class B : A
@@ -62,10 +64,12 @@ namespace DelegateDecompiler.Tests
             public override string M1() => "B";
 
             public override string M2() => Me;
-            
+
             public override string M3() => "B";
 
             public override string M5() => "B";
+
+            public override string M6() => "B is child of " + base.M6().ToString();
         }
 
         public class C : A
@@ -79,6 +83,8 @@ namespace DelegateDecompiler.Tests
             public override string M3() => "C";
 
             public override string M5() => "C";
+            
+            public override string M6() => "C is child of " + base.M6().ToString();
         }
 
         public class D : C
@@ -92,6 +98,8 @@ namespace DelegateDecompiler.Tests
             public override string M3() => "D";
 
             public override string M5() => "D";
+
+            public override string M6() => "D is child of " + base.M6().ToString();
         }
 
         public abstract class E : C
@@ -105,6 +113,8 @@ namespace DelegateDecompiler.Tests
             public override string M3() => "E";
 
             public override string M5() => "E";
+
+            public override string M6() => "E is child of " + base.M6().ToString();
         }
 
         [Test]
@@ -154,6 +164,19 @@ namespace DelegateDecompiler.Tests
             Expression<Func<A, string>> e = @this => "A";
 
             Test(e, typeof(A).GetMethod(nameof(A.M4)));
+        }
+
+        [Test]
+        public void DecompileVirtualMethodWithBaseCall()
+        {
+            Expression<Func<A, string>> e = @this =>
+                @this is E ? "E is child of " + ("C is child of " + "A".ToString()).ToString()
+                : @this is D ? "D is child of " + ("C is child of " + "A".ToString()).ToString()
+                : @this is C ? "C is child of " + "A".ToString()
+                : @this is B ? "B is child of " + "A".ToString()
+                : "A";
+
+            Test(e, typeof(A).GetMethod(nameof(A.M6)));
         }
 
         [Test]
