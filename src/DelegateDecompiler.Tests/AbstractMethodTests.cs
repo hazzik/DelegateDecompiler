@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq.Expressions;
+using System.Reflection;
 using NUnit.Framework;
 
 namespace DelegateDecompiler.Tests
@@ -55,6 +56,8 @@ namespace DelegateDecompiler.Tests
             public virtual string M4() => "A";
 
             public virtual string M6() => "A";
+
+            public virtual string M7 => "A";
         }
 
         public class B : A
@@ -70,6 +73,8 @@ namespace DelegateDecompiler.Tests
             public override string M5() => "B";
 
             public override string M6() => "B is child of " + base.M6().ToString();
+           
+            public override string M7 => "B is child of " + base.M7.ToString();
         }
 
         public class C : A
@@ -85,6 +90,8 @@ namespace DelegateDecompiler.Tests
             public override string M5() => "C";
             
             public override string M6() => "C is child of " + base.M6().ToString();
+           
+            public override string M7 => "C is child of " + base.M7.ToString();
         }
 
         public class D : C
@@ -100,6 +107,8 @@ namespace DelegateDecompiler.Tests
             public override string M5() => "D";
 
             public override string M6() => "D is child of " + base.M6().ToString();
+            
+            public override string M7 => "D is child of " + base.M7.ToString();
         }
 
         public abstract class E : C
@@ -115,6 +124,8 @@ namespace DelegateDecompiler.Tests
             public override string M5() => "E";
 
             public override string M6() => "E is child of " + base.M6().ToString();
+            
+            public override string M7 => "E is child of " + base.M7.ToString();
         }
 
         [Test]
@@ -177,6 +188,21 @@ namespace DelegateDecompiler.Tests
                 : "A";
 
             Test(e, typeof(A).GetMethod(nameof(A.M6)));
+        }
+
+        [Test]
+        public void DecompileVirtualPropertyWithBaseCall()
+        {
+            Expression<Func<A, string>> e = @this =>
+                @this is E ? "E is child of " + ("C is child of " + "A".ToString()).ToString()
+                : @this is D ? "D is child of " + ("C is child of " + "A".ToString()).ToString()
+                : @this is C ? "C is child of " + "A".ToString()
+                : @this is B ? "B is child of " + "A".ToString()
+                : "A";
+
+            var property = typeof(A).GetProperty(nameof(A.M7));
+            Assert.NotNull(property);
+            Test(e, property.GetGetMethod());
         }
 
         [Test]

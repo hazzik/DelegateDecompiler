@@ -144,6 +144,17 @@ namespace DelegateDecompiler
 
                 return base.VisitMethodCall(node);
             }
+            
+            protected override Expression VisitMember(MemberExpression node)
+            {
+                if (node.Member is PropertyInfo property &&
+                    replacements.TryGetValue(property.GetGetMethod(), out var replacement))
+                {
+                    return Visit(replacement);
+                }
+
+                return base.VisitMember(node);
+            }
         }
     }
 }
