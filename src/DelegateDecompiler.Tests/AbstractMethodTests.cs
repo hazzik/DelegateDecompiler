@@ -124,8 +124,12 @@ namespace DelegateDecompiler.Tests
             public override string M5() => "E";
 
             public override string M6() => "E is child of " + base.M6().ToString();
-            
+
             public override string M7 => "E is child of " + base.M7.ToString();
+
+            // Not used directly but here to create a method collision by name with M1
+            // ReSharper disable once UnusedMember.Global
+            public string M1(int a) => a.ToString();
         }
 
         [Test]

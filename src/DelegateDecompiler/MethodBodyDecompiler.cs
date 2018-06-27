@@ -123,9 +123,12 @@ namespace DelegateDecompiler
         static MethodInfo GetDeclaredMethod(Type type, MethodInfo method)
         {
             return type.GetMethod(method.Name,
-                BindingFlags.DeclaredOnly | BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+                BindingFlags.DeclaredOnly | BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic,
+                null,
+                Array.ConvertAll(method.GetParameters(), p => p.ParameterType),
+                null);
         }
-        
+
         class ReplaceMethodCallsExpressionVisitor : ExpressionVisitor
         {
             readonly IDictionary<MethodInfo, Expression> replacements;
