@@ -813,18 +813,18 @@ namespace DelegateDecompiler
             var rightType = right.Type;
             var leftType = left.Type;
 
-            left = AdjustBooleanConstant(left, rightType);
-            right = AdjustBooleanConstant(right, leftType);
-            left = ConvertEnumExpressionToUnderlyingType(left);
-            right = ConvertEnumExpressionToUnderlyingType(right);
+			left = AdjustBooleanConstant(left, rightType);
+			right = AdjustBooleanConstant(right, leftType);
+			left = ConvertEnumExpressionToUnderlyingType(left);
+			right = ConvertEnumExpressionToUnderlyingType(right);
 
-	        var leftIsNullable = leftType.IsGenericType && leftType.GetGenericTypeDefinition() == typeof(Nullable<>);
+			var leftIsNullable = leftType.IsGenericType && leftType.GetGenericTypeDefinition() == typeof(Nullable<>);
 	        var rightIsNullable = rightType.IsGenericType && rightType.GetGenericTypeDefinition() == typeof(Nullable<>);
 
 			if (leftIsNullable && !rightIsNullable)
 	        {
 		        var propertyHasValue = Expression.Property(left.Expression, nameof(Nullable<int>.HasValue));
-		        var propertyValue = Expression.Property(left.Expression, nameof(Nullable<int>.Value));
+		        var propertyValue = ConvertEnumExpressionToUnderlyingType(Expression.Property(left.Expression, nameof(Nullable<int>.Value)));
 		        var binary = Expression.MakeBinary(expressionType, propertyValue, right);
 				return Expression.Condition(Expression.Equal(propertyHasValue, Expression.Constant(true)),
 					Expression.Convert(binary, binary.Type), Expression.New(binary.Type));
@@ -832,7 +832,7 @@ namespace DelegateDecompiler
 			if (!leftIsNullable && rightIsNullable)
 	        {
 		        var propertyHasValue = Expression.Property(right.Expression, nameof(Nullable<int>.HasValue));
-		        var propertyValue = Expression.Property(right.Expression, nameof(Nullable<int>.Value));
+		        var propertyValue = ConvertEnumExpressionToUnderlyingType(Expression.Property(right.Expression, nameof(Nullable<int>.Value)));
 		        var binary = Expression.MakeBinary(expressionType, propertyValue, left);
 				return Expression.Condition(Expression.Equal(propertyHasValue, Expression.Constant(true)),
 					Expression.Convert(binary, binary.Type), Expression.New(binary.Type));
