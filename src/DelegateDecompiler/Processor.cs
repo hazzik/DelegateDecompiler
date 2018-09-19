@@ -825,15 +825,17 @@ namespace DelegateDecompiler
 	        {
 		        var propertyHasValue = Expression.Property(left.Expression, nameof(Nullable<int>.HasValue));
 		        var propertyValue = Expression.Property(left.Expression, nameof(Nullable<int>.Value));
+		        var binary = Expression.MakeBinary(expressionType, propertyValue, right);
 				return Expression.Condition(Expression.Equal(propertyHasValue, Expression.Constant(true)),
-					Expression.Convert(Expression.MakeBinary(expressionType, propertyValue, right), leftType), Expression.Default(leftType));
+					Expression.Convert(binary, binary.Type), Expression.New(binary.Type));
 			}
 			if (!leftIsNullable && rightIsNullable)
 	        {
 		        var propertyHasValue = Expression.Property(right.Expression, nameof(Nullable<int>.HasValue));
 		        var propertyValue = Expression.Property(right.Expression, nameof(Nullable<int>.Value));
-		        return Expression.Condition(Expression.Equal(propertyHasValue, Expression.Constant(true)),
-			        Expression.Convert(Expression.MakeBinary(expressionType, propertyValue, left), rightType), Expression.Default(rightType));
+		        var binary = Expression.MakeBinary(expressionType, propertyValue, left);
+				return Expression.Condition(Expression.Equal(propertyHasValue, Expression.Constant(true)),
+					Expression.Convert(binary, binary.Type), Expression.New(binary.Type));
 			}
 
 			return Expression.MakeBinary(expressionType, left, right);
