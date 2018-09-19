@@ -83,7 +83,7 @@ namespace DelegateDecompiler
                        : Stack.Pop();
             }
         }
-  
+
         const string cachedAnonymousMethodDelegate = "CS$<>9__CachedAnonymousMethodDelegate";
         const string cachedAnonymousMethodDelegateRoslyn = "<>9__";
 
@@ -284,7 +284,7 @@ namespace DelegateDecompiler
                     }
                     else if (state.Instruction.OpCode == OpCodes.Ldloc ||
                              state.Instruction.OpCode == OpCodes.Ldloc_S ||
-                             state.Instruction.OpCode == OpCodes.Ldloca || 
+                             state.Instruction.OpCode == OpCodes.Ldloca ||
                              state.Instruction.OpCode == OpCodes.Ldloca_S)
                     {
                         var operand = (LocalVariableInfo) state.Instruction.Operand;
@@ -691,7 +691,11 @@ namespace DelegateDecompiler
                     {
                         var method = state.Instruction.Operand as MethodInfo;
                         var constructor = state.Instruction.Operand as ConstructorInfo;
-                        if (method != null)
+						if (method != null && method.Name == nameof(Nullable<int>.GetValueOrDefault))
+						{
+							// do nothing
+						}
+						else if (method != null)
                         {
                             Call(state, method);
                         }
@@ -804,7 +808,7 @@ namespace DelegateDecompiler
                    field.Name.StartsWith(cachedAnonymousMethodDelegateRoslyn) && field.DeclaringType != null && Attribute.IsDefined(field.DeclaringType, typeof (CompilerGeneratedAttribute), false);
         }
 
-        static BinaryExpression MakeBinaryExpression(Address left, Address right, ExpressionType expressionType)
+        static Expression MakeBinaryExpression(Address left, Address right, ExpressionType expressionType)
         {
             var rightType = right.Type;
             var leftType = left.Type;
@@ -814,7 +818,25 @@ namespace DelegateDecompiler
             left = ConvertEnumExpressionToUnderlyingType(left);
             right = ConvertEnumExpressionToUnderlyingType(right);
 
-            return Expression.MakeBinary(expressionType, left, right);
+	        var leftIsNullable = leftType.IsGenericType && leftType.GetGenericTypeDefinition() == typeof(Nullable<>);
+	        var rightIsNullable = rightType.IsGenericType && rightType.GetGenericTypeDefinition() == typeof(Nullable<>);
+
+			if (leftIsNullable && !rightIsNullable)
+	        {
+		        var propertyHasValue = Expression.Property(left.Expression, nameof(Nullable<int>.HasValue));
+		        var propertyValue = Expression.Property(left.Expression, nameof(Nullable<int>.Value));
+				return Expression.Condition(Expression.Equal(propertyHasValue, Expression.Constant(true)),
+					Expression.Convert(Expression.MakeBinary(expressionType, propertyValue, right), leftType), Expression.Default(leftType));
+			}
+			if (!leftIsNullable && rightIsNullable)
+	        {
+		        var propertyHasValue = Expression.Property(right.Expression, nameof(Nullable<int>.HasValue));
+		        var propertyValue = Expression.Property(right.Expression, nameof(Nullable<int>.Value));
+		        return Expression.Condition(Expression.Equal(propertyHasValue, Expression.Constant(true)),
+			        Expression.Convert(Expression.MakeBinary(expressionType, propertyValue, left), rightType), Expression.Default(rightType));
+			}
+
+			return Expression.MakeBinary(expressionType, left, right);
         }
 
         static Expression Box(Expression expression, Type type)
@@ -913,6 +935,11 @@ namespace DelegateDecompiler
                 return expression;
             }
 
+	        if (expression.Type.IsGenericType && expression.Type.GetGenericTypeDefinition() == typeof(Nullable<>))
+	        {
+		        return Expression.Property(expression, nameof(Nullable<int>.Value));
+	        }
+
             var constantExpression = expression as ConstantExpression;
             if (constantExpression != null)
             {
@@ -964,7 +991,7 @@ namespace DelegateDecompiler
             {
                 return Expression.Convert(expression, type);
             }
-            
+
             if (type.IsValueType != expression.Type.IsValueType)
             {
                 return Expression.Convert(expression, type);
@@ -1216,12 +1243,12 @@ namespace DelegateDecompiler
         {
             switch (m.Name)
             {
-                /* The complete set of binary operator function names used is as follows: 
-                 * op_Addition, op_Subtraction, op_Multiply, op_Division, op_Modulus, 
-                 * op_BitwiseAnd, op_BitwiseOr, op_ExclusiveOr, op_LeftShift, op_RightShift, 
-                 * op_Equality, op_Inequality, op_LessThan, op_LessThanOrEqual, op_GreaterThan, 
+                /* The complete set of binary operator function names used is as follows:
+                 * op_Addition, op_Subtraction, op_Multiply, op_Division, op_Modulus,
+                 * op_BitwiseAnd, op_BitwiseOr, op_ExclusiveOr, op_LeftShift, op_RightShift,
+                 * op_Equality, op_Inequality, op_LessThan, op_LessThanOrEqual, op_GreaterThan,
                  * and op_GreaterThanOrEqual.
-                 */ 
+                 */
                 case "op_Addition":
                     type = ExpressionType.Add;
                     return true;
@@ -1249,7 +1276,7 @@ namespace DelegateDecompiler
                 case "op_BitwiseOr":
                     type = ExpressionType.Or;
                     return true;
-                
+
                 case "op_ExclusiveOr":
                     type = ExpressionType.ExclusiveOr;
                     return true;
@@ -1261,11 +1288,11 @@ namespace DelegateDecompiler
                 case "op_RightShift":
                     type = ExpressionType.RightShift;
                     return true;
-                
+
                 case "op_Equality":
                     type = ExpressionType.Equal;
                     return true;
-                
+
                 case "op_Inequality":
                     type = ExpressionType.NotEqual;
                     return true;
@@ -1287,7 +1314,7 @@ namespace DelegateDecompiler
                     return true;
 
                 /*
-                 * The complete set of unary operator function names used is as follows: 
+                 * The complete set of unary operator function names used is as follows:
                  * op_UnaryPlus, op_UnaryNegation, op_LogicalNot, op_OnesComplement, op_Increment, op_Decrement, op_True, and op_False.
                  */
                 case "op_UnaryPlus":
