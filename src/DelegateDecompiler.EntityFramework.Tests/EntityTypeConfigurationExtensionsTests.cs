@@ -19,6 +19,18 @@ namespace DelegateDecompiler.EntityFramework.Tests
         }
 
         [Test]
+        public void ComputedExpressionMapShouldRegisterPropertyAsDecompileable()
+        {
+            Assert.Null(InstanceGetter());
+            var configuration = new DefaultConfiguration();
+            Configuration.Configure(configuration);
+
+            default(EntityTypeConfiguration<TestClass>).Computed(x => x.Property, x => x.Field);
+
+            Assert.IsTrue(configuration.ShouldDecompile(typeof(TestClass).GetProperty(nameof(TestClass.Property))));
+        }
+
+        [Test]
         public void ComputedShouldRegisterMethodAsDecompileable()
         {
             Assert.Null(InstanceGetter());

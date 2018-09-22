@@ -16,6 +16,13 @@ namespace DelegateDecompiler.EntityFramework
             return configuration;
         }
 
+        public static EntityTypeConfiguration<T> Computed<T, TResult>(this EntityTypeConfiguration<T> configuration, Expression<Func<T, TResult>> expression, Expression<Func<T, TResult>> expressionMap) where T : class
+        {
+            Configuration.Instance.AddExpressionMap(expression, expressionMap);
+
+            return configuration;
+        }
+
         static MemberInfo ExtractMemberInfo(Expression body)
         {
             if (body.NodeType == ExpressionType.MemberAccess)

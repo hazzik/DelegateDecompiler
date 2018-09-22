@@ -16,6 +16,13 @@ namespace DelegateDecompiler.EntityFrameworkCore
             return configuration;
         }
 
+        public static EntityTypeBuilder<T> Computed<T, TResult>(this EntityTypeBuilder<T> configuration, Expression<Func<T, TResult>> expression, Expression<Func<T, TResult>> expressionMap) where T : class
+        {
+            Configuration.Instance.AddExpressionMap(expression, expressionMap);
+
+            return configuration;
+        }
+
         static MemberInfo ExtractMemberInfo(Expression body)
         {
             if (body.NodeType == ExpressionType.MemberAccess)
@@ -31,6 +38,7 @@ namespace DelegateDecompiler.EntityFrameworkCore
             {
                 return ((MethodCallExpression) body).Method;
             }
+
             throw new ArgumentException("Expression expected to be of MemberAccess or Call type, but got " + body.NodeType);
         }
     }

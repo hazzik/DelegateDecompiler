@@ -60,6 +60,17 @@ Again, the `FullName` property will be decompiled:
 bool exists = db.Employees.Any(employee => (employee.FirstName + " " + employee.LastName) == "Test User");
 ```
 
+### Expression maps per configuration
+If you require custom mapping of computed expressions per configuration, you can use the `Configuration.AddExpressionMap<TEntity, TProperty>()` method.
+
+```csharp
+Configuration.Instance.AddExpressionMap<Employee, string>(x => x.FullName, x => x.FirstName + " " + x.LastName);
+
+var employees = (from employee in db.Employees
+                 where employee.FullName == "Test User"
+                 select employee).ToList();
+```
+
 ## Using with EntityFramework and other ORMs
 
 If you are using ORM specific features, like EF's `Include`, `AsNoTracking` or NH's `Fetch` then `Decompile` method should be called after all ORM specific methods, otherwise it may not work. Ideally use `Decompile` extension method just before materialization methods such as `ToList`, `ToArray`, `First`, `FirstOrDefault`, `Count`, `Any`, and etc.
