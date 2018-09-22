@@ -1,6 +1,6 @@
 Summary of supported commands
 ============
-## Documentation produced for DelegateDecompiler, version 0.24.0 on Sunday, 29 April 2018 02:03
+## Documentation produced for DelegateDecompiler, version 0.24.0 on Saturday, 22 September 2018 09:41
 
 This file documents what linq commands **DelegateDecompiler** supports when
 working with [Entity Framework Core](https://docs.microsoft.com/en-us/ef/core/) (EF).
@@ -24,22 +24,30 @@ More will appear as we move forward.*
 
 ### Group: Basic Features
 - Supported
-  * [Select](../TestGroup05BasicFeatures/Test01Select.cs) (5 tests)
   * [Select Async](../TestGroup05BasicFeatures/Test02SelectAsync.cs) (3 tests)
   * [Equals And Not Equals](../TestGroup05BasicFeatures/Test03EqualsAndNotEquals.cs) (4 tests)
   * [Nullable](../TestGroup05BasicFeatures/Test04Nullable.cs) (5 tests)
-  * [Where](../TestGroup05BasicFeatures/Test05Where.cs) (3 tests)
   * [Single](../TestGroup05BasicFeatures/Test10Single.cs) (1 tests)
   * [Single Async](../TestGroup05BasicFeatures/Test11SingleAsync.cs) (1 tests)
+- **Partially Supported**
+  * [Select](../TestGroup05BasicFeatures/Test01Select.cs) (9 of 10 tests passed)
+  * [Where](../TestGroup05BasicFeatures/Test05Where.cs) (4 of 5 tests passed)
 
 ### Group: Order Take
+- Supported
+  * [Order By](../TestGroup10OrderTake/Test01OrderBy.cs) (3 tests)
+  * [Skip Take](../TestGroup10OrderTake/Test02SkipTake.cs) (3 tests)
 
 ### Group: Quantifier Operators
 - Supported
-  * [All](../TestGroup12QuantifierOperators/Test02All.cs) (1 tests)
+  * [Any](../TestGroup12QuantifierOperators/Test01Any.cs) (2 tests)
+  * [All](../TestGroup12QuantifierOperators/Test02All.cs) (2 tests)
   * [Contains](../TestGroup12QuantifierOperators/Test03Contains.cs) (1 tests)
 
 ### Group: Aggregation
+- Supported
+  * [Count](../TestGroup15Aggregation/Test01Count.cs) (6 tests)
+  * [Sum](../TestGroup15Aggregation/Test02Sum.cs) (2 tests)
 
 ### Group: Types
 - Supported

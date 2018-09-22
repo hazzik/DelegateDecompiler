@@ -89,6 +89,23 @@ namespace DelegateDecompiler.EntityFramework.Tests.TestGroup05BasicFeatures
         }
 
         [Test]
+        public void TestSelectPropertyWithExpressionMap()
+        {
+            using (var env = new MethodEnvironment(classEnv))
+            {
+                //SETUP
+                var linq = env.Db.EfPersons.Select(x => x.FirstName + " " + x.MiddleName + " " + x.LastName).ToList();
+
+                //ATTEMPT
+                env.AboutToUseDelegateDecompiler();
+                var dd = env.Db.EfPersons.Select(x => x.FullNameExpressionMap).Decompile().ToList();
+
+                //VERIFY
+                env.CompareAndLogList(linq, dd);
+            }
+        }
+
+        [Test]
         public void TestSelectMethodWithoutComputedAttribute()
         {
             using (var env = new MethodEnvironment(classEnv))
@@ -99,6 +116,23 @@ namespace DelegateDecompiler.EntityFramework.Tests.TestGroup05BasicFeatures
                 //ATTEMPT
                 env.AboutToUseDelegateDecompiler();
                 var dd = env.Db.EfPersons.Select(x => x.GetFullNameNoAttibute()).Decompile().ToList();
+
+                //VERIFY
+                env.CompareAndLogList(linq, dd);
+            }
+        }
+
+        [Test]
+        public void TestSelectMethodWithExpressionMap()
+        {
+            using (var env = new MethodEnvironment(classEnv))
+            {
+                //SETUP
+                var linq = env.Db.EfPersons.Select(x => x.FirstName + " " + x.MiddleName + " " + x.LastName).ToList();
+
+                //ATTEMPT
+                env.AboutToUseDelegateDecompiler();
+                var dd = env.Db.EfPersons.Select(x => x.GetFullNameExpressionMap()).Decompile().ToList();
 
                 //VERIFY
                 env.CompareAndLogList(linq, dd);

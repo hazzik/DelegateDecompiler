@@ -46,6 +46,10 @@ namespace DelegateDecompiler.EntityFramework.Tests.EfItems
             modelBuilder.Entity<EfPerson>()
                 .Computed(x => x.FullNameNoAttibute)
                 .Computed(x => x.GetFullNameNoAttibute());
+
+            modelBuilder.Entity<EfPerson>()
+                .Computed(x => x.FullNameExpressionMap, x => x.FirstName + " " + x.MiddleName + " " + x.LastName)
+                .Computed(x => x.GetFullNameExpressionMap(), x => x.FirstName + " " + x.MiddleName + " " + x.LastName);
             
             modelBuilder.Entity<Dog>();
             modelBuilder.Entity<HoneyBee>();

@@ -35,7 +35,18 @@ namespace DelegateDecompiler
 
         public static LambdaExpression Decompile(this MethodInfo method, Type declaringType)
         {
-            return Cache.GetOrAdd(Tuple.Create(declaringType, method), DecompileDelegate).Value;
+            LambdaExpression expression;
+
+            if (Configuration.Instance.TryGetExpressionMap(method, out LambdaExpression expressionMap))
+            {
+                expression = Cache.GetOrAdd(Tuple.Create(declaringType, method), new Lazy<LambdaExpression>(() => expressionMap)).Value;
+            }
+            else
+            {
+                expression = Cache.GetOrAdd(Tuple.Create(declaringType, method), DecompileDelegate).Value;
+            }
+
+            return expression;
         }
 
         public static IQueryable<T> Decompile<T>(this IQueryable<T> self)

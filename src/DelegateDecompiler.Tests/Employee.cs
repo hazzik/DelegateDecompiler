@@ -24,6 +24,13 @@ namespace DelegateDecompiler.Tests
             get { return FirstName + " " + LastName; }
         }
 
+        public string FullNameWithExpressionMap { get; set; }
+
+        public string GetFullNameWithExpressionMap()
+        {
+            return null;
+        }
+
         public string FullNameWithoutAttribute
         {
             get { return FirstName + " " + LastName; }
