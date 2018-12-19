@@ -87,6 +87,23 @@ namespace DelegateDecompiler
                 }
             }
 
+            var ancestors = AppDomain.CurrentDomain.GetAssemblies()
+                .Where(a => !a.IsDynamic)
+                .SelectMany(a => SafeGetTypes(a))
+                .Where(t => t.IsAssignableFrom(declaringType) && t != declaringType);
+
+            foreach (var type in ancestors)
+            {
+                var declaredMethod = GetDeclaredMethod(type, method);
+                if (declaredMethod != null && !declaredMethod.IsAbstract)
+                {
+                    var localArgs = args.ToList();
+                    localArgs[0] = Expression.Convert(@this, type);
+
+                    DecompileConcrete(declaredMethod, localArgs, baseCalls);
+                }
+            }
+
             return new ReplaceMethodCallsExpressionVisitor(baseCalls).Visit(result);
         }
         

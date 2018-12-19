@@ -238,5 +238,28 @@ namespace DelegateDecompiler.Tests
 
             Test(e, typeof(IA).GetMethod(nameof(IA.M5)));
         }
+
+
+        [Test]
+        public void DecompileFinalVirtualMethodWithBaseCall()
+        {
+            Expression<Func<E, string>> e = @this =>
+                "E is child of " + ("C is child of " + "A".ToString()).ToString()
+                ;
+
+            Test(e, typeof(E).GetMethod(nameof(E.M6)));
+        }
+
+        [Test]
+        public void DecompileIntermediateVirtualMethodWithBaseCall()
+        {
+            Expression<Func<C, string>> e = @this =>
+                @this is E ? "E is child of " + ("C is child of " + "A".ToString()).ToString()
+                : @this is D ? "D is child of " + ("C is child of " + "A".ToString()).ToString()
+                : "C is child of " + "A".ToString();
+
+            Test(e, typeof(C).GetMethod(nameof(C.M6)));
+        }
+
     }
 }
