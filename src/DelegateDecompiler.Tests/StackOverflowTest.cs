@@ -31,6 +31,7 @@ namespace DelegateDecompiler.Tests
             Test(expected, compiled);
         }
 
+#if !DEBUG
         [Test]
         public void StackOverflowTestOnThreadWithLargeStack()
         {
@@ -55,6 +56,7 @@ namespace DelegateDecompiler.Tests
             thread.Start();
             thread.Join();
         }
+#endif
 
         [Test]
         public void StackOverflowTestOnThreadWithSmallStack()

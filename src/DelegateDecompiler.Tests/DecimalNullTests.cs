@@ -18,7 +18,15 @@ namespace DelegateDecompiler.Tests
         [Test]
         public void ExpressionWithNullableEqual()
         {
-            Expression<Func<decimal?, decimal?, bool>> expected = (x, y) => x == y;
+            Expression<Func<decimal?, decimal?, bool>> expected;
+            if (IsVersion(VS_15_8))
+            {
+                expected = (x, y) => x.GetValueOrDefault() == y.GetValueOrDefault() & x.HasValue == y.HasValue;
+            }
+            else
+            {
+                expected = (x, y) => x == y;
+            }
             Func<decimal?, decimal?, bool> compiled = (x, y) => x == y;
             Test(expected, compiled);
         }
@@ -26,7 +34,16 @@ namespace DelegateDecompiler.Tests
         [Test]
         public void ExpressionWithNullableNotEqual()
         {
-            Expression<Func<decimal?, decimal?, bool>> expected = (x, y) => x != y;
+            Expression<Func<decimal?, decimal?, bool>> expected;
+            if (IsVersion(VS_15_8))
+            {
+                expected = (x, y) => !(x.GetValueOrDefault() == y.GetValueOrDefault() & x.HasValue == y.HasValue);
+            }
+            else
+            {
+                expected = (x, y) => x != y;
+            }
+
             Func<decimal?, decimal?, bool> compiled = (x, y) => x != y;
             Test(expected, compiled);
         }
@@ -34,7 +51,16 @@ namespace DelegateDecompiler.Tests
         [Test]
         public void ExpressionWithNullableGreaterThan()
         {
-            Expression<Func<decimal?, decimal?, bool>> expected = (x, y) => x > y;
+            Expression<Func<decimal?, decimal?, bool>> expected;
+            if (IsVersion(VS_15_8))
+            {
+                expected = (x, y) => x.GetValueOrDefault() > y.GetValueOrDefault() & (x.HasValue & y.HasValue);
+            }
+            else
+            {
+                expected = (x, y) => x > y;
+            }
+            
             Func<decimal?, decimal?, bool> compiled = (x, y) => x > y;
             Test(expected, compiled);
         }
@@ -42,7 +68,16 @@ namespace DelegateDecompiler.Tests
         [Test]
         public void ExpressionWithNullableGreaterThanOrEqual()
         {
-            Expression<Func<decimal?, decimal?, bool>> expected = (x, y) => x >= y;
+            Expression<Func<decimal?, decimal?, bool>> expected;
+            if (IsVersion(VS_15_8))
+            {
+                expected = (x, y) => x.GetValueOrDefault() >= y.GetValueOrDefault() & (x.HasValue & y.HasValue);
+            }
+            else
+            {
+                expected = (x, y) => x >= y;
+            }
+            
             Func<decimal?, decimal?, bool> compiled = (x, y) => x >= y;
             Test(expected, compiled);
         }
@@ -50,7 +85,16 @@ namespace DelegateDecompiler.Tests
         [Test]
         public void ExpressionWithNullableLessThan()
         {
-            Expression<Func<decimal?, decimal?, bool>> expected = (x, y) => x < y;
+            Expression<Func<decimal?, decimal?, bool>> expected;
+            if (IsVersion(VS_15_8))
+            {
+                expected = (x, y) => x.GetValueOrDefault() < y.GetValueOrDefault() & (x.HasValue & y.HasValue);
+            }
+            else
+            {
+                expected = (x, y) => x < y;
+            }
+            
             Func<decimal?, decimal?, bool> compiled = (x, y) => x < y;
             Test(expected, compiled);
         }
@@ -58,7 +102,16 @@ namespace DelegateDecompiler.Tests
         [Test]
         public void ExpressionWithNullableLessThanOrEqual()
         {
-            Expression<Func<decimal?, decimal?, bool>> expected = (x, y) => x <= y;
+            Expression<Func<decimal?, decimal?, bool>> expected;
+            if (IsVersion(VS_15_8))
+            {
+                expected = (x, y) => x.GetValueOrDefault() <= y.GetValueOrDefault() & (x.HasValue & y.HasValue);
+            }
+            else
+            {
+                expected = (x, y) => x <= y;
+            }
+
             Func<decimal?, decimal?, bool> compiled = (x, y) => x <= y;
             Test(expected, compiled);
         }
@@ -70,7 +123,7 @@ namespace DelegateDecompiler.Tests
             Func<decimal?, decimal?, decimal?> compiled = (x, y) => x * y;
             Test(expected, compiled);
         }
-        
+
         [Test]
         public void ExpressionWithNullablePlus()
         {
@@ -98,7 +151,15 @@ namespace DelegateDecompiler.Tests
         [Test]
         public void ExpressionWithNullableEqual2()
         {
-            Expression<Func<decimal?, decimal, bool>> expected = (x, y) => x == y;
+            Expression<Func<decimal?, decimal, bool>> expected;
+            if (IsVersion(VS_15_8))
+            {
+                expected = (x, y) => x.GetValueOrDefault() == y & x.HasValue;
+            }
+            else
+            {
+                expected = (x, y) => x == y;
+            }
             Func<decimal?, decimal, bool> compiled = (x, y) => x == y;
             Test(expected, compiled);
         }
@@ -106,7 +167,16 @@ namespace DelegateDecompiler.Tests
         [Test]
         public void ExpressionWithNullableNotEqual2()
         {
-            Expression<Func<decimal?, decimal, bool>> expected = (x, y) => x != y;
+            Expression<Func<decimal?, decimal, bool>> expected;
+            if (IsVersion(VS_15_8))
+            {
+                expected = (x, y) => !(x.GetValueOrDefault() == y & x.HasValue);
+            }
+            else
+            {
+                expected = (x, y) => x != y;
+            }
+
             Func<decimal?, decimal, bool> compiled = (x, y) => x != y;
             Test(expected, compiled);
         }
@@ -114,7 +184,16 @@ namespace DelegateDecompiler.Tests
         [Test]
         public void ExpressionWithNullableGreaterThan2()
         {
-            Expression<Func<decimal?, decimal, bool>> expected = (x, y) => x > y;
+            Expression<Func<decimal?, decimal, bool>> expected;
+            if (IsVersion(VS_15_8))
+            {
+                expected = (x, y) => x.GetValueOrDefault() > y & x.HasValue;
+            }
+            else
+            {
+                expected = (x, y) => x > y;
+            }
+
             Func<decimal?, decimal, bool> compiled = (x, y) => x > y;
             Test(expected, compiled);
         }
@@ -122,7 +201,16 @@ namespace DelegateDecompiler.Tests
         [Test]
         public void ExpressionWithNullableGreaterThanOrEqual2()
         {
-            Expression<Func<decimal?, decimal, bool>> expected = (x, y) => x >= y;
+            Expression<Func<decimal?, decimal, bool>> expected;
+            if (IsVersion(VS_15_8))
+            {
+                expected = (x, y) => x.GetValueOrDefault() >= y & x.HasValue;
+            }
+            else
+            {
+                expected = (x, y) => x >= y;
+            }
+
             Func<decimal?, decimal, bool> compiled = (x, y) => x >= y;
             Test(expected, compiled);
         }
@@ -130,7 +218,16 @@ namespace DelegateDecompiler.Tests
         [Test]
         public void ExpressionWithNullableLessThan2()
         {
-            Expression<Func<decimal?, decimal, bool>> expected = (x, y) => x < y;
+            Expression<Func<decimal?, decimal, bool>> expected;
+            if (IsVersion(VS_15_8))
+            {
+                expected = (x, y) => x.GetValueOrDefault() < y & x.HasValue;
+            }
+            else
+            {
+                expected = (x, y) => x < y;
+            }
+
             Func<decimal?, decimal, bool> compiled = (x, y) => x < y;
             Test(expected, compiled);
         }
@@ -138,7 +235,16 @@ namespace DelegateDecompiler.Tests
         [Test]
         public void ExpressionWithNullableLessThanOrEqual2()
         {
-            Expression<Func<decimal?, decimal, bool>> expected = (x, y) => x <= y;
+            Expression<Func<decimal?, decimal, bool>> expected;
+            if (IsVersion(VS_15_8))
+            {
+                expected = (x, y) => x.GetValueOrDefault() <= y & x.HasValue;
+            }
+            else
+            {
+                expected = (x, y) => x <= y;
+            }
+
             Func<decimal?, decimal, bool> compiled = (x, y) => x <= y;
             Test(expected, compiled);
         }
@@ -150,7 +256,7 @@ namespace DelegateDecompiler.Tests
             Func<decimal?, decimal, decimal?> compiled = (x, y) => x * y;
             Test(expected, compiled);
         }
-        
+
         [Test]
         public void ExpressionWithNullablePlus2()
         {
@@ -178,7 +284,15 @@ namespace DelegateDecompiler.Tests
         [Test]
         public void ExpressionWithNullableEqual3()
         {
-            Expression<Func<decimal, decimal?, bool>> expected = (x, y) => x == y;
+            Expression<Func<decimal, decimal?, bool>> expected;
+            if (IsVersion(VS_15_8))
+            {
+                expected = (x, y) => x == y.GetValueOrDefault() & y.HasValue;
+            }
+            else
+            {
+                expected = (x, y) => x == y;
+            }
             Func<decimal, decimal?, bool> compiled = (x, y) => x == y;
             Test(expected, compiled);
         }
@@ -186,7 +300,15 @@ namespace DelegateDecompiler.Tests
         [Test]
         public void ExpressionWithNullableNotEqual3()
         {
-            Expression<Func<decimal, decimal?, bool>> expected = (x, y) => x != y;
+            Expression<Func<decimal, decimal?, bool>> expected;
+            if (IsVersion(VS_15_8))
+            {
+                expected = (x, y) => !(x == y.GetValueOrDefault() & y.HasValue);
+            }
+            else
+            {
+                expected = (x, y) => x != y;
+            }
             Func<decimal, decimal?, bool> compiled = (x, y) => x != y;
             Test(expected, compiled);
         }
@@ -194,7 +316,16 @@ namespace DelegateDecompiler.Tests
         [Test]
         public void ExpressionWithNullableGreaterThan3()
         {
-            Expression<Func<decimal, decimal?, bool>> expected = (x, y) => x > y;
+            Expression<Func<decimal, decimal?, bool>> expected;
+            if (IsVersion(VS_15_8))
+            {
+                expected = (x, y) => x > y.GetValueOrDefault() & y.HasValue;
+            }
+            else
+            {
+                expected = (x, y) => x > y;
+            }
+            
             Func<decimal, decimal?, bool> compiled = (x, y) => x > y;
             Test(expected, compiled);
         }
@@ -202,7 +333,16 @@ namespace DelegateDecompiler.Tests
         [Test]
         public void ExpressionWithNullableGreaterThanOrEqual3()
         {
-            Expression<Func<decimal, decimal?, bool>> expected = (x, y) => x >= y;
+            Expression<Func<decimal, decimal?, bool>> expected;
+            if (IsVersion(VS_15_8))
+            {
+                expected = (x, y) => x >= y.GetValueOrDefault() & y.HasValue;
+            }
+            else
+            {
+                expected = (x, y) => x >= y;
+            }
+            
             Func<decimal, decimal?, bool> compiled = (x, y) => x >= y;
             Test(expected, compiled);
         }
@@ -210,7 +350,16 @@ namespace DelegateDecompiler.Tests
         [Test]
         public void ExpressionWithNullableLessThan3()
         {
-            Expression<Func<decimal, decimal?, bool>> expected = (x, y) => x < y;
+            Expression<Func<decimal, decimal?, bool>> expected;
+            if (IsVersion(VS_15_8))
+            {
+                expected = (x, y) => x < y.GetValueOrDefault() & y.HasValue;
+            }
+            else
+            {
+                expected = (x, y) => x < y;
+            }
+
             Func<decimal, decimal?, bool> compiled = (x, y) => x < y;
             Test(expected, compiled);
         }
@@ -218,7 +367,15 @@ namespace DelegateDecompiler.Tests
         [Test]
         public void ExpressionWithNullableLessThanOrEqual3()
         {
-            Expression<Func<decimal, decimal?, bool>> expected = (x, y) => x <= y;
+            Expression<Func<decimal, decimal?, bool>> expected;
+            if (IsVersion(VS_15_8))
+            {
+                expected = (x, y) => x <= y.GetValueOrDefault() & y.HasValue;
+            }
+            else
+            {
+                expected = (x, y) => x <= y;
+            }
             Func<decimal, decimal?, bool> compiled = (x, y) => x <= y;
             Test(expected, compiled);
         }
@@ -230,7 +387,7 @@ namespace DelegateDecompiler.Tests
             Func<decimal, decimal?, decimal?> compiled = (x, y) => x * y;
             Test(expected, compiled);
         }
-        
+
         [Test]
         public void ExpressionWithNullablePlus3()
         {

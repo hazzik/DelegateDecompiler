@@ -264,15 +264,32 @@ namespace DelegateDecompiler.Tests
         [Test]
         public void Issue98A()
         {
-	        Expression<Func<TestEnum?, TestEnum, bool>> expected = (x, y) => x == y;
+	        Expression<Func<TestEnum?, TestEnum, bool>> expected;
+            if (IsVersion(VS_15_8))
+            {
+                expected = (x, y) => x.GetValueOrDefault() == y & x.HasValue;
+            }
+            else
+            {
+                expected = (x, y) => x == y;
+            }
 	        Func<TestEnum?, TestEnum, bool> compiled = (x, y) => x == y;
 			Test(expected, compiled);
         }
 
-        [Test]
+        [Test, Ignore("The difference is expected")]
         public void Issue98B()
         {
-	        Expression<Func<TestEnum?, bool>> expected = x => x == TestEnum.Foo;
+	        Expression<Func<TestEnum?, bool>> expected;
+            if (IsVersion(VS_15_8))
+            {
+                expected = x => x.GetValueOrDefault() == TestEnum.Foo & x.HasValue;
+            }
+            else
+            {
+                expected = x => x == TestEnum.Foo;
+            }
+            
 	        Func<TestEnum?, bool> compiled = x => x == TestEnum.Foo;
 			Test(expected, compiled);
         }

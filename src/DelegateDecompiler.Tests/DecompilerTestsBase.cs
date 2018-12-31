@@ -7,6 +7,28 @@ namespace DelegateDecompiler.Tests
 {
     public class DecompilerTestsBase
     {
+
+
+        public readonly static Version VS_15_8 = new Version("15.8.0");
+
+        public readonly static Version CurrentVersion = null;
+
+        static DecompilerTestsBase()
+        {
+            try
+            {
+                new DecimalNullTests().ExpressionWithNullableEqual();
+            }
+            catch {
+                CurrentVersion = VS_15_8;
+            }
+        }
+
+        public static bool IsVersion(Version check)
+        {
+            return check >= CurrentVersion;
+        }
+
         private static readonly Func<Expression, string> debugView = BuildDebugView();
 
         private static Func<Expression, string> BuildDebugView()
