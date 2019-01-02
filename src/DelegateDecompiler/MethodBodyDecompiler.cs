@@ -87,9 +87,30 @@ namespace DelegateDecompiler
                 }
             }
 
+            foreach (var type in declaringType.BaseTypes())
+            {
+                var declaredMethod = GetDeclaredMethod(type, method);
+                if (declaredMethod != null && !declaredMethod.IsAbstract)
+                {
+                    DecompileConcrete(declaredMethod, args, baseCalls);
+                }
+            }
+
             return new ReplaceMethodCallsExpressionVisitor(baseCalls).Visit(result);
         }
-        
+
+        static IEnumerable<Type> BaseTypes(this Type type)
+        {
+            var baseType = type.BaseType;
+            if (baseType != typeof(object) && baseType != null)
+            {
+                for (var t = baseType; t != typeof(object); t = t.BaseType)
+                {
+                    yield return t;
+                }
+            }
+        }
+
         static IEnumerable<Type> SafeGetTypes(Assembly a)
         {
             try
