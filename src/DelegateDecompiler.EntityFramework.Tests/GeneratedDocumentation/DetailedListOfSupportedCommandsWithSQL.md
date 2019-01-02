@@ -1,6 +1,6 @@
 Detail With Sql of supported commands
 ============
-## Documentation produced for DelegateDecompiler, version 0.24.0 on Saturday, 28 April 2018 22:35
+## Documentation produced for DelegateDecompiler, version 0.25.0 on Wednesday, 02 January 2019 21:20
 
 This file documents what linq commands **DelegateDecompiler** supports when
 working with [Entity Framework v6.1](http://msdn.microsoft.com/en-us/data/aa937723) (EF).
@@ -103,7 +103,7 @@ SELECT
 
 #### [Select Async](../TestGroup05BasicFeatures/Test02SelectAsync.cs):
 - Supported
-  * Bool Equals Constant Async (line 34)
+  * Bool Equals Constant Async (line 39)
      * T-Sql executed is
 
 ```SQL
@@ -112,7 +112,7 @@ SELECT
     FROM [dbo].[EfParents] AS [Extent1]
 ```
 
-  * Bool Equals Static Variable To Array Async (line 53)
+  * Bool Equals Static Variable To Array Async (line 58)
      * T-Sql executed is
 
 ```SQL
@@ -121,7 +121,7 @@ SELECT
     FROM [dbo].[EfParents] AS [Extent1]
 ```
 
-  * Int Equals Constant (line 70)
+  * Int Equals Constant (line 75)
      * T-Sql executed is
 
 ```SQL
@@ -291,7 +291,7 @@ SELECT
 
 #### [Single Async](../TestGroup05BasicFeatures/Test11SingleAsync.cs):
 - Supported
-  * Single Int Equals Unique Value Async (line 41)
+  * Single Int Equals Unique Value Async (line 46)
      * T-Sql executed is
 
 ```SQL
