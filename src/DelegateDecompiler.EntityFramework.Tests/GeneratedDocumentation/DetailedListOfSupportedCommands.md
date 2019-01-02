@@ -1,6 +1,6 @@
 Detail of supported commands
 ============
-## Documentation produced for DelegateDecompiler, version 0.24.0 on Saturday, 28 April 2018 22:35
+## Documentation produced for DelegateDecompiler, version 0.25.0 on Wednesday, 02 January 2019 21:20
 
 This file documents what linq commands **DelegateDecompiler** supports when
 working with [Entity Framework v6.1](http://msdn.microsoft.com/en-us/data/aa937723) (EF).
@@ -36,9 +36,9 @@ More will appear as we move forward.*
 
 #### [Select Async](../TestGroup05BasicFeatures/Test02SelectAsync.cs):
 - Supported
-  * Bool Equals Constant Async (line 34)
-  * Bool Equals Static Variable To Array Async (line 53)
-  * Int Equals Constant (line 70)
+  * Bool Equals Constant Async (line 39)
+  * Bool Equals Static Variable To Array Async (line 58)
+  * Int Equals Constant (line 75)
 
 #### [Equals And Not Equals](../TestGroup05BasicFeatures/Test03EqualsAndNotEquals.cs):
 - Supported
@@ -69,7 +69,7 @@ More will appear as we move forward.*
 
 #### [Single Async](../TestGroup05BasicFeatures/Test11SingleAsync.cs):
 - Supported
-  * Single Int Equals Unique Value Async (line 41)
+  * Single Int Equals Unique Value Async (line 46)
 
 
 ### Group: Order Take
