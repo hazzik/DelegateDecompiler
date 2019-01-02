@@ -87,26 +87,30 @@ namespace DelegateDecompiler
                 }
             }
 
-            var ancestors = AppDomain.CurrentDomain.GetAssemblies()
-                .Where(a => !a.IsDynamic)
-                .SelectMany(a => SafeGetTypes(a))
-                .Where(t => t.IsAssignableFrom(declaringType) && t != declaringType);
-
-            foreach (var type in ancestors)
+            foreach (var type in declaringType.BaseTypes())
             {
                 var declaredMethod = GetDeclaredMethod(type, method);
                 if (declaredMethod != null && !declaredMethod.IsAbstract)
                 {
-                    var localArgs = args.ToList();
-                    localArgs[0] = Expression.Convert(@this, type);
-
-                    DecompileConcrete(declaredMethod, localArgs, baseCalls);
+                    DecompileConcrete(declaredMethod, args, baseCalls);
                 }
             }
 
             return new ReplaceMethodCallsExpressionVisitor(baseCalls).Visit(result);
         }
-        
+
+        static IEnumerable<Type> BaseTypes(this Type type)
+        {
+            var baseType = type.BaseType;
+            if (baseType != typeof(object) && baseType != null)
+            {
+                for (var t = baseType; t != typeof(object); t = t.BaseType)
+                {
+                    yield return t;
+                }
+            }
+        }
+
         static IEnumerable<Type> SafeGetTypes(Assembly a)
         {
             try
