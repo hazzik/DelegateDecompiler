@@ -510,5 +510,29 @@ namespace DelegateDecompiler.Tests
             Func<Employee, bool> compiled = x => x != null;
             Test(expected, compiled);
         }
+
+        [Test]
+        public void BooleanCompareToTrue()
+        {
+            Expression<Func<bool?, bool>> expected = x => x == true;
+            Func<bool?, bool> compiled = x => x == true;
+            Test(expected, compiled);
+        }
+
+        [Test, Ignore("Overoptimized")]
+        public void BooleanCompareToFalse()
+        {
+            Expression<Func<bool?, bool>> expected = x => x == false;
+            Func<bool?, bool> compiled = x => x == false;
+            Test(expected, compiled);
+        }
+
+        [Test, Ignore("Minor difference")]
+        public void IntToBool()
+        {
+            Expression<Func<int?, bool?>> expected = x => x.HasValue ? x == 1 : (bool?) null;
+            Func<int?, bool?> compiled = x => x.HasValue ? x == 1 : (bool?) null;
+            Test(expected, compiled);
+        }
     }
 }
