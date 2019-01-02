@@ -9,9 +9,11 @@ namespace DelegateDecompiler.EntityFramework.Tests.TestGroup99SaveResults
         [Test]
         public void EndRun()
         {
+#if !DEBUG
             MasterEnvironment.UpdateDocumentationIfLooksLikeAFullRun();
             //var markupResults = MasterEnvironment.ResultsAsMarkup( OutputVersions.Summary);
             //Console.Write(markupResults);
+#endif
         }
 
     }
