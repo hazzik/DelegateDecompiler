@@ -1,5 +1,6 @@
 ﻿// Contributed by @JonPSmith (GitHub) www.thereformedprogrammer.com
 
+using System;
 using System.Linq;
 using DelegateDecompiler.EntityFramework.Tests.EfItems.Abstracts;
 using DelegateDecompiler.EntityFramework.Tests.Helpers;
@@ -148,7 +149,7 @@ namespace DelegateDecompiler.EntityFramework.Tests.TestGroup05BasicFeatures
 
                 //ATTEMPT
                 env.AboutToUseDelegateDecompiler();
-                var dd = env.Db.LivingBeeing.OfType<Animal>().Select(p => p.Species + " : " + p.IsPet).Decompile().ToList();
+                var dd = env.Db.LivingBeeing.OfType<Animal>().Select(p => p.Species + " : " + (p.IsPet ? Boolean.TrueString : Boolean.FalseString)).Decompile().ToList();
 
                 //VERIFY
                 env.CompareAndLogList(linq, dd);
