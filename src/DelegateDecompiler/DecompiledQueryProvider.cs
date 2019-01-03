@@ -12,7 +12,7 @@ namespace DelegateDecompiler
             typeof(DecompiledQueryProvider)
             .GetMethods(BindingFlags.Public | BindingFlags.Instance)
             .Single(method => method.Name == "CreateQuery" && method.IsGenericMethod);
-        readonly IQueryProvider inner;
+        protected readonly IQueryProvider inner;
 
         protected internal DecompiledQueryProvider(IQueryProvider inner)
         {

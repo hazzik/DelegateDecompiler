@@ -8,7 +8,7 @@ namespace DelegateDecompiler
 {
     public class DecompiledQueryable<T> : IOrderedQueryable<T>
     {
-        private readonly IQueryable<T> inner;
+        protected readonly IQueryable<T> inner;
         private readonly IQueryProvider provider;
 
         protected internal DecompiledQueryable(IQueryProvider provider, IQueryable<T> inner)

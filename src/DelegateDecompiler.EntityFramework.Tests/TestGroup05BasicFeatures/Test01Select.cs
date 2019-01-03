@@ -1,6 +1,5 @@
 ﻿// Contributed by @JonPSmith (GitHub) www.thereformedprogrammer.com
 
-using System;
 using System.Linq;
 using DelegateDecompiler.EntityFramework.Tests.EfItems.Abstracts;
 using DelegateDecompiler.EntityFramework.Tests.Helpers;

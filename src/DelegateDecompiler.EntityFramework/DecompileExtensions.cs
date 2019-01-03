@@ -4,9 +4,17 @@ namespace DelegateDecompiler.EntityFramework
 {
     public static class DecompileExtensions
     {
+        public static IQueryable<T> Decompile<T>(this IQueryable<T> self)
+        {
+            // Minor optimisation : avoid stacking multiple instances when chaining multiple calls to Decompile
+            var provider = self.Provider;
+            if (!(provider is EfDecompiledQueryProvider)) provider = new EfDecompiledQueryProvider(self.Provider);
+            return provider.CreateQuery<T>(self.Expression);
+        }
+
         public static IQueryable<T> DecompileAsync<T>(this IQueryable<T> self)
         {
-            return new AsyncDecompiledQueryProvider(self.Provider).CreateQuery<T>(self.Expression);
+            return Decompile<T>(self);
         }
     }
 }
