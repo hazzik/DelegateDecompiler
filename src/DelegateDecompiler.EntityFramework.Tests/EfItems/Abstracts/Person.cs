@@ -11,6 +11,6 @@ namespace DelegateDecompiler.EntityFramework.Tests.EfItems.Abstracts
 
         public DateTime Birthdate { get; set; }
 
-        public virtual ICollection<Animal> Animals { get; set; }
+        public ICollection<Animal> Animals { get; set; }
     }
 }

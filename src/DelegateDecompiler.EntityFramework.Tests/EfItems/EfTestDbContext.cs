@@ -48,6 +48,8 @@ namespace DelegateDecompiler.EntityFramework.Tests.EfItems
                 .Computed(x => x.GetFullNameNoAttibute());
             
             modelBuilder.Entity<Dog>();
+            modelBuilder.Entity<Feline>();
+            modelBuilder.Entity<Cat>();
             modelBuilder.Entity<HoneyBee>();
             modelBuilder.Entity<Person>();
             base.OnModelCreating(modelBuilder);
