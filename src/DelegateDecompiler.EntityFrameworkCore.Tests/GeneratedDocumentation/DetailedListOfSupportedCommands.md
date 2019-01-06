@@ -1,6 +1,6 @@
 Detail of supported commands
 ============
-## Documentation produced for DelegateDecompiler, version 0.25.0 on Wednesday, 02 January 2019 21:20
+## Documentation produced for DelegateDecompiler, version 0.25.0 on Friday, 04 January 2019 01:24
 
 This file documents what linq commands **DelegateDecompiler** supports when
 working with [Entity Framework Core](https://docs.microsoft.com/en-us/ef/core/) (EF).
@@ -25,15 +25,14 @@ More will appear as we move forward.*
 ### Group: Basic Features
 #### [Select](../TestGroup05BasicFeatures/Test01Select.cs):
 - Supported
-  * Bool Equals Constant (line 34)
-  * Bool Equals Static Variable (line 53)
-  * Int Equals Constant (line 70)
-  * Select Property Without Computed Attribute (line 87)
-  * Select Method Without Computed Attribute (line 104)
-  * Select Abstract Member Over Tph Hierarchy (line 121)
-  * Select Abstract Member Over Tph Hierarchy After Restricting To Subtype (line 138)
-- **Not Supported**
-  * Select Multiple Levels Of Abstract Members Over Tph Hierarchy (line 155)
+  * Bool Equals Constant (line 33)
+  * Bool Equals Static Variable (line 52)
+  * Int Equals Constant (line 69)
+  * Select Property Without Computed Attribute (line 86)
+  * Select Method Without Computed Attribute (line 103)
+  * Select Abstract Member Over Tph Hierarchy (line 120)
+  * Select Abstract Member Over Tph Hierarchy After Restricting To Subtype (line 137)
+  * Select Multiple Levels Of Abstract Members Over Tph Hierarchy (line 154)
 
 #### [Select Async](../TestGroup05BasicFeatures/Test02SelectAsync.cs):
 - Supported
@@ -62,7 +61,6 @@ More will appear as we move forward.*
   * Where Bool Equals Static Variable (line 52)
   * Where Int Equals Constant (line 69)
   * Where Filters On Abstract Members Over Tph Hierarchy (line 86)
-- **Not Supported**
   * Where Filters On Multiple Levels Of Abstract Members Over Tph Hierarchy (line 103)
 
 #### [Single](../TestGroup05BasicFeatures/Test10Single.cs):
