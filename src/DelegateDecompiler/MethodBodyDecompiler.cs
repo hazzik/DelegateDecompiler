@@ -29,8 +29,9 @@ namespace DelegateDecompiler
                 : DecompileConcrete(method, args);
 
             var optimizedExpression = new OptimizeExpressionVisitor().Visit(expression);
+            var replacedOptimizedExpression = new FinalPrimitiveGetValueOrDefaultRemover().Visit(optimizedExpression);
 
-            return Expression.Lambda(optimizedExpression, args.Select(x => (ParameterExpression) x.Expression));
+            return Expression.Lambda(replacedOptimizedExpression, args.Select(x => (ParameterExpression) x.Expression));
         }
 
         static Expression DecompileConcrete(MethodInfo method, IList<Address> args)
