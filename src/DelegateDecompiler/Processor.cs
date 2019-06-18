@@ -376,7 +376,7 @@ namespace DelegateDecompiler
                         }
                         else
                         {
-                            state.Instruction = ConditionalBranch(state, val => val.Type == typeof(bool) ? val : Expression.NotEqual(val, ExpressionHelper.Default(val.Type, null)));
+                            state.Instruction = ConditionalBranch(state, val => (val as LambdaExpression)?.ReturnType == typeof(bool) || val.Type == typeof(bool) ? val : Expression.NotEqual(val, ExpressionHelper.Default(val.Type, null)));
                             continue;
                         }
                     }
@@ -847,20 +847,21 @@ namespace DelegateDecompiler
         {
             var val1 = state.Stack.Pop();
             var test = condition(val1);
-
-            var left = (Instruction) state.Instruction.Operand;
-            var right = state.Instruction.Next;
-
             var common = GetJointPoint(state.Instruction);
+            if (!(test is LambdaExpression))
+            {
 
-            var rightState = state.Clone(right, common);
-            var leftState = state.Clone(left, common);
-            states.Push(rightState);
-            states.Push(leftState);
+                var left = (Instruction)state.Instruction.Operand;
+                var right = state.Instruction.Next;
 
-            // Run this once the conditional branches have been processed
-            state.RunNext = () => state.Merge(test, leftState, rightState);
+                var rightState = state.Clone(right, common);
+                var leftState = state.Clone(left, common);
+                states.Push(rightState);
+                states.Push(leftState);
 
+                // Run this once the conditional branches have been processed
+                state.RunNext = () => state.Merge(test, leftState, rightState);
+            }
             return common;
         }
 
