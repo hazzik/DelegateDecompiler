@@ -362,7 +362,7 @@ namespace DelegateDecompiler
                     else if (state.Instruction.OpCode == OpCodes.Brfalse ||
                              state.Instruction.OpCode == OpCodes.Brfalse_S)
                     {
-                        state.Instruction = ConditionalBranch(state, val => Expression.Equal(val, ExpressionHelper.Default(val.Type)));
+                        state.Instruction = ConditionalBranch(state, val => Expression.Equal(val, ExpressionHelper.Default(val.Type, null)));
                         continue;
                     }
                     else if (state.Instruction.OpCode == OpCodes.Brtrue ||
@@ -376,7 +376,7 @@ namespace DelegateDecompiler
                         }
                         else
                         {
-                            state.Instruction = ConditionalBranch(state, val => val.Type == typeof(bool) ? val : Expression.NotEqual(val, ExpressionHelper.Default(val.Type)));
+                            state.Instruction = ConditionalBranch(state, val => val.Type == typeof(bool) ? val : Expression.NotEqual(val, ExpressionHelper.Default(val.Type, null)));
                             continue;
                         }
                     }
@@ -666,7 +666,7 @@ namespace DelegateDecompiler
                     {
                         var address = state.Stack.Pop();
                         var type = (Type) state.Instruction.Operand;
-                        address.Expression = ExpressionHelper.Default(type);
+                        address.Expression = ExpressionHelper.Default(type, null);
                     }
                     else if (state.Instruction.OpCode == OpCodes.Newarr)
                     {

@@ -138,7 +138,7 @@ namespace DelegateDecompiler
                 }
             }
 
-            return ExpressionHelper.Default(method.ReturnType);
+            return ExpressionHelper.Default(method.ReturnType, null);
         }
 
         static MethodInfo GetDeclaredMethod(Type type, MethodInfo method)
