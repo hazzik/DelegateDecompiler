@@ -1,6 +1,6 @@
 Detail With Sql of supported commands
 ============
-## Documentation produced for DelegateDecompiler, version 0.25.0 on Friday, 04 January 2019 01:24
+## Documentation produced for DelegateDecompiler, version 0.26.0 on Thursday, 08 August 2019 17:31
 
 This file documents what linq commands **DelegateDecompiler** supports when
 working with [Entity Framework Core](https://docs.microsoft.com/en-us/ef/core/) (EF).
@@ -25,56 +25,56 @@ More will appear as we move forward.*
 ### Group: Basic Features
 #### [Select](../TestGroup05BasicFeatures/Test01Select.cs):
 - Supported
-  * Bool Equals Constant (line 33)
+  * Bool Equals Constant (line 34)
      * T-Sql executed is
 
 ```SQL
 
 ```
 
-  * Bool Equals Static Variable (line 52)
+  * Bool Equals Static Variable (line 53)
      * T-Sql executed is
 
 ```SQL
 
 ```
 
-  * Int Equals Constant (line 69)
+  * Int Equals Constant (line 70)
      * T-Sql executed is
 
 ```SQL
 
 ```
 
-  * Select Property Without Computed Attribute (line 86)
+  * Select Property Without Computed Attribute (line 87)
      * T-Sql executed is
 
 ```SQL
 
 ```
 
-  * Select Method Without Computed Attribute (line 103)
+  * Select Method Without Computed Attribute (line 104)
      * T-Sql executed is
 
 ```SQL
 
 ```
 
-  * Select Abstract Member Over Tph Hierarchy (line 120)
+  * Select Abstract Member Over Tph Hierarchy (line 121)
      * T-Sql executed is
 
 ```SQL
 
 ```
 
-  * Select Abstract Member Over Tph Hierarchy After Restricting To Subtype (line 137)
+  * Select Abstract Member Over Tph Hierarchy After Restricting To Subtype (line 138)
      * T-Sql executed is
 
 ```SQL
 
 ```
 
-  * Select Multiple Levels Of Abstract Members Over Tph Hierarchy (line 154)
+  * Select Multiple Levels Of Abstract Members Over Tph Hierarchy (line 155)
      * T-Sql executed is
 
 ```SQL
