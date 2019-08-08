@@ -28,7 +28,7 @@ namespace DelegateDecompiler
                 ? DecompileVirtual(methodType, method, args)
                 : DecompileConcrete(method, args);
 
-            var optimizedExpression = new OptimizeExpressionVisitor().Visit(expression);
+            var optimizedExpression = OptimizeExpressionVisitor.Optimize(expression);
 
             return Expression.Lambda(optimizedExpression, args.Select(x => (ParameterExpression) x.Expression));
         }

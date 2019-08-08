@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using System.Linq.Expressions;
 
 namespace DelegateDecompiler
@@ -332,6 +331,7 @@ namespace DelegateDecompiler
             return base.VisitUnary(node);
         }
 
+
         static bool Invert(ref BinaryExpression expression)
         {
             switch (expression.NodeType)
@@ -417,5 +417,25 @@ namespace DelegateDecompiler
 		        return before.Update(operand);
 	        }
 		}
+
+        class GetValueOrDefaultToCoalesceConverter : ExpressionVisitor
+        {
+            protected override Expression VisitMethodCall(MethodCallExpression node)
+            {
+                if (IsGetValueOrDefault(node) &&
+                    node.Type != typeof(DateTime) &&
+                    node.Type != typeof(DateTimeOffset))
+                {
+                    return Expression.Coalesce(node.Object, ExpressionHelper.Default(node.Type));
+                }
+
+                return base.VisitMethodCall(node);
+            }
+        }
+
+        public static Expression Optimize(Expression expression)
+        {
+            return new GetValueOrDefaultToCoalesceConverter().Visit(new OptimizeExpressionVisitor().Visit(expression));
+        }
     }
 }
