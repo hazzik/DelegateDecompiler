@@ -1,6 +1,6 @@
 Detail With Sql of supported commands
 ============
-## Documentation produced for DelegateDecompiler, version 0.25.0 on Wednesday, 02 January 2019 21:20
+## Documentation produced for DelegateDecompiler, version 0.26.0 on Thursday, 08 August 2019 17:31
 
 This file documents what linq commands **DelegateDecompiler** supports when
 working with [Entity Framework Core](https://docs.microsoft.com/en-us/ef/core/) (EF).
@@ -74,8 +74,13 @@ More will appear as we move forward.*
 
 ```
 
-- **Not Supported**
   * Select Multiple Levels Of Abstract Members Over Tph Hierarchy (line 155)
+     * T-Sql executed is
+
+```SQL
+
+```
+
 
 #### [Select Async](../TestGroup05BasicFeatures/Test02SelectAsync.cs):
 - Supported
@@ -200,8 +205,13 @@ More will appear as we move forward.*
 
 ```
 
-- **Not Supported**
   * Where Filters On Multiple Levels Of Abstract Members Over Tph Hierarchy (line 103)
+     * T-Sql executed is
+
+```SQL
+
+```
+
 
 #### [Single](../TestGroup05BasicFeatures/Test10Single.cs):
 - Supported

@@ -145,11 +145,11 @@ namespace DelegateDecompiler.EntityFramework.Tests.TestGroup05BasicFeatures
             using (var env = new MethodEnvironment(classEnv))
             {
                 //SETUP
-                var linq = env.Db.LivingBeeing.OfType<Animal>().ToList().Select(p => p.Species + " : " + p.IsPet).ToList();
+                var linq = env.Db.LivingBeeing.OfType<Animal>().ToList().Select(p => string.Concat(p.Species, " : ", p.IsPet)).ToList();
 
                 //ATTEMPT
                 env.AboutToUseDelegateDecompiler();
-                var dd = env.Db.LivingBeeing.OfType<Animal>().Select(p => p.Species + " : " + p.IsPet).Decompile().ToList();
+                var dd = env.Db.LivingBeeing.OfType<Animal>().Select(p => string.Concat(p.Species, " : ", p.IsPet)).Decompile().ToList();
 
                 //VERIFY
                 env.CompareAndLogList(linq, dd);
