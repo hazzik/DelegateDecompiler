@@ -426,7 +426,8 @@ namespace DelegateDecompiler
                     node.Type != typeof(DateTime) &&
                     node.Type != typeof(DateTimeOffset))
                 {
-                    return Expression.Coalesce(node.Object, ExpressionHelper.Default(node.Type));
+                    var @default = node.Arguments.Count == 0 ? ExpressionHelper.Default(node.Type) : node.Arguments[0];
+                    return Expression.Coalesce(node.Object, @default);
                 }
 
                 return base.VisitMethodCall(node);
