@@ -9,4 +9,3 @@ nunit3-console ^
 dotnet test --no-build -c Release -f netcoreapp2.0 src\DelegateDecompiler.Tests 
 dotnet test --no-build -c Release -f netcoreapp2.0 src\DelegateDecompiler.Tests.VB
 dotnet test --no-build -c Release -f netcoreapp2.0 src\DelegateDecompiler.EntityFrameworkCore.Tests
-exit 0;
