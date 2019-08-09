@@ -30,12 +30,31 @@ namespace DelegateDecompiler.Tests
             Func<int, int?> compiled = x => (int?)x;
             Test(expected, compiled);
         }
+
         [Test]
         public void ExpressionWithNullableCoalesce()
         {
             Expression<Func<int?, int>> expected = x => x ?? 0;
             Func<int?, int> compiled = x => x ?? 0;
             Test(expected, compiled);
+        }
+
+        [Test]
+        public void ExpressionWithGetValueOrDefault()
+        {
+            Expression<Func<int?, int>> expected1 = x => x ?? 0;
+            Expression<Func<int?, int>> expected2 = x => x.GetValueOrDefault();
+            Func<int?, int> compiled = x => x.GetValueOrDefault();
+            Test(expected1, expected2, compiled);
+        }
+
+        [Test]
+        public void ExpressionWithGetValueToDefaultToNotDefault()
+        {
+            Expression<Func<int?, int>> expected1 = x => x ?? 100;
+            Expression<Func<int?, int>> expected2 = x => x.GetValueOrDefault(100);
+            Func<int?, int> compiled = x => x.GetValueOrDefault(100);
+            Test(expected1, expected2, compiled);
         }
 
         [Test]
