@@ -101,10 +101,13 @@ namespace DelegateDecompiler
 
             if (test.NodeType == ExpressionType.Not)
             {
+                var testOperand = ((UnaryExpression) test).Operand;
                 if (ifTrueConstant?.Value as bool? == false)
                 {
-                    return Expression.AndAlso(((UnaryExpression) test).Operand, ifFalse);
+                    return Expression.AndAlso(testOperand, ifFalse);
                 }
+
+                return Visit(node.Update(testOperand, ifFalse, ifTrue));
             }
 
             return node.Update(test, ifTrue, ifFalse);
@@ -431,7 +434,7 @@ namespace DelegateDecompiler
                     node.Type != typeof(DateTime) &&
                     node.Type != typeof(DateTimeOffset))
                 {
-                    var @default = node.Arguments.Count == 0 ? ExpressionHelper.Default(node.Type) : node.Arguments[0];
+                    var @default = node.Arguments.Count == 0 ? ExpressionHelper.Default(node.Type, null) : node.Arguments[0];
                     return Expression.Coalesce(node.Object, @default);
                 }
 
