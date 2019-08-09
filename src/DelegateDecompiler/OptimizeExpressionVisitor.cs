@@ -101,10 +101,13 @@ namespace DelegateDecompiler
 
             if (test.NodeType == ExpressionType.Not)
             {
+                var testOperand = ((UnaryExpression) test).Operand;
                 if (ifTrueConstant?.Value as bool? == false)
                 {
-                    return Expression.AndAlso(((UnaryExpression) test).Operand, ifFalse);
+                    return Expression.AndAlso(testOperand, ifFalse);
                 }
+
+                return Visit(node.Update(testOperand, ifFalse, ifTrue));
             }
 
             return node.Update(test, ifTrue, ifFalse);
