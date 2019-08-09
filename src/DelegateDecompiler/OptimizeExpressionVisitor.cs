@@ -41,9 +41,9 @@ namespace DelegateDecompiler
         protected override Expression VisitConditional(ConditionalExpression node)
         {
             Debug.WriteLine(node);
+            var test = Visit(node.Test);
             var ifTrue = Visit(node.IfTrue);
             var ifFalse = Visit(node.IfFalse);
-            var test = Visit(node.Test);
 
             Expression expression;
             if (IsCoalesce(test, ifTrue, out expression))
@@ -92,6 +92,11 @@ namespace DelegateDecompiler
                         }
                     }
                 }
+            }
+
+            if (ifTrueConstant?.Value is true)
+            {
+                return Expression.OrElse(test, ifFalse);
             }
 
             if (test.NodeType == ExpressionType.Not)
