@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection.Emit;
@@ -80,7 +81,9 @@ namespace DelegateDecompiler
 
 			switch (block.Last.OpCode.FlowControl)
 			{
+				case FlowControl.Meta:
 				case FlowControl.Next:
+				case FlowControl.Call:
 				case FlowControl.Cond_Branch:
 				{
 					var operand = block.Last.Next;
