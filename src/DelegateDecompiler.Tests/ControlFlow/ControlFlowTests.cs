@@ -17,7 +17,7 @@ namespace DelegateDecompiler.Tests.ControlFlow
 
 			Assert.That(flow, Has.Count.EqualTo(2));
 			Assert.That(flow[0].Instructions, Has.Count.EqualTo(6));
-			Assert.That(flow[0].Instructions, Has.Count.EqualTo(2));
+			Assert.That(flow[1].Instructions, Has.Count.EqualTo(2));
 		}
 
 		public static int GraphWithCondition(bool a)
