@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection.Emit;
 using Mono.Reflection;
 
@@ -25,10 +26,12 @@ namespace DelegateDecompiler
 
 			blocks.Add(block);
 
+			CalculateJumps(blocks);
+
 			return blocks;
 		}
 
-		static ICollection<Instruction> GetJumpTargets(IEnumerable<Instruction> instructions)
+		static ICollection<Instruction> GetJumpTargets(ICollection<Instruction> instructions)
 		{
 			var jumpTargets = new HashSet<Instruction>();
 			foreach (var instruction in instructions)
@@ -48,6 +51,45 @@ namespace DelegateDecompiler
 			}
 
 			return jumpTargets;
+		}
+
+		static void CalculateJumps(List<ControlFlowBlock> blocks)
+		{
+			var map = blocks.ToDictionary(x => x.First.Offset);
+			foreach (var block in blocks)
+			{
+				block.Jumps = CalculateJumps(block, map);
+			}
+		}
+
+		public static IList<ControlFlowBlock> CalculateJumps(ControlFlowBlock block, Dictionary<int, ControlFlowBlock> map)
+		{
+			var jumps = new List<ControlFlowBlock>();
+			switch (block.Last.OpCode.OperandType)
+			{
+				case OperandType.ShortInlineBrTarget:
+				case OperandType.InlineBrTarget:
+					var operand = (Instruction) block.Last.Operand;
+					jumps.Add(map[operand.Offset]);
+					break;
+				case OperandType.InlineSwitch:
+					var operands = (IEnumerable<Instruction>) block.Last.Operand;
+					jumps.AddRange(operands.Select(o => map[o.Offset]));
+					break;
+			}
+
+			switch (block.Last.OpCode.FlowControl)
+			{
+				case FlowControl.Next:
+				case FlowControl.Cond_Branch:
+				{
+					var operand = block.Last.Next;
+					jumps.Add(map[operand.Offset]);
+					break;
+				}
+			}
+
+			return jumps;
 		}
 	}
 }

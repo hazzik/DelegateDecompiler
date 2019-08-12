@@ -42,7 +42,8 @@ namespace DelegateDecompiler
             var locals = addresses.ToArray();
 
             var instructions = method.GetInstructions();
-            return Processor.Process(locals, args, instructions.First(), method.ReturnType);
+            var flow = instructions.GetControlFlow();
+            return Processor.Process(locals, args, flow, method.ReturnType);
         }
 
         static Expression DecompileConcrete(
