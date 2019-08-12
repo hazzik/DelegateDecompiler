@@ -2,7 +2,7 @@
   <Import Project="..\..\DelegateDecompiler.props" />
 
   <PropertyGroup>
-    <TargetFrameworks>net40;net45;netstandard2.0</TargetFrameworks>
+    <TargetFrameworks>netstandard2.0</TargetFrameworks>
     <Description>A library which is able to decompile a delegate or a method body to its lambda representation</Description>
     <PackageTags>LINQ computed-properties computedproperties decompiler decompilation computed properties expressions expression-tree IL</PackageTags>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
