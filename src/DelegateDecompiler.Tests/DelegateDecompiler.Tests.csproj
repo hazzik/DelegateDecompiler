@@ -1,7 +1,4 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
-  <Import Project="..\..\DelegateDecompiler.props" />
-
   <PropertyGroup>
     <TargetFrameworks>net40;net45;netcoreapp2.0</TargetFrameworks>
   </PropertyGroup>
