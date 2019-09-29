@@ -47,6 +47,7 @@ namespace DelegateDecompiler.EntityFrameworkCore
             return new AsyncDecompiledQueryable<TElement>(this, inner.CreateQuery<TElement>(decompiled));
         }
 
+#if NETSTANDARD2_0
         public IAsyncEnumerable<TResult> ExecuteAsync<TResult>(Expression expression)
         {
             if (!(inner is IAsyncQueryProvider asyncProvider))
@@ -68,5 +69,17 @@ namespace DelegateDecompiler.EntityFrameworkCore
             var decompiled = DecompileExpressionVisitor.Decompile(expression);
             return asyncProvider.ExecuteAsync<TResult>(decompiled, cancellationToken);
         }
+#else
+        public TResult ExecuteAsync<TResult>(Expression expression, CancellationToken cancellationToken)
+        {
+            if (!(inner is IAsyncQueryProvider asyncProvider))
+            {
+                throw new InvalidOperationException("The source IQueryProvider doesn't implement IDbAsyncQueryProvider.");
+            }
+
+            var decompiled = DecompileExpressionVisitor.Decompile(expression);
+            return asyncProvider.ExecuteAsync<TResult>(decompiled, cancellationToken);
+        }
+#endif
     }
 }

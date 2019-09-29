@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 
 namespace DelegateDecompiler.EntityFrameworkCore
 {
@@ -14,6 +15,7 @@ namespace DelegateDecompiler.EntityFrameworkCore
             this.inner = inner;
         }
 
+#if NETSTANDARD2_0
         IAsyncEnumerator<T> IAsyncEnumerable<T>.GetEnumerator()
         {
             if (inner is IAsyncEnumerable<T> asyncEnumerable)
@@ -21,5 +23,14 @@ namespace DelegateDecompiler.EntityFrameworkCore
             
             throw new InvalidOperationException("The source IQueryable doesn't implement IDbAsyncEnumerable<T>.");
         }
+#else
+        IAsyncEnumerator<T> IAsyncEnumerable<T>.GetAsyncEnumerator(CancellationToken cancellationToken = new CancellationToken())
+        {
+            if (inner is IAsyncEnumerable<T> asyncEnumerable)
+                return asyncEnumerable.GetAsyncEnumerator(cancellationToken);
+            
+            throw new InvalidOperationException("The source IQueryable doesn't implement IDbAsyncEnumerable<T>.");
+        }
+#endif
     }
 }
