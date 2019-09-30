@@ -87,6 +87,7 @@ namespace DelegateDecompiler.EntityFramework.Tests.TestGroup05BasicFeatures
             }
         }
 
+#if !NETCOREAPP3_0
         [Test]
         public void TestWhereFiltersOnMultipleLevelsOfAbstractMembersOverTphHierarchy()
         {
@@ -103,5 +104,6 @@ namespace DelegateDecompiler.EntityFramework.Tests.TestGroup05BasicFeatures
                 env.CompareAndLogList(linq, dd);
             }
         }
+#endif
     }
 }

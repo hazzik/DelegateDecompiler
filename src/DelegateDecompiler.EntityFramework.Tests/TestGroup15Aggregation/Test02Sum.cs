@@ -16,6 +16,7 @@ namespace DelegateDecompiler.EntityFramework.Tests.TestGroup15Aggregation
             classEnv = new ClassEnvironment();
         }
 
+#if !NETCOREAPP3_0
         [Test]
         public void TestSingletonSumChildren()
         {
@@ -33,6 +34,7 @@ namespace DelegateDecompiler.EntityFramework.Tests.TestGroup15Aggregation
                 env.CompareAndLogSingleton(linq, dd);
             }
         }
+#endif
 
         [Test]
         public void TestSumCountInChildrenWhereChildrenCanBeNone()

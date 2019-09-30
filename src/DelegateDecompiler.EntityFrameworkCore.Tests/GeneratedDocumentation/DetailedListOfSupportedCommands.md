@@ -1,6 +1,6 @@
 Detail of supported commands
 ============
-## Documentation produced for DelegateDecompiler, version 0.26.1 on Thursday, 08 August 2019 19:00
+## Documentation produced for DelegateDecompiler, version 0.26.1 on Tuesday, 01 October 2019 01:20
 
 This file documents what linq commands **DelegateDecompiler** supports when
 working with [Entity Framework Core](https://docs.microsoft.com/en-us/ef/core/) (EF).
@@ -36,9 +36,11 @@ More will appear as we move forward.*
 
 #### [Select Async](../TestGroup05BasicFeatures/Test02SelectAsync.cs):
 - Supported
-  * Bool Equals Constant Async (line 39)
-  * Bool Equals Static Variable To Array Async (line 58)
-  * Int Equals Constant (line 75)
+  * Async (line 39)
+  * Bool Equals Constant Async (line 56)
+  * Decompile Upfront Bool Equals Constant Async (line 73)
+  * Bool Equals Static Variable To Array Async (line 92)
+  * Int Equals Constant (line 109)
 
 #### [Equals And Not Equals](../TestGroup05BasicFeatures/Test03EqualsAndNotEquals.cs):
 - Supported
@@ -116,6 +118,15 @@ More will appear as we move forward.*
 - Supported
   * Singleton Sum Children (line 33)
   * Sum Count In Children Where Children Can Be None (line 51)
+
+#### [Count Async](../TestGroup15Aggregation/Test03CountAsync.cs):
+- Supported
+  * Count Children Async (line 40)
+  * Count Children With Filter Async (line 58)
+  * Count Children With Filter By Closure Async (line 76)
+  * Count Children With Filter By External Closure Async (line 95)
+  * Count Children With Filter By External Closure2 Async (line 115)
+  * Singleton Count Children With Filter Async (line 133)
 
 
 ### Group: Types

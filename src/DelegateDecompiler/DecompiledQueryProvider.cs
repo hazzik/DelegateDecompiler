@@ -8,15 +8,16 @@ namespace DelegateDecompiler
 {
     public class DecompiledQueryProvider : IQueryProvider
     {
-        static readonly MethodInfo openGenericCreateQueryMethod =
+        static readonly MethodInfo OpenGenericCreateQueryMethod =
             typeof(DecompiledQueryProvider)
             .GetMethods(BindingFlags.Public | BindingFlags.Instance)
             .Single(method => method.Name == "CreateQuery" && method.IsGenericMethod);
-        readonly IQueryProvider inner;
+
+        protected IQueryProvider Inner { get; }
 
         protected internal DecompiledQueryProvider(IQueryProvider inner)
         {
-            this.inner = inner;
+            Inner = inner;
         }
 
         public virtual IQueryable CreateQuery(Expression expression)
@@ -32,7 +33,7 @@ namespace DelegateDecompiler
                 throw new ArgumentException();
             }
 
-            MethodInfo closedGenericCreateQueryMethod = openGenericCreateQueryMethod.MakeGenericMethod(elementType);
+            var closedGenericCreateQueryMethod = OpenGenericCreateQueryMethod.MakeGenericMethod(elementType);
 
             return (IQueryable)closedGenericCreateQueryMethod.Invoke(this, new object[] { expression });
         }
@@ -40,19 +41,19 @@ namespace DelegateDecompiler
         public virtual IQueryable<TElement> CreateQuery<TElement>(Expression expression)
         {
             var decompiled = DecompileExpressionVisitor.Decompile(expression);
-            return new DecompiledQueryable<TElement>(this, inner.CreateQuery<TElement>(decompiled));
+            return new DecompiledQueryable<TElement>(this, Inner.CreateQuery<TElement>(decompiled));
         }
 
         public object Execute(Expression expression)
         {
             var decompiled = DecompileExpressionVisitor.Decompile(expression);
-            return inner.Execute(decompiled);
+            return Inner.Execute(decompiled);
         }
 
         public TResult Execute<TResult>(Expression expression)
         {
             var decompiled = DecompileExpressionVisitor.Decompile(expression);
-            return inner.Execute<TResult>(decompiled);
+            return Inner.Execute<TResult>(decompiled);
         }
     }
 }
