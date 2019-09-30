@@ -11,10 +11,10 @@ namespace DelegateDecompiler.EntityFrameworkCore
 {
     class AsyncDecompiledQueryProviderBase : DecompiledQueryProvider
     {
-        static readonly MethodInfo ExecuteAsync2 = typeof(IAsyncQueryProvider)
+        static readonly MethodInfo OpenGenericExecuteAsync2 = typeof(IAsyncQueryProvider)
             .GetMethod("ExecuteAsync", new[] {typeof(Expression), typeof(CancellationToken)});
 
-        static readonly MethodInfo ExecuteAsync1 = typeof(IAsyncQueryProvider)
+        static readonly MethodInfo OpenGenericExecuteAsync1 = typeof(IAsyncQueryProvider)
             .GetMethod("ExecuteAsync", new[] {typeof(Expression)});
 
         protected AsyncDecompiledQueryProviderBase(IQueryProvider inner)
@@ -37,27 +37,49 @@ namespace DelegateDecompiler.EntityFrameworkCore
         public virtual TResult ExecuteAsync<TResult>(Expression expression, CancellationToken cancellationToken)
         {
             var decompiled = DecompileExpressionVisitor.Decompile(expression);
-            return (TResult) ExecuteAsync<TResult>(AsyncQueryProvider, decompiled, cancellationToken);
+            return (TResult) MethodCache<TResult>.ExecuteAsync(AsyncQueryProvider, decompiled, cancellationToken);
         }
 
-        protected static object ExecuteAsync<TResult>(IAsyncQueryProvider asyncQueryProvider, Expression expression, CancellationToken cancellationToken)
+        protected static class MethodCache<T>
         {
-            return ExecuteAsync2.MakeGenericMethod(typeof(TResult)).Invoke(
-                asyncQueryProvider,
-                new object[]
-                {
-                    expression, cancellationToken
-                });
-        }
+            static readonly Func<IAsyncQueryProvider, Expression, object> ExecuteAsync1 =
+                (Func<IAsyncQueryProvider, Expression, object>) CompileDelegate(OpenGenericExecuteAsync1?.MakeGenericMethod(typeof(T)));
 
-        protected static object ExecuteAsync<TResult>(IAsyncQueryProvider asyncQueryProvider, Expression expression)
-        {
-            return ExecuteAsync1.MakeGenericMethod(typeof(TResult)).Invoke(
-                asyncQueryProvider,
-                new object[]
+            static readonly Func<IAsyncQueryProvider, Expression, CancellationToken, object> ExecuteAsync2 =
+                (Func<IAsyncQueryProvider, Expression, CancellationToken, object>) CompileDelegate(OpenGenericExecuteAsync2?.MakeGenericMethod(typeof(T)));
+
+            public static object ExecuteAsync(IAsyncQueryProvider asyncQueryProvider, Expression expression)
+            {
+                return ExecuteAsync1(asyncQueryProvider, expression);
+            }
+
+            public static object ExecuteAsync(IAsyncQueryProvider asyncQueryProvider, Expression expression, CancellationToken cancellationToken)
+            {
+                return ExecuteAsync2(asyncQueryProvider, expression, cancellationToken);
+            }
+
+            static Delegate CompileDelegate(MethodInfo method)
+            {
+                if (method == null)
                 {
-                    expression
-                });
+                    return null;
+                }
+
+                var instance = method.DeclaringType != null && !method.IsStatic
+                    ? Expression.Parameter(method.DeclaringType)
+                    : null;
+
+                var parameters = Array.ConvertAll(method.GetParameters(),
+                    pi => Expression.Parameter(pi.ParameterType));
+
+                return Expression.Lambda(
+                        Expression.Call(
+                            instance,
+                            method,
+                            parameters),
+                        new[] {instance}.Concat(parameters))
+                    .Compile();
+            }
         }
     }
 
@@ -77,13 +99,13 @@ namespace DelegateDecompiler.EntityFrameworkCore
         public virtual IAsyncEnumerable<TResult> ExecuteAsync<TResult>(Expression expression)
         {
             var decompiled = DecompileExpressionVisitor.Decompile(expression);
-            return (IAsyncEnumerable<TResult>) ExecuteAsync<TResult>(AsyncQueryProvider, decompiled);
+            return (IAsyncEnumerable<TResult>) MethodCache<TResult>.ExecuteAsync(AsyncQueryProvider, decompiled);
         }
 
         public new virtual Task<TResult> ExecuteAsync<TResult>(Expression expression, CancellationToken cancellationToken)
         {
             var decompiled = DecompileExpressionVisitor.Decompile(expression);
-            return (Task<TResult>) ExecuteAsync<TResult>(AsyncQueryProvider, decompiled, cancellationToken);
+            return (Task<TResult>) MethodCache<TResult>.ExecuteAsync(AsyncQueryProvider, decompiled, cancellationToken);
         }
     }
 }
