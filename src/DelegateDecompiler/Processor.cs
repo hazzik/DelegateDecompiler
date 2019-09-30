@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -88,6 +89,10 @@ namespace DelegateDecompiler
         const string cachedAnonymousMethodDelegateRoslyn = "<>9__";
 
         static readonly MethodInfo StringConcat = typeof(string).GetMethod("Concat", new[] { typeof(object), typeof(object) });
+
+        //TODO: Move to ProcessorState??
+        static readonly ConcurrentDictionary<MethodInfo, LambdaExpression> AnonymousDelegatesCache =
+            new ConcurrentDictionary<MethodInfo, LambdaExpression>();
 
         public static Expression Process(VariableInfo[] locals, IList<Address> args, Instruction instruction, Type returnType)
         {
@@ -383,22 +388,7 @@ namespace DelegateDecompiler
                     else if (state.Instruction.OpCode == OpCodes.Ldftn)
                     {
                         var method = (MethodInfo) state.Instruction.Operand;
-                        var decompile = method.Decompile();
-
-                        var obj = state.Stack.Pop();
-                        if (!method.IsStatic)
-                        {
-                            var expressions = new Dictionary<Expression, Expression>
-                            {
-                                {decompile.Parameters[0], obj}
-                            };
-
-                            var body = new ReplaceExpressionVisitor(expressions).Visit(decompile.Body);
-                            body = TransparentIdentifierRemovingExpressionVisitor.RemoveTransparentIdentifiers(body);
-                            decompile = Expression.Lambda(body, decompile.Parameters.Skip(1));
-                        }
-
-                        state.Stack.Push(decompile);
+                        state.Stack.Push(DecompileLambdaExpression(method, () => state.Stack.Pop()));
                         state.Instruction = state.Instruction.Next;
                     }
                     else if (state.Instruction.OpCode == OpCodes.Bgt ||
@@ -775,6 +765,30 @@ namespace DelegateDecompiler
             }
 
             return state == null ? Expression.Empty() : state.Final();
+        }
+
+        static LambdaExpression DecompileLambdaExpression(MethodInfo method, Func<Expression> @this)
+        {
+            if (method.IsStatic)
+            {
+                return AnonymousDelegatesCache.GetOrAdd(method, m => m.Decompile());
+            }
+
+            //Should always call.
+            var expression = @this();
+            return AnonymousDelegatesCache.GetOrAdd(method, m =>
+            {
+                var decompiled = m.Decompile();
+
+                var expressions = new Dictionary<Expression, Expression>
+                {
+                    {decompiled.Parameters[0], expression}
+                };
+
+                var body = new ReplaceExpressionVisitor(expressions).Visit(decompiled.Body);
+                body = TransparentIdentifierRemovingExpressionVisitor.RemoveTransparentIdentifiers(body);
+                return Expression.Lambda(body, decompiled.Parameters.Skip(1));
+            });
         }
 
         static object GetRuntimeHandle(object operand)

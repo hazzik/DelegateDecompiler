@@ -9,9 +9,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DelegateDecompiler.Tests", 
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{CF17DF9B-3430-4159-9BF3-8F56C6E9887C}"
 	ProjectSection(SolutionItems) = preProject
+		!release.cmd = !release.cmd
 		appveyor.yml = appveyor.yml
 		build.cmd = build.cmd
-		DelegateDecompiler.props = DelegateDecompiler.props
+		src\Directory.Build.props = src\Directory.Build.props
 		LICENSE.txt = LICENSE.txt
 		README.md = README.md
 		test.cmd = test.cmd
@@ -26,6 +27,8 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DelegateDecompiler.EntityFrameworkCore", "src\DelegateDecompiler.EntityFrameworkCore\DelegateDecompiler.EntityFrameworkCore.csproj", "{B0FE6AA7-2C34-42B7-9684-FB1229442761}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DelegateDecompiler.EntityFrameworkCore.Tests", "src\DelegateDecompiler.EntityFrameworkCore.Tests\DelegateDecompiler.EntityFrameworkCore.Tests.csproj", "{BE231144-9777-4DBD-B40D-BE65B24C04B4}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DelegateDecompiler.EntityFrameworkCore3.Tests", "src\DelegateDecompiler.EntityFrameworkCore3.Tests\DelegateDecompiler.EntityFrameworkCore3.Tests.csproj", "{B8F5E18F-723A-46FF-A7FB-7F25F95A62DD}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -61,6 +64,10 @@ Global
 		{BE231144-9777-4DBD-B40D-BE65B24C04B4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BE231144-9777-4DBD-B40D-BE65B24C04B4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BE231144-9777-4DBD-B40D-BE65B24C04B4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B8F5E18F-723A-46FF-A7FB-7F25F95A62DD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B8F5E18F-723A-46FF-A7FB-7F25F95A62DD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B8F5E18F-723A-46FF-A7FB-7F25F95A62DD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B8F5E18F-723A-46FF-A7FB-7F25F95A62DD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
