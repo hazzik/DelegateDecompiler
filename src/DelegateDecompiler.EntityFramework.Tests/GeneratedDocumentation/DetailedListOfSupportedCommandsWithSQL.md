@@ -1,6 +1,6 @@
 Detail With Sql of supported commands
 ============
-## Documentation produced for DelegateDecompiler, version 0.26.1 on Thursday, 08 August 2019 19:00
+## Documentation produced for DelegateDecompiler, version 0.26.1 on Tuesday, 01 October 2019 01:20
 
 This file documents what linq commands **DelegateDecompiler** supports when
 working with [Entity Framework v6.1](http://msdn.microsoft.com/en-us/data/aa937723) (EF).
@@ -95,7 +95,7 @@ SELECT
 
 ```SQL
 SELECT 
-    CASE WHEN (CASE WHEN ([Extent1].[Discriminator] = N'HoneyBee') THEN N'Apis mellifera' WHEN ([Extent1].[Discriminator] = N'Dog') THEN N'Canis lupus' END IS NULL) THEN N'' WHEN ([Extent1].[Discriminator] = N'HoneyBee') THEN N'Apis mellifera' WHEN ([Extent1].[Discriminator] = N'Dog') THEN N'Canis lupus' END + N' : ' + CASE WHEN ((CASE WHEN ([Extent1].[Discriminator] = N'HoneyBee') THEN cast(0 as bit) WHEN ([Extent1].[Discriminator] = N'Dog') THEN cast(1 as bit) ELSE cast(0 as bit) END) = 1) THEN N'True' WHEN ((CASE WHEN ([Extent1].[Discriminator] = N'HoneyBee') THEN cast(0 as bit) WHEN ([Extent1].[Discriminator] = N'Dog') THEN cast(1 as bit) ELSE cast(0 as bit) END) = 0) THEN N'False' ELSE N'' END AS [C1]
+    CASE WHEN (CASE WHEN ([Extent1].[Discriminator] = N'HoneyBee') THEN N'Apis mellifera' WHEN ([Extent1].[Discriminator] = N'Dog') THEN N'Canis lupus' END IS NULL) THEN N'' WHEN ([Extent1].[Discriminator] = N'HoneyBee') THEN N'Apis mellifera' WHEN ([Extent1].[Discriminator] = N'Dog') THEN N'Canis lupus' END + N' : ' + CASE WHEN ((CASE WHEN ([Extent1].[Discriminator] = N'HoneyBee') THEN cast(0 as bit) WHEN ([Extent1].[Discriminator] = N'Dog') THEN cast(1 as bit) WHEN ([Extent1].[Discriminator] <> N'Dog') THEN cast(0 as bit) END) = 1) THEN N'True' WHEN ((CASE WHEN ([Extent1].[Discriminator] = N'HoneyBee') THEN cast(0 as bit) WHEN ([Extent1].[Discriminator] = N'Dog') THEN cast(1 as bit) WHEN ([Extent1].[Discriminator] <> N'Dog') THEN cast(0 as bit) END) = 0) THEN N'False' ELSE N'' END AS [C1]
     FROM [dbo].[LivingBeeings] AS [Extent1]
     WHERE ([Extent1].[Discriminator] IN (N'Dog',N'HoneyBee',N'Person')) AND ([Extent1].[Discriminator] IN (N'Dog',N'HoneyBee'))
 ```
@@ -103,7 +103,26 @@ SELECT
 
 #### [Select Async](../TestGroup05BasicFeatures/Test02SelectAsync.cs):
 - Supported
-  * Bool Equals Constant Async (line 39)
+  * Async (line 39)
+     * T-Sql executed is
+
+```SQL
+SELECT 
+    [Extent1].[EfParentId] AS [EfParentId], 
+    [Extent1].[ParentBool] AS [ParentBool], 
+    [Extent1].[ParentInt] AS [ParentInt], 
+    [Extent1].[ParentNullableInt] AS [ParentNullableInt], 
+    [Extent1].[ParentNullableDecimal1] AS [ParentNullableDecimal1], 
+    [Extent1].[ParentNullableDecimal2] AS [ParentNullableDecimal2], 
+    [Extent1].[ParentDouble] AS [ParentDouble], 
+    [Extent1].[ParentString] AS [ParentString], 
+    [Extent1].[StartDate] AS [StartDate], 
+    [Extent1].[EndDate] AS [EndDate], 
+    [Extent1].[ParentTimeSpan] AS [ParentTimeSpan]
+    FROM [dbo].[EfParents] AS [Extent1]
+```
+
+  * Bool Equals Constant Async (line 56)
      * T-Sql executed is
 
 ```SQL
@@ -112,7 +131,16 @@ SELECT
     FROM [dbo].[EfParents] AS [Extent1]
 ```
 
-  * Bool Equals Static Variable To Array Async (line 58)
+  * Decompile Upfront Bool Equals Constant Async (line 73)
+     * T-Sql executed is
+
+```SQL
+SELECT 
+    [Extent1].[ParentBool] AS [ParentBool]
+    FROM [dbo].[EfParents] AS [Extent1]
+```
+
+  * Bool Equals Static Variable To Array Async (line 92)
      * T-Sql executed is
 
 ```SQL
@@ -121,7 +149,7 @@ SELECT
     FROM [dbo].[EfParents] AS [Extent1]
 ```
 
-  * Int Equals Constant (line 75)
+  * Int Equals Constant (line 109)
      * T-Sql executed is
 
 ```SQL
@@ -267,7 +295,7 @@ SELECT
 SELECT 
     [Extent1].[Id] AS [Id]
     FROM [dbo].[LivingBeeings] AS [Extent1]
-    WHERE ([Extent1].[Discriminator] IN (N'Dog',N'HoneyBee',N'Person')) AND ([Extent1].[Discriminator] IN (N'Dog',N'HoneyBee')) AND (N'Apis mellifera : False' = (CASE WHEN (CASE WHEN ([Extent1].[Discriminator] = N'HoneyBee') THEN N'Apis mellifera' WHEN ([Extent1].[Discriminator] = N'Dog') THEN N'Canis lupus' END IS NULL) THEN N'' WHEN ([Extent1].[Discriminator] = N'HoneyBee') THEN N'Apis mellifera' WHEN ([Extent1].[Discriminator] = N'Dog') THEN N'Canis lupus' END + N' : ' + CASE WHEN ((CASE WHEN ([Extent1].[Discriminator] = N'HoneyBee') THEN cast(0 as bit) WHEN ([Extent1].[Discriminator] = N'Dog') THEN cast(1 as bit) ELSE cast(0 as bit) END) = 1) THEN N'True' WHEN ((CASE WHEN ([Extent1].[Discriminator] = N'HoneyBee') THEN cast(0 as bit) WHEN ([Extent1].[Discriminator] = N'Dog') THEN cast(1 as bit) ELSE cast(0 as bit) END) = 0) THEN N'False' ELSE N'' END))
+    WHERE ([Extent1].[Discriminator] IN (N'Dog',N'HoneyBee',N'Person')) AND ([Extent1].[Discriminator] IN (N'Dog',N'HoneyBee')) AND (N'Apis mellifera : False' = (CASE WHEN (CASE WHEN ([Extent1].[Discriminator] = N'HoneyBee') THEN N'Apis mellifera' WHEN ([Extent1].[Discriminator] = N'Dog') THEN N'Canis lupus' END IS NULL) THEN N'' WHEN ([Extent1].[Discriminator] = N'HoneyBee') THEN N'Apis mellifera' WHEN ([Extent1].[Discriminator] = N'Dog') THEN N'Canis lupus' END + N' : ' + CASE WHEN ((CASE WHEN ([Extent1].[Discriminator] = N'HoneyBee') THEN cast(0 as bit) WHEN ([Extent1].[Discriminator] = N'Dog') THEN cast(1 as bit) WHEN ([Extent1].[Discriminator] <> N'Dog') THEN cast(0 as bit) END) = 1) THEN N'True' WHEN ((CASE WHEN ([Extent1].[Discriminator] = N'HoneyBee') THEN cast(0 as bit) WHEN ([Extent1].[Discriminator] = N'Dog') THEN cast(1 as bit) WHEN ([Extent1].[Discriminator] <> N'Dog') THEN cast(0 as bit) END) = 0) THEN N'False' ELSE N'' END))
 ```
 
 
@@ -639,6 +667,94 @@ SELECT
             FROM [dbo].[EfParents] AS [Extent1]
         )  AS [Project1]
     )  AS [Project2]
+```
+
+
+#### [Count Async](../TestGroup15Aggregation/Test03CountAsync.cs):
+- Supported
+  * Count Children Async (line 40)
+     * T-Sql executed is
+
+```SQL
+SELECT 
+    (SELECT 
+        COUNT(1) AS [A1]
+        FROM [dbo].[EfChilds] AS [Extent2]
+        WHERE [Extent1].[EfParentId] = [Extent2].[EfParentId]) AS [C1]
+    FROM [dbo].[EfParents] AS [Extent1]
+```
+
+  * Count Children With Filter Async (line 58)
+     * T-Sql executed is
+
+```SQL
+SELECT 
+    (SELECT 
+        COUNT(1) AS [A1]
+        FROM [dbo].[EfChilds] AS [Extent2]
+        WHERE ([Extent1].[EfParentId] = [Extent2].[EfParentId]) AND (123 = [Extent2].[ChildInt])) AS [C1]
+    FROM [dbo].[EfParents] AS [Extent1]
+```
+
+  * Count Children With Filter By Closure Async (line 76)
+     * T-Sql executed is
+
+```SQL
+SELECT 
+    (SELECT 
+        COUNT(1) AS [A1]
+        FROM [dbo].[EfChilds] AS [Extent2]
+        WHERE ([Extent1].[EfParentId] = [Extent2].[EfParentId]) AND ([Extent2].[ChildInt] = [Extent1].[ParentInt])) AS [C1]
+    FROM [dbo].[EfParents] AS [Extent1]
+```
+
+  * Count Children With Filter By External Closure Async (line 95)
+     * T-Sql executed is
+
+```SQL
+SELECT 
+    [Project1].[C1] AS [C1]
+    FROM ( SELECT 
+        (SELECT 
+            COUNT(1) AS [A1]
+            FROM [dbo].[EfChilds] AS [Extent2]
+            WHERE ([Extent1].[EfParentId] = [Extent2].[EfParentId]) AND ([Extent2].[ChildInt] = @p__linq__0)) AS [C1]
+        FROM [dbo].[EfParents] AS [Extent1]
+    )  AS [Project1]
+```
+
+  * Count Children With Filter By External Closure2 Async (line 115)
+     * T-Sql executed is
+
+```SQL
+SELECT 
+    [Project1].[C1] AS [C1]
+    FROM ( SELECT 
+        (SELECT 
+            COUNT(1) AS [A1]
+            FROM [dbo].[EfChilds] AS [Extent2]
+            WHERE ([Extent1].[EfParentId] = [Extent2].[EfParentId]) AND ([Extent2].[ChildInt] = @p__linq__0) AND ([Extent2].[EfParentId] = @p__linq__1)) AS [C1]
+        FROM [dbo].[EfParents] AS [Extent1]
+    )  AS [Project1]
+```
+
+  * Singleton Count Children With Filter Async (line 133)
+     * T-Sql executed is
+
+```SQL
+SELECT 
+    [GroupBy2].[A1] AS [C1]
+    FROM ( SELECT 
+        COUNT(1) AS [A1]
+        FROM ( SELECT 
+            (SELECT 
+                COUNT(1) AS [A1]
+                FROM [dbo].[EfChilds] AS [Extent2]
+                WHERE [Extent1].[EfParentId] = [Extent2].[EfParentId]) AS [C1]
+            FROM [dbo].[EfParents] AS [Extent1]
+        )  AS [Project1]
+        WHERE 2 = [Project1].[C1]
+    )  AS [GroupBy2]
 ```
 
 

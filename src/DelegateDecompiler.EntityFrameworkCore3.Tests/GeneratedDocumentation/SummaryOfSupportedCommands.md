@@ -1,6 +1,6 @@
 Summary of supported commands
 ============
-## Documentation produced for DelegateDecompiler, version 0.26.1 on Tuesday, 01 October 2019 01:20
+## Documentation produced for DelegateDecompiler, version 0.26.1 on Tuesday, 01 October 2019 02:21
 
 This file documents what linq commands **DelegateDecompiler** supports when
 working with [Entity Framework Core](https://docs.microsoft.com/en-us/ef/core/) (EF).
@@ -28,7 +28,7 @@ More will appear as we move forward.*
   * [Select Async](../TestGroup05BasicFeatures/Test02SelectAsync.cs) (5 tests)
   * [Equals And Not Equals](../TestGroup05BasicFeatures/Test03EqualsAndNotEquals.cs) (4 tests)
   * [Nullable](../TestGroup05BasicFeatures/Test04Nullable.cs) (5 tests)
-  * [Where](../TestGroup05BasicFeatures/Test05Where.cs) (5 tests)
+  * [Where](../TestGroup05BasicFeatures/Test05Where.cs) (4 tests)
   * [Single](../TestGroup05BasicFeatures/Test10Single.cs) (1 tests)
   * [Single Async](../TestGroup05BasicFeatures/Test11SingleAsync.cs) (1 tests)
 
@@ -46,7 +46,7 @@ More will appear as we move forward.*
 ### Group: Aggregation
 - Supported
   * [Count](../TestGroup15Aggregation/Test01Count.cs) (6 tests)
-  * [Sum](../TestGroup15Aggregation/Test02Sum.cs) (2 tests)
+  * [Sum](../TestGroup15Aggregation/Test02Sum.cs) (1 tests)
   * [Count Async](../TestGroup15Aggregation/Test03CountAsync.cs) (6 tests)
 
 ### Group: Types

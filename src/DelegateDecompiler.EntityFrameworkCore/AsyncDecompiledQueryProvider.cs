@@ -9,64 +9,81 @@ using Microsoft.EntityFrameworkCore.Query.Internal;
 
 namespace DelegateDecompiler.EntityFrameworkCore
 {
-    class AsyncDecompiledQueryProvider : DecompiledQueryProvider, IAsyncQueryProvider
+    class AsyncDecompiledQueryProviderBase : DecompiledQueryProvider
     {
-        static readonly MethodInfo openGenericCreateQueryMethod =
-            typeof(AsyncDecompiledQueryProvider)
-            .GetMethods(BindingFlags.Public | BindingFlags.Instance)
-            .Single(method => method.Name == "CreateQuery" && method.IsGenericMethod);
-        readonly IQueryProvider inner;
+        static readonly MethodInfo ExecuteAsync2 = typeof(IAsyncQueryProvider)
+            .GetMethod("ExecuteAsync", new[] {typeof(Expression), typeof(CancellationToken)});
 
-        protected internal AsyncDecompiledQueryProvider(IQueryProvider inner)
+        static readonly MethodInfo ExecuteAsync1 = typeof(IAsyncQueryProvider)
+            .GetMethod("ExecuteAsync", new[] {typeof(Expression)});
+
+        protected AsyncDecompiledQueryProviderBase(IQueryProvider inner)
             : base(inner)
         {
-            this.inner = inner;
         }
 
-        public override IQueryable CreateQuery(Expression expression)
+        protected IAsyncQueryProvider AsyncQueryProvider
         {
-            Type elementType = expression.Type
-                .GetInterfaces()
-                .Where(type => type.IsGenericType && type.GetGenericTypeDefinition() == typeof(IEnumerable<>))
-                .Select(type => type.GetGenericArguments().FirstOrDefault())
-                .FirstOrDefault();
-
-            if (elementType == null)
+            get
             {
-                throw new ArgumentException();
+                if (Inner is IAsyncQueryProvider asyncProvider) return asyncProvider;
+
+                throw new InvalidOperationException("The source IQueryProvider doesn't implement IAsyncQueryProvider.");
             }
+        }
 
-            MethodInfo closedGenericCreateQueryMethod = openGenericCreateQueryMethod.MakeGenericMethod(elementType);
+        // ReSharper disable once UnusedMember.Global
+        // ReSharper disable once VirtualMemberNeverOverridden.Global
+        public virtual TResult ExecuteAsync<TResult>(Expression expression, CancellationToken cancellationToken)
+        {
+            var decompiled = DecompileExpressionVisitor.Decompile(expression);
+            return (TResult) ExecuteAsync<TResult>(AsyncQueryProvider, decompiled, cancellationToken);
+        }
 
-            return (IQueryable)closedGenericCreateQueryMethod.Invoke(this, new object[] { expression });
+        protected static object ExecuteAsync<TResult>(IAsyncQueryProvider asyncQueryProvider, Expression expression, CancellationToken cancellationToken)
+        {
+            return ExecuteAsync2.MakeGenericMethod(typeof(TResult)).Invoke(
+                asyncQueryProvider,
+                new object[]
+                {
+                    expression, cancellationToken
+                });
+        }
+
+        protected static object ExecuteAsync<TResult>(IAsyncQueryProvider asyncQueryProvider, Expression expression)
+        {
+            return ExecuteAsync1.MakeGenericMethod(typeof(TResult)).Invoke(
+                asyncQueryProvider,
+                new object[]
+                {
+                    expression
+                });
+        }
+    }
+
+    class AsyncDecompiledQueryProvider : AsyncDecompiledQueryProviderBase, IAsyncQueryProvider
+    {
+        public AsyncDecompiledQueryProvider(IQueryProvider inner)
+            : base(inner)
+        {
         }
 
         public override IQueryable<TElement> CreateQuery<TElement>(Expression expression)
         {
             var decompiled = DecompileExpressionVisitor.Decompile(expression);
-            return new AsyncDecompiledQueryable<TElement>(this, inner.CreateQuery<TElement>(decompiled));
+            return new EntityQueryable<TElement>(this, decompiled);
         }
 
-        public IAsyncEnumerable<TResult> ExecuteAsync<TResult>(Expression expression)
+        public virtual IAsyncEnumerable<TResult> ExecuteAsync<TResult>(Expression expression)
         {
-            if (!(inner is IAsyncQueryProvider asyncProvider))
-            {
-                throw new InvalidOperationException("The source IQueryProvider doesn't implement IDbAsyncQueryProvider.");
-            }
-
             var decompiled = DecompileExpressionVisitor.Decompile(expression);
-            return asyncProvider.ExecuteAsync<TResult>(decompiled);
+            return (IAsyncEnumerable<TResult>) ExecuteAsync<TResult>(AsyncQueryProvider, decompiled);
         }
 
-        public Task<TResult> ExecuteAsync<TResult>(Expression expression, CancellationToken cancellationToken)
+        public new virtual Task<TResult> ExecuteAsync<TResult>(Expression expression, CancellationToken cancellationToken)
         {
-            if (!(inner is IAsyncQueryProvider asyncProvider))
-            {
-                throw new InvalidOperationException("The source IQueryProvider doesn't implement IDbAsyncQueryProvider.");
-            }
-
             var decompiled = DecompileExpressionVisitor.Decompile(expression);
-            return asyncProvider.ExecuteAsync<TResult>(decompiled, cancellationToken);
+            return (Task<TResult>) ExecuteAsync<TResult>(AsyncQueryProvider, decompiled, cancellationToken);
         }
     }
 }

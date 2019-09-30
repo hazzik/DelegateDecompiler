@@ -1,6 +1,6 @@
 Detail With Sql of supported commands
 ============
-## Documentation produced for DelegateDecompiler, version 0.26.1 on Thursday, 08 August 2019 19:00
+## Documentation produced for DelegateDecompiler, version 0.26.1 on Tuesday, 01 October 2019 01:20
 
 This file documents what linq commands **DelegateDecompiler** supports when
 working with [Entity Framework Core](https://docs.microsoft.com/en-us/ef/core/) (EF).
@@ -84,21 +84,35 @@ More will appear as we move forward.*
 
 #### [Select Async](../TestGroup05BasicFeatures/Test02SelectAsync.cs):
 - Supported
-  * Bool Equals Constant Async (line 39)
+  * Async (line 39)
      * T-Sql executed is
 
 ```SQL
 
 ```
 
-  * Bool Equals Static Variable To Array Async (line 58)
+  * Bool Equals Constant Async (line 56)
      * T-Sql executed is
 
 ```SQL
 
 ```
 
-  * Int Equals Constant (line 75)
+  * Decompile Upfront Bool Equals Constant Async (line 73)
+     * T-Sql executed is
+
+```SQL
+
+```
+
+  * Bool Equals Static Variable To Array Async (line 92)
+     * T-Sql executed is
+
+```SQL
+
+```
+
+  * Int Equals Constant (line 109)
      * T-Sql executed is
 
 ```SQL
@@ -386,6 +400,51 @@ More will appear as we move forward.*
 ```
 
   * Sum Count In Children Where Children Can Be None (line 51)
+     * T-Sql executed is
+
+```SQL
+
+```
+
+
+#### [Count Async](../TestGroup15Aggregation/Test03CountAsync.cs):
+- Supported
+  * Count Children Async (line 40)
+     * T-Sql executed is
+
+```SQL
+
+```
+
+  * Count Children With Filter Async (line 58)
+     * T-Sql executed is
+
+```SQL
+
+```
+
+  * Count Children With Filter By Closure Async (line 76)
+     * T-Sql executed is
+
+```SQL
+
+```
+
+  * Count Children With Filter By External Closure Async (line 95)
+     * T-Sql executed is
+
+```SQL
+
+```
+
+  * Count Children With Filter By External Closure2 Async (line 115)
+     * T-Sql executed is
+
+```SQL
+
+```
+
+  * Singleton Count Children With Filter Async (line 133)
      * T-Sql executed is
 
 ```SQL
