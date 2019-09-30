@@ -44,15 +44,19 @@ namespace DelegateDecompiler.Tests
         {
             var employees = new[] { new Employee { FirstName = "Test", LastName = "User", From = 0, To = 100 } };
 
-            var expected = (from employee in employees.AsQueryable()
+            var expected1 = (from employee in employees.AsQueryable()
                             where (employee.From + "-" + employee.To) == "0-100"
+                            select employee);
+
+            var expected2 = (from employee in employees.AsQueryable()
+                            where (employee.From.ToString() + "-" + employee.To.ToString()) == "0-100"
                             select employee);
 
             var actual = (from employee in employees.AsQueryable()
                           where employee.FromTo == "0-100"
                           select employee).Decompile();
 
-            AssertAreEqual(expected.Expression, actual.Expression);
+            AssertAreEqual(expected1.Expression, expected2.Expression, actual.Expression);
         }
 
         [Test]

@@ -63,5 +63,12 @@ namespace DelegateDecompiler.Tests
             if (compareDebugView)
                 Assert.AreEqual(DebugView(expected), DebugView(actual));
         }
+
+        protected static void AssertAreEqual(Expression expected1, Expression expected2, Expression actual, bool compareDebugView = true)
+        {
+            Assert.That(actual.ToString(), Is.AnyOf(expected1.ToString(), expected2.ToString()));
+            if (compareDebugView)
+                Assert.That(DebugView(actual), Is.AnyOf(DebugView(expected1), DebugView(expected2)));
+        }
     }
 }
