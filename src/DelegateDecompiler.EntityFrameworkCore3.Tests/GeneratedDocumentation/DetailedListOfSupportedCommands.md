@@ -1,6 +1,6 @@
 Detail of supported commands
 ============
-## Documentation produced for DelegateDecompiler, version 0.27.0 on Monday, 30 September 2019 16:56
+## Documentation produced for DelegateDecompiler, version 0.27.0 on Monday, 30 September 2019 17:54
 
 This file documents what linq commands **DelegateDecompiler** supports when
 working with [Entity Framework Core](https://docs.microsoft.com/en-us/ef/core/) (EF).
@@ -35,10 +35,10 @@ More will appear as we move forward.*
   * Select Multiple Levels Of Abstract Members Over Tph Hierarchy (line 155)
 
 #### [Select Async](../TestGroup05BasicFeatures/Test02SelectAsync.cs):
-- Supported
-  * Bool Equals Constant Async (line 39)
-  * Bool Equals Static Variable To Array Async (line 58)
-  * Int Equals Constant (line 75)
+- **Not Supported**
+  * Bool Equals Constant Async (line 35)
+  * Bool Equals Static Variable To Array Async (line 54)
+  * Int Equals Constant (line 71)
 
 #### [Equals And Not Equals](../TestGroup05BasicFeatures/Test03EqualsAndNotEquals.cs):
 - Supported
@@ -61,15 +61,16 @@ More will appear as we move forward.*
   * Where Bool Equals Static Variable (line 52)
   * Where Int Equals Constant (line 69)
   * Where Filters On Abstract Members Over Tph Hierarchy (line 86)
-  * Where Filters On Multiple Levels Of Abstract Members Over Tph Hierarchy (line 103)
+- **Not Supported**
+  * Where Filters On Multiple Levels Of Abstract Members Over Tph Hierarchy (line 99)
 
 #### [Single](../TestGroup05BasicFeatures/Test10Single.cs):
 - Supported
   * Single Int Equals Unique Value (line 40)
 
 #### [Single Async](../TestGroup05BasicFeatures/Test11SingleAsync.cs):
-- Supported
-  * Single Int Equals Unique Value Async (line 46)
+- **Not Supported**
+  * Single Int Equals Unique Value Async (line 38)
 
 
 ### Group: Order Take
@@ -114,7 +115,6 @@ More will appear as we move forward.*
 
 #### [Sum](../TestGroup15Aggregation/Test02Sum.cs):
 - Supported
-  * Singleton Sum Children (line 33)
   * Sum Count In Children Where Children Can Be None (line 51)
 
 

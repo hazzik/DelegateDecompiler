@@ -1,17 +1,23 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFrameworks>netstandard2.1</TargetFrameworks>
     <Copyright>Copyright © Alexander Zaytsev 2014 - 2019</Copyright>
     <PackageTags>$(PackageTags) EF EntityFrameworkCore Entity-Framework-Core</PackageTags>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="[2.0.0,3.0.0)" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="3.0.0" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\DelegateDecompiler\DelegateDecompiler.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="..\DelegateDecompiler.EntityFrameworkCore\**\*.cs" Exclude="..\DelegateDecompiler.EntityFrameworkCore\obj\**">
+      <Link>%(Name)</Link>
+    </Compile>
   </ItemGroup>
 
 </Project>

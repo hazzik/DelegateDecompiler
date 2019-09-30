@@ -78,7 +78,9 @@ namespace DelegateDecompiler.EntityFrameworkCore
             }
 
             var decompiled = DecompileExpressionVisitor.Decompile(expression);
+#pragma warning disable EF1001 // Internal EF Core API usage.
             return asyncProvider.ExecuteAsync<TResult>(decompiled, cancellationToken);
+#pragma warning restore EF1001 // Internal EF Core API usage.
         }
 #endif
     }
