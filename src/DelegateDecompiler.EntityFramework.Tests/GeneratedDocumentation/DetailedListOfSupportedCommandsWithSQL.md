@@ -1,6 +1,6 @@
 Detail With Sql of supported commands
 ============
-## Documentation produced for DelegateDecompiler, version 0.26.1 on Tuesday, 01 October 2019 01:20
+## Documentation produced for DelegateDecompiler, version 0.27.0 on Tuesday, 01 October 2019 11:44
 
 This file documents what linq commands **DelegateDecompiler** supports when
 working with [Entity Framework v6.1](http://msdn.microsoft.com/en-us/data/aa937723) (EF).
@@ -288,7 +288,7 @@ SELECT
     WHERE ([Extent1].[Discriminator] IN (N'Dog',N'HoneyBee',N'Person')) AND (N'Human' = (CASE WHEN ([Extent1].[Discriminator] = N'Person') THEN N'Human' WHEN ([Extent1].[Discriminator] = N'HoneyBee') THEN N'Apis mellifera' WHEN ([Extent1].[Discriminator] = N'Dog') THEN N'Canis lupus' END))
 ```
 
-  * Where Filters On Multiple Levels Of Abstract Members Over Tph Hierarchy (line 103)
+  * Where Filters On Multiple Levels Of Abstract Members Over Tph Hierarchy (line 104)
      * T-Sql executed is
 
 ```SQL
@@ -628,7 +628,7 @@ SELECT
 
 #### [Sum](../TestGroup15Aggregation/Test02Sum.cs):
 - Supported
-  * Singleton Sum Children (line 33)
+  * Singleton Sum Children (line 34)
      * T-Sql executed is
 
 ```SQL
@@ -646,7 +646,7 @@ SELECT
     )  AS [GroupBy2]
 ```
 
-  * Sum Count In Children Where Children Can Be None (line 51)
+  * Sum Count In Children Where Children Can Be None (line 53)
      * T-Sql executed is
 
 ```SQL
