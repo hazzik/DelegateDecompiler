@@ -9,6 +9,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DelegateDecompiler.Tests", 
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{CF17DF9B-3430-4159-9BF3-8F56C6E9887C}"
 	ProjectSection(SolutionItems) = preProject
+		!release.cmd = !release.cmd
 		appveyor.yml = appveyor.yml
 		build.cmd = build.cmd
 		src\Directory.Build.props = src\Directory.Build.props
