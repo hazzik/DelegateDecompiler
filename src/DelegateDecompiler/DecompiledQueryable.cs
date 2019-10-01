@@ -46,5 +46,15 @@ namespace DelegateDecompiler
         {
             return inner.ToString();
         }
+
+        public virtual IQueryable<T> Include(string path)
+        {
+            throw new NotSupportedException("Include is not supported with Decompile please use DecompileAsync instead.");
+        }
+
+        public virtual IQueryable<T> AsNoTracking()
+        {
+            throw new NotSupportedException("AsNoTracking is not supported with Decompile please use DecompileAsync instead.");
+        }
     }
 }

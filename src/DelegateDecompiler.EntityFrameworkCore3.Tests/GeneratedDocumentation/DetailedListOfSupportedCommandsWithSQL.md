@@ -1,6 +1,6 @@
 Detail With Sql of supported commands
 ============
-## Documentation produced for DelegateDecompiler, version 0.27.0 on Tuesday, 01 October 2019 11:45
+## Documentation produced for DelegateDecompiler, version 0.27.0 on Tuesday, 01 October 2019 16:44
 
 This file documents what linq commands **DelegateDecompiler** supports when
 working with [Entity Framework Core](https://docs.microsoft.com/en-us/ef/core/) (EF).
@@ -431,6 +431,98 @@ More will appear as we move forward.*
 ```
 
   * Singleton Count Children With Filter Async (line 133)
+     * T-Sql executed is
+
+```SQL
+
+```
+
+
+
+### Group: Extensions
+#### [Include](../TestGroup20Extensions/Test01Include.cs):
+- Supported
+  * Include Where Decompile (line 36)
+     * T-Sql executed is
+
+```SQL
+
+```
+
+  * Include Decompile Where (line 53)
+     * T-Sql executed is
+
+```SQL
+
+```
+
+  * Decompile Include Where (line 70)
+     * T-Sql executed is
+
+```SQL
+
+```
+
+  * Where Include Decompile (line 87)
+     * T-Sql executed is
+
+```SQL
+
+```
+
+  * Where Decompile Include (line 104)
+     * T-Sql executed is
+
+```SQL
+
+```
+
+  * Decompile Where Include (line 121)
+     * T-Sql executed is
+
+```SQL
+
+```
+
+
+#### [As No Tracking](../TestGroup20Extensions/Test02AsNoTracking.cs):
+- Supported
+  * As No Tracking Where Decompile (line 38)
+     * T-Sql executed is
+
+```SQL
+
+```
+
+  * As No Tracking Decompile Where (line 58)
+     * T-Sql executed is
+
+```SQL
+
+```
+
+  * Decompile As No Tracking Where (line 76)
+     * T-Sql executed is
+
+```SQL
+
+```
+
+  * Where As No Tracking Decompile (line 94)
+     * T-Sql executed is
+
+```SQL
+
+```
+
+  * Where Decompile As No Tracking (line 112)
+     * T-Sql executed is
+
+```SQL
+
+```
+
+  * Decompile Where As No Tracking (line 130)
      * T-Sql executed is
 
 ```SQL

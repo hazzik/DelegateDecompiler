@@ -1,6 +1,6 @@
 Summary of supported commands
 ============
-## Documentation produced for DelegateDecompiler, version 0.27.0 on Tuesday, 01 October 2019 11:45
+## Documentation produced for DelegateDecompiler, version 0.27.0 on Tuesday, 01 October 2019 16:44
 
 This file documents what linq commands **DelegateDecompiler** supports when
 working with [Entity Framework Core](https://docs.microsoft.com/en-us/ef/core/) (EF).
@@ -48,6 +48,11 @@ More will appear as we move forward.*
   * [Count](../TestGroup15Aggregation/Test01Count.cs) (6 tests)
   * [Sum](../TestGroup15Aggregation/Test02Sum.cs) (1 tests)
   * [Count Async](../TestGroup15Aggregation/Test03CountAsync.cs) (6 tests)
+
+### Group: Extensions
+- Supported
+  * [Include](../TestGroup20Extensions/Test01Include.cs) (6 tests)
+  * [As No Tracking](../TestGroup20Extensions/Test02AsNoTracking.cs) (6 tests)
 
 ### Group: Types
 - Supported

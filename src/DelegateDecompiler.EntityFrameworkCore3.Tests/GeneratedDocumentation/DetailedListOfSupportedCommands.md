@@ -1,6 +1,6 @@
 Detail of supported commands
 ============
-## Documentation produced for DelegateDecompiler, version 0.27.0 on Tuesday, 01 October 2019 11:45
+## Documentation produced for DelegateDecompiler, version 0.27.0 on Tuesday, 01 October 2019 16:44
 
 This file documents what linq commands **DelegateDecompiler** supports when
 working with [Entity Framework Core](https://docs.microsoft.com/en-us/ef/core/) (EF).
@@ -125,6 +125,26 @@ More will appear as we move forward.*
   * Count Children With Filter By External Closure Async (line 95)
   * Count Children With Filter By External Closure2 Async (line 115)
   * Singleton Count Children With Filter Async (line 133)
+
+
+### Group: Extensions
+#### [Include](../TestGroup20Extensions/Test01Include.cs):
+- Supported
+  * Include Where Decompile (line 36)
+  * Include Decompile Where (line 53)
+  * Decompile Include Where (line 70)
+  * Where Include Decompile (line 87)
+  * Where Decompile Include (line 104)
+  * Decompile Where Include (line 121)
+
+#### [As No Tracking](../TestGroup20Extensions/Test02AsNoTracking.cs):
+- Supported
+  * As No Tracking Where Decompile (line 38)
+  * As No Tracking Decompile Where (line 58)
+  * Decompile As No Tracking Where (line 76)
+  * Where As No Tracking Decompile (line 94)
+  * Where Decompile As No Tracking (line 112)
+  * Decompile Where As No Tracking (line 130)
 
 
 ### Group: Types

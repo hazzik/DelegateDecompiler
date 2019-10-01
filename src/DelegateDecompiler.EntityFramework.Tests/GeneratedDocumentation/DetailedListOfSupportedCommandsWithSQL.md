@@ -1,6 +1,6 @@
 Detail With Sql of supported commands
 ============
-## Documentation produced for DelegateDecompiler, version 0.27.0 on Tuesday, 01 October 2019 11:44
+## Documentation produced for DelegateDecompiler, version 0.27.0 on Tuesday, 01 October 2019 16:37
 
 This file documents what linq commands **DelegateDecompiler** supports when
 working with [Entity Framework v6.1](http://msdn.microsoft.com/en-us/data/aa937723) (EF).
@@ -755,6 +755,401 @@ SELECT
         )  AS [Project1]
         WHERE 2 = [Project1].[C1]
     )  AS [GroupBy2]
+```
+
+
+
+### Group: Extensions
+#### [Include](../TestGroup20Extensions/Test01Include.cs):
+- Supported
+  * Include Where Decompile (line 36)
+     * T-Sql executed is
+
+```SQL
+SELECT 
+    [Project1].[EfParentId] AS [EfParentId], 
+    [Project1].[ParentBool] AS [ParentBool], 
+    [Project1].[ParentInt] AS [ParentInt], 
+    [Project1].[ParentNullableInt] AS [ParentNullableInt], 
+    [Project1].[ParentNullableDecimal1] AS [ParentNullableDecimal1], 
+    [Project1].[ParentNullableDecimal2] AS [ParentNullableDecimal2], 
+    [Project1].[ParentDouble] AS [ParentDouble], 
+    [Project1].[ParentString] AS [ParentString], 
+    [Project1].[StartDate] AS [StartDate], 
+    [Project1].[EndDate] AS [EndDate], 
+    [Project1].[ParentTimeSpan] AS [ParentTimeSpan], 
+    [Project1].[C1] AS [C1], 
+    [Project1].[EfChildId] AS [EfChildId], 
+    [Project1].[ChildBool] AS [ChildBool], 
+    [Project1].[ChildInt] AS [ChildInt], 
+    [Project1].[ChildDouble] AS [ChildDouble], 
+    [Project1].[ChildString] AS [ChildString], 
+    [Project1].[ChildDateTime] AS [ChildDateTime], 
+    [Project1].[ChildTimeSpan] AS [ChildTimeSpan], 
+    [Project1].[EfParentId1] AS [EfParentId1]
+    FROM ( SELECT 
+        [Extent1].[EfParentId] AS [EfParentId], 
+        [Extent1].[ParentBool] AS [ParentBool], 
+        [Extent1].[ParentInt] AS [ParentInt], 
+        [Extent1].[ParentNullableInt] AS [ParentNullableInt], 
+        [Extent1].[ParentNullableDecimal1] AS [ParentNullableDecimal1], 
+        [Extent1].[ParentNullableDecimal2] AS [ParentNullableDecimal2], 
+        [Extent1].[ParentDouble] AS [ParentDouble], 
+        [Extent1].[ParentString] AS [ParentString], 
+        [Extent1].[StartDate] AS [StartDate], 
+        [Extent1].[EndDate] AS [EndDate], 
+        [Extent1].[ParentTimeSpan] AS [ParentTimeSpan], 
+        [Extent2].[EfChildId] AS [EfChildId], 
+        [Extent2].[ChildBool] AS [ChildBool], 
+        [Extent2].[ChildInt] AS [ChildInt], 
+        [Extent2].[ChildDouble] AS [ChildDouble], 
+        [Extent2].[ChildString] AS [ChildString], 
+        [Extent2].[ChildDateTime] AS [ChildDateTime], 
+        [Extent2].[ChildTimeSpan] AS [ChildTimeSpan], 
+        [Extent2].[EfParentId] AS [EfParentId1], 
+        CASE WHEN ([Extent2].[EfChildId] IS NULL) THEN CAST(NULL AS int) ELSE 1 END AS [C1]
+        FROM  [dbo].[EfParents] AS [Extent1]
+        LEFT OUTER JOIN [dbo].[EfChilds] AS [Extent2] ON [Extent1].[EfParentId] = [Extent2].[EfParentId]
+        WHERE [Extent1].[ParentBool] = 1
+    )  AS [Project1]
+    ORDER BY [Project1].[EfParentId] ASC, [Project1].[C1] ASC
+```
+
+  * Include Decompile Where (line 53)
+     * T-Sql executed is
+
+```SQL
+SELECT 
+    [Project1].[EfParentId] AS [EfParentId], 
+    [Project1].[ParentBool] AS [ParentBool], 
+    [Project1].[ParentInt] AS [ParentInt], 
+    [Project1].[ParentNullableInt] AS [ParentNullableInt], 
+    [Project1].[ParentNullableDecimal1] AS [ParentNullableDecimal1], 
+    [Project1].[ParentNullableDecimal2] AS [ParentNullableDecimal2], 
+    [Project1].[ParentDouble] AS [ParentDouble], 
+    [Project1].[ParentString] AS [ParentString], 
+    [Project1].[StartDate] AS [StartDate], 
+    [Project1].[EndDate] AS [EndDate], 
+    [Project1].[ParentTimeSpan] AS [ParentTimeSpan], 
+    [Project1].[C1] AS [C1], 
+    [Project1].[EfChildId] AS [EfChildId], 
+    [Project1].[ChildBool] AS [ChildBool], 
+    [Project1].[ChildInt] AS [ChildInt], 
+    [Project1].[ChildDouble] AS [ChildDouble], 
+    [Project1].[ChildString] AS [ChildString], 
+    [Project1].[ChildDateTime] AS [ChildDateTime], 
+    [Project1].[ChildTimeSpan] AS [ChildTimeSpan], 
+    [Project1].[EfParentId1] AS [EfParentId1]
+    FROM ( SELECT 
+        [Extent1].[EfParentId] AS [EfParentId], 
+        [Extent1].[ParentBool] AS [ParentBool], 
+        [Extent1].[ParentInt] AS [ParentInt], 
+        [Extent1].[ParentNullableInt] AS [ParentNullableInt], 
+        [Extent1].[ParentNullableDecimal1] AS [ParentNullableDecimal1], 
+        [Extent1].[ParentNullableDecimal2] AS [ParentNullableDecimal2], 
+        [Extent1].[ParentDouble] AS [ParentDouble], 
+        [Extent1].[ParentString] AS [ParentString], 
+        [Extent1].[StartDate] AS [StartDate], 
+        [Extent1].[EndDate] AS [EndDate], 
+        [Extent1].[ParentTimeSpan] AS [ParentTimeSpan], 
+        [Extent2].[EfChildId] AS [EfChildId], 
+        [Extent2].[ChildBool] AS [ChildBool], 
+        [Extent2].[ChildInt] AS [ChildInt], 
+        [Extent2].[ChildDouble] AS [ChildDouble], 
+        [Extent2].[ChildString] AS [ChildString], 
+        [Extent2].[ChildDateTime] AS [ChildDateTime], 
+        [Extent2].[ChildTimeSpan] AS [ChildTimeSpan], 
+        [Extent2].[EfParentId] AS [EfParentId1], 
+        CASE WHEN ([Extent2].[EfChildId] IS NULL) THEN CAST(NULL AS int) ELSE 1 END AS [C1]
+        FROM  [dbo].[EfParents] AS [Extent1]
+        LEFT OUTER JOIN [dbo].[EfChilds] AS [Extent2] ON [Extent1].[EfParentId] = [Extent2].[EfParentId]
+        WHERE [Extent1].[ParentBool] = 1
+    )  AS [Project1]
+    ORDER BY [Project1].[EfParentId] ASC, [Project1].[C1] ASC
+```
+
+  * Decompile Include Where (line 70)
+     * T-Sql executed is
+
+```SQL
+SELECT 
+    [Project1].[EfParentId] AS [EfParentId], 
+    [Project1].[ParentBool] AS [ParentBool], 
+    [Project1].[ParentInt] AS [ParentInt], 
+    [Project1].[ParentNullableInt] AS [ParentNullableInt], 
+    [Project1].[ParentNullableDecimal1] AS [ParentNullableDecimal1], 
+    [Project1].[ParentNullableDecimal2] AS [ParentNullableDecimal2], 
+    [Project1].[ParentDouble] AS [ParentDouble], 
+    [Project1].[ParentString] AS [ParentString], 
+    [Project1].[StartDate] AS [StartDate], 
+    [Project1].[EndDate] AS [EndDate], 
+    [Project1].[ParentTimeSpan] AS [ParentTimeSpan], 
+    [Project1].[C1] AS [C1], 
+    [Project1].[EfChildId] AS [EfChildId], 
+    [Project1].[ChildBool] AS [ChildBool], 
+    [Project1].[ChildInt] AS [ChildInt], 
+    [Project1].[ChildDouble] AS [ChildDouble], 
+    [Project1].[ChildString] AS [ChildString], 
+    [Project1].[ChildDateTime] AS [ChildDateTime], 
+    [Project1].[ChildTimeSpan] AS [ChildTimeSpan], 
+    [Project1].[EfParentId1] AS [EfParentId1]
+    FROM ( SELECT 
+        [Extent1].[EfParentId] AS [EfParentId], 
+        [Extent1].[ParentBool] AS [ParentBool], 
+        [Extent1].[ParentInt] AS [ParentInt], 
+        [Extent1].[ParentNullableInt] AS [ParentNullableInt], 
+        [Extent1].[ParentNullableDecimal1] AS [ParentNullableDecimal1], 
+        [Extent1].[ParentNullableDecimal2] AS [ParentNullableDecimal2], 
+        [Extent1].[ParentDouble] AS [ParentDouble], 
+        [Extent1].[ParentString] AS [ParentString], 
+        [Extent1].[StartDate] AS [StartDate], 
+        [Extent1].[EndDate] AS [EndDate], 
+        [Extent1].[ParentTimeSpan] AS [ParentTimeSpan], 
+        [Extent2].[EfChildId] AS [EfChildId], 
+        [Extent2].[ChildBool] AS [ChildBool], 
+        [Extent2].[ChildInt] AS [ChildInt], 
+        [Extent2].[ChildDouble] AS [ChildDouble], 
+        [Extent2].[ChildString] AS [ChildString], 
+        [Extent2].[ChildDateTime] AS [ChildDateTime], 
+        [Extent2].[ChildTimeSpan] AS [ChildTimeSpan], 
+        [Extent2].[EfParentId] AS [EfParentId1], 
+        CASE WHEN ([Extent2].[EfChildId] IS NULL) THEN CAST(NULL AS int) ELSE 1 END AS [C1]
+        FROM  [dbo].[EfParents] AS [Extent1]
+        LEFT OUTER JOIN [dbo].[EfChilds] AS [Extent2] ON [Extent1].[EfParentId] = [Extent2].[EfParentId]
+        WHERE [Extent1].[ParentBool] = 1
+    )  AS [Project1]
+    ORDER BY [Project1].[EfParentId] ASC, [Project1].[C1] ASC
+```
+
+  * Where Decompile Include (line 104)
+     * T-Sql executed is
+
+```SQL
+SELECT 
+    [Project1].[EfParentId] AS [EfParentId], 
+    [Project1].[ParentBool] AS [ParentBool], 
+    [Project1].[ParentInt] AS [ParentInt], 
+    [Project1].[ParentNullableInt] AS [ParentNullableInt], 
+    [Project1].[ParentNullableDecimal1] AS [ParentNullableDecimal1], 
+    [Project1].[ParentNullableDecimal2] AS [ParentNullableDecimal2], 
+    [Project1].[ParentDouble] AS [ParentDouble], 
+    [Project1].[ParentString] AS [ParentString], 
+    [Project1].[StartDate] AS [StartDate], 
+    [Project1].[EndDate] AS [EndDate], 
+    [Project1].[ParentTimeSpan] AS [ParentTimeSpan], 
+    [Project1].[C1] AS [C1], 
+    [Project1].[EfChildId] AS [EfChildId], 
+    [Project1].[ChildBool] AS [ChildBool], 
+    [Project1].[ChildInt] AS [ChildInt], 
+    [Project1].[ChildDouble] AS [ChildDouble], 
+    [Project1].[ChildString] AS [ChildString], 
+    [Project1].[ChildDateTime] AS [ChildDateTime], 
+    [Project1].[ChildTimeSpan] AS [ChildTimeSpan], 
+    [Project1].[EfParentId1] AS [EfParentId1]
+    FROM ( SELECT 
+        [Extent1].[EfParentId] AS [EfParentId], 
+        [Extent1].[ParentBool] AS [ParentBool], 
+        [Extent1].[ParentInt] AS [ParentInt], 
+        [Extent1].[ParentNullableInt] AS [ParentNullableInt], 
+        [Extent1].[ParentNullableDecimal1] AS [ParentNullableDecimal1], 
+        [Extent1].[ParentNullableDecimal2] AS [ParentNullableDecimal2], 
+        [Extent1].[ParentDouble] AS [ParentDouble], 
+        [Extent1].[ParentString] AS [ParentString], 
+        [Extent1].[StartDate] AS [StartDate], 
+        [Extent1].[EndDate] AS [EndDate], 
+        [Extent1].[ParentTimeSpan] AS [ParentTimeSpan], 
+        [Extent2].[EfChildId] AS [EfChildId], 
+        [Extent2].[ChildBool] AS [ChildBool], 
+        [Extent2].[ChildInt] AS [ChildInt], 
+        [Extent2].[ChildDouble] AS [ChildDouble], 
+        [Extent2].[ChildString] AS [ChildString], 
+        [Extent2].[ChildDateTime] AS [ChildDateTime], 
+        [Extent2].[ChildTimeSpan] AS [ChildTimeSpan], 
+        [Extent2].[EfParentId] AS [EfParentId1], 
+        CASE WHEN ([Extent2].[EfChildId] IS NULL) THEN CAST(NULL AS int) ELSE 1 END AS [C1]
+        FROM  [dbo].[EfParents] AS [Extent1]
+        LEFT OUTER JOIN [dbo].[EfChilds] AS [Extent2] ON [Extent1].[EfParentId] = [Extent2].[EfParentId]
+        WHERE [Extent1].[ParentBool] = 1
+    )  AS [Project1]
+    ORDER BY [Project1].[EfParentId] ASC, [Project1].[C1] ASC
+```
+
+  * Decompile Where Include (line 121)
+     * T-Sql executed is
+
+```SQL
+SELECT 
+    [Project1].[EfParentId] AS [EfParentId], 
+    [Project1].[ParentBool] AS [ParentBool], 
+    [Project1].[ParentInt] AS [ParentInt], 
+    [Project1].[ParentNullableInt] AS [ParentNullableInt], 
+    [Project1].[ParentNullableDecimal1] AS [ParentNullableDecimal1], 
+    [Project1].[ParentNullableDecimal2] AS [ParentNullableDecimal2], 
+    [Project1].[ParentDouble] AS [ParentDouble], 
+    [Project1].[ParentString] AS [ParentString], 
+    [Project1].[StartDate] AS [StartDate], 
+    [Project1].[EndDate] AS [EndDate], 
+    [Project1].[ParentTimeSpan] AS [ParentTimeSpan], 
+    [Project1].[C1] AS [C1], 
+    [Project1].[EfChildId] AS [EfChildId], 
+    [Project1].[ChildBool] AS [ChildBool], 
+    [Project1].[ChildInt] AS [ChildInt], 
+    [Project1].[ChildDouble] AS [ChildDouble], 
+    [Project1].[ChildString] AS [ChildString], 
+    [Project1].[ChildDateTime] AS [ChildDateTime], 
+    [Project1].[ChildTimeSpan] AS [ChildTimeSpan], 
+    [Project1].[EfParentId1] AS [EfParentId1]
+    FROM ( SELECT 
+        [Extent1].[EfParentId] AS [EfParentId], 
+        [Extent1].[ParentBool] AS [ParentBool], 
+        [Extent1].[ParentInt] AS [ParentInt], 
+        [Extent1].[ParentNullableInt] AS [ParentNullableInt], 
+        [Extent1].[ParentNullableDecimal1] AS [ParentNullableDecimal1], 
+        [Extent1].[ParentNullableDecimal2] AS [ParentNullableDecimal2], 
+        [Extent1].[ParentDouble] AS [ParentDouble], 
+        [Extent1].[ParentString] AS [ParentString], 
+        [Extent1].[StartDate] AS [StartDate], 
+        [Extent1].[EndDate] AS [EndDate], 
+        [Extent1].[ParentTimeSpan] AS [ParentTimeSpan], 
+        [Extent2].[EfChildId] AS [EfChildId], 
+        [Extent2].[ChildBool] AS [ChildBool], 
+        [Extent2].[ChildInt] AS [ChildInt], 
+        [Extent2].[ChildDouble] AS [ChildDouble], 
+        [Extent2].[ChildString] AS [ChildString], 
+        [Extent2].[ChildDateTime] AS [ChildDateTime], 
+        [Extent2].[ChildTimeSpan] AS [ChildTimeSpan], 
+        [Extent2].[EfParentId] AS [EfParentId1], 
+        CASE WHEN ([Extent2].[EfChildId] IS NULL) THEN CAST(NULL AS int) ELSE 1 END AS [C1]
+        FROM  [dbo].[EfParents] AS [Extent1]
+        LEFT OUTER JOIN [dbo].[EfChilds] AS [Extent2] ON [Extent1].[EfParentId] = [Extent2].[EfParentId]
+        WHERE [Extent1].[ParentBool] = 1
+    )  AS [Project1]
+    ORDER BY [Project1].[EfParentId] ASC, [Project1].[C1] ASC
+```
+
+- **Not Supported**
+  * Where Include Decompile (line 83)
+
+#### [As No Tracking](../TestGroup20Extensions/Test02AsNoTracking.cs):
+- Supported
+  * As No Tracking Where Decompile (line 38)
+     * T-Sql executed is
+
+```SQL
+SELECT 
+    [Extent1].[EfParentId] AS [EfParentId], 
+    [Extent1].[ParentBool] AS [ParentBool], 
+    [Extent1].[ParentInt] AS [ParentInt], 
+    [Extent1].[ParentNullableInt] AS [ParentNullableInt], 
+    [Extent1].[ParentNullableDecimal1] AS [ParentNullableDecimal1], 
+    [Extent1].[ParentNullableDecimal2] AS [ParentNullableDecimal2], 
+    [Extent1].[ParentDouble] AS [ParentDouble], 
+    [Extent1].[ParentString] AS [ParentString], 
+    [Extent1].[StartDate] AS [StartDate], 
+    [Extent1].[EndDate] AS [EndDate], 
+    [Extent1].[ParentTimeSpan] AS [ParentTimeSpan]
+    FROM [dbo].[EfParents] AS [Extent1]
+    WHERE [Extent1].[ParentBool] = 1
+```
+
+  * As No Tracking Decompile Where (line 58)
+     * T-Sql executed is
+
+```SQL
+SELECT 
+    [Extent1].[EfParentId] AS [EfParentId], 
+    [Extent1].[ParentBool] AS [ParentBool], 
+    [Extent1].[ParentInt] AS [ParentInt], 
+    [Extent1].[ParentNullableInt] AS [ParentNullableInt], 
+    [Extent1].[ParentNullableDecimal1] AS [ParentNullableDecimal1], 
+    [Extent1].[ParentNullableDecimal2] AS [ParentNullableDecimal2], 
+    [Extent1].[ParentDouble] AS [ParentDouble], 
+    [Extent1].[ParentString] AS [ParentString], 
+    [Extent1].[StartDate] AS [StartDate], 
+    [Extent1].[EndDate] AS [EndDate], 
+    [Extent1].[ParentTimeSpan] AS [ParentTimeSpan]
+    FROM [dbo].[EfParents] AS [Extent1]
+    WHERE [Extent1].[ParentBool] = 1
+```
+
+  * Decompile As No Tracking Where (line 76)
+     * T-Sql executed is
+
+```SQL
+SELECT 
+    [Extent1].[EfParentId] AS [EfParentId], 
+    [Extent1].[ParentBool] AS [ParentBool], 
+    [Extent1].[ParentInt] AS [ParentInt], 
+    [Extent1].[ParentNullableInt] AS [ParentNullableInt], 
+    [Extent1].[ParentNullableDecimal1] AS [ParentNullableDecimal1], 
+    [Extent1].[ParentNullableDecimal2] AS [ParentNullableDecimal2], 
+    [Extent1].[ParentDouble] AS [ParentDouble], 
+    [Extent1].[ParentString] AS [ParentString], 
+    [Extent1].[StartDate] AS [StartDate], 
+    [Extent1].[EndDate] AS [EndDate], 
+    [Extent1].[ParentTimeSpan] AS [ParentTimeSpan]
+    FROM [dbo].[EfParents] AS [Extent1]
+    WHERE [Extent1].[ParentBool] = 1
+```
+
+  * Where As No Tracking Decompile (line 94)
+     * T-Sql executed is
+
+```SQL
+SELECT 
+    [Extent1].[EfParentId] AS [EfParentId], 
+    [Extent1].[ParentBool] AS [ParentBool], 
+    [Extent1].[ParentInt] AS [ParentInt], 
+    [Extent1].[ParentNullableInt] AS [ParentNullableInt], 
+    [Extent1].[ParentNullableDecimal1] AS [ParentNullableDecimal1], 
+    [Extent1].[ParentNullableDecimal2] AS [ParentNullableDecimal2], 
+    [Extent1].[ParentDouble] AS [ParentDouble], 
+    [Extent1].[ParentString] AS [ParentString], 
+    [Extent1].[StartDate] AS [StartDate], 
+    [Extent1].[EndDate] AS [EndDate], 
+    [Extent1].[ParentTimeSpan] AS [ParentTimeSpan]
+    FROM [dbo].[EfParents] AS [Extent1]
+    WHERE [Extent1].[ParentBool] = 1
+```
+
+  * Where Decompile As No Tracking (line 112)
+     * T-Sql executed is
+
+```SQL
+SELECT 
+    [Extent1].[EfParentId] AS [EfParentId], 
+    [Extent1].[ParentBool] AS [ParentBool], 
+    [Extent1].[ParentInt] AS [ParentInt], 
+    [Extent1].[ParentNullableInt] AS [ParentNullableInt], 
+    [Extent1].[ParentNullableDecimal1] AS [ParentNullableDecimal1], 
+    [Extent1].[ParentNullableDecimal2] AS [ParentNullableDecimal2], 
+    [Extent1].[ParentDouble] AS [ParentDouble], 
+    [Extent1].[ParentString] AS [ParentString], 
+    [Extent1].[StartDate] AS [StartDate], 
+    [Extent1].[EndDate] AS [EndDate], 
+    [Extent1].[ParentTimeSpan] AS [ParentTimeSpan]
+    FROM [dbo].[EfParents] AS [Extent1]
+    WHERE [Extent1].[ParentBool] = 1
+```
+
+  * Decompile Where As No Tracking (line 130)
+     * T-Sql executed is
+
+```SQL
+SELECT 
+    [Extent1].[EfParentId] AS [EfParentId], 
+    [Extent1].[ParentBool] AS [ParentBool], 
+    [Extent1].[ParentInt] AS [ParentInt], 
+    [Extent1].[ParentNullableInt] AS [ParentNullableInt], 
+    [Extent1].[ParentNullableDecimal1] AS [ParentNullableDecimal1], 
+    [Extent1].[ParentNullableDecimal2] AS [ParentNullableDecimal2], 
+    [Extent1].[ParentDouble] AS [ParentDouble], 
+    [Extent1].[ParentString] AS [ParentString], 
+    [Extent1].[StartDate] AS [StartDate], 
+    [Extent1].[EndDate] AS [EndDate], 
+    [Extent1].[ParentTimeSpan] AS [ParentTimeSpan]
+    FROM [dbo].[EfParents] AS [Extent1]
+    WHERE [Extent1].[ParentBool] = 1
 ```
 
 

@@ -41,7 +41,7 @@ namespace DelegateDecompiler.EntityFramework
             return (IQueryable)closedGenericCreateQueryMethod.Invoke(this, new object[] { expression });
         }
 
-        public override IQueryable<TElement> CreateQuery<TElement>(Expression expression)
+        public override IQueryable<TElement> CreateQuery<TElement>(Expression expression) 
         {
             var decompiled = DecompileExpressionVisitor.Decompile(expression);
             return new AsyncDecompiledQueryable<TElement>(this, inner.CreateQuery<TElement>(decompiled));

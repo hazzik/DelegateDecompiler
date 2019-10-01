@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
 using System.Linq;
 
@@ -16,22 +17,33 @@ namespace DelegateDecompiler.EntityFramework
 
         IDbAsyncEnumerator IDbAsyncEnumerable.GetAsyncEnumerator()
         {
-            IDbAsyncEnumerable<T> asyncEnumerable = inner as IDbAsyncEnumerable<T>;
-            if(asyncEnumerable == null)
+            if (inner is IDbAsyncEnumerable<T> asyncEnumerable)
             {
-                throw new InvalidOperationException("The source IQueryable doesn't implement IDbAsyncEnumerable<T>.");
+                return asyncEnumerable.GetAsyncEnumerator();
             }
-            return asyncEnumerable.GetAsyncEnumerator();
+
+            throw new InvalidOperationException("The source IQueryable doesn't implement IDbAsyncEnumerable<T>.");
         }
 
         public IDbAsyncEnumerator<T> GetAsyncEnumerator()
         {
-            IDbAsyncEnumerable<T> asyncEnumerable = inner as IDbAsyncEnumerable<T>;
-            if (asyncEnumerable == null)
+            if (inner is IDbAsyncEnumerable<T> asyncEnumerable)
             {
-                throw new InvalidOperationException("The source IQueryable doesn't implement IDbAsyncEnumerable<T>.");
+                return asyncEnumerable.GetAsyncEnumerator();
             }
-            return asyncEnumerable.GetAsyncEnumerator();
+
+            throw new InvalidOperationException("The source IQueryable doesn't implement IDbAsyncEnumerable<T>.");
+        }
+
+        public override IQueryable<T> Include(string path)
+        {
+            return inner.Include(path).DecompileAsync();
+        }
+
+        public override IQueryable<T> AsNoTracking()
+        {
+            var queryable = (IQueryable<T>) inner.AsNoTracking();
+            return queryable.DecompileAsync();
         }
     }
 }
