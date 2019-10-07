@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net45</TargetFramework>
+    <TargetFrameworks>net45;netcoreapp3.0</TargetFrameworks>
     <Copyright>Copyright © Dave Glick 2014, Jon Smith 2014, Alexander Zaytsev 2014 - 2019</Copyright>
   </PropertyGroup>
 

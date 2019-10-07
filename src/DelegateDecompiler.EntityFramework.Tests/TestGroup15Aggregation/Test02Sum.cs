@@ -16,7 +16,7 @@ namespace DelegateDecompiler.EntityFramework.Tests.TestGroup15Aggregation
             classEnv = new ClassEnvironment();
         }
 
-#if !NETCOREAPP3_0
+#if !EF_CORE3
         [Test]
         public void TestSingletonSumChildren()
         {

@@ -1,10 +1,10 @@
 ﻿// Contributed by @JonPSmith (GitHub) www.thereformedprogrammer.com
 
 using System;
+using System.Configuration;
 using DelegateDecompiler.EntityFramework.Tests.EfItems.Abstracts;
 using DelegateDecompiler.EntityFramework.Tests.EfItems.Concretes;
 #if EF_CORE
-using System.Configuration;
 using DelegateDecompiler.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using DbModelBuilder = Microsoft.EntityFrameworkCore.ModelBuilder;
@@ -16,12 +16,11 @@ namespace DelegateDecompiler.EntityFramework.Tests.EfItems
 {
     public class EfTestDbContext : DbContext
     {
+
 #if EF_CORE
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            var location = new Uri(typeof(EfTestDbContext).Assembly.EscapedCodeBase).LocalPath;
-            var configuration = ConfigurationManager.OpenExeConfiguration(location);
-            var connectionString = configuration.ConnectionStrings.ConnectionStrings["DelegateDecompilerEfTestDb"].ConnectionString;
+            var connectionString = GetConnectionString();
             optionsBuilder.UseSqlServer(connectionString);
         }
 #else
@@ -30,7 +29,22 @@ namespace DelegateDecompiler.EntityFramework.Tests.EfItems
             Database.SetInitializer(new DropCreateDatabaseAlways<EfTestDbContext>()); 
         }
 
+#if NETFRAMEWORK
         public EfTestDbContext() : base("name=DelegateDecompilerEfTestDb") { }
+#else
+        public EfTestDbContext() : base(GetConnectionString()) { }
+#endif
+#endif
+
+#if NETCOREAPP
+        static string GetConnectionString()
+        {
+            var location = new Uri(typeof(EfTestDbContext).Assembly.EscapedCodeBase).LocalPath;
+            var configuration = ConfigurationManager.OpenExeConfiguration(location);
+            var connectionString = configuration.ConnectionStrings.ConnectionStrings["DelegateDecompilerEfTestDb"]
+                .ConnectionString;
+            return connectionString;
+        }
 #endif
 
         public DbSet<EfParent> EfParents { get; set; }
