@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net45</TargetFramework>
+    <TargetFrameworks>net45;netstandard2.1</TargetFrameworks>
     <Copyright>Copyright © Dave Glick 2014, Jon Smith 2014, Alexander Zaytsev 2014 - 2019</Copyright>
     <PackageTags>$(PackageTags) EF EntityFramework Entity-Framework</PackageTags>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
