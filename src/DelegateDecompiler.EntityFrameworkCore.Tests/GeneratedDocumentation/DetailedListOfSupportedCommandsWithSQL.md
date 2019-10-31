@@ -1,6 +1,6 @@
 Detail With Sql of supported commands
 ============
-## Documentation produced for DelegateDecompiler, version 0.27.0 on Tuesday, 01 October 2019 11:45
+## Documentation produced for DelegateDecompiler, version 0.28.0 on Friday, 01 November 2019 10:55
 
 This file documents what linq commands **DelegateDecompiler** supports when
 working with [Entity Framework Core](https://docs.microsoft.com/en-us/ef/core/) (EF).
@@ -219,6 +219,13 @@ More will appear as we move forward.*
 
 ```
 
+  * Where Filters On Multiple Levels Of Abstract Members Over Tph Hierarchy (line 104)
+     * T-Sql executed is
+
+```SQL
+
+```
+
 
 #### [Single](../TestGroup05BasicFeatures/Test10Single.cs):
 - Supported
@@ -385,6 +392,13 @@ More will appear as we move forward.*
 
 #### [Sum](../TestGroup15Aggregation/Test02Sum.cs):
 - Supported
+  * Singleton Sum Children (line 34)
+     * T-Sql executed is
+
+```SQL
+
+```
+
   * Sum Count In Children Where Children Can Be None (line 53)
      * T-Sql executed is
 

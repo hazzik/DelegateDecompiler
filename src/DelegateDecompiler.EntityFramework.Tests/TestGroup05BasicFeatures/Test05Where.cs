@@ -87,7 +87,7 @@ namespace DelegateDecompiler.EntityFramework.Tests.TestGroup05BasicFeatures
             }
         }
 
-#if !NETCOREAPP3_0
+#if !EF_CORE3
         [Test]
         public void TestWhereFiltersOnMultipleLevelsOfAbstractMembersOverTphHierarchy()
         {
