@@ -111,7 +111,10 @@ namespace DelegateDecompiler
             processor.states.Push(new ProcessorState(new Stack<Address>(), locals, args, instruction));
 
             var ex = AdjustType(processor.Process(), returnType);
-
+            if (ex.NodeType == ExpressionType.MemberAccess && (ex as MemberExpression).Member.GetCustomAttributes(true).OfType<CompilerGeneratedAttribute>().Any())
+            {
+                ex = ExpressionHelper.Default(returnType, null);
+            }
             if (ex.Type != returnType && returnType != typeof(void))
             {
                 return Expression.Convert(ex, returnType);
