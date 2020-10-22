@@ -1,13 +1,17 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFrameworks>net5.0;netstandard2.0</TargetFrameworks>
     <Copyright>Copyright © Alexander Zaytsev 2014 - 2019</Copyright>
     <PackageTags>$(PackageTags) EF EntityFrameworkCore Entity-Framework-Core</PackageTags>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
 
-  <ItemGroup>
+  <ItemGroup Condition=" '$(TargetFramework)' == 'netstandard2.0' ">
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="2.0.0" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(TargetFramework)' == 'net5.0' ">
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="5.0.0-rc.2.20475.6" />
   </ItemGroup>
 
   <ItemGroup>
