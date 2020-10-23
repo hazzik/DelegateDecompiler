@@ -24,6 +24,16 @@
   </ItemGroup>
 
   <ItemGroup>
+<!--
+This is needed because test data mixes Windows and Unix-style line endings. See:
+https://github.com/dotnet/runtime/issues/43736
+and
+https://docs.microsoft.com/en-us/dotnet/standard/globalization-localization/globalization-icu     
+-->
+    <RuntimeHostConfigurationOption Include="System.Globalization.UseNls" Value="true" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="NUnit" Version="3.12.0" />
     <PackageReference Include="System.Configuration.ConfigurationManager" Version="5.0.0-rc.2.20475.5" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="5.0.0-rc.2.20475.6" />
