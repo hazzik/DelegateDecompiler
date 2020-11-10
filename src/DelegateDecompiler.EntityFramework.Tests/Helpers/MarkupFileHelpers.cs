@@ -65,13 +65,13 @@ namespace DelegateDecompiler.EntityFramework.Tests.Helpers
             {
                 @"\bin\debug",
                 @"\bin\debug\net45",
-                @"\bin\debug\netcoreapp2.0",
-                @"\bin\debug\netcoreapp3.0",
+                @"\bin\debug\netcoreapp2.1",
+                @"\bin\debug\netcoreapp3.1",
                 @"\bin\debug\net5.0",
                 @"\bin\release",
                 @"\bin\release\net45",
-                @"\bin\release\netcoreapp2.0",
-                @"\bin\release\netcoreapp3.0",
+                @"\bin\release\netcoreapp2.1",
+                @"\bin\release\netcoreapp3.1",
                 @"\bin\release\net5.0"
             };
             foreach (var ending in endings)

@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>net40;net45;netcoreapp2.0</TargetFrameworks>
+    <TargetFrameworks>net40;net45;netcoreapp2.1</TargetFrameworks>
     <Copyright>Copyright © Alexander Zaytsev 2016 - 2019</Copyright>
   </PropertyGroup>
 
