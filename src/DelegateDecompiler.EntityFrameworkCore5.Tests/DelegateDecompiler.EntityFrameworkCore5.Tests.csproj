@@ -39,7 +39,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\DelegateDecompiler.EntityFrameworkCore\DelegateDecompiler.EntityFrameworkCore.csproj" />
+    <ProjectReference Include="..\DelegateDecompiler.EntityFrameworkCore5\DelegateDecompiler.EntityFrameworkCore5.csproj" />
     <ProjectReference Include="..\DelegateDecompiler.Tests\DelegateDecompiler.Tests.csproj" />
   </ItemGroup>
 
