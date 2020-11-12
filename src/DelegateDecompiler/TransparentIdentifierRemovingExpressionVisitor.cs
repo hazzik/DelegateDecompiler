@@ -54,7 +54,7 @@ namespace DelegateDecompiler
             
             var methodInfo = b as MethodInfo;
             var propertyInfo = a as PropertyInfo;
-            if (propertyInfo != null && methodInfo != null && propertyInfo.CanRead && methodInfo == propertyInfo.GetGetMethod())
+            if (propertyInfo != null && methodInfo != null && propertyInfo.CanRead && methodInfo == propertyInfo.GetGetMethod(true))
                 return true;
 
             return false;
