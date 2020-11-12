@@ -5,6 +5,9 @@ using System.Linq.Expressions;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
+#if NET5_0
+using Microsoft.EntityFrameworkCore.Query;
+#endif
 using Microsoft.EntityFrameworkCore.Query.Internal;
 
 namespace DelegateDecompiler.EntityFrameworkCore
