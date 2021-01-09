@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <Copyright>Copyright © Alexander Zaytsev 2014 - 2020</Copyright>
+    <Copyright>Copyright © Alexander Zaytsev 2014 - 2021</Copyright>
     <PackageTags>$(PackageTags) EF EntityFrameworkCore Entity-Framework-Core</PackageTags>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
