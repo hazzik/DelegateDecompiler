@@ -523,7 +523,7 @@ namespace DelegateDecompiler
                     else if (state.Instruction.OpCode == OpCodes.Not)
                     {
                         var val = state.Stack.Pop();
-                        state.Stack.Push(Expression.Not(val));
+                        state.Stack.Push(MakeUnaryExpression(val, ExpressionType.Not));
                     }
                     else if (state.Instruction.OpCode == OpCodes.Conv_I)
                     {
@@ -829,6 +829,13 @@ namespace DelegateDecompiler
             right = ConvertEnumExpressionToUnderlyingType(right);
 
             return Expression.MakeBinary(expressionType, left, right);
+        }
+
+        static UnaryExpression MakeUnaryExpression(Expression operand, ExpressionType expressionType)
+        {
+            operand = ConvertEnumExpressionToUnderlyingType(operand);
+
+            return Expression.MakeUnary(expressionType, operand, operand.Type);
         }
 
         static Expression Box(Expression expression, Type type)

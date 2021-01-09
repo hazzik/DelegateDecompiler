@@ -132,6 +132,14 @@ namespace DelegateDecompiler.Tests
         }
 
         [Test]
+        public void TestNotEnumParameter()
+        {
+            Expression<Func<TestFlagEnum, TestFlagEnum>> expected = x => ~ x;
+            Func<TestFlagEnum, TestFlagEnum> compiled = x => ~ x;
+            Test(expected, compiled);
+        }
+
+        [Test]
         public void TestEnumParameterAndEnumParameter()
         {
             Expression<Func<TestFlagEnum, TestFlagEnum>> expected = x => x & x;
