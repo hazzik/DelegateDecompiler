@@ -232,15 +232,15 @@ namespace DelegateDecompiler
                     }
                     else if (state.Instruction.OpCode == OpCodes.Stsfld)
                     {
+                        var value = state.Stack.Pop();
                         var field = (FieldInfo) state.Instruction.Operand;
                         if (IsCachedAnonymousMethodDelegate(field))
                         {
-                            state.Delegates[Tuple.Create(default(Address), field)] = state.Stack.Pop();
+                            state.Delegates[Tuple.Create(default(Address), field)] = value;
                         }
                         else
                         {
-                            var pop = state.Stack.Pop();
-                            state.Stack.Push(Expression.Assign(Expression.Field(null, field), pop));
+                            state.Stack.Push(Expression.Assign(Expression.Field(null, field), value));
                         }
                     }
                     else if (state.Instruction.OpCode == OpCodes.Stfld)
@@ -767,7 +767,7 @@ namespace DelegateDecompiler
             }
             else
             {
-                state.Stack.Push(Expression.Field(instance, field));
+                state.Stack.Push(Expression.Field(instance?.Expression, field));
             }
         }
 
@@ -1102,7 +1102,7 @@ namespace DelegateDecompiler
                     });
             }
 
-            push = false;
+            push = true;
             return Expression.Assign(Expression.MakeMemberAccess(instance, member), value);
         }
 
