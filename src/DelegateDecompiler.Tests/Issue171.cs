@@ -23,6 +23,15 @@ namespace DelegateDecompiler.Tests
             Assert.That(expression.ToString(), Is.EqualTo("this => new DataOnStack() {StatementCount = 1}"));
         }
 
+        [Test]
+        public void ShouldSupportByRefMethods()
+        {
+            var method = typeof(Issue171).GetMethod(nameof(X3));
+            var expression = method.Decompile();
+
+            Assert.That(expression.ToString(), Is.EqualTo("this => new DataOnStack() {StatementCount = 1}"));
+        }
+
         public DataOnStack X1()
         {
             DataOnStack x;
@@ -30,15 +39,26 @@ namespace DelegateDecompiler.Tests
             return x;
         }
 
-
         public DataOnStack X2()
         {
             return new DataOnStack {StatementCount = 1};
+        }
+        
+        public DataOnStack X3()
+        {
+            DataOnStack x;
+            x.StatementCount = 1;
+            DataOnStack.JetBrains_Profiler_Core_Instrumentation_Begin(ref x);
+            return x;
         }
 
         public struct DataOnStack
         {
             public uint StatementCount;
+
+            public static void JetBrains_Profiler_Core_Instrumentation_Begin(ref DataOnStack d)
+            {
+            }
         }
     }
 }
