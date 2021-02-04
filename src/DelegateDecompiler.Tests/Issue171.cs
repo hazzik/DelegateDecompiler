@@ -24,7 +24,7 @@ namespace DelegateDecompiler.Tests
         }
 
         [Test]
-        public void ShouldSupportByRefMethods()
+        public void ShouldSupportMethodsWithByRefArguments()
         {
             var method = typeof(Issue171).GetMethod(nameof(X3));
             var expression = method.Decompile();
