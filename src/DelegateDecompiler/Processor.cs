@@ -933,7 +933,7 @@ namespace DelegateDecompiler
 
         internal static Expression AdjustType(Expression expression, Type type)
         {
-            if (expression.Type == type)
+            if (expression.Type == type || type.IsByRef)
             {
                 return expression;
             }
