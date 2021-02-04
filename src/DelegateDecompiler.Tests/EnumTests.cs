@@ -285,6 +285,15 @@ namespace DelegateDecompiler.Tests
 			Test(expected, compiled);
         }
 
+        [Test, Ignore("Not fixed yet")]
+        public void Issue160()
+        {
+            Expression<Func<int?, bool>> expected1 = x => (TestEnum?) x == TestEnum.Bar;
+            Expression<Func<int?, bool>> expected2 = x => (int?) x == (int?) TestEnum.Bar;
+            Func<int?, bool> compiled = x => (TestEnum?) x == TestEnum.Bar;
+            Test(expected1, expected2, compiled);
+        }
+
         private static bool TestEnumMethod(TestEnum p0)
         {
             throw new NotImplementedException();

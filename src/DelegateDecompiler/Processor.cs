@@ -16,7 +16,7 @@ namespace DelegateDecompiler
     {
         class ProcessorState
         {
-            public IDictionary<FieldInfo, Address> Delegates { get; private set; }
+            public IDictionary<Tuple<Address, FieldInfo>, Address> Delegates { get; private set; }
             public Stack<Address> Stack { get; private set; }
             public VariableInfo[] Locals { get; private set; }
             public IList<Address> Args { get; private set; }
@@ -26,9 +26,9 @@ namespace DelegateDecompiler
             public Instruction Instruction { get; set; }
 
             public ProcessorState(Stack<Address> stack, VariableInfo[] locals, IList<Address> args, Instruction instruction,
-               Instruction last = null, IDictionary<FieldInfo, Address> delegates = null)
+               Instruction last = null, IDictionary<Tuple<Address, FieldInfo>, Address> delegates = null)
             {
-                Delegates = delegates ?? new Dictionary<FieldInfo, Address>();
+                Delegates = delegates ?? new Dictionary<Tuple<Address, FieldInfo>, Address>();
                 Stack = stack;
                 Locals = locals;
                 Args = args;
@@ -224,40 +224,23 @@ namespace DelegateDecompiler
                     }
                     else if (state.Instruction.OpCode == OpCodes.Ldfld || state.Instruction.OpCode == OpCodes.Ldflda)
                     {
-                        var instance = state.Stack.Pop();
-                        state.Stack.Push(Expression.Field(instance, (FieldInfo) state.Instruction.Operand));
+                        LdFld(state, state.Stack.Pop());
                     }
                     else if (state.Instruction.OpCode == OpCodes.Ldsfld)
                     {
-                        var field = (FieldInfo) state.Instruction.Operand;
-                        if (IsCachedAnonymousMethodDelegate(field))
-                        {
-                            Address address;
-                            if (state.Delegates.TryGetValue(field, out address))
-                            {
-                                state.Stack.Push(address);
-                            }
-                            else
-                            {
-                                state.Stack.Push(Expression.Field(null, field));
-                            }
-                        }
-                        else
-                        {
-                            state.Stack.Push(Expression.Field(null, field));
-                        }
+                        LdFld(state, null);
                     }
                     else if (state.Instruction.OpCode == OpCodes.Stsfld)
                     {
+                        var value = state.Stack.Pop();
                         var field = (FieldInfo) state.Instruction.Operand;
                         if (IsCachedAnonymousMethodDelegate(field))
                         {
-                            state.Delegates[field] = state.Stack.Pop();
+                            state.Delegates[Tuple.Create(default(Address), field)] = value;
                         }
                         else
                         {
-                            var pop = state.Stack.Pop();
-                            state.Stack.Push(Expression.Assign(Expression.Field(null, field), pop));
+                            state.Stack.Push(Expression.Assign(Expression.Field(null, field), value));
                         }
                     }
                     else if (state.Instruction.OpCode == OpCodes.Stfld)
@@ -265,11 +248,18 @@ namespace DelegateDecompiler
                         var value = state.Stack.Pop();
                         var instance = state.Stack.Pop();
                         var field = (FieldInfo) state.Instruction.Operand;
-                        var expression = BuildAssignment(instance.Expression, field, value, out var push);
-                        if (push)
-                            state.Stack.Push(expression);
+                        if (IsCachedAnonymousMethodDelegate(field))
+                        {
+                            state.Delegates[Tuple.Create(instance, field)] = value;
+                        }
                         else
-                            instance.Expression = expression;
+                        {
+                            var expression = BuildAssignment(instance.Expression, field, value, out var push);
+                            if (push)
+                                state.Stack.Push(expression);
+                            else
+                                instance.Expression = expression;
+                        }
                     }
                     else if (state.Instruction.OpCode == OpCodes.Ldloc_0)
                     {
@@ -767,6 +757,20 @@ namespace DelegateDecompiler
             return state == null ? Expression.Empty() : state.Final();
         }
 
+        static void LdFld(ProcessorState state, Address instance)
+        {
+            var field = (FieldInfo) state.Instruction.Operand;
+            if (IsCachedAnonymousMethodDelegate(field) &&
+                state.Delegates.TryGetValue(Tuple.Create(instance, field), out var address))
+            {
+                state.Stack.Push(address);
+            }
+            else
+            {
+                state.Stack.Push(Expression.Field(instance?.Expression, field));
+            }
+        }
+
         static LambdaExpression DecompileLambdaExpression(MethodInfo method, Func<Expression> @this)
         {
             if (method.IsStatic)
@@ -1080,10 +1084,12 @@ namespace DelegateDecompiler
 
         static Expression BuildAssignment(Expression instance, MemberInfo member, Expression value, out bool push)
         {
+            var adjustedValue = AdjustType(value, member.FieldOrPropertyType());
+            
             if (instance.NodeType == ExpressionType.New)
             {
                 push = false;
-                return Expression.MemberInit((NewExpression) instance, Expression.Bind(member, value));
+                return Expression.MemberInit((NewExpression) instance, Expression.Bind(member, adjustedValue));
             }
 
             if (instance.NodeType == ExpressionType.MemberInit)
@@ -1094,12 +1100,18 @@ namespace DelegateDecompiler
                     memberInitExpression.NewExpression,
                     new List<MemberBinding>(memberInitExpression.Bindings)
                     {
-                        Expression.Bind(member, value)
+                        Expression.Bind(member, adjustedValue)
                     });
             }
 
+            if (instance.NodeType == ExpressionType.Constant && instance.Type.IsValueType)
+            {
+                push = false;
+                return Expression.MemberInit(Expression.New(instance.Type), Expression.Bind(member, adjustedValue));
+            }
+
             push = true;
-            return Expression.Assign(Expression.MakeMemberAccess(instance, member), value);
+            return Expression.Assign(Expression.MakeMemberAccess(instance, member), adjustedValue);
         }
 
         static Expression[] GetArguments(ProcessorState state, MethodBase m)
