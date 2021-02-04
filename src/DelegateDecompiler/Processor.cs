@@ -1123,7 +1123,7 @@ namespace DelegateDecompiler
                 var argument = state.Stack.Pop();
                 var parameter = parameterInfos[i];
                 var parameterType = parameter.ParameterType;
-                mArgs[i] = AdjustType(argument, parameterType);
+                mArgs[i] = AdjustType(argument, parameterType.IsByRef ? parameterType.GetElementType() : parameterType);
             }
             return mArgs;
         }
