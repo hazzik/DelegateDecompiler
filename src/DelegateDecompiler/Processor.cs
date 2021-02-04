@@ -1084,10 +1084,12 @@ namespace DelegateDecompiler
 
         static Expression BuildAssignment(Expression instance, MemberInfo member, Expression value, out bool push)
         {
+            var adjustedValue = AdjustType(value, member.FieldOrPropertyType());
+            
             if (instance.NodeType == ExpressionType.New)
             {
                 push = false;
-                return Expression.MemberInit((NewExpression) instance, Expression.Bind(member, value));
+                return Expression.MemberInit((NewExpression) instance, Expression.Bind(member, adjustedValue));
             }
 
             if (instance.NodeType == ExpressionType.MemberInit)
@@ -1098,12 +1100,18 @@ namespace DelegateDecompiler
                     memberInitExpression.NewExpression,
                     new List<MemberBinding>(memberInitExpression.Bindings)
                     {
-                        Expression.Bind(member, value)
+                        Expression.Bind(member, adjustedValue)
                     });
             }
 
+            if (instance.NodeType == ExpressionType.Constant && instance.Type.IsValueType)
+            {
+                push = false;
+                return Expression.MemberInit(Expression.New(instance.Type), Expression.Bind(member, adjustedValue));
+            }
+
             push = true;
-            return Expression.Assign(Expression.MakeMemberAccess(instance, member), value);
+            return Expression.Assign(Expression.MakeMemberAccess(instance, member), adjustedValue);
         }
 
         static Expression[] GetArguments(ProcessorState state, MethodBase m)
