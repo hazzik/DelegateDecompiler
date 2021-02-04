@@ -7,7 +7,10 @@ namespace DelegateDecompiler
         public VariableInfo(Type type)
         {
             Type = type;
-            Address = new Address();
+            Address = new Address
+            {
+                Expression = ExpressionHelper.Default(type)
+            };
         }
 
         public Type Type { get; set; }
