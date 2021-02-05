@@ -3,6 +3,7 @@
     <TargetFrameworks>net40;net45;netstandard2.0</TargetFrameworks>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
+
   <ItemGroup>
     <PackageReference Include="Mono.Reflection.Core" Version="1.1.1" />
   </ItemGroup>
