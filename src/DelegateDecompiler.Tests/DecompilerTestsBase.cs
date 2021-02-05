@@ -7,7 +7,7 @@ namespace DelegateDecompiler.Tests
 {
     public class DecompilerTestsBase
     {
-        static readonly Func<Expression, string> DebugView = BuildDebugView();
+        protected static readonly Func<Expression, string> DebugView = BuildDebugView();
 
         private static Func<Expression, string> BuildDebugView()
         {

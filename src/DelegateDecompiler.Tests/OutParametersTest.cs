@@ -5,16 +5,29 @@ using NUnit.Framework;
 namespace DelegateDecompiler.Tests
 {
     [TestFixture]
-    public class OutParametersTests
+    public class OutParametersTests : DecompilerTestsBase
     {
         [Test]
-        public void TestMethod()
+        public void TestOutParameter()
         {
             var mi = typeof(OutParametersTests).GetMethod(nameof(GetInt));
 
             var expression = (Expression<Func<string, int>>) MethodBodyDecompiler.Decompile(mi);
 
             Assert.That(expression.ToString(), Is.EqualTo("s => {var var0; ... }"));
+            Assert.That(DebugView(expression), Is.EqualTo(@".Lambda #Lambda1<System.Func`2[System.String,System.Int32]>(System.String $s) {
+    .Block(System.Int32 $var0) {
+        .If (
+            .Call System.Int32.TryParse(
+                $s,
+                $var0)
+        ) {
+            $var0
+        } .Else {
+            -1
+        }
+    }
+}"));
 
             var compiledMethod = expression.Compile();
 
