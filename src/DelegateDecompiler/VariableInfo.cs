@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Linq.Expressions;
 
 namespace DelegateDecompiler
@@ -11,20 +10,12 @@ namespace DelegateDecompiler
             Type = type;
             Address = new Address
             {
-                Expression = ExpressionHelper.Default(type)
+                Expression = Expression.Variable(type)
             };
         }
 
         public Type Type { get; set; }
 
         public Address Address { get; set; }
-
-        public VariableInfo Clone(IDictionary<Address, Address> addressMap)
-        {
-            return new VariableInfo(Type)
-            {
-                Address = Address.Clone(addressMap)
-            };
-        }
     }
 }

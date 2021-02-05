@@ -48,7 +48,8 @@ namespace DelegateDecompiler
                 state.Stack = new Stack<Address>(Enumerable.Reverse(buffer));
                 for (int i = 0; i < Locals.Length; i++)
                 {
-                    state.Locals[i] = Locals[i].Clone(addressMap);
+                    state.Locals[i] = new VariableInfo(Locals[i].Type);
+                    state.Locals[i].Address = Locals[i].Address.Clone(addressMap);
                 }
                 return state;
             }
@@ -932,7 +933,7 @@ namespace DelegateDecompiler
 
         internal static Expression AdjustType(Expression expression, Type type)
         {
-            if (expression.Type == type || type.IsByRef && type == expression.Type.MakeByRefType())
+            if (expression.Type == type)
             {
                 return expression;
             }
@@ -1103,7 +1104,8 @@ namespace DelegateDecompiler
                     });
             }
 
-            if (instance.NodeType == ExpressionType.Constant && instance.Type.IsValueType)
+            if (instance.Type.IsValueType &&
+                (instance.NodeType == ExpressionType.Parameter || instance.NodeType == ExpressionType.Constant))
             {
                 push = false;
                 return Expression.MemberInit(Expression.New(instance.Type), Expression.Bind(member, adjustedValue));

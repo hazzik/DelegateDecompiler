@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
@@ -30,7 +30,6 @@ namespace DelegateDecompiler
 
             var optimizedExpression = OptimizeExpressionVisitor.Optimize(expression);
 
-
             return Expression.Lambda(optimizedExpression, args.Select(x => (ParameterExpression) x.Expression));
         }
 
@@ -39,29 +38,16 @@ namespace DelegateDecompiler
             var body = method.GetMethodBody();
             var addresses = new VariableInfo[body.LocalVariables.Count];
             for (var i = 0; i < addresses.Length; i++)
-            {
-                var localVariable = body.LocalVariables[i];
-                var type = localVariable.LocalType;
-                addresses[i] = new VariableInfo(type)
-                {
-                    Address =
-                    {
-                        Expression = Expression.Variable(type, "var" + localVariable.LocalIndex)
-                    }
-                };
-            }
+                addresses[i] = new VariableInfo(body.LocalVariables[i].LocalType);
             var locals = addresses.ToArray();
 
             var instructions = method.GetInstructions();
-
             var expression = Processor.Process(locals, args, instructions.First(), method.ReturnType);
-
             var localParameters = locals
                 .Select(l => l.Address.Expression)
                 .OfType<ParameterExpression>()
                 .Except(args.Select(a => a.Expression).OfType<ParameterExpression>())
                 .ToArray();
-
             return localParameters.Length == 0
                 ? expression
                 : Expression.Block(localParameters, expression);
