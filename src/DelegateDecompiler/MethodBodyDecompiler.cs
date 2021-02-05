@@ -42,7 +42,15 @@ namespace DelegateDecompiler
             var locals = addresses.ToArray();
 
             var instructions = method.GetInstructions();
-            return Processor.Process(locals, args, instructions.First(), method.ReturnType);
+            var expression = Processor.Process(locals, args, instructions.First(), method.ReturnType);
+            var localParameters = locals
+                .Select(l => l.Address.Expression)
+                .OfType<ParameterExpression>()
+                .Except(args.Select(a => a.Expression).OfType<ParameterExpression>())
+                .ToArray();
+            return localParameters.Length == 0
+                ? expression
+                : Expression.Block(localParameters, expression);
         }
 
         static Expression DecompileConcrete(

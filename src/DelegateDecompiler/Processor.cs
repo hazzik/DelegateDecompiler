@@ -1104,7 +1104,8 @@ namespace DelegateDecompiler
                     });
             }
 
-            if (instance.NodeType == ExpressionType.Constant && instance.Type.IsValueType)
+            if (instance.Type.IsValueType &&
+                (instance.NodeType == ExpressionType.Parameter || instance.NodeType == ExpressionType.Constant))
             {
                 push = false;
                 return Expression.MemberInit(Expression.New(instance.Type), Expression.Bind(member, adjustedValue));
