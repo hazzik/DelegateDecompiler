@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using System.Linq.Expressions;
 
 namespace DelegateDecompiler
@@ -42,9 +41,9 @@ namespace DelegateDecompiler
         protected override Expression VisitConditional(ConditionalExpression node)
         {
             Debug.WriteLine(node);
+            var test = Visit(node.Test);
             var ifTrue = Visit(node.IfTrue);
             var ifFalse = Visit(node.IfFalse);
-            var test = Visit(node.Test);
 
             Expression expression;
             if (IsCoalesce(test, ifTrue, out expression))
@@ -86,8 +85,8 @@ namespace DelegateDecompiler
                         {
                             return Expression.Coalesce(testBinary.Left, ifFalse);
                         }
-                        var rightConstant = testBinary.Right as ConstantExpression;
-                        if (rightConstant != null && rightConstant.Value == null)
+
+                        if (testBinary.Right is ConstantExpression rightConstant && rightConstant.Value == null)
                         {
                             return Expression.Coalesce(testBinary.Left, ifFalse);
                         }
@@ -95,12 +94,20 @@ namespace DelegateDecompiler
                 }
             }
 
+            if (ifTrueConstant?.Value is true)
+            {
+                return Expression.OrElse(test, ifFalse);
+            }
+
             if (test.NodeType == ExpressionType.Not)
             {
+                var testOperand = ((UnaryExpression) test).Operand;
                 if (ifTrueConstant?.Value as bool? == false)
                 {
-                    return Expression.AndAlso(((UnaryExpression) test).Operand, ifFalse);
+                    return Expression.AndAlso(testOperand, ifFalse);
                 }
+
+                return Visit(node.Update(testOperand, ifFalse, ifTrue));
             }
 
             return node.Update(test, ifTrue, ifFalse);
@@ -108,9 +115,9 @@ namespace DelegateDecompiler
 
         private static bool TryConvert(ConstantExpression constant, BinaryExpression left, Expression right, out BinaryExpression result, bool isLeft)
         {
-            if (constant?.Value is bool)
+            if (constant?.Value is bool booleanValue)
             {
-                if ((bool) constant.Value)
+                if (booleanValue)
                 {
                     if (left.NodeType == ExpressionType.Equal ||
                         left.NodeType == ExpressionType.NotEqual ||
@@ -179,10 +186,8 @@ namespace DelegateDecompiler
 
         private static bool TryConvert2(BinaryExpression hasValue, BinaryExpression getValueOrDefault, out BinaryExpression result)
         {
-            Expression left;
-            Expression right;
-            if (ExtractNullableArgument(hasValue.Left, getValueOrDefault.Left, out left) &&
-                ExtractNullableArgument(hasValue.Right, getValueOrDefault.Right, out right))
+            if (ExtractNullableArgument(hasValue.Left, getValueOrDefault.Left, out var left) &&
+                ExtractNullableArgument(hasValue.Right, getValueOrDefault.Right, out var right))
             {
                 result = Expression.MakeBinary(getValueOrDefault.NodeType, left, right);
                 return true;
@@ -277,36 +282,63 @@ namespace DelegateDecompiler
 
         protected override Expression VisitBinary(BinaryExpression node)
         {
-            var rightConstant = node.Right as ConstantExpression;
-            if (rightConstant != null)
+            var left = Visit(node.Left);
+            if (node.Right is ConstantExpression rightConstant)
             {
                 if (rightConstant.Value as bool? == false)
                 {
                     switch (node.NodeType)
                     {
                         case ExpressionType.Equal:
-                            BinaryExpression binaryExpression = node.Left as BinaryExpression;
-                            if (binaryExpression != null && Invert(ref binaryExpression))
-                                return Visit(binaryExpression);
-                            return Expression.Not(Visit(node.Left));
+                            if (left is BinaryExpression binaryExpression && Invert(ref binaryExpression))
+                                return binaryExpression;
+                            return Expression.Not(left);
                         case ExpressionType.NotEqual:
-                            return Visit(node.Left);
+                            return left;
                     }
                 }
-                if (rightConstant.Value as int? == 0)
+
+                if (rightConstant.Value as int? == 0 &&
+                    left is MethodCallExpression expression &&
+                    expression.Method.Name == "Compare" &&
+                    expression.Method.IsStatic &&
+                    expression.Method.DeclaringType == typeof(decimal))
                 {
-                    var expression = node.Left as MethodCallExpression;
-                    if (expression != null)
+                    return Expression.MakeBinary(node.NodeType, expression.Arguments[0], expression.Arguments[1]);
+                }
+            }
+
+            if (node.NodeType == ExpressionType.And)
+            {
+                if (ExtractNullableArgument(node.Right, left, out var result))
+                {
+                    return Visit(result);
+                }
+
+                if (left is BinaryExpression leftBinary && node.Right is BinaryExpression rightBinary)
+                {
+                    if (TryConvert2(rightBinary, leftBinary, out var binaryResult))
                     {
-                        if (expression.Method.Name == "Compare" && expression.Method.IsStatic && expression.Method.DeclaringType == typeof(decimal))
-                        {
-                            return Expression.MakeBinary(node.NodeType, expression.Arguments[0], expression.Arguments[1]);
-                        }
+                        return Visit(binaryResult);
                     }
                 }
             }
+
             return base.VisitBinary(node);
         }
+
+        protected override Expression VisitUnary(UnaryExpression node)
+        {
+            if (node.NodeType == ExpressionType.Not && 
+                node.Operand is BinaryExpression binary &&
+                Invert(ref binary))
+            {
+                return Visit(binary);
+            }
+
+            return base.VisitUnary(node);
+        }
+
 
         static bool Invert(ref BinaryExpression expression)
         {
@@ -359,7 +391,7 @@ namespace DelegateDecompiler
             {
                 if (IsGetValueOrDefault(node) && node.Object == expected)
                 {
-                    return expected;
+                    return node.Object;
                 }
 
                 return base.VisitMethodCall(node);
@@ -393,5 +425,26 @@ namespace DelegateDecompiler
 		        return before.Update(operand);
 	        }
 		}
+
+        class GetValueOrDefaultToCoalesceConverter : ExpressionVisitor
+        {
+            protected override Expression VisitMethodCall(MethodCallExpression node)
+            {
+                if (IsGetValueOrDefault(node) &&
+                    node.Type != typeof(DateTime) &&
+                    node.Type != typeof(DateTimeOffset))
+                {
+                    var @default = node.Arguments.Count == 0 ? ExpressionHelper.Default(node.Type) : node.Arguments[0];
+                    return Expression.Coalesce(node.Object, @default);
+                }
+
+                return base.VisitMethodCall(node);
+            }
+        }
+
+        public static Expression Optimize(Expression expression)
+        {
+            return new GetValueOrDefaultToCoalesceConverter().Visit(new OptimizeExpressionVisitor().Visit(expression));
+        }
     }
 }

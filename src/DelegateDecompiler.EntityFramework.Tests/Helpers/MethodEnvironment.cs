@@ -33,7 +33,11 @@ namespace DelegateDecompiler.EntityFramework.Tests.Helpers
             loggedDelegateDecompilerSql = new List<string>();
 
             Db = new EfTestDbContext();
+#if !EF_CORE
             Db.Database.Log = LogEfSql;               //capture the sql for the linq part
+#else
+            //TODO: Caputre log?
+#endif
         }
 
         public void AboutToUseDelegateDecompiler([CallerLineNumber] int lineNumber = 0)

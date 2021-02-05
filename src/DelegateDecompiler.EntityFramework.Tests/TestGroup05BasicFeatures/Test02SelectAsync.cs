@@ -1,10 +1,15 @@
 ﻿// Contributed by @JonPSmith (GitHub) www.thereformedprogrammer.com
 
-using System.Data.Entity;
 using System.Linq;
 using System.Threading.Tasks;
 using DelegateDecompiler.EntityFramework.Tests.Helpers;
 using NUnit.Framework;
+#if EF_CORE
+using DelegateDecompiler.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
+#else
+using System.Data.Entity;
+#endif
 
 namespace DelegateDecompiler.EntityFramework.Tests.TestGroup05BasicFeatures
 {
@@ -19,6 +24,23 @@ namespace DelegateDecompiler.EntityFramework.Tests.TestGroup05BasicFeatures
         }
 
         [Test]
+        public async Task TestAsync()
+        {
+            using (var env = new MethodEnvironment(classEnv))
+            {
+                //SETUP
+                var linq = await env.Db.EfParents.ToListAsync();
+
+                //ATTEMPT
+                env.AboutToUseDelegateDecompiler();
+                var dd = await env.Db.EfParents.DecompileAsync().ToListAsync();
+
+                //VERIFY
+                env.CompareAndLogList(linq, dd);
+            }
+        }
+
+        [Test]
         public async Task TestBoolEqualsConstantAsync()
         {
             using (var env = new MethodEnvironment(classEnv))
@@ -29,6 +51,23 @@ namespace DelegateDecompiler.EntityFramework.Tests.TestGroup05BasicFeatures
                 //ATTEMPT
                 env.AboutToUseDelegateDecompiler();
                 var dd = await env.Db.EfParents.Select(x => x.BoolEqualsConstant).DecompileAsync().ToListAsync();
+
+                //VERIFY
+                env.CompareAndLogList(linq, dd);
+            }
+        }
+
+        [Test]
+        public async Task TestDecompileUpfrontBoolEqualsConstantAsync()
+        {
+            using (var env = new MethodEnvironment(classEnv))
+            {
+                //SETUP
+                var linq = await env.Db.EfParents.Select(x => x.ParentBool == true).ToListAsync();
+
+                //ATTEMPT
+                env.AboutToUseDelegateDecompiler();
+                var dd = await env.Db.EfParents.DecompileAsync().Select(x => x.BoolEqualsConstant).ToListAsync();
 
                 //VERIFY
                 env.CompareAndLogList(linq, dd);

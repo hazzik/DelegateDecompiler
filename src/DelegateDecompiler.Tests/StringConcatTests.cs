@@ -42,16 +42,19 @@ namespace DelegateDecompiler.Tests
         [Test]
         public void StringConcatObjects()
         {
-            Expression<Func<int, string, int, string>> expected = (x, y, z) => x + y + z;
+            Expression<Func<int, string, int, string>> expected1 = (x, y, z) => x + y + z;
+            Expression<Func<int, string, int, string>> expected2 = (x, y, z) => x.ToString() + y + z.ToString();
             Func<int, string, int, string> compiled = (x, y, z) => x + y + z;
-            Test(expected, compiled);
-        } 
+            Test(expected1, expected2, compiled);
+        }
+
         [Test]
         public void StringConcatObjects2()
         {
-            Expression<Func<int, string, double, string>> expected = (x, y, z) => x + y + z;
+            Expression<Func<int, string, double, string>> expected1 = (x, y, z) => x + y + z;
+            Expression<Func<int, string, double, string>> expected2 = (x, y, z) => x.ToString() + y + z.ToString();
             Func<int, string, double, string> compiled = (x, y, z) => x + y + z;
-            Test(expected, compiled);
+            Test(expected1, expected2, compiled);
         } 
     }
 }

@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -16,13 +14,9 @@ namespace DelegateDecompiler
 
         protected override Expression VisitMember(MemberExpression node)
         {
-            if (ShouldDecompile(node.Member))
+            if (ShouldDecompile(node.Member) && node.Member is PropertyInfo property)
             {
-                var info = node.Member as PropertyInfo;
-                if (info != null)
-                {
-                    return Decompile(info.GetGetMethod(), node.Expression, new List<Expression>());
-                }
+                return Decompile(property.GetGetMethod(true), node.Expression, new List<Expression>());
             }
 
             return base.VisitMember(node);
@@ -34,19 +28,16 @@ namespace DelegateDecompiler
             {
                 var argument = node.Arguments.SingleOrDefault();
 
-                var member = argument as MemberExpression;
-                if (member != null)
+                switch (argument)
                 {
-                    var info = member.Member as PropertyInfo;
-                    if (info != null)
+                    case MemberExpression member when member.Member is PropertyInfo property:
                     {
-                        return Decompile(info.GetGetMethod(), member.Expression, new List<Expression>());
+                        return Decompile(property.GetGetMethod(true), member.Expression, new List<Expression>());
                     }
-                }
-                var methodCall = argument as MethodCallExpression;
-                if (methodCall != null)
-                {
-                    return Decompile(methodCall.Method, methodCall.Object, methodCall.Arguments);
+                    case MethodCallExpression methodCall:
+                    {
+                        return Decompile(methodCall.Method, methodCall.Object, methodCall.Arguments);
+                    }
                 }
             }
 
@@ -65,7 +56,7 @@ namespace DelegateDecompiler
 
         Expression Decompile(MethodInfo method, Expression instance, IList<Expression> arguments)
         {
-            var expression = method.Decompile();
+            var expression = method.Decompile(instance?.Type);
 
             var expressions = new Dictionary<Expression, Expression>();
             var argIndex = 0;
@@ -82,7 +73,9 @@ namespace DelegateDecompiler
                 }
             }
 
-            return Visit(new ReplaceExpressionVisitor(expressions).Visit(expression.Body));
+            var body = new ReplaceExpressionVisitor(expressions).Visit(expression.Body);
+            body = TransparentIdentifierRemovingExpressionVisitor.RemoveTransparentIdentifiers(body);
+            return Visit(body);
         }
     }
 }

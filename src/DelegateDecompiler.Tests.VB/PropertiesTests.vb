@@ -1,4 +1,5 @@
 ﻿Imports NUnit.Framework
+Imports System.Linq
 
 <TestFixture>
 Public Class PropertiesTests

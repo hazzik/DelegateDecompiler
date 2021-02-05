@@ -61,20 +61,27 @@ namespace DelegateDecompiler.EntityFramework.Tests.Helpers
 
         static bool GetMarkupFileDirectory(string pathToManipulate, string alternateTestDir, out string path)
         {
-            const string debugEnding = @"\bin\debug";
-            const string releaseEnding = @"\bin\release";
-
-            if (pathToManipulate.EndsWith(debugEnding, StringComparison.InvariantCultureIgnoreCase))
+            var endings = new[]
             {
-                path = pathToManipulate.Substring(0, pathToManipulate.Length - debugEnding.Length) + alternateTestDir;
-                return true;
-            }
-            if (pathToManipulate.EndsWith(releaseEnding, StringComparison.InvariantCultureIgnoreCase))
+                @"\bin\debug",
+                @"\bin\debug\net45",
+                @"\bin\debug\netcoreapp2.1",
+                @"\bin\debug\netcoreapp3.1",
+                @"\bin\debug\net5.0",
+                @"\bin\release",
+                @"\bin\release\net45",
+                @"\bin\release\netcoreapp2.1",
+                @"\bin\release\netcoreapp3.1",
+                @"\bin\release\net5.0"
+            };
+            foreach (var ending in endings)
             {
-                path = pathToManipulate.Substring(0, pathToManipulate.Length - releaseEnding.Length) + alternateTestDir;
-                return true;
+                if (pathToManipulate.EndsWith(ending, StringComparison.InvariantCultureIgnoreCase))
+                {
+                    path = pathToManipulate.Substring(0, pathToManipulate.Length - ending.Length) + alternateTestDir;
+                    return true;
+                }
             }
-
             path = null;
             return false;
         }

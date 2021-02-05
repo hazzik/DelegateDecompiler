@@ -1,6 +1,6 @@
 Detail With Sql of supported commands
 ============
-## Documentation produced for DelegateDecompiler, version 0.23.0 on Tuesday, 14 March 2017 10:50
+## Documentation produced for DelegateDecompiler, version 0.29.0 on Thursday, 04 February 2021 16:03
 
 This file documents what linq commands **DelegateDecompiler** supports when
 working with [Entity Framework v6.1](http://msdn.microsoft.com/en-us/data/aa937723) (EF).
@@ -25,7 +25,7 @@ More will appear as we move forward.*
 ### Group: Basic Features
 #### [Select](../TestGroup05BasicFeatures/Test01Select.cs):
 - Supported
-  * Bool Equals Constant (line 32)
+  * Bool Equals Constant (line 34)
      * T-Sql executed is
 
 ```SQL
@@ -34,55 +34,7 @@ SELECT
     FROM [dbo].[EfParents] AS [Extent1]
 ```
 
-  * Bool Equals Static Variable (line 51)
-     * T-Sql executed is
-
-```SQL
-SELECT 
-    CASE WHEN ([Extent1].[ParentBool] = @p__linq__0) THEN cast(1 as bit) WHEN ([Extent1].[ParentBool] <> @p__linq__0) THEN cast(0 as bit) END AS [C1]
-    FROM [dbo].[EfParents] AS [Extent1]
-```
-
-  * Int Equals Constant (line 68)
-     * T-Sql executed is
-
-```SQL
-SELECT 
-    CASE WHEN (123 = [Extent1].[ParentInt]) THEN cast(1 as bit) WHEN (123 <> [Extent1].[ParentInt]) THEN cast(0 as bit) END AS [C1]
-    FROM [dbo].[EfParents] AS [Extent1]
-```
-
-  * Select Property Without Computed Attribute (line 85)
-     * T-Sql executed is
-
-```SQL
-SELECT 
-    [Extent1].[FirstName] + N' ' + CASE WHEN ([Extent1].[MiddleName] IS NULL) THEN N'' ELSE [Extent1].[MiddleName] END + N' ' + [Extent1].[LastName] AS [C1]
-    FROM [dbo].[EfPersons] AS [Extent1]
-```
-
-  * Select Method Without Computed Attribute (line 102)
-     * T-Sql executed is
-
-```SQL
-SELECT 
-    [Extent1].[FirstName] + N' ' + CASE WHEN ([Extent1].[MiddleName] IS NULL) THEN N'' ELSE [Extent1].[MiddleName] END + N' ' + [Extent1].[LastName] AS [C1]
-    FROM [dbo].[EfPersons] AS [Extent1]
-```
-
-
-#### [Select Async](../TestGroup05BasicFeatures/Test02SelectAsync.cs):
-- Supported
-  * Bool Equals Constant Async (line 34)
-     * T-Sql executed is
-
-```SQL
-SELECT 
-    [Extent1].[ParentBool] AS [ParentBool]
-    FROM [dbo].[EfParents] AS [Extent1]
-```
-
-  * Bool Equals Static Variable To Array Async (line 53)
+  * Bool Equals Static Variable (line 53)
      * T-Sql executed is
 
 ```SQL
@@ -92,6 +44,112 @@ SELECT
 ```
 
   * Int Equals Constant (line 70)
+     * T-Sql executed is
+
+```SQL
+SELECT 
+    CASE WHEN (123 = [Extent1].[ParentInt]) THEN cast(1 as bit) WHEN (123 <> [Extent1].[ParentInt]) THEN cast(0 as bit) END AS [C1]
+    FROM [dbo].[EfParents] AS [Extent1]
+```
+
+  * Select Property Without Computed Attribute (line 87)
+     * T-Sql executed is
+
+```SQL
+SELECT 
+    [Extent1].[FirstName] + N' ' + CASE WHEN ([Extent1].[MiddleName] IS NULL) THEN N'' ELSE [Extent1].[MiddleName] END + N' ' + [Extent1].[LastName] AS [C1]
+    FROM [dbo].[EfPersons] AS [Extent1]
+```
+
+  * Select Method Without Computed Attribute (line 104)
+     * T-Sql executed is
+
+```SQL
+SELECT 
+    [Extent1].[FirstName] + N' ' + CASE WHEN ([Extent1].[MiddleName] IS NULL) THEN N'' ELSE [Extent1].[MiddleName] END + N' ' + [Extent1].[LastName] AS [C1]
+    FROM [dbo].[EfPersons] AS [Extent1]
+```
+
+  * Select Abstract Member Over Tph Hierarchy (line 121)
+     * T-Sql executed is
+
+```SQL
+SELECT 
+    CASE WHEN ([Extent1].[Discriminator] = N'Person') THEN N'Human' WHEN ([Extent1].[Discriminator] = N'HoneyBee') THEN N'Apis mellifera' WHEN ([Extent1].[Discriminator] = N'Dog') THEN N'Canis lupus' END AS [C1]
+    FROM [dbo].[LivingBeeings] AS [Extent1]
+    WHERE [Extent1].[Discriminator] IN (N'Dog',N'HoneyBee',N'Person')
+```
+
+  * Select Abstract Member Over Tph Hierarchy After Restricting To Subtype (line 138)
+     * T-Sql executed is
+
+```SQL
+SELECT 
+    CASE WHEN ([Extent1].[Discriminator] = N'HoneyBee') THEN N'Apis mellifera' WHEN ([Extent1].[Discriminator] = N'Dog') THEN N'Canis lupus' END AS [C1]
+    FROM [dbo].[LivingBeeings] AS [Extent1]
+    WHERE ([Extent1].[Discriminator] IN (N'Dog',N'HoneyBee',N'Person')) AND ([Extent1].[Discriminator] IN (N'Dog',N'HoneyBee'))
+```
+
+  * Select Multiple Levels Of Abstract Members Over Tph Hierarchy (line 155)
+     * T-Sql executed is
+
+```SQL
+SELECT 
+    CASE WHEN (CASE WHEN ([Extent1].[Discriminator] = N'HoneyBee') THEN N'Apis mellifera' WHEN ([Extent1].[Discriminator] = N'Dog') THEN N'Canis lupus' END IS NULL) THEN N'' WHEN ([Extent1].[Discriminator] = N'HoneyBee') THEN N'Apis mellifera' WHEN ([Extent1].[Discriminator] = N'Dog') THEN N'Canis lupus' END + N' : ' + CASE WHEN ((CASE WHEN ([Extent1].[Discriminator] = N'HoneyBee') THEN cast(0 as bit) WHEN ([Extent1].[Discriminator] = N'Dog') THEN cast(1 as bit) WHEN ([Extent1].[Discriminator] <> N'Dog') THEN cast(0 as bit) END) = 1) THEN N'True' WHEN ((CASE WHEN ([Extent1].[Discriminator] = N'HoneyBee') THEN cast(0 as bit) WHEN ([Extent1].[Discriminator] = N'Dog') THEN cast(1 as bit) WHEN ([Extent1].[Discriminator] <> N'Dog') THEN cast(0 as bit) END) = 0) THEN N'False' ELSE N'' END AS [C1]
+    FROM [dbo].[LivingBeeings] AS [Extent1]
+    WHERE ([Extent1].[Discriminator] IN (N'Dog',N'HoneyBee',N'Person')) AND ([Extent1].[Discriminator] IN (N'Dog',N'HoneyBee'))
+```
+
+
+#### [Select Async](../TestGroup05BasicFeatures/Test02SelectAsync.cs):
+- Supported
+  * Async (line 39)
+     * T-Sql executed is
+
+```SQL
+SELECT 
+    [Extent1].[EfParentId] AS [EfParentId], 
+    [Extent1].[ParentBool] AS [ParentBool], 
+    [Extent1].[ParentInt] AS [ParentInt], 
+    [Extent1].[ParentNullableInt] AS [ParentNullableInt], 
+    [Extent1].[ParentNullableDecimal1] AS [ParentNullableDecimal1], 
+    [Extent1].[ParentNullableDecimal2] AS [ParentNullableDecimal2], 
+    [Extent1].[ParentDouble] AS [ParentDouble], 
+    [Extent1].[ParentString] AS [ParentString], 
+    [Extent1].[StartDate] AS [StartDate], 
+    [Extent1].[EndDate] AS [EndDate], 
+    [Extent1].[ParentTimeSpan] AS [ParentTimeSpan]
+    FROM [dbo].[EfParents] AS [Extent1]
+```
+
+  * Bool Equals Constant Async (line 56)
+     * T-Sql executed is
+
+```SQL
+SELECT 
+    [Extent1].[ParentBool] AS [ParentBool]
+    FROM [dbo].[EfParents] AS [Extent1]
+```
+
+  * Decompile Upfront Bool Equals Constant Async (line 73)
+     * T-Sql executed is
+
+```SQL
+SELECT 
+    [Extent1].[ParentBool] AS [ParentBool]
+    FROM [dbo].[EfParents] AS [Extent1]
+```
+
+  * Bool Equals Static Variable To Array Async (line 92)
+     * T-Sql executed is
+
+```SQL
+SELECT 
+    CASE WHEN ([Extent1].[ParentBool] = @p__linq__0) THEN cast(1 as bit) WHEN ([Extent1].[ParentBool] <> @p__linq__0) THEN cast(0 as bit) END AS [C1]
+    FROM [dbo].[EfParents] AS [Extent1]
+```
+
+  * Int Equals Constant (line 109)
      * T-Sql executed is
 
 ```SQL
@@ -190,7 +248,7 @@ SELECT
 
 #### [Where](../TestGroup05BasicFeatures/Test05Where.cs):
 - Supported
-  * Where Bool Equals Constant (line 32)
+  * Where Bool Equals Constant (line 33)
      * T-Sql executed is
 
 ```SQL
@@ -200,7 +258,7 @@ SELECT
     WHERE [Extent1].[ParentBool] = 1
 ```
 
-  * Where Bool Equals Static Variable (line 51)
+  * Where Bool Equals Static Variable (line 52)
      * T-Sql executed is
 
 ```SQL
@@ -210,7 +268,7 @@ SELECT
     WHERE [Extent1].[ParentBool] = @p__linq__0
 ```
 
-  * Where Int Equals Constant (line 68)
+  * Where Int Equals Constant (line 69)
      * T-Sql executed is
 
 ```SQL
@@ -218,6 +276,26 @@ SELECT
     [Extent1].[EfParentId] AS [EfParentId]
     FROM [dbo].[EfParents] AS [Extent1]
     WHERE 123 = [Extent1].[ParentInt]
+```
+
+  * Where Filters On Abstract Members Over Tph Hierarchy (line 86)
+     * T-Sql executed is
+
+```SQL
+SELECT 
+    [Extent1].[Id] AS [Id]
+    FROM [dbo].[LivingBeeings] AS [Extent1]
+    WHERE ([Extent1].[Discriminator] IN (N'Dog',N'HoneyBee',N'Person')) AND (N'Human' = (CASE WHEN ([Extent1].[Discriminator] = N'Person') THEN N'Human' WHEN ([Extent1].[Discriminator] = N'HoneyBee') THEN N'Apis mellifera' WHEN ([Extent1].[Discriminator] = N'Dog') THEN N'Canis lupus' END))
+```
+
+  * Where Filters On Multiple Levels Of Abstract Members Over Tph Hierarchy (line 104)
+     * T-Sql executed is
+
+```SQL
+SELECT 
+    [Extent1].[Id] AS [Id]
+    FROM [dbo].[LivingBeeings] AS [Extent1]
+    WHERE ([Extent1].[Discriminator] IN (N'Dog',N'HoneyBee',N'Person')) AND ([Extent1].[Discriminator] IN (N'Dog',N'HoneyBee')) AND (N'Apis mellifera : False' = (CASE WHEN (CASE WHEN ([Extent1].[Discriminator] = N'HoneyBee') THEN N'Apis mellifera' WHEN ([Extent1].[Discriminator] = N'Dog') THEN N'Canis lupus' END IS NULL) THEN N'' WHEN ([Extent1].[Discriminator] = N'HoneyBee') THEN N'Apis mellifera' WHEN ([Extent1].[Discriminator] = N'Dog') THEN N'Canis lupus' END + N' : ' + CASE WHEN ((CASE WHEN ([Extent1].[Discriminator] = N'HoneyBee') THEN cast(0 as bit) WHEN ([Extent1].[Discriminator] = N'Dog') THEN cast(1 as bit) WHEN ([Extent1].[Discriminator] <> N'Dog') THEN cast(0 as bit) END) = 1) THEN N'True' WHEN ((CASE WHEN ([Extent1].[Discriminator] = N'HoneyBee') THEN cast(0 as bit) WHEN ([Extent1].[Discriminator] = N'Dog') THEN cast(1 as bit) WHEN ([Extent1].[Discriminator] <> N'Dog') THEN cast(0 as bit) END) = 0) THEN N'False' ELSE N'' END))
 ```
 
 
@@ -241,7 +319,7 @@ SELECT
 
 #### [Single Async](../TestGroup05BasicFeatures/Test11SingleAsync.cs):
 - Supported
-  * Single Int Equals Unique Value Async (line 41)
+  * Single Int Equals Unique Value Async (line 46)
      * T-Sql executed is
 
 ```SQL
@@ -357,7 +435,7 @@ SELECT
             WHERE [Extent1].[EfParentId] = [Extent2].[EfParentId]) AS [C1]
         FROM [dbo].[EfParents] AS [Extent1]
     )  AS [Project1]
-    ORDER BY [Project1].[C1] ASC
+    ORDER BY row_number() OVER (ORDER BY [Project1].[C1] ASC)
     OFFSET 1 ROWS FETCH NEXT 2 ROWS ONLY 
 ```
 
@@ -380,7 +458,7 @@ SELECT
             WHERE [Extent1].[EfParentId] = [Extent2].[EfParentId]
         )
     )  AS [Project2]
-    ORDER BY [Project2].[C1] ASC
+    ORDER BY row_number() OVER (ORDER BY [Project2].[C1] ASC)
     OFFSET 1 ROWS FETCH NEXT 1 ROWS ONLY 
 ```
 
@@ -550,25 +628,25 @@ SELECT
 
 #### [Sum](../TestGroup15Aggregation/Test02Sum.cs):
 - Supported
-  * Singleton Sum Children (line 33)
+  * Singleton Sum Children (line 34)
      * T-Sql executed is
 
 ```SQL
 SELECT 
-    [GroupBy2].[A1] AS [C1]
+    [GroupBy3].[A1] AS [C1]
     FROM ( SELECT 
-        SUM([Extent1].[A1]) AS [A1]
+        SUM([Extent1].[A1_0]) AS [A1]
         FROM ( SELECT 
             (SELECT 
                 COUNT(1) AS [A1]
-                FROM [dbo].[EfChilds] AS [Extent2]
-                WHERE [Extent1].[EfParentId] = [Extent2].[EfParentId]) AS [A1]
+                FROM [dbo].[EfChilds] AS [Extent3]
+                WHERE [Extent1].[EfParentId] = [Extent3].[EfParentId]) AS [A1_0]
             FROM [dbo].[EfParents] AS [Extent1]
         )  AS [Extent1]
-    )  AS [GroupBy2]
+    )  AS [GroupBy3]
 ```
 
-  * Sum Count In Children Where Children Can Be None (line 51)
+  * Sum Count In Children Where Children Can Be None (line 53)
      * T-Sql executed is
 
 ```SQL
@@ -589,6 +667,94 @@ SELECT
             FROM [dbo].[EfParents] AS [Extent1]
         )  AS [Project1]
     )  AS [Project2]
+```
+
+
+#### [Count Async](../TestGroup15Aggregation/Test03CountAsync.cs):
+- Supported
+  * Count Children Async (line 40)
+     * T-Sql executed is
+
+```SQL
+SELECT 
+    (SELECT 
+        COUNT(1) AS [A1]
+        FROM [dbo].[EfChilds] AS [Extent2]
+        WHERE [Extent1].[EfParentId] = [Extent2].[EfParentId]) AS [C1]
+    FROM [dbo].[EfParents] AS [Extent1]
+```
+
+  * Count Children With Filter Async (line 58)
+     * T-Sql executed is
+
+```SQL
+SELECT 
+    (SELECT 
+        COUNT(1) AS [A1]
+        FROM [dbo].[EfChilds] AS [Extent2]
+        WHERE ([Extent1].[EfParentId] = [Extent2].[EfParentId]) AND (123 = [Extent2].[ChildInt])) AS [C1]
+    FROM [dbo].[EfParents] AS [Extent1]
+```
+
+  * Count Children With Filter By Closure Async (line 76)
+     * T-Sql executed is
+
+```SQL
+SELECT 
+    (SELECT 
+        COUNT(1) AS [A1]
+        FROM [dbo].[EfChilds] AS [Extent2]
+        WHERE ([Extent1].[EfParentId] = [Extent2].[EfParentId]) AND ([Extent2].[ChildInt] = [Extent1].[ParentInt])) AS [C1]
+    FROM [dbo].[EfParents] AS [Extent1]
+```
+
+  * Count Children With Filter By External Closure Async (line 95)
+     * T-Sql executed is
+
+```SQL
+SELECT 
+    [Project1].[C1] AS [C1]
+    FROM ( SELECT 
+        (SELECT 
+            COUNT(1) AS [A1]
+            FROM [dbo].[EfChilds] AS [Extent2]
+            WHERE ([Extent1].[EfParentId] = [Extent2].[EfParentId]) AND ([Extent2].[ChildInt] = @p__linq__0)) AS [C1]
+        FROM [dbo].[EfParents] AS [Extent1]
+    )  AS [Project1]
+```
+
+  * Count Children With Filter By External Closure2 Async (line 115)
+     * T-Sql executed is
+
+```SQL
+SELECT 
+    [Project1].[C1] AS [C1]
+    FROM ( SELECT 
+        (SELECT 
+            COUNT(1) AS [A1]
+            FROM [dbo].[EfChilds] AS [Extent2]
+            WHERE ([Extent1].[EfParentId] = [Extent2].[EfParentId]) AND ([Extent2].[ChildInt] = @p__linq__0) AND ([Extent2].[EfParentId] = @p__linq__1)) AS [C1]
+        FROM [dbo].[EfParents] AS [Extent1]
+    )  AS [Project1]
+```
+
+  * Singleton Count Children With Filter Async (line 133)
+     * T-Sql executed is
+
+```SQL
+SELECT 
+    [GroupBy2].[A1] AS [C1]
+    FROM ( SELECT 
+        COUNT(1) AS [A1]
+        FROM ( SELECT 
+            (SELECT 
+                COUNT(1) AS [A1]
+                FROM [dbo].[EfChilds] AS [Extent2]
+                WHERE [Extent1].[EfParentId] = [Extent2].[EfParentId]) AS [C1]
+            FROM [dbo].[EfParents] AS [Extent1]
+        )  AS [Project1]
+        WHERE 2 = [Project1].[C1]
+    )  AS [GroupBy2]
 ```
 
 
@@ -620,6 +786,15 @@ SELECT
 ```SQL
 SELECT 
     CASE WHEN ([Extent1].[NameOrder] = 1) THEN [Extent1].[LastName] + N', ' + [Extent1].[FirstName] + CASE WHEN (CASE WHEN ([Extent1].[MiddleName] IS NULL) THEN N'' ELSE N' ' END IS NULL) THEN N'' WHEN ([Extent1].[MiddleName] IS NULL) THEN N'' ELSE N' ' END ELSE [Extent1].[FirstName] + CASE WHEN (CASE WHEN ([Extent1].[MiddleName] IS NULL) THEN N'' ELSE N' ' END IS NULL) THEN N'' WHEN ([Extent1].[MiddleName] IS NULL) THEN N'' ELSE N' ' END + CASE WHEN ([Extent1].[MiddleName] IS NULL) THEN N'' ELSE [Extent1].[MiddleName] END + N' ' + [Extent1].[LastName] END AS [C1]
+    FROM [dbo].[EfPersons] AS [Extent1]
+```
+
+  * Generic Method Person Handle (line 85)
+     * T-Sql executed is
+
+```SQL
+SELECT 
+    [Extent1].[FirstName] + CASE WHEN (CASE WHEN ([Extent1].[MiddleName] IS NULL) THEN N'' ELSE N' ' END IS NULL) THEN N'' WHEN ([Extent1].[MiddleName] IS NULL) THEN N'' ELSE N' ' END + CASE WHEN ([Extent1].[MiddleName] IS NULL) THEN N'' ELSE [Extent1].[MiddleName] END + N' ' + [Extent1].[LastName] AS [C1]
     FROM [dbo].[EfPersons] AS [Extent1]
 ```
 

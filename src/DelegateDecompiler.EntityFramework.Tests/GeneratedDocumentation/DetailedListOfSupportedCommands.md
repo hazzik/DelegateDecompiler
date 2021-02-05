@@ -1,6 +1,6 @@
 Detail of supported commands
 ============
-## Documentation produced for DelegateDecompiler, version 0.23.0 on Tuesday, 14 March 2017 10:50
+## Documentation produced for DelegateDecompiler, version 0.29.0 on Thursday, 04 February 2021 16:03
 
 This file documents what linq commands **DelegateDecompiler** supports when
 working with [Entity Framework v6.1](http://msdn.microsoft.com/en-us/data/aa937723) (EF).
@@ -25,17 +25,22 @@ More will appear as we move forward.*
 ### Group: Basic Features
 #### [Select](../TestGroup05BasicFeatures/Test01Select.cs):
 - Supported
-  * Bool Equals Constant (line 32)
-  * Bool Equals Static Variable (line 51)
-  * Int Equals Constant (line 68)
-  * Select Property Without Computed Attribute (line 85)
-  * Select Method Without Computed Attribute (line 102)
+  * Bool Equals Constant (line 34)
+  * Bool Equals Static Variable (line 53)
+  * Int Equals Constant (line 70)
+  * Select Property Without Computed Attribute (line 87)
+  * Select Method Without Computed Attribute (line 104)
+  * Select Abstract Member Over Tph Hierarchy (line 121)
+  * Select Abstract Member Over Tph Hierarchy After Restricting To Subtype (line 138)
+  * Select Multiple Levels Of Abstract Members Over Tph Hierarchy (line 155)
 
 #### [Select Async](../TestGroup05BasicFeatures/Test02SelectAsync.cs):
 - Supported
-  * Bool Equals Constant Async (line 34)
-  * Bool Equals Static Variable To Array Async (line 53)
-  * Int Equals Constant (line 70)
+  * Async (line 39)
+  * Bool Equals Constant Async (line 56)
+  * Decompile Upfront Bool Equals Constant Async (line 73)
+  * Bool Equals Static Variable To Array Async (line 92)
+  * Int Equals Constant (line 109)
 
 #### [Equals And Not Equals](../TestGroup05BasicFeatures/Test03EqualsAndNotEquals.cs):
 - Supported
@@ -54,9 +59,11 @@ More will appear as we move forward.*
 
 #### [Where](../TestGroup05BasicFeatures/Test05Where.cs):
 - Supported
-  * Where Bool Equals Constant (line 32)
-  * Where Bool Equals Static Variable (line 51)
-  * Where Int Equals Constant (line 68)
+  * Where Bool Equals Constant (line 33)
+  * Where Bool Equals Static Variable (line 52)
+  * Where Int Equals Constant (line 69)
+  * Where Filters On Abstract Members Over Tph Hierarchy (line 86)
+  * Where Filters On Multiple Levels Of Abstract Members Over Tph Hierarchy (line 104)
 
 #### [Single](../TestGroup05BasicFeatures/Test10Single.cs):
 - Supported
@@ -64,7 +71,7 @@ More will appear as we move forward.*
 
 #### [Single Async](../TestGroup05BasicFeatures/Test11SingleAsync.cs):
 - Supported
-  * Single Int Equals Unique Value Async (line 41)
+  * Single Int Equals Unique Value Async (line 46)
 
 
 ### Group: Order Take
@@ -109,8 +116,17 @@ More will appear as we move forward.*
 
 #### [Sum](../TestGroup15Aggregation/Test02Sum.cs):
 - Supported
-  * Singleton Sum Children (line 33)
-  * Sum Count In Children Where Children Can Be None (line 51)
+  * Singleton Sum Children (line 34)
+  * Sum Count In Children Where Children Can Be None (line 53)
+
+#### [Count Async](../TestGroup15Aggregation/Test03CountAsync.cs):
+- Supported
+  * Count Children Async (line 40)
+  * Count Children With Filter Async (line 58)
+  * Count Children With Filter By Closure Async (line 76)
+  * Count Children With Filter By External Closure Async (line 95)
+  * Count Children With Filter By External Closure2 Async (line 115)
+  * Singleton Count Children With Filter Async (line 133)
 
 
 ### Group: Types
@@ -119,6 +135,7 @@ More will appear as we move forward.*
   * Concatenate Person Not Handle Null (line 32)
   * Concatenate Person Handle Null (line 49)
   * Concatenate Person Handle Name Order (line 68)
+  * Generic Method Person Handle (line 85)
 
 #### [DateTime](../TestGroup50Types/Test05DateTime.cs):
 - Supported

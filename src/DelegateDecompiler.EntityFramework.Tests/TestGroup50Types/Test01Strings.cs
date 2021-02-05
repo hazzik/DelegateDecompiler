@@ -68,5 +68,28 @@ namespace DelegateDecompiler.EntityFramework.Tests.TestGroup50Types
                 env.CompareAndLogList(linq, dd);
             }
         }
+
+        [Test]
+        public void TestGenericMethodPersonHandle()
+        {
+            using (var env = new MethodEnvironment(classEnv))
+            {
+                //SETUP
+                var linq = env.Db.EfPersons.Select(x => x.FirstName + (x.MiddleName == null ? "" : " ") + x.MiddleName + " " + x.LastName).ToList();
+
+                //ATTEMPT
+                env.AboutToUseDelegateDecompiler();
+                var dd = GetGenericPersonHandle(env.Db.EfPersons).Decompile().ToList();
+
+                //VERIFY
+                env.CompareAndLogList(linq, dd);
+            }
+        }
+
+        public IQueryable<string> GetGenericPersonHandle<T>(IQueryable<T> people)
+            where T : class, EfItems.Abstracts.IPerson
+        {
+            return people.Select(x => x.FullNameHandleNull);
+        }
     }
 }
