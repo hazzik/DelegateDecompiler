@@ -350,7 +350,7 @@ namespace DelegateDecompiler.Tests
             Test(expected, expected2, compiled);
         }
 
-        [Test, Ignore("Needs optimization")]
+        [Test]
         public void TestFuncOrElseFunc()
         {
             Expression<Func<Func<bool>, Func<bool>, bool>> expected = (x, y) => x.Invoke() || y.Invoke();

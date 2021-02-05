@@ -1,6 +1,6 @@
 Detail With Sql of supported commands
 ============
-## Documentation produced for DelegateDecompiler, version 0.24.0 on Sunday, 29 April 2018 02:03
+## Documentation produced for DelegateDecompiler, version 0.29.0 on Thursday, 04 February 2021 16:04
 
 This file documents what linq commands **DelegateDecompiler** supports when
 working with [Entity Framework Core](https://docs.microsoft.com/en-us/ef/core/) (EF).
@@ -60,24 +60,59 @@ More will appear as we move forward.*
 
 ```
 
+  * Select Abstract Member Over Tph Hierarchy (line 121)
+     * T-Sql executed is
+
+```SQL
+
+```
+
+  * Select Abstract Member Over Tph Hierarchy After Restricting To Subtype (line 138)
+     * T-Sql executed is
+
+```SQL
+
+```
+
+  * Select Multiple Levels Of Abstract Members Over Tph Hierarchy (line 155)
+     * T-Sql executed is
+
+```SQL
+
+```
+
 
 #### [Select Async](../TestGroup05BasicFeatures/Test02SelectAsync.cs):
 - Supported
-  * Bool Equals Constant Async (line 39)
+  * Async (line 39)
      * T-Sql executed is
 
 ```SQL
 
 ```
 
-  * Bool Equals Static Variable To Array Async (line 58)
+  * Bool Equals Constant Async (line 56)
      * T-Sql executed is
 
 ```SQL
 
 ```
 
-  * Int Equals Constant (line 75)
+  * Decompile Upfront Bool Equals Constant Async (line 73)
+     * T-Sql executed is
+
+```SQL
+
+```
+
+  * Bool Equals Static Variable To Array Async (line 92)
+     * T-Sql executed is
+
+```SQL
+
+```
+
+  * Int Equals Constant (line 109)
      * T-Sql executed is
 
 ```SQL
@@ -177,6 +212,20 @@ More will appear as we move forward.*
 
 ```
 
+  * Where Filters On Abstract Members Over Tph Hierarchy (line 86)
+     * T-Sql executed is
+
+```SQL
+
+```
+
+  * Where Filters On Multiple Levels Of Abstract Members Over Tph Hierarchy (line 104)
+     * T-Sql executed is
+
+```SQL
+
+```
+
 
 #### [Single](../TestGroup05BasicFeatures/Test10Single.cs):
 - Supported
@@ -201,16 +250,82 @@ More will appear as we move forward.*
 
 ### Group: Order Take
 #### [Order By](../TestGroup10OrderTake/Test01OrderBy.cs):
+- Supported
+  * Order By Children Count (line 33)
+     * T-Sql executed is
+
+```SQL
+
+```
+
+  * Order By Children Count Then By String Length (line 51)
+     * T-Sql executed is
+
+```SQL
+
+```
+
+  * Where Any Children Then Order By Children Count (line 69)
+     * T-Sql executed is
+
+```SQL
+
+```
+
 
 #### [Skip Take](../TestGroup10OrderTake/Test02SkipTake.cs):
+- Supported
+  * Order By Children Count Then Take (line 33)
+     * T-Sql executed is
+
+```SQL
+
+```
+
+  * Order By Children Count Then Skip And Take (line 51)
+     * T-Sql executed is
+
+```SQL
+
+```
+
+  * Where Any Children Then Order By Then Skip Take (line 69)
+     * T-Sql executed is
+
+```SQL
+
+```
+
 
 
 ### Group: Quantifier Operators
 #### [Any](../TestGroup12QuantifierOperators/Test01Any.cs):
+- Supported
+  * Any Children (line 32)
+     * T-Sql executed is
+
+```SQL
+
+```
+
+  * Any Children With Filter (line 49)
+     * T-Sql executed is
+
+```SQL
+
+```
+
 
 #### [All](../TestGroup12QuantifierOperators/Test02All.cs):
 - Supported
   * Singleton All Filter (line 32)
+     * T-Sql executed is
+
+```SQL
+
+```
+
+  * All Filter On Children Int (line 49)
      * T-Sql executed is
 
 ```SQL
@@ -231,8 +346,111 @@ More will appear as we move forward.*
 
 ### Group: Aggregation
 #### [Count](../TestGroup15Aggregation/Test01Count.cs):
+- Supported
+  * Count Children (line 33)
+     * T-Sql executed is
+
+```SQL
+
+```
+
+  * Count Children With Filter (line 51)
+     * T-Sql executed is
+
+```SQL
+
+```
+
+  * Count Children With Filter By Closure (line 69)
+     * T-Sql executed is
+
+```SQL
+
+```
+
+  * Count Children With Filter By External Closure (line 88)
+     * T-Sql executed is
+
+```SQL
+
+```
+
+  * Count Children With Filter By External Closure2 (line 108)
+     * T-Sql executed is
+
+```SQL
+
+```
+
+  * Singleton Count Children With Filter (line 126)
+     * T-Sql executed is
+
+```SQL
+
+```
+
 
 #### [Sum](../TestGroup15Aggregation/Test02Sum.cs):
+- Supported
+  * Singleton Sum Children (line 34)
+     * T-Sql executed is
+
+```SQL
+
+```
+
+  * Sum Count In Children Where Children Can Be None (line 53)
+     * T-Sql executed is
+
+```SQL
+
+```
+
+
+#### [Count Async](../TestGroup15Aggregation/Test03CountAsync.cs):
+- Supported
+  * Count Children Async (line 40)
+     * T-Sql executed is
+
+```SQL
+
+```
+
+  * Count Children With Filter Async (line 58)
+     * T-Sql executed is
+
+```SQL
+
+```
+
+  * Count Children With Filter By Closure Async (line 76)
+     * T-Sql executed is
+
+```SQL
+
+```
+
+  * Count Children With Filter By External Closure Async (line 95)
+     * T-Sql executed is
+
+```SQL
+
+```
+
+  * Count Children With Filter By External Closure2 Async (line 115)
+     * T-Sql executed is
+
+```SQL
+
+```
+
+  * Singleton Count Children With Filter Async (line 133)
+     * T-Sql executed is
+
+```SQL
+
+```
+
 
 
 ### Group: Types

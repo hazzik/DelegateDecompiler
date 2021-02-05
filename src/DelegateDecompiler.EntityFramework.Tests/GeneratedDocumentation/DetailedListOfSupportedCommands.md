@@ -1,6 +1,6 @@
 Detail of supported commands
 ============
-## Documentation produced for DelegateDecompiler, version 0.24.0 on Saturday, 28 April 2018 22:35
+## Documentation produced for DelegateDecompiler, version 0.29.0 on Thursday, 04 February 2021 16:03
 
 This file documents what linq commands **DelegateDecompiler** supports when
 working with [Entity Framework v6.1](http://msdn.microsoft.com/en-us/data/aa937723) (EF).
@@ -36,9 +36,11 @@ More will appear as we move forward.*
 
 #### [Select Async](../TestGroup05BasicFeatures/Test02SelectAsync.cs):
 - Supported
-  * Bool Equals Constant Async (line 34)
-  * Bool Equals Static Variable To Array Async (line 53)
-  * Int Equals Constant (line 70)
+  * Async (line 39)
+  * Bool Equals Constant Async (line 56)
+  * Decompile Upfront Bool Equals Constant Async (line 73)
+  * Bool Equals Static Variable To Array Async (line 92)
+  * Int Equals Constant (line 109)
 
 #### [Equals And Not Equals](../TestGroup05BasicFeatures/Test03EqualsAndNotEquals.cs):
 - Supported
@@ -61,7 +63,7 @@ More will appear as we move forward.*
   * Where Bool Equals Static Variable (line 52)
   * Where Int Equals Constant (line 69)
   * Where Filters On Abstract Members Over Tph Hierarchy (line 86)
-  * Where Filters On Multiple Levels Of Abstract Members Over Tph Hierarchy (line 103)
+  * Where Filters On Multiple Levels Of Abstract Members Over Tph Hierarchy (line 104)
 
 #### [Single](../TestGroup05BasicFeatures/Test10Single.cs):
 - Supported
@@ -69,7 +71,7 @@ More will appear as we move forward.*
 
 #### [Single Async](../TestGroup05BasicFeatures/Test11SingleAsync.cs):
 - Supported
-  * Single Int Equals Unique Value Async (line 41)
+  * Single Int Equals Unique Value Async (line 46)
 
 
 ### Group: Order Take
@@ -114,8 +116,17 @@ More will appear as we move forward.*
 
 #### [Sum](../TestGroup15Aggregation/Test02Sum.cs):
 - Supported
-  * Singleton Sum Children (line 33)
-  * Sum Count In Children Where Children Can Be None (line 51)
+  * Singleton Sum Children (line 34)
+  * Sum Count In Children Where Children Can Be None (line 53)
+
+#### [Count Async](../TestGroup15Aggregation/Test03CountAsync.cs):
+- Supported
+  * Count Children Async (line 40)
+  * Count Children With Filter Async (line 58)
+  * Count Children With Filter By Closure Async (line 76)
+  * Count Children With Filter By External Closure Async (line 95)
+  * Count Children With Filter By External Closure2 Async (line 115)
+  * Singleton Count Children With Filter Async (line 133)
 
 
 ### Group: Types

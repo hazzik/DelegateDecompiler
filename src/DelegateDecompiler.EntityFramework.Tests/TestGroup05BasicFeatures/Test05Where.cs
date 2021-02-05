@@ -87,21 +87,23 @@ namespace DelegateDecompiler.EntityFramework.Tests.TestGroup05BasicFeatures
             }
         }
 
+#if !EF_CORE3
         [Test]
         public void TestWhereFiltersOnMultipleLevelsOfAbstractMembersOverTphHierarchy()
         {
             using (var env = new MethodEnvironment(classEnv))
             {
                 //SETUP
-                var linq = env.Db.LivingBeeing.OfType<Animal>().ToList().Where(p => p.Species + " : " + p.IsPet == "Apis mellifera : False").Select(x => x.Id).ToList();
+                var linq = env.Db.LivingBeeing.OfType<Animal>().ToList().Where(p => string.Concat(p.Species, " : ", p.IsPet) == "Apis mellifera : False").Select(x => x.Id).ToList();
 
                 //ATTEMPT
                 env.AboutToUseDelegateDecompiler();
-                var dd = env.Db.LivingBeeing.OfType<Animal>().Where(p => p.Species + " : " + p.IsPet == "Apis mellifera : False").Select(x => x.Id).Decompile().ToList();
+                var dd = env.Db.LivingBeeing.OfType<Animal>().Where(p => string.Concat(p.Species, " : ", p.IsPet) == "Apis mellifera : False").Select(x => x.Id).Decompile().ToList();
 
                 //VERIFY
                 env.CompareAndLogList(linq, dd);
             }
         }
+#endif
     }
 }

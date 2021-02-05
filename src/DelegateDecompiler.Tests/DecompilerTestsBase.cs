@@ -7,7 +7,7 @@ namespace DelegateDecompiler.Tests
 {
     public class DecompilerTestsBase
     {
-        private static readonly Func<Expression, string> debugView = BuildDebugView();
+        static readonly Func<Expression, string> DebugView = BuildDebugView();
 
         private static Func<Expression, string> BuildDebugView()
         {
@@ -25,7 +25,7 @@ namespace DelegateDecompiler.Tests
             var y = decompiled.Body.ToString();
             Console.WriteLine(y);
             Assert.AreEqual(x, y);
-            Assert.AreEqual(debugView(expected.Body), debugView(decompiled.Body));
+            Assert.AreEqual(DebugView(expected.Body), DebugView(decompiled.Body));
         }
 
         protected static void Test<T>(Expression<T> expected, MethodInfo compiled)
@@ -38,10 +38,10 @@ namespace DelegateDecompiler.Tests
             var y = decompiled.Body.ToString();
             Console.WriteLine(y);
             Assert.AreEqual(x, y);
-            Assert.AreEqual(debugView(expected.Body), debugView(decompiled.Body));
+            Assert.AreEqual(DebugView(expected.Body), DebugView(decompiled.Body));
         }
 
-        protected static void Test<T>(Expression<T> expected1, Expression<T> expected2, T compiled)
+        protected static void Test<T>(Expression<T> expected1, Expression<T> expected2, T compiled, bool compareDebugView = true)
         {
             //Double cast required as we can not convert T to Delegate directly
             var decompiled = ((Delegate) ((object) compiled)).Decompile();
@@ -53,7 +53,22 @@ namespace DelegateDecompiler.Tests
             var y = decompiled.Body.ToString();
             Console.WriteLine(y);
             Assert.That(y, Is.EqualTo(x1).Or.EqualTo(x2));
-            Assert.That(debugView(decompiled.Body), Is.EqualTo(debugView(expected1.Body)).Or.EqualTo(debugView(expected2.Body)));
+            if (compareDebugView)
+                Assert.That(DebugView(decompiled.Body), Is.EqualTo(DebugView(expected1.Body)).Or.EqualTo(DebugView(expected2.Body)));
+        }
+
+        protected static void AssertAreEqual(Expression expected, Expression actual, bool compareDebugView = true)
+        {
+            Assert.AreEqual(expected.ToString(), actual.ToString());
+            if (compareDebugView)
+                Assert.AreEqual(DebugView(expected), DebugView(actual));
+        }
+
+        protected static void AssertAreEqual(Expression expected1, Expression expected2, Expression actual, bool compareDebugView = true)
+        {
+            Assert.That(actual.ToString(), Is.AnyOf(expected1.ToString(), expected2.ToString()));
+            if (compareDebugView)
+                Assert.That(DebugView(actual), Is.AnyOf(DebugView(expected1), DebugView(expected2)));
         }
     }
 }

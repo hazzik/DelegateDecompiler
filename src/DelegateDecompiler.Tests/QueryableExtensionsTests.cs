@@ -5,7 +5,7 @@ using NUnit.Framework;
 namespace DelegateDecompiler.Tests
 {
     [TestFixture]
-    public class QueryableExtensionsTests
+    public class QueryableExtensionsTests : DecompilerTestsBase
     {
         [Test]
         public void InlinePropertyWithoutAttribute()
@@ -20,7 +20,7 @@ namespace DelegateDecompiler.Tests
                           where employee.FullNameWithoutAttribute.Computed() == "Test User"
                           select employee).Decompile();
 
-            Assert.AreEqual(expected.Expression.ToString(), actual.Expression.ToString());
+            AssertAreEqual(expected.Expression, actual.Expression);
         }
 
         [Test]
@@ -36,7 +36,7 @@ namespace DelegateDecompiler.Tests
                           where employee.FullName == "Test User"
                           select employee).Decompile();
 
-            Assert.AreEqual(expected.Expression.ToString(), actual.Expression.ToString());
+            AssertAreEqual(expected.Expression, actual.Expression);
         }
 
         [Test]
@@ -44,15 +44,19 @@ namespace DelegateDecompiler.Tests
         {
             var employees = new[] { new Employee { FirstName = "Test", LastName = "User", From = 0, To = 100 } };
 
-            var expected = (from employee in employees.AsQueryable()
+            var expected1 = (from employee in employees.AsQueryable()
                             where (employee.From + "-" + employee.To) == "0-100"
+                            select employee);
+
+            var expected2 = (from employee in employees.AsQueryable()
+                            where (employee.From.ToString() + "-" + employee.To.ToString()) == "0-100"
                             select employee);
 
             var actual = (from employee in employees.AsQueryable()
                           where employee.FromTo == "0-100"
                           select employee).Decompile();
 
-            Assert.AreEqual(expected.Expression.ToString(), actual.Expression.ToString());
+            AssertAreEqual(expected1.Expression, expected2.Expression, actual.Expression);
         }
 
         [Test]
@@ -70,7 +74,7 @@ namespace DelegateDecompiler.Tests
                           orderby employee.FullName
                           select employee);
 
-            Assert.AreEqual(expected.Expression.ToString(), actual.Expression.ToString());
+            AssertAreEqual(expected.Expression, actual.Expression);
         }
 
         [Test]
@@ -88,7 +92,7 @@ namespace DelegateDecompiler.Tests
                           orderby employee.FullName 
                           select employee).ThenBy(x => x.IsActive);
 
-            Assert.AreEqual(expected.Expression.ToString(), actual.Expression.ToString());
+            AssertAreEqual(expected.Expression, actual.Expression);
         }
 
         [Test]
@@ -104,7 +108,7 @@ namespace DelegateDecompiler.Tests
                           where employee.IsActive
                           select employee).Decompile();
 
-            Assert.AreEqual(expected.Expression.ToString(), actual.Expression.ToString());
+            AssertAreEqual(expected.Expression, actual.Expression);
         }
 
         [Test]
@@ -120,7 +124,7 @@ namespace DelegateDecompiler.Tests
                 where employee.Count == 0
                 select employee).Decompile();
 
-            Assert.AreEqual(expected.Expression.ToString(), actual.Expression.ToString());
+            AssertAreEqual(expected.Expression, actual.Expression);
         }
 
         [Test]
@@ -136,7 +140,7 @@ namespace DelegateDecompiler.Tests
                           where employee.TooDeepName == "Test User"
                           select employee).Decompile();
 
-            Assert.AreEqual(expected.Expression.ToString(), actual.Expression.ToString());
+            AssertAreEqual(expected.Expression, actual.Expression);
         }
 
         [Test]
@@ -154,7 +158,7 @@ namespace DelegateDecompiler.Tests
                           select employee).Decompile();
 
             Console.WriteLine(expected);
-            Assert.AreEqual(expected.Expression.ToString(), actual.Expression.ToString());
+            AssertAreEqual(expected.Expression, actual.Expression);
         }
 
         [Test]
@@ -170,7 +174,7 @@ namespace DelegateDecompiler.Tests
                           where employee.FullNameMethod() == "Test User"
                           select employee).Decompile();
 
-            Assert.AreEqual(expected.Expression.ToString(), actual.Expression.ToString());
+            AssertAreEqual(expected.Expression, actual.Expression);
         }
 
         [Test]
@@ -186,7 +190,7 @@ namespace DelegateDecompiler.Tests
                           where employee.FullNameMethod("Mr ") == "Mr Test User"
                           select employee).Decompile();
 
-            Assert.AreEqual(expected.Expression.ToString(), actual.Expression.ToString());
+            AssertAreEqual(expected.Expression, actual.Expression);
         }
 
         [Test]
@@ -202,7 +206,7 @@ namespace DelegateDecompiler.Tests
                           where employee.FullNameMethod("Mr ", " Jr.") == "Mr Test User Jr."
                           select employee).Decompile();
 
-            Assert.AreEqual(expected.Expression.ToString(), actual.Expression.ToString());
+            AssertAreEqual(expected.Expression, actual.Expression);
         }
 
         [Test, Ignore("Minor differences")]
@@ -218,7 +222,7 @@ namespace DelegateDecompiler.Tests
                           where employee.Test
                           select employee).Decompile();
 
-            Assert.AreEqual(expected.Expression.ToString(), actual.Expression.ToString());
+            AssertAreEqual(expected.Expression, actual.Expression);
         }
 
         [Test]
@@ -230,7 +234,7 @@ namespace DelegateDecompiler.Tests
 
             var actual = employees.AsQueryable().Where(_ => _.ComplexProperty == 1).Decompile();
 
-            Assert.AreEqual(expected.Expression.ToString(), actual.Expression.ToString());
+            AssertAreEqual(expected.Expression, actual.Expression);
         }
 
         [Test]
@@ -246,7 +250,7 @@ namespace DelegateDecompiler.Tests
                           where employee.FullName().Computed() == "Test User"
                           select employee).Decompile();
 
-            Assert.AreEqual(expected.Expression.ToString(), actual.Expression.ToString());
+                        AssertAreEqual(expected.Expression, actual.Expression);
         }
 
         [Test]
@@ -264,7 +268,7 @@ namespace DelegateDecompiler.Tests
                           orderby employee.FullName ().Computed()
                           select employee);
 
-            Assert.AreEqual(expected.Expression.ToString(), actual.Expression.ToString());
+            AssertAreEqual(expected.Expression, actual.Expression);
         }
 
         [Test]
@@ -282,7 +286,7 @@ namespace DelegateDecompiler.Tests
                           orderby employee.FullName().Computed()
                           select employee).ThenBy(x => x.IsActive);
 
-            Assert.AreEqual(expected.Expression.ToString(), actual.Expression.ToString());
+            AssertAreEqual(expected.Expression, actual.Expression);
         }
 
         [Test]
@@ -298,7 +302,7 @@ namespace DelegateDecompiler.Tests
                           where employee.TheBad > (short)0
                           select employee);
 
-            Assert.AreEqual(expected.Expression.ToString(), actual.Expression.ToString());
+            AssertAreEqual(expected.Expression, actual.Expression);
         }
 
         [Test]
@@ -314,7 +318,7 @@ namespace DelegateDecompiler.Tests
                           where (employee.MyField.HasValue ? (short)0 : (short)1) > 0
                           select employee);
 
-            Assert.AreEqual(expected.Expression.ToString(), actual.Expression.ToString());
+            AssertAreEqual(expected.Expression, actual.Expression);
         }
 
         [Test, Ignore("Minor differences")]
@@ -328,7 +332,7 @@ namespace DelegateDecompiler.Tests
 
             var actual = employees.AsQueryable().Select(e => e.TotalHoursDb).Decompile();
 
-            Assert.AreEqual(expected.Expression.ToString(), actual.Expression.ToString());
+            AssertAreEqual(expected.Expression, actual.Expression);
         }
     }
 }

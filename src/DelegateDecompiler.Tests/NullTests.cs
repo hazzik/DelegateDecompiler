@@ -30,12 +30,31 @@ namespace DelegateDecompiler.Tests
             Func<int, int?> compiled = x => (int?)x;
             Test(expected, compiled);
         }
+
         [Test]
         public void ExpressionWithNullableCoalesce()
         {
             Expression<Func<int?, int>> expected = x => x ?? 0;
             Func<int?, int> compiled = x => x ?? 0;
             Test(expected, compiled);
+        }
+
+        [Test]
+        public void ExpressionWithGetValueOrDefault()
+        {
+            Expression<Func<int?, int>> expected1 = x => x ?? 0;
+            Expression<Func<int?, int>> expected2 = x => x.GetValueOrDefault();
+            Func<int?, int> compiled = x => x.GetValueOrDefault();
+            Test(expected1, expected2, compiled);
+        }
+
+        [Test]
+        public void ExpressionWithGetValueToDefaultToNotDefault()
+        {
+            Expression<Func<int?, int>> expected1 = x => x ?? 100;
+            Expression<Func<int?, int>> expected2 = x => x.GetValueOrDefault(100);
+            Func<int?, int> compiled = x => x.GetValueOrDefault(100);
+            Test(expected1, expected2, compiled);
         }
 
         [Test]
@@ -508,6 +527,30 @@ namespace DelegateDecompiler.Tests
         {
             Expression<Func<Employee, bool>> expected = x => x != null;
             Func<Employee, bool> compiled = x => x != null;
+            Test(expected, compiled);
+        }
+
+        [Test]
+        public void BooleanCompareToTrue()
+        {
+            Expression<Func<bool?, bool>> expected = x => x == true;
+            Func<bool?, bool> compiled = x => x == true;
+            Test(expected, compiled);
+        }
+
+        [Test, Ignore("Overoptimized")]
+        public void BooleanCompareToFalse()
+        {
+            Expression<Func<bool?, bool>> expected = x => x == false;
+            Func<bool?, bool> compiled = x => x == false;
+            Test(expected, compiled);
+        }
+
+        [Test, Ignore("Minor difference")]
+        public void IntToBool()
+        {
+            Expression<Func<int?, bool?>> expected = x => x.HasValue ? x == 1 : (bool?) null;
+            Func<int?, bool?> compiled = x => x.HasValue ? x == 1 : (bool?) null;
             Test(expected, compiled);
         }
     }
