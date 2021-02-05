@@ -652,8 +652,7 @@ namespace DelegateDecompiler
                     {
                         var operand = (Type) state.Instruction.Operand;
                         var expression = state.Stack.Pop();
-                        var size = expression.Expression as ConstantExpression;
-                        if (size != null && (int) size.Value == 0) // optimization
+                        if (expression.Expression is ConstantExpression size && (int) size.Value == 0) // optimization
                             state.Stack.Push(Expression.NewArrayInit(operand));
                         else
                             state.Stack.Push(Expression.NewArrayBounds(operand, expression));
@@ -1018,12 +1017,11 @@ namespace DelegateDecompiler
             var index = state.Stack.Pop();
             var array = state.Stack.Pop();
 
-            var newArray = array.Expression as NewArrayExpression;
-            if (newArray != null)
+            if (array.Expression is NewArrayExpression newArray)
             {
-                var expressions = CreateArrayInitExpressions(newArray, value, index);
-                var newArrayInit = Expression.NewArrayInit(array.Type.GetElementType(), expressions);
-                array.Expression = newArrayInit;
+                var elementType = array.Type.GetElementType();
+                var expressions = CreateArrayInitExpressions(elementType, newArray, value, index);
+                array.Expression = Expression.NewArrayInit(elementType, expressions);
             }
             else
             {
@@ -1031,25 +1029,37 @@ namespace DelegateDecompiler
             }
         }
 
-        static IEnumerable<Expression> CreateArrayInitExpressions(NewArrayExpression newArray, Expression valueExpression, Expression indexExpression)
+        static IEnumerable<Expression> CreateArrayInitExpressions(
+            Type elementType, NewArrayExpression newArray, Expression valueExpression, Expression indexExpression)
         {
+            var indexGetter = (Func<int>) Expression.Lambda(indexExpression).Compile();
+            var index = indexGetter();
+
+            Expression[] expressions;
             if (newArray.NodeType == ExpressionType.NewArrayInit)
             {
-                var indexGetter = (Func<int>) Expression.Lambda(indexExpression).Compile();
-                var index = indexGetter();
-                var expressions = newArray.Expressions.ToArray();
-
+                expressions = newArray.Expressions.ToArray();
                 if (index >= newArray.Expressions.Count)
                 {
                     Array.Resize(ref expressions, index + 1);
                 }
 
-                expressions[index] = valueExpression;
+            }
+            else if (newArray.NodeType == ExpressionType.NewArrayBounds)
+            {
+                var sizeExpression = newArray.Expressions.Single();
+                var sizeGetter = (Func<int>) Expression.Lambda(sizeExpression).Compile();
+                var getter = sizeGetter();
 
-                return expressions;
+                expressions = Enumerable.Repeat(ExpressionHelper.Default(elementType), getter).ToArray();
+            }
+            else
+            {
+                throw new NotSupportedException();
             }
 
-            return new[] {valueExpression};
+            expressions[index] = AdjustType(valueExpression, elementType);
+            return expressions;
         }
 
         static void LdC(ProcessorState state, int i)

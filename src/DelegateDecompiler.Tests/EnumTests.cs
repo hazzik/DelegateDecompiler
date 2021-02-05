@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Linq.Expressions;
 using NUnit.Framework;
 
@@ -292,6 +293,14 @@ namespace DelegateDecompiler.Tests
             Expression<Func<int?, bool>> expected2 = x => (int?) x == (int?) TestEnum.Bar;
             Func<int?, bool> compiled = x => (TestEnum?) x == TestEnum.Bar;
             Test(expected1, expected2, compiled);
+        }
+
+        [Test]
+        public void Issue176Array()
+        {
+            Expression<Func<TestEnum, bool>> expected = x => new [] {TestEnum.Foo, TestEnum.Bar}.Contains(x);
+            Func<TestEnum, bool> compiled = x => new[] {TestEnum.Foo, TestEnum.Bar}.Contains(x);
+			Test(expected, compiled);
         }
 
         private static bool TestEnumMethod(TestEnum p0)
