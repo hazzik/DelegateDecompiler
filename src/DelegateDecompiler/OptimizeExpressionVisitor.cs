@@ -10,16 +10,11 @@ namespace DelegateDecompiler
         protected override Expression VisitNew(NewExpression node)
         {
             // Test if this is a nullable type
-            if (IsNullable(node.Type) && node.Arguments.Count == 1)
+            if (node.Type.IsNullableType() && node.Arguments.Count == 1)
             {
                 return Expression.Convert(Visit(node.Arguments[0]), node.Type);
             }
             return base.VisitNew(node);
-        }
-
-        private static bool IsNullable(Type type)
-        {
-            return type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>);
         }
 
         readonly Dictionary<Expression, Expression> expressionsCache
@@ -45,8 +40,7 @@ namespace DelegateDecompiler
             var ifTrue = Visit(node.IfTrue);
             var ifFalse = Visit(node.IfFalse);
 
-            Expression expression;
-            if (IsCoalesce(test, ifTrue, out expression))
+            if (IsCoalesce(test, ifTrue, out var expression))
             {
                 return Expression.Coalesce(expression, ifFalse);
             }
@@ -215,7 +209,7 @@ namespace DelegateDecompiler
 
         static Expression ConvertToNullable(Expression expression)
         {
-	        if (!expression.Type.IsValueType || IsNullable(expression.Type)) return expression;
+	        if (!expression.Type.IsValueType || expression.Type.IsNullableType()) return expression;
 
 	        var operand = expression.NodeType == ExpressionType.Convert
 		        ? ((UnaryExpression) expression).Operand
@@ -227,7 +221,7 @@ namespace DelegateDecompiler
 		static Expression UnwrapConvertToNullable(Expression expression)
         {
             var unary = expression as UnaryExpression;
-            if (unary != null && expression.NodeType == ExpressionType.Convert && IsNullable(expression.Type))
+            if (unary != null && expression.NodeType == ExpressionType.Convert && expression.Type.IsNullableType())
             {
                 return unary.Operand;
             }
@@ -266,7 +260,7 @@ namespace DelegateDecompiler
 	    static bool IsHasValue(Expression expression, out MemberExpression property)
         {
             property = expression as MemberExpression;
-            return property != null && property.Member.Name == "HasValue" && property.Expression != null && IsNullable(property.Expression.Type);
+            return property != null && property.Member.Name == "HasValue" && property.Expression != null && property.Expression.Type.IsNullableType();
         }
 
         static bool IsGetValueOrDefault(Expression expression, out MethodCallExpression method)
@@ -277,12 +271,13 @@ namespace DelegateDecompiler
 
         static bool IsGetValueOrDefault(MethodCallExpression method)
         {
-            return method.Method.Name == "GetValueOrDefault" && method.Object != null && IsNullable(method.Object.Type);
+            return method.Method.Name == "GetValueOrDefault" && method.Object != null && method.Object.Type.IsNullableType();
         }
 
         protected override Expression VisitBinary(BinaryExpression node)
         {
             var left = Visit(node.Left);
+            var right = Visit(node.Right);
             if (node.Right is ConstantExpression rightConstant)
             {
                 if (rightConstant.Value as bool? == false)
@@ -310,7 +305,7 @@ namespace DelegateDecompiler
 
             if (node.NodeType == ExpressionType.And)
             {
-                if (ExtractNullableArgument(node.Right, left, out var result))
+                if (ExtractNullableArgument(right, left, out var result))
                 {
                     return Visit(result);
                 }

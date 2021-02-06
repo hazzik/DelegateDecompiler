@@ -8,6 +8,11 @@ namespace DelegateDecompiler
         internal static Expression Default(Type type) =>
             // LINQ to entities and possibly other providers don't support Expression.Default, so this gets the default
             // value and then uses an Expression.Constant instead
-            Expression.Constant(type.IsValueType ? Activator.CreateInstance(type) : null, type);
+            Expression.Constant(GetDefaultValue(type), type);
+
+        internal static object GetDefaultValue(Type type)
+        {
+            return type.IsValueType ? Activator.CreateInstance(type) : null;
+        }
     }
 }
