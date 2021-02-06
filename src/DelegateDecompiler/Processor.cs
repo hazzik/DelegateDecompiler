@@ -663,8 +663,15 @@ namespace DelegateDecompiler
                     }
                     else if (state.Instruction.OpCode == OpCodes.Newobj)
                     {
-                        var constructor = (ConstructorInfo)state.Instruction.Operand;
-                        state.Stack.Push(Expression.New(constructor, GetArguments(state, constructor)));
+                        var constructor = (ConstructorInfo) state.Instruction.Operand;
+                        if (constructor.DeclaringType.IsNullableType() && constructor.GetParameters().Length == 1)
+                        {
+                            state.Stack.Push(Expression.Convert(state.Stack.Pop(), constructor.DeclaringType));
+                        }
+                        else
+                        {
+                            state.Stack.Push(Expression.New(constructor, GetArguments(state, constructor)));
+                        }
                     }
                     else if (state.Instruction.OpCode == OpCodes.Call || state.Instruction.OpCode == OpCodes.Callvirt)
                     {
