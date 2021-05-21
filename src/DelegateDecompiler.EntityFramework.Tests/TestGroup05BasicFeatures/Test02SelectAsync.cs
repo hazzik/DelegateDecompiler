@@ -40,6 +40,25 @@ namespace DelegateDecompiler.EntityFramework.Tests.TestGroup05BasicFeatures
             }
         }
 
+#if !EF_CORE
+        [Test]
+        public async Task TestAsyncNonGeneric()
+        {
+            using (var env = new MethodEnvironment(classEnv))
+            {
+                //SETUP
+                var linq = await env.Db.EfParents.ToListAsync();
+
+                //ATTEMPT
+                env.AboutToUseDelegateDecompiler();
+                var dd = await ((IQueryable)env.Db.EfParents).DecompileAsync().ToListAsync();
+
+                //VERIFY
+                env.CompareAndLogNonGenericList(linq, dd);
+            }
+        }
+#endif
+
         [Test]
         public async Task TestBoolEqualsConstantAsync()
         {
