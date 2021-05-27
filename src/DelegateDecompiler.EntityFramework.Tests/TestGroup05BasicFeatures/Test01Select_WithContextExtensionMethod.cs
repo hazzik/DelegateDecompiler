@@ -39,7 +39,7 @@ namespace DelegateDecompiler.EntityFramework.Tests.TestGroup05BasicFeatures
                 {
                     ParentId = x.EfParentId,
                     FirstChildId = env.Db.GetFirstChildIdByParent(x.EfParentId)
-                }).Decompile();
+                }).DecompileAsync();
                 var dd = ddQuery.ToList();
 
                 //VERIFY
