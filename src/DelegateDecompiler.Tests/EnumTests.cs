@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Linq.Expressions;
 using NUnit.Framework;
 
@@ -128,6 +129,14 @@ namespace DelegateDecompiler.Tests
         {
             Expression<Func<TestFlagEnum, TestFlagEnum>> expected = x => x & TestFlagEnum.Bar ;
             Func<TestFlagEnum, TestFlagEnum> compiled = x => x & TestFlagEnum.Bar ;
+            Test(expected, compiled);
+        }
+
+        [Test]
+        public void TestNotEnumParameter()
+        {
+            Expression<Func<TestFlagEnum, TestFlagEnum>> expected = x => ~ x;
+            Func<TestFlagEnum, TestFlagEnum> compiled = x => ~ x;
             Test(expected, compiled);
         }
 
@@ -274,6 +283,23 @@ namespace DelegateDecompiler.Tests
         {
 	        Expression<Func<TestEnum?, bool>> expected = x => x == TestEnum.Foo;
 	        Func<TestEnum?, bool> compiled = x => x == TestEnum.Foo;
+			Test(expected, compiled);
+        }
+
+        [Test]
+        public void Issue160()
+        {
+            Expression<Func<int?, bool>> expected1 = x => (TestEnum?) x == TestEnum.Bar;
+            Expression<Func<int?, bool>> expected2 = x => (x.HasValue ? (TestEnum?) (x ?? 0) : null) == TestEnum.Bar;
+            Func<int?, bool> compiled = x => (TestEnum?) x == TestEnum.Bar;
+            Test(expected1, expected2, compiled);
+        }
+
+        [Test]
+        public void Issue176Array()
+        {
+            Expression<Func<TestEnum, bool>> expected = x => new [] {TestEnum.Foo, TestEnum.Bar}.Contains(x);
+            Func<TestEnum, bool> compiled = x => new[] {TestEnum.Foo, TestEnum.Bar}.Contains(x);
 			Test(expected, compiled);
         }
 

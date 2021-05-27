@@ -1,9 +1,11 @@
 ﻿// Contributed by @JonPSmith (GitHub) www.thereformedprogrammer.com
 
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using NUnit.Framework;
+using NUnit.Framework.Constraints;
 
 namespace DelegateDecompiler.EntityFramework.Tests.Helpers
 {
@@ -28,7 +30,10 @@ namespace DelegateDecompiler.EntityFramework.Tests.Helpers
 
         internal static void ShouldContain(this string actualValue, string expectedValue, string errorMessage = null)
         {
-            StringAssert.Contains(expectedValue, actualValue, errorMessage);
+            //Regular StringAssert.Contains uses CurrentCulture, and fails in .NET 5.0
+            var constraint = new SubstringConstraint(expectedValue).Using(StringComparison.Ordinal);
+
+            Assert.That(actualValue, constraint, errorMessage);
         }
 
         internal static void ShouldNotEqual(this string actualValue, string expectedValue, string errorMessage = null)

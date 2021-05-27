@@ -1,6 +1,6 @@
 Detail of supported commands
 ============
-## Documentation produced for DelegateDecompiler, version 0.27.0 on Tuesday, 01 October 2019 11:45
+## Documentation produced for DelegateDecompiler, version 0.29.0 on Thursday, 04 February 2021 16:04
 
 This file documents what linq commands **DelegateDecompiler** supports when
 working with [Entity Framework Core](https://docs.microsoft.com/en-us/ef/core/) (EF).
@@ -63,6 +63,7 @@ More will appear as we move forward.*
   * Where Bool Equals Static Variable (line 52)
   * Where Int Equals Constant (line 69)
   * Where Filters On Abstract Members Over Tph Hierarchy (line 86)
+  * Where Filters On Multiple Levels Of Abstract Members Over Tph Hierarchy (line 104)
 
 #### [Single](../TestGroup05BasicFeatures/Test10Single.cs):
 - Supported
@@ -115,6 +116,7 @@ More will appear as we move forward.*
 
 #### [Sum](../TestGroup15Aggregation/Test02Sum.cs):
 - Supported
+  * Singleton Sum Children (line 34)
   * Sum Count In Children Where Children Can Be None (line 53)
 
 #### [Count Async](../TestGroup15Aggregation/Test03CountAsync.cs):

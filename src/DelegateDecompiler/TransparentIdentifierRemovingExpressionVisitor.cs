@@ -37,12 +37,10 @@ namespace DelegateDecompiler
 
         private static IEnumerable<MemberAssignment> GetMemberBindingsCreatedByExpression(Expression expression)
         {
-            var memberInitExpression = expression as MemberInitExpression;
-            if (memberInitExpression != null)
+            if (expression is MemberInitExpression memberInitExpression)
                 return memberInitExpression.Bindings.OfType<MemberAssignment>();
-            
-            var newExpression = expression as NewExpression;
-            if (newExpression != null && newExpression.Members != null)
+
+            if (expression is NewExpression newExpression && newExpression.Members != null)
                 return newExpression.Members.Select((t, i) => Expression.Bind(t, newExpression.Arguments[i]));
             
             return null;
@@ -52,9 +50,7 @@ namespace DelegateDecompiler
         {
             if (a == b) return true;
             
-            var methodInfo = b as MethodInfo;
-            var propertyInfo = a as PropertyInfo;
-            if (propertyInfo != null && methodInfo != null && propertyInfo.CanRead && methodInfo == propertyInfo.GetGetMethod())
+            if (a is PropertyInfo propertyInfo && b is MethodInfo methodInfo && propertyInfo.CanRead && methodInfo == propertyInfo.GetGetMethod(true)) 
                 return true;
 
             return false;

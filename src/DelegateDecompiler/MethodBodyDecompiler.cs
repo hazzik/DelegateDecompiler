@@ -42,7 +42,15 @@ namespace DelegateDecompiler
             var locals = addresses.ToArray();
 
             var instructions = method.GetInstructions();
-            return Processor.Process(locals, args, instructions.First(), method.ReturnType);
+            var expression = Processor.Process(locals, args, instructions.First(), method.ReturnType);
+            var localParameters = locals
+                .Select(l => l.Address.Expression)
+                .OfType<ParameterExpression>()
+                .Except(args.Select(a => a.Expression).OfType<ParameterExpression>())
+                .ToArray();
+            return localParameters.Length == 0
+                ? expression
+                : Expression.Block(localParameters, expression);
         }
 
         static Expression DecompileConcrete(
@@ -172,7 +180,7 @@ namespace DelegateDecompiler
             protected override Expression VisitMember(MemberExpression node)
             {
                 if (node.Member is PropertyInfo property &&
-                    replacements.TryGetValue(property.GetGetMethod(), out var replacement))
+                    replacements.TryGetValue(property.GetGetMethod(true), out var replacement))
                 {
                     return Visit(replacement);
                 }

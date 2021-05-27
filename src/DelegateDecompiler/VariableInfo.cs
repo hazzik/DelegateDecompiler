@@ -1,4 +1,5 @@
 using System;
+using System.Linq.Expressions;
 
 namespace DelegateDecompiler
 {
@@ -7,7 +8,10 @@ namespace DelegateDecompiler
         public VariableInfo(Type type)
         {
             Type = type;
-            Address = new Address();
+            Address = new Address
+            {
+                Expression = Expression.Variable(type)
+            };
         }
 
         public Type Type { get; set; }
