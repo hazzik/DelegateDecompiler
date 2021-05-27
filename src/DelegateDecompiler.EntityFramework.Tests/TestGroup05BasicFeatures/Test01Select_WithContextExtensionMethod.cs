@@ -1,4 +1,4 @@
-﻿// Contributed by @JonPSmith (GitHub) www.thereformedprogrammer.com
+﻿#if !EF_CORE
 
 using System;
 using System.Linq;
@@ -35,7 +35,7 @@ namespace DelegateDecompiler.EntityFramework.Tests.TestGroup05BasicFeatures
                 //ATTEMPT
                 env.AboutToUseDelegateDecompiler();
                 env.AboutToUseDelegateDecompiler();
-                var ddQuery = env.Db.EfParents.Select(x => new ParentIdWithFirstChildId()
+                var ddQuery = env.Db.EfParents.DecompileAsync().Select(x => new ParentIdWithFirstChildId()
                 {
                     ParentId = x.EfParentId,
                     FirstChildId = env.Db.GetFirstChildIdByParent(x.EfParentId)
@@ -60,3 +60,5 @@ namespace DelegateDecompiler.EntityFramework.Tests.TestGroup05BasicFeatures
         }
     }
 }
+
+#endif
