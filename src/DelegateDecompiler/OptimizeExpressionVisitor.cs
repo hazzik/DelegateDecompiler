@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Linq.Expressions;
 
 namespace DelegateDecompiler
@@ -31,6 +32,15 @@ namespace DelegateDecompiler
             if (node != result)
                 expressionsCache[node] = result;
             return result;
+        }
+
+        protected override Expression VisitBlock(BlockExpression node)
+        {
+            if (node.Expressions.Count <= 1 && node.Variables.Count == 0)
+            {
+                return node.Expressions.FirstOrDefault();
+            }
+            return base.VisitBlock(node);
         }
 
         protected override Expression VisitConditional(ConditionalExpression node)

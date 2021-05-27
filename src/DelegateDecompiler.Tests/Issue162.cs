@@ -24,7 +24,6 @@ namespace DelegateDecompiler.Tests
                 ProtectedProperty = value;
             }
 
-            [Computed]
             protected virtual int ProtectedProperty { get; private set; }
 
             [Computed]
