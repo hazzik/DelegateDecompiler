@@ -40,6 +40,22 @@ namespace DelegateDecompiler.Tests
         }
 
         [Test]
+        public void InlinePropertyNonGeneric()
+        {
+            var employees = new[] { new Employee { FirstName = "Test", LastName = "User" } };
+
+            var expected = (from employee in employees.AsQueryable()
+                            where (employee.FirstName + " " + employee.LastName) == "Test User"
+                            select employee);
+
+            var actual = ((IQueryable)(from employee in employees.AsQueryable()
+                          where employee.FullName == "Test User"
+                          select employee)).Decompile();
+
+            AssertAreEqual(expected.Expression, actual.Expression);
+        }
+
+        [Test]
         public void ConcatNonStringInlineProperty()
         {
             var employees = new[] { new Employee { FirstName = "Test", LastName = "User", From = 0, To = 100 } };

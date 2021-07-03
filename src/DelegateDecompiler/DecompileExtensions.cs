@@ -43,5 +43,11 @@ namespace DelegateDecompiler
             var provider = new DecompiledQueryProvider(self.Provider);
             return provider.CreateQuery<T>(self.Expression);
         }
+
+        public static IQueryable Decompile(this IQueryable self)
+        {
+            var provider = new DecompiledQueryProvider(self.Provider);
+            return provider.CreateQuery(self.Expression);
+        }
     }
 }
