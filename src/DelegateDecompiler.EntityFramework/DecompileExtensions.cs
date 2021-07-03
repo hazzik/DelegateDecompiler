@@ -8,5 +8,10 @@ namespace DelegateDecompiler.EntityFramework
         {
             return new AsyncDecompiledQueryProvider(self.Provider).CreateQuery<T>(self.Expression);
         }
+
+        public static IQueryable DecompileAsync(this IQueryable self)
+        {
+            return new AsyncDecompiledQueryProvider(self.Provider).CreateQuery(self.Expression);
+        }
     }
 }
