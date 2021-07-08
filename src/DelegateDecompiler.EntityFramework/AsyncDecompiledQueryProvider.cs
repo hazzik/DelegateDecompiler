@@ -43,7 +43,7 @@ namespace DelegateDecompiler.EntityFramework
 
         public override IQueryable<TElement> CreateQuery<TElement>(Expression expression)
         {
-            var decompiled = DecompileExpressionVisitor.Decompile(expression);
+            var decompiled = SimpleBlockRemovingExpressionVisitor.Process(DecompileExpressionVisitor.Decompile(expression));
             return new AsyncDecompiledQueryable<TElement>(this, inner.CreateQuery<TElement>(decompiled));
         }
 

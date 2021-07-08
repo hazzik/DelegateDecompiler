@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq.Expressions;
 using System.Reflection;
 using NUnit.Framework;
@@ -18,7 +18,7 @@ namespace DelegateDecompiler.Tests
         protected static void Test<T>(Expression<T> expected, T compiled)
         {
             //Double cast required as we can not convert T to Delegate directly
-            var decompiled = ((Delegate) ((object) compiled)).Decompile();
+            var decompiled = (LambdaExpression)DecompileExpressionVisitor.Decompile(((Delegate) ((object) compiled)).Decompile());
 
             var x = expected.Body.ToString();
             Console.WriteLine(x);
@@ -31,7 +31,8 @@ namespace DelegateDecompiler.Tests
         protected static void Test<T>(Expression<T> expected, MethodInfo compiled)
         {
             //Double cast required as we can not convert T to Delegate directly
-            var decompiled = compiled.Decompile();
+            //var decompiled = compiled.Decompile();
+            var decompiled = (LambdaExpression)DecompileExpressionVisitor.Decompile(compiled.Decompile());
 
             var x = expected.Body.ToString();
             Console.WriteLine(x);
@@ -44,7 +45,8 @@ namespace DelegateDecompiler.Tests
         protected static void Test<T>(Expression<T> expected1, Expression<T> expected2, T compiled, bool compareDebugView = true)
         {
             //Double cast required as we can not convert T to Delegate directly
-            var decompiled = ((Delegate) ((object) compiled)).Decompile();
+            //var decompiled = ((Delegate) ((object) compiled)).Decompile();
+            LambdaExpression decompiled = (LambdaExpression)DecompileExpressionVisitor.Decompile(((Delegate)((object)compiled)).Decompile());
 
             var x1 = expected1.Body.ToString();
             Console.WriteLine(x1);
