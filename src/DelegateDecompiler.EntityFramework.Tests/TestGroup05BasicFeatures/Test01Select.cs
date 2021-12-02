@@ -139,6 +139,27 @@ namespace DelegateDecompiler.EntityFramework.Tests.TestGroup05BasicFeatures
             }
         }
 
+#if EF_CORE
+        [Test]
+        public void TestSelectAbstractMemberOverTphHierarchyWithGenericClassesAfterRestrictingToSubtype()
+        {
+            using (var env = new MethodEnvironment(classEnv))
+            {
+                //SETUP
+                var linq = env.Db.LivingBeeing.OfType<Fish>().ToList().Select(p => p.Species).ToList();
+
+                //ATTEMPT
+                env.AboutToUseDelegateDecompiler();
+                var dd1 = env.Db.LivingBeeing.OfType<Fish>().Select(p => p.Species).Decompile();
+                
+                var dd = dd1.ToList();
+
+                //VERIFY
+                env.CompareAndLogList(linq, dd);
+            }
+        }
+#endif
+
         [Test]
         public void TestSelectMultipleLevelsOfAbstractMembersOverTphHierarchy()
         {

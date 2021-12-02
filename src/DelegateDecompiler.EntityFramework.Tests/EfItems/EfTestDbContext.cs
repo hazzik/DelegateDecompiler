@@ -64,6 +64,10 @@ namespace DelegateDecompiler.EntityFramework.Tests.EfItems
             modelBuilder.Entity<Dog>();
             modelBuilder.Entity<HoneyBee>();
             modelBuilder.Entity<Person>();
+#if EF_CORE
+            modelBuilder.Entity<WhiteShark>().HasBaseType<Fish>();
+            modelBuilder.Entity<AtlanticCod>().HasBaseType<Fish>();
+#endif
             base.OnModelCreating(modelBuilder);
         }
     }
