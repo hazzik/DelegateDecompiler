@@ -7,6 +7,7 @@ using DelegateDecompiler.EntityFramework.Tests.EfItems.Concretes;
 #if EF_CORE
 using DelegateDecompiler.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 using DbModelBuilder = Microsoft.EntityFrameworkCore.ModelBuilder;
 #else
 using System.Data.Entity;
@@ -16,12 +17,20 @@ namespace DelegateDecompiler.EntityFramework.Tests.EfItems
 {
     public class EfTestDbContext : DbContext
     {
-
 #if EF_CORE
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             var connectionString = GetConnectionString();
             optionsBuilder.UseSqlServer(connectionString);
+#if EF_CORE5
+            optionsBuilder.LogTo((id, _) => id == RelationalEventId.CommandExecuted, d =>
+            {
+                if (Log != null && d is CommandExecutedEventData e)
+                {
+                    Log(e.Command.CommandText);
+                }
+            });
+#endif
         }
 #else
         static EfTestDbContext() 
@@ -54,6 +63,8 @@ namespace DelegateDecompiler.EntityFramework.Tests.EfItems
         public DbSet<EfPerson> EfPersons { get; set; }
 
         public DbSet<LivingBeeing> LivingBeeing { get; set; }
+
+        public Action<string> Log { get; set; }
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
