@@ -1,6 +1,6 @@
 Detail With Sql of supported commands
 ============
-## Documentation produced for DelegateDecompiler, version 0.29.0 on Thursday, 04 February 2021 16:04
+## Documentation produced for DelegateDecompiler, version 0.29.1 on Friday, 03 December 2021 13:16
 
 This file documents what linq commands **DelegateDecompiler** supports when
 working with [Entity Framework Core](https://docs.microsoft.com/en-us/ef/core/) (EF).
@@ -91,28 +91,28 @@ More will appear as we move forward.*
 
 ```
 
-  * Bool Equals Constant Async (line 56)
+  * Bool Equals Constant Async (line 75)
      * T-Sql executed is
 
 ```SQL
 
 ```
 
-  * Decompile Upfront Bool Equals Constant Async (line 73)
+  * Decompile Upfront Bool Equals Constant Async (line 92)
      * T-Sql executed is
 
 ```SQL
 
 ```
 
-  * Bool Equals Static Variable To Array Async (line 92)
+  * Bool Equals Static Variable To Array Async (line 111)
      * T-Sql executed is
 
 ```SQL
 
 ```
 
-  * Int Equals Constant (line 109)
+  * Int Equals Constant (line 128)
      * T-Sql executed is
 
 ```SQL
