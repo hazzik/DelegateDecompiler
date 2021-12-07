@@ -277,8 +277,8 @@ namespace DelegateDecompiler.Tests
         public void DecompileIntermediateVirtualMethodWithBaseCall()
         {
             Expression<Func<C<int>, string>> e = @this =>
-                /*@this is F<int> ? "F is child of " + ("C is child of " + "A".ToString()).ToString() // TODO: Support closing F<>
-                :*/ @this is E ? "E is child of " + ("C is child of " + "A".ToString()).ToString()
+                @this is F<int> ? "F is child of " + ("C is child of " + "A".ToString()).ToString()
+                : @this is E ? "E is child of " + ("C is child of " + "A".ToString()).ToString()
                 : @this is D ? "D is child of " + ("C is child of " + "A".ToString()).ToString()
                 : "C is child of " + "A".ToString();
 

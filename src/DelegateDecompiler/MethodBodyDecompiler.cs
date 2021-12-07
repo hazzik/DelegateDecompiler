@@ -79,7 +79,7 @@ namespace DelegateDecompiler
                 .SelectMany(a => SafeGetTypes(a))
                 .SelectMany(t => t.SelfAndBaseTypes())
                 .Distinct()
-                .Where(t => declaringType.IsAssignableFrom(t) && t != declaringType);
+                .Where(t => IsAssignableFrom(declaringType, t) && t != declaringType);
 
             var sorted = TypeHierarchy.Traverse(declaringType, descendants);
 
@@ -107,6 +107,22 @@ namespace DelegateDecompiler
             }
 
             return new ReplaceMethodCallsExpressionVisitor(baseCalls).Visit(result);
+        }
+
+        static bool IsAssignableFrom(Type p, Type c)
+        {
+            if (p.IsAssignableFrom(c))
+            {
+                return true;
+            }
+
+            if (!p.IsGenericType)
+            {
+                return false;
+            }
+
+            var definition = p.GetGenericTypeDefinition();
+            return c.SelfAndBaseTypes().Any(t => t.SafeGetGenericTypeDefinition() == definition);
         }
 
         static IEnumerable<Type> SafeGetTypes(Assembly a)

@@ -26,6 +26,9 @@ namespace DelegateDecompiler
         public static IEnumerable<Type> BaseTypes(this Type type) =>
             type.BaseType.SelfAndBaseTypes();
 
+        public static Type SafeGetGenericTypeDefinition(this Type type) =>
+            type?.IsGenericType == true ? type.GetGenericTypeDefinition() : type;
+
         public static Type MakeGenericTypeFromClosedParentArguments(this Type type, Type[] genericArguments)
         {
             var typeArguments = Array.ConvertAll(
