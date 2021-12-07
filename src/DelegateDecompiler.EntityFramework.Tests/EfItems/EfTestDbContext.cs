@@ -76,8 +76,11 @@ namespace DelegateDecompiler.EntityFramework.Tests.EfItems
             modelBuilder.Entity<HoneyBee>();
             modelBuilder.Entity<Person>();
 #if EF_CORE
-            modelBuilder.Entity<WhiteShark>().HasBaseType<Fish>();
-            modelBuilder.Entity<AtlanticCod>().HasBaseType<Fish>();
+            modelBuilder.Entity<Fish>();
+            modelBuilder.Entity<Fish<string>>().HasBaseType<Fish>();
+            modelBuilder.Entity<Fish<int>>().HasBaseType<Fish>();
+            modelBuilder.Entity<WhiteShark>().HasBaseType<Fish<string>>();
+            modelBuilder.Entity<AtlanticCod>().HasBaseType<Fish<int>>();
 #endif
             base.OnModelCreating(modelBuilder);
         }
