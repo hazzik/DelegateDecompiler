@@ -9,10 +9,7 @@ namespace DelegateDecompiler
         public static IEnumerable<Type> Traverse(Type root, IEnumerable<Type> ancestors)
         {
             var result = new List<Type>();
-            var children = ancestors.ToLookup(t =>
-                t.BaseType.IsGenericType && !t.BaseType.IsGenericTypeDefinition // This covers hierarchies which include intermediate generic class like C -> B<int> -> A, D -> B<string> -> A
-                    ? t.BaseType.GetGenericTypeDefinition()
-                    : t.BaseType);
+            var children = ancestors.ToLookup(t => t.BaseType);
 
             if (!root.IsInterface)
             {

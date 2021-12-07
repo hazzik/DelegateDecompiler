@@ -73,10 +73,13 @@ namespace DelegateDecompiler
             var @this = args[0].Expression;
 
             var result = GetDefaultImplementation(declaringType, method, args, baseCalls);
- 
+
             var descendants = AppDomain.CurrentDomain.GetAssemblies()
                 .Where(a => !a.IsDynamic)
                 .SelectMany(a => SafeGetTypes(a))
+                .SelectMany(t => t.SelfAndBaseTypes())
+                .Where(t => !t.IsGenericTypeDefinition)
+                .Distinct()
                 .Where(t => declaringType.IsAssignableFrom(t) && t != declaringType);
 
             var sorted = TypeHierarchy.Traverse(declaringType, descendants);
@@ -105,18 +108,6 @@ namespace DelegateDecompiler
             }
 
             return new ReplaceMethodCallsExpressionVisitor(baseCalls).Visit(result);
-        }
-
-        static IEnumerable<Type> BaseTypes(this Type type)
-        {
-            var baseType = type.BaseType;
-            if (baseType != typeof(object) && baseType != null)
-            {
-                for (var t = baseType; t != typeof(object); t = t.BaseType)
-                {
-                    yield return t;
-                }
-            }
         }
 
         static IEnumerable<Type> SafeGetTypes(Assembly a)

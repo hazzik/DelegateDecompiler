@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Linq.Expressions;
-using System.Reflection;
 using NUnit.Framework;
 
 namespace DelegateDecompiler.Tests
@@ -77,7 +76,7 @@ namespace DelegateDecompiler.Tests
             public override string M7 => "B is child of " + base.M7.ToString();
         }
 
-        public class C : A
+        public class C<T> : A
         {
             public string Me = "C";
 
@@ -88,13 +87,13 @@ namespace DelegateDecompiler.Tests
             public override string M3() => "C";
 
             public override string M5() => "C";
-            
+
             public override string M6() => "C is child of " + base.M6().ToString();
-           
+
             public override string M7 => "C is child of " + base.M7.ToString();
         }
 
-        public class D : C
+        public class D : C<int>
         {
             public string Me = "C";
 
@@ -111,7 +110,7 @@ namespace DelegateDecompiler.Tests
             public override string M7 => "D is child of " + base.M7.ToString();
         }
 
-        public abstract class E : C
+        public abstract class E : C<int>
         {
             public string Me = "C";
 
@@ -138,7 +137,7 @@ namespace DelegateDecompiler.Tests
             Expression<Func<A, string>> e = @this =>
                 @this is E ? "E"
                 : @this is D ? "D"
-                : @this is C ? "C"
+                : @this is C<int> ? "C"
                 : @this is B ? "B"
                 : null;
 
@@ -152,7 +151,7 @@ namespace DelegateDecompiler.Tests
             Expression<Func<A, string>> e = @this =>
                 @this is E ? ((E) @this).Me
                 : @this is D ? ((D) @this).Me
-                : @this is C ? ((C) @this).Me
+                : @this is C<int> ? ((C<int>) @this).Me
                 : @this is B ? ((B) @this).Me
                 : null;
             // ReSharper restore MergeCastWithTypeCheck
@@ -166,7 +165,7 @@ namespace DelegateDecompiler.Tests
             Expression<Func<A, string>> e = @this =>
                 @this is E ? "E"
                 : @this is D ? "D"
-                : @this is C ? "C"
+                : @this is C<int> ? "C"
                 : @this is B ? "B"
                 : "A";
 
@@ -187,7 +186,7 @@ namespace DelegateDecompiler.Tests
             Expression<Func<A, string>> e = @this =>
                 @this is E ? "E is child of " + ("C is child of " + "A".ToString()).ToString()
                 : @this is D ? "D is child of " + ("C is child of " + "A".ToString()).ToString()
-                : @this is C ? "C is child of " + "A".ToString()
+                : @this is C<int> ? "C is child of " + "A".ToString()
                 : @this is B ? "B is child of " + "A".ToString()
                 : "A";
 
@@ -200,7 +199,7 @@ namespace DelegateDecompiler.Tests
             Expression<Func<A, string>> e = @this =>
                 @this is E ? "E is child of " + ("C is child of " + "A".ToString()).ToString()
                 : @this is D ? "D is child of " + ("C is child of " + "A".ToString()).ToString()
-                : @this is C ? "C is child of " + "A".ToString()
+                : @this is C<int> ? "C is child of " + "A".ToString()
                 : @this is B ? "B is child of " + "A".ToString()
                 : "A";
 
@@ -231,7 +230,7 @@ namespace DelegateDecompiler.Tests
                 : @this is X ? "X"
                 : @this is E ? "E"
                 : @this is D ? "D"
-                : @this is C ? "C"
+                : @this is C<int> ? "C"
                 : @this is B ? "B"
                 : @this is A ? "A"
                 : null;
@@ -253,12 +252,12 @@ namespace DelegateDecompiler.Tests
         [Test]
         public void DecompileIntermediateVirtualMethodWithBaseCall()
         {
-            Expression<Func<C, string>> e = @this =>
+            Expression<Func<C<int>, string>> e = @this =>
                 @this is E ? "E is child of " + ("C is child of " + "A".ToString()).ToString()
                 : @this is D ? "D is child of " + ("C is child of " + "A".ToString()).ToString()
                 : "C is child of " + "A".ToString();
 
-            Test(e, typeof(C).GetMethod(nameof(C.M6)));
+            Test(e, typeof(C<int>).GetMethod(nameof(C<int>.M6)));
         }
 
     }
