@@ -78,7 +78,6 @@ namespace DelegateDecompiler
                 .Where(a => !a.IsDynamic)
                 .SelectMany(a => SafeGetTypes(a))
                 .SelectMany(t => t.SelfAndBaseTypes())
-                .Where(t => !t.ContainsGenericParameters)
                 .Distinct()
                 .Where(t => declaringType.IsAssignableFrom(t) && t != declaringType);
 
