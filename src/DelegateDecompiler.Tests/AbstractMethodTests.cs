@@ -131,11 +131,28 @@ namespace DelegateDecompiler.Tests
             public string M1(int a) => a.ToString();
         }
 
+        //TODO: Support closing F if C is closed in hierarchy
+        public class F<T> : C<T>
+        {
+            public override string M1() => "F";
+
+            public override string M2() => Me;
+
+            public override string M3() => "F";
+
+            public override string M5() => "F";
+
+            public override string M6() => "F is child of " + base.M6().ToString();
+
+            public override string M7 => "F is child of " + base.M7.ToString();
+        }
+
         [Test]
         public void DecompileMethod()
         {
             Expression<Func<A, string>> e = @this =>
-                @this is E ? "E"
+                /*@this is F<int> ? "F" // TODO: Support closing F<>
+                :*/ @this is E ? "E"
                 : @this is D ? "D"
                 : @this is C<int> ? "C"
                 : @this is B ? "B"
@@ -149,10 +166,11 @@ namespace DelegateDecompiler.Tests
         {
             // ReSharper disable MergeCastWithTypeCheck
             Expression<Func<A, string>> e = @this =>
-                @this is E ? ((E) @this).Me
-                : @this is D ? ((D) @this).Me
-                : @this is C<int> ? ((C<int>) @this).Me
-                : @this is B ? ((B) @this).Me
+                /*@this is F<int> ? ((F<int>)@this).Me // TODO: Support closing F<>
+                :*/ @this is E ? ((E)@this).Me
+                : @this is D ? ((D)@this).Me
+                : @this is C<int> ? ((C<int>)@this).Me
+                : @this is B ? ((B)@this).Me
                 : null;
             // ReSharper restore MergeCastWithTypeCheck
 
@@ -163,7 +181,8 @@ namespace DelegateDecompiler.Tests
         public void DecompileVirtualMethod()
         {
             Expression<Func<A, string>> e = @this =>
-                @this is E ? "E"
+                /*@this is F<int> ? "F"// TODO: Support closing F<>
+                :*/ @this is E ? "E"
                 : @this is D ? "D"
                 : @this is C<int> ? "C"
                 : @this is B ? "B"
@@ -184,7 +203,8 @@ namespace DelegateDecompiler.Tests
         public void DecompileVirtualMethodWithBaseCall()
         {
             Expression<Func<A, string>> e = @this =>
-                @this is E ? "E is child of " + ("C is child of " + "A".ToString()).ToString()
+                /*@this is F<int> ? "F is child of " + ("C is child of " + "A".ToString()).ToString() // TODO: Support closing F<>
+                :*/ @this is E ? "E is child of " + ("C is child of " + "A".ToString()).ToString()
                 : @this is D ? "D is child of " + ("C is child of " + "A".ToString()).ToString()
                 : @this is C<int> ? "C is child of " + "A".ToString()
                 : @this is B ? "B is child of " + "A".ToString()
@@ -197,7 +217,8 @@ namespace DelegateDecompiler.Tests
         public void DecompileVirtualPropertyWithBaseCall()
         {
             Expression<Func<A, string>> e = @this =>
-                @this is E ? "E is child of " + ("C is child of " + "A".ToString()).ToString()
+                /*@this is F<int> ? "F is child of " + ("C is child of " + "A".ToString()).ToString()
+                :*/ @this is E ? "E is child of " + ("C is child of " + "A".ToString()).ToString()
                 : @this is D ? "D is child of " + ("C is child of " + "A".ToString()).ToString()
                 : @this is C<int> ? "C is child of " + "A".ToString()
                 : @this is B ? "B is child of " + "A".ToString()
@@ -228,6 +249,7 @@ namespace DelegateDecompiler.Tests
                 : @this is Y1 ? "Y1"
                 : @this is Y ? "Y"
                 : @this is X ? "X"
+                //: @this is F<int> ? "F" // TODO: Support closing F<>
                 : @this is E ? "E"
                 : @this is D ? "D"
                 : @this is C<int> ? "C"
@@ -237,7 +259,6 @@ namespace DelegateDecompiler.Tests
 
             Test(e, typeof(IA).GetMethod(nameof(IA.M5)));
         }
-
 
         [Test]
         public void DecompileFinalVirtualMethodWithBaseCall()
@@ -253,12 +274,12 @@ namespace DelegateDecompiler.Tests
         public void DecompileIntermediateVirtualMethodWithBaseCall()
         {
             Expression<Func<C<int>, string>> e = @this =>
-                @this is E ? "E is child of " + ("C is child of " + "A".ToString()).ToString()
+                /*@this is F<int> ? "F is child of " + ("C is child of " + "A".ToString()).ToString() // TODO: Support closing F<>
+                :*/ @this is E ? "E is child of " + ("C is child of " + "A".ToString()).ToString()
                 : @this is D ? "D is child of " + ("C is child of " + "A".ToString()).ToString()
                 : "C is child of " + "A".ToString();
 
             Test(e, typeof(C<int>).GetMethod(nameof(C<int>.M6)));
         }
-
     }
 }
