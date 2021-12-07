@@ -11,22 +11,24 @@ namespace DelegateDecompiler
             var children = descendants.ToLookup(t => t.BaseType.SafeGetGenericTypeDefinition());
 
             var result = new List<Type>();
+            var usher = new HashSet<Type>();
             if (!root.IsInterface)
             {
-                Traverse(result, root, children);
+                Traverse(result, usher, root, children);
             }
             else
             {
                 foreach (var hierarchy in children.Where(l => !root.IsAssignableFrom(l.Key)))
                 {
-                    Traverse(result, hierarchy.Key, children);
+                    Traverse(result, usher, hierarchy.Key, children);
                 }
             }
 
             return result;
         }
 
-        private static void Traverse(ICollection<Type> result, Type type, ILookup<Type, Type> children)
+        private static void Traverse(ICollection<Type> result, HashSet<Type> usher, Type type,
+            ILookup<Type, Type> children)
         {
             var types = BuildChildren(type, children)
                 .Where(t => !t.ContainsGenericParameters)
@@ -34,9 +36,12 @@ namespace DelegateDecompiler
 
             foreach (var child in types)
             {
-                result.Add(child);
+                if (usher.Add(child))
+                {
+                    result.Add(child);
 
-                Traverse(result, child, children);
+                    Traverse(result, usher, child, children);
+                }
             }
         }
 
