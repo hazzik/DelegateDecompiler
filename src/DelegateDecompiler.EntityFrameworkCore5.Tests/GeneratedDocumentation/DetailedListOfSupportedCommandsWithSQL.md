@@ -1,6 +1,6 @@
 Detail With Sql of supported commands
 ============
-## Documentation produced for DelegateDecompiler, version 0.29.1 on Friday, 03 December 2021 13:20
+## Documentation produced for DelegateDecompiler, version 0.29.1 on Wednesday, 08 December 2021 12:44
 
 This file documents what linq commands **DelegateDecompiler** supports when
 working with [Entity Framework Core](https://docs.microsoft.com/en-us/ef/core/) (EF).
@@ -77,6 +77,8 @@ FROM [EfPersons] AS [e]
 ```SQL
 SELECT CASE
     WHEN [l].[Discriminator] = N'Person' THEN N'Human'
+    WHEN [l].[Discriminator] = N'WhiteShark' THEN N'Carcharodon carcharias'
+    WHEN [l].[Discriminator] = N'AtlanticCod' THEN N'Gadus morhua'
     WHEN [l].[Discriminator] = N'HoneyBee' THEN N'Apis mellifera'
     WHEN [l].[Discriminator] = N'Dog' THEN N'Canis lupus'
     ELSE NULL
@@ -97,7 +99,49 @@ FROM [LivingBeeing] AS [l]
 WHERE [l].[Discriminator] IN (N'Dog', N'HoneyBee')
 ```
 
-  * Select Multiple Levels Of Abstract Members Over Tph Hierarchy (line 155)
+  * Select Abstract Member Over Tph Hierarchy With Generic Classes After Restricting To Subtype (line 156)
+     * T-Sql executed is
+
+```SQL
+SELECT CASE
+    WHEN [l].[Discriminator] = N'WhiteShark' THEN N'Carcharodon carcharias'
+    WHEN [l].[Discriminator] = N'AtlanticCod' THEN N'Gadus morhua'
+    ELSE NULL
+END AS [Species], CASE
+    WHEN [l].[Discriminator] = N'WhiteShark' THEN N'Fish'
+    WHEN [l].[Discriminator] = N'AtlanticCod' THEN N'Fish'
+    ELSE NULL
+END AS [Group]
+FROM [LivingBeeing] AS [l]
+WHERE [l].[Discriminator] IN (N'AtlanticCod', N'WhiteShark')
+```
+
+  * Select Abstract Member With Condition On It Over Tph Hierarchy With Generic Classes After Restricting To Subtype (line 181)
+     * T-Sql executed is
+
+```SQL
+SELECT CASE
+    WHEN [l].[Discriminator] = N'WhiteShark' THEN N'Carcharodon carcharias'
+    WHEN [l].[Discriminator] = N'AtlanticCod' THEN N'Gadus morhua'
+    ELSE NULL
+END AS [Species], CASE
+    WHEN [l].[Discriminator] = N'WhiteShark' THEN N'Fish'
+    WHEN [l].[Discriminator] = N'AtlanticCod' THEN N'Fish'
+    ELSE NULL
+END AS [Group]
+FROM [LivingBeeing] AS [l]
+WHERE [l].[Discriminator] IN (N'AtlanticCod', N'WhiteShark') AND (CASE
+    WHEN [l].[Discriminator] = N'WhiteShark' THEN N'Carcharodon carcharias'
+    WHEN [l].[Discriminator] = N'AtlanticCod' THEN N'Gadus morhua'
+    ELSE NULL
+END IS NOT NULL AND CASE
+    WHEN [l].[Discriminator] = N'WhiteShark' THEN N'Fish'
+    WHEN [l].[Discriminator] = N'AtlanticCod' THEN N'Fish'
+    ELSE NULL
+END IS NOT NULL)
+```
+
+  * Select Multiple Levels Of Abstract Members Over Tph Hierarchy (line 199)
      * T-Sql executed is
 
 ```SQL

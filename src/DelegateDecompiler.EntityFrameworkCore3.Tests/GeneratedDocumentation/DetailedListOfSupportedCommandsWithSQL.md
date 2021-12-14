@@ -1,6 +1,6 @@
 Detail With Sql of supported commands
 ============
-## Documentation produced for DelegateDecompiler, version 0.29.0 on Thursday, 04 February 2021 16:05
+## Documentation produced for DelegateDecompiler, version 0.29.1 on Wednesday, 08 December 2021 12:44
 
 This file documents what linq commands **DelegateDecompiler** supports when
 working with [Entity Framework Core](https://docs.microsoft.com/en-us/ef/core/) (EF).
@@ -74,7 +74,21 @@ More will appear as we move forward.*
 
 ```
 
-  * Select Multiple Levels Of Abstract Members Over Tph Hierarchy (line 155)
+  * Select Abstract Member Over Tph Hierarchy With Generic Classes After Restricting To Subtype (line 156)
+     * T-Sql executed is
+
+```SQL
+
+```
+
+  * Select Abstract Member With Condition On It Over Tph Hierarchy With Generic Classes After Restricting To Subtype (line 181)
+     * T-Sql executed is
+
+```SQL
+
+```
+
+  * Select Multiple Levels Of Abstract Members Over Tph Hierarchy (line 199)
      * T-Sql executed is
 
 ```SQL
@@ -91,28 +105,28 @@ More will appear as we move forward.*
 
 ```
 
-  * Bool Equals Constant Async (line 56)
+  * Bool Equals Constant Async (line 75)
      * T-Sql executed is
 
 ```SQL
 
 ```
 
-  * Decompile Upfront Bool Equals Constant Async (line 73)
+  * Decompile Upfront Bool Equals Constant Async (line 92)
      * T-Sql executed is
 
 ```SQL
 
 ```
 
-  * Bool Equals Static Variable To Array Async (line 92)
+  * Bool Equals Static Variable To Array Async (line 111)
      * T-Sql executed is
 
 ```SQL
 
 ```
 
-  * Int Equals Constant (line 109)
+  * Int Equals Constant (line 128)
      * T-Sql executed is
 
 ```SQL

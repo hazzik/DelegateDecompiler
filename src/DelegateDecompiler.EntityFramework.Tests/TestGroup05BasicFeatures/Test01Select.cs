@@ -139,6 +139,50 @@ namespace DelegateDecompiler.EntityFramework.Tests.TestGroup05BasicFeatures
             }
         }
 
+#if EF_CORE
+        [Test]
+        public void TestSelectAbstractMemberOverTphHierarchyWithGenericClassesAfterRestrictingToSubtype()
+        {
+            using (var env = new MethodEnvironment(classEnv))
+            {
+                //SETUP
+                var linq = env.Db.LivingBeeing.OfType<Fish>().ToList().Select(p => new { p.Species, p.Group }).ToList();
+
+                //ATTEMPT
+                env.AboutToUseDelegateDecompiler();
+                var dd = env.Db.LivingBeeing.OfType<Fish>().Select(p => new { p.Species, p.Group }).Decompile().ToList();
+
+                //VERIFY
+                env.CompareAndLogList(linq, dd);
+            }
+        }
+
+        [Test]
+        public void TestSelectAbstractMemberWithConditionOnItOverTphHierarchyWithGenericClassesAfterRestrictingToSubtype()
+        {
+            using (var env = new MethodEnvironment(classEnv))
+            {
+                //SETUP
+                var linq = env.Db.LivingBeeing.OfType<Fish>().ToList()
+                    .Select(p => new { p.Species, p.Group })
+                    .Where(p => p.Species != null && p.Group != null)
+                    .ToList();
+
+                //ATTEMPT
+                env.AboutToUseDelegateDecompiler();
+                var dd1 = env.Db.LivingBeeing.OfType<Fish>()
+                    .Select(p => new { p.Species, p.Group })
+                    .Where(p => p.Species != null && p.Group != null)
+                    .Decompile();
+
+                var dd = dd1.ToList();
+
+                //VERIFY
+                env.CompareAndLogList(linq, dd);
+            }
+        }
+#endif
+
         [Test]
         public void TestSelectMultipleLevelsOfAbstractMembersOverTphHierarchy()
         {

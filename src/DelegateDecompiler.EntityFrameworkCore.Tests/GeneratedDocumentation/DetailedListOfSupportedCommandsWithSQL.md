@@ -1,6 +1,6 @@
 Detail With Sql of supported commands
 ============
-## Documentation produced for DelegateDecompiler, version 0.29.1 on Friday, 03 December 2021 13:16
+## Documentation produced for DelegateDecompiler, version 0.29.1 on Wednesday, 08 December 2021 12:44
 
 This file documents what linq commands **DelegateDecompiler** supports when
 working with [Entity Framework Core](https://docs.microsoft.com/en-us/ef/core/) (EF).
@@ -74,7 +74,21 @@ More will appear as we move forward.*
 
 ```
 
-  * Select Multiple Levels Of Abstract Members Over Tph Hierarchy (line 155)
+  * Select Abstract Member Over Tph Hierarchy With Generic Classes After Restricting To Subtype (line 156)
+     * T-Sql executed is
+
+```SQL
+
+```
+
+  * Select Abstract Member With Condition On It Over Tph Hierarchy With Generic Classes After Restricting To Subtype (line 181)
+     * T-Sql executed is
+
+```SQL
+
+```
+
+  * Select Multiple Levels Of Abstract Members Over Tph Hierarchy (line 199)
      * T-Sql executed is
 
 ```SQL
