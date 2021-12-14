@@ -7,6 +7,7 @@ using DelegateDecompiler.EntityFramework.Tests.EfItems.Concretes;
 #if EF_CORE
 using DelegateDecompiler.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 using DbModelBuilder = Microsoft.EntityFrameworkCore.ModelBuilder;
 #else
 using System.Data.Entity;
@@ -16,12 +17,20 @@ namespace DelegateDecompiler.EntityFramework.Tests.EfItems
 {
     public class EfTestDbContext : DbContext
     {
-
 #if EF_CORE
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             var connectionString = GetConnectionString();
             optionsBuilder.UseSqlServer(connectionString);
+#if EF_CORE5
+            optionsBuilder.LogTo((id, _) => id == RelationalEventId.CommandExecuted, d =>
+            {
+                if (Log != null && d is CommandExecutedEventData e)
+                {
+                    Log(e.Command.CommandText);
+                }
+            });
+#endif
         }
 #else
         static EfTestDbContext() 
@@ -55,6 +64,8 @@ namespace DelegateDecompiler.EntityFramework.Tests.EfItems
 
         public DbSet<LivingBeeing> LivingBeeing { get; set; }
 
+        public Action<string> Log { get; set; }
+
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
             modelBuilder.Entity<EfPerson>()
@@ -64,6 +75,13 @@ namespace DelegateDecompiler.EntityFramework.Tests.EfItems
             modelBuilder.Entity<Dog>();
             modelBuilder.Entity<HoneyBee>();
             modelBuilder.Entity<Person>();
+#if EF_CORE
+            modelBuilder.Entity<Fish>();
+            modelBuilder.Entity<Fish<string>>().HasBaseType<Fish>();
+            modelBuilder.Entity<Fish<int>>().HasBaseType<Fish>();
+            modelBuilder.Entity<WhiteShark>().HasBaseType<Fish<string>>();
+            modelBuilder.Entity<AtlanticCod>().HasBaseType<Fish<int>>();
+#endif
             base.OnModelCreating(modelBuilder);
         }
     }

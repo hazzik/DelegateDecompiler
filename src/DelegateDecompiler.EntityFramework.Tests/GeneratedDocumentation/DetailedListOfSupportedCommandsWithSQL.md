@@ -1,6 +1,6 @@
 Detail With Sql of supported commands
 ============
-## Documentation produced for DelegateDecompiler, version 0.29.0 on Thursday, 04 February 2021 16:03
+## Documentation produced for DelegateDecompiler, version 0.30.0 on Tuesday, 14 December 2021 22:20
 
 This file documents what linq commands **DelegateDecompiler** supports when
 working with [Entity Framework v6.1](http://msdn.microsoft.com/en-us/data/aa937723) (EF).
@@ -90,7 +90,7 @@ SELECT
     WHERE ([Extent1].[Discriminator] IN (N'Dog',N'HoneyBee',N'Person')) AND ([Extent1].[Discriminator] IN (N'Dog',N'HoneyBee'))
 ```
 
-  * Select Multiple Levels Of Abstract Members Over Tph Hierarchy (line 155)
+  * Select Multiple Levels Of Abstract Members Over Tph Hierarchy (line 199)
      * T-Sql executed is
 
 ```SQL
@@ -122,7 +122,26 @@ SELECT
     FROM [dbo].[EfParents] AS [Extent1]
 ```
 
-  * Bool Equals Constant Async (line 56)
+  * Async Non Generic (line 57)
+     * T-Sql executed is
+
+```SQL
+SELECT 
+    [Extent1].[EfParentId] AS [EfParentId], 
+    [Extent1].[ParentBool] AS [ParentBool], 
+    [Extent1].[ParentInt] AS [ParentInt], 
+    [Extent1].[ParentNullableInt] AS [ParentNullableInt], 
+    [Extent1].[ParentNullableDecimal1] AS [ParentNullableDecimal1], 
+    [Extent1].[ParentNullableDecimal2] AS [ParentNullableDecimal2], 
+    [Extent1].[ParentDouble] AS [ParentDouble], 
+    [Extent1].[ParentString] AS [ParentString], 
+    [Extent1].[StartDate] AS [StartDate], 
+    [Extent1].[EndDate] AS [EndDate], 
+    [Extent1].[ParentTimeSpan] AS [ParentTimeSpan]
+    FROM [dbo].[EfParents] AS [Extent1]
+```
+
+  * Bool Equals Constant Async (line 75)
      * T-Sql executed is
 
 ```SQL
@@ -131,7 +150,7 @@ SELECT
     FROM [dbo].[EfParents] AS [Extent1]
 ```
 
-  * Decompile Upfront Bool Equals Constant Async (line 73)
+  * Decompile Upfront Bool Equals Constant Async (line 92)
      * T-Sql executed is
 
 ```SQL
@@ -140,7 +159,7 @@ SELECT
     FROM [dbo].[EfParents] AS [Extent1]
 ```
 
-  * Bool Equals Static Variable To Array Async (line 92)
+  * Bool Equals Static Variable To Array Async (line 111)
      * T-Sql executed is
 
 ```SQL
@@ -149,7 +168,7 @@ SELECT
     FROM [dbo].[EfParents] AS [Extent1]
 ```
 
-  * Int Equals Constant (line 109)
+  * Int Equals Constant (line 128)
      * T-Sql executed is
 
 ```SQL

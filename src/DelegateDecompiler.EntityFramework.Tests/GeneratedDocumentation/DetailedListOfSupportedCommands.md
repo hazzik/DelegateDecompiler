@@ -1,6 +1,6 @@
 Detail of supported commands
 ============
-## Documentation produced for DelegateDecompiler, version 0.29.0 on Thursday, 04 February 2021 16:03
+## Documentation produced for DelegateDecompiler, version 0.30.0 on Tuesday, 14 December 2021 22:20
 
 This file documents what linq commands **DelegateDecompiler** supports when
 working with [Entity Framework v6.1](http://msdn.microsoft.com/en-us/data/aa937723) (EF).
@@ -32,15 +32,16 @@ More will appear as we move forward.*
   * Select Method Without Computed Attribute (line 104)
   * Select Abstract Member Over Tph Hierarchy (line 121)
   * Select Abstract Member Over Tph Hierarchy After Restricting To Subtype (line 138)
-  * Select Multiple Levels Of Abstract Members Over Tph Hierarchy (line 155)
+  * Select Multiple Levels Of Abstract Members Over Tph Hierarchy (line 199)
 
 #### [Select Async](../TestGroup05BasicFeatures/Test02SelectAsync.cs):
 - Supported
   * Async (line 39)
-  * Bool Equals Constant Async (line 56)
-  * Decompile Upfront Bool Equals Constant Async (line 73)
-  * Bool Equals Static Variable To Array Async (line 92)
-  * Int Equals Constant (line 109)
+  * Async Non Generic (line 57)
+  * Bool Equals Constant Async (line 75)
+  * Decompile Upfront Bool Equals Constant Async (line 92)
+  * Bool Equals Static Variable To Array Async (line 111)
+  * Int Equals Constant (line 128)
 
 #### [Equals And Not Equals](../TestGroup05BasicFeatures/Test03EqualsAndNotEquals.cs):
 - Supported

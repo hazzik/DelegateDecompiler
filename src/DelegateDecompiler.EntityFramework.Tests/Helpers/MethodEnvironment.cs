@@ -36,7 +36,7 @@ namespace DelegateDecompiler.EntityFramework.Tests.Helpers
 #if !EF_CORE
             Db.Database.Log = LogEfSql;               //capture the sql for the linq part
 #else
-            //TODO: Caputre log?
+            Db.Log = LogEfSql;                        //capture the sql for the linq part
 #endif
         }
 
