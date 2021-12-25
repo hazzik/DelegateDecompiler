@@ -72,7 +72,7 @@ The [DelegateDecompiler.EntityFramework](https://nuget.org/packages/DelegateDeco
 
 The [DelegateDecompiler.EntityFrameworkCore](https://nuget.org/packages/DelegateDecompiler.EntityFrameworkCore) package provides `DecompileAsync` extension method which adds support for EF's Async operations.
  
-### Async Support with [EntityFramework Core 5.0](https://www.nuget.org/packages/DelegateDecompiler.EntityFrameworkCore5)
+### Async Support with [EntityFramework Core 5.0 and later](https://www.nuget.org/packages/DelegateDecompiler.EntityFrameworkCore5)
 
 The [DelegateDecompiler.EntityFrameworkCore5](https://nuget.org/packages/DelegateDecompiler.EntityFrameworkCore5) package provides `DecompileAsync` extension method which adds support for EF's Async operations.
  
@@ -83,8 +83,9 @@ Available on [NuGet](https://nuget.org/)
 * Install-Package [DelegateDecompiler](https://nuget.org/packages/DelegateDecompiler)
 * Install-Package [DelegateDecompiler.EntityFramework](https://nuget.org/packages/DelegateDecompiler.EntityFramework)
 * Install-Package [DelegateDecompiler.EntityFrameworkCore](https://nuget.org/packages/DelegateDecompiler.EntityFrameworkCore)
+* Install-Package [DelegateDecompiler.EntityFrameworkCore5](https://nuget.org/packages/DelegateDecompiler.EntityFrameworkCore5)
 
-# Donations
+# Support
 
 If you like the library please [support my work](https://github.com/sponsors/hazzik).
 
