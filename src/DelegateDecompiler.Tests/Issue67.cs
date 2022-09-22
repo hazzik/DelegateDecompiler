@@ -4,7 +4,7 @@ using NUnit.Framework;
 
 namespace DelegateDecompiler.Tests
 {
-    public class Issue67
+    public class Issue67 : DecompilerTestsBase
     {
         [Test]
         public void Should_be_able_to_decompile_enum()

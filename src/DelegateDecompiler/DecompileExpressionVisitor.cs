@@ -12,6 +12,15 @@ namespace DelegateDecompiler
             return new DecompileExpressionVisitor().Visit(expression);
         }
 
+        protected override Expression VisitBlock(BlockExpression node)
+        {
+            if (node.Expressions.Count <= 1)
+            {
+                return node.Expressions.FirstOrDefault();
+            }
+            return base.VisitBlock(node);
+        }
+
         protected override Expression VisitMember(MemberExpression node)
         {
             if (ShouldDecompile(node.Member) && node.Member is PropertyInfo property)
@@ -19,6 +28,24 @@ namespace DelegateDecompiler
                 return Decompile(property.GetGetMethod(true), node.Expression, new List<Expression>());
             }
 
+            if (node.Expression is ConstantExpression constExpression)
+            {
+                if (constExpression.Value == null)
+                {
+                    return ExpressionHelper.Default(node.Type);
+                }
+                var value = (node.Member as FieldInfo)?.GetValue(constExpression.Value)
+                    ?? (node.Member as PropertyInfo)?.GetValue(constExpression.Value, new object[] { });
+                if (value == null)
+                {
+                    return ExpressionHelper.Default(node.Type);
+                }
+                // if the value is an IQueryable we visit its expression
+                if (value is IQueryable)
+                {
+                    return Visit((value as IQueryable).Expression);
+                }
+            }
             return base.VisitMember(node);
         }
 

@@ -79,12 +79,20 @@ namespace DelegateDecompiler
 
             public Expression Final()
             {
-                return Stack.Count == 0
-                       ? Expression.Empty()
-                       : Stack.Pop();
+                if (Stack.Count == 0) return Expression.Empty();
+                if (Stack.Count == 1) return Stack.Pop();
+
+                // Resolves hazzik#122 
+                //TODO confirm what state the stack should be at the end
+                var expressions = Stack.Reverse()
+                    .Select(it => it.Expression)
+                    .Where(it => it.NodeType != ExpressionType.NewArrayBounds);
+                if (expressions.Count() == 0) return Expression.Empty();
+                if (expressions.Count() == 1) return Stack.Pop();
+                return Expression.Block(expressions);
             }
         }
-  
+
         const string cachedAnonymousMethodDelegate = "CS$<>9__CachedAnonymousMethodDelegate";
         const string cachedAnonymousMethodDelegateRoslyn = "<>9__";
 
@@ -279,7 +287,7 @@ namespace DelegateDecompiler
                     }
                     else if (state.Instruction.OpCode == OpCodes.Ldloc ||
                              state.Instruction.OpCode == OpCodes.Ldloc_S ||
-                             state.Instruction.OpCode == OpCodes.Ldloca || 
+                             state.Instruction.OpCode == OpCodes.Ldloca ||
                              state.Instruction.OpCode == OpCodes.Ldloca_S)
                     {
                         var operand = (LocalVariableInfo) state.Instruction.Operand;
@@ -995,7 +1003,7 @@ namespace DelegateDecompiler
             {
                 return Expression.Convert(expression, type);
             }
-            
+
             if (type.IsValueType != expression.Type.IsValueType)
             {
                 return Expression.Convert(expression, type);
@@ -1028,7 +1036,17 @@ namespace DelegateDecompiler
             {
                 var elementType = array.Type.GetElementType();
                 var expressions = CreateArrayInitExpressions(elementType, newArray, value, index);
-                array.Expression = Expression.NewArrayInit(elementType, expressions);
+                if (typeof(Expression).IsAssignableFrom(array.Type.GetElementType()))
+                {
+                    array.Expression = Expression.Constant(expressions);
+                }
+                else
+                {
+                    array.Expression = Expression.NewArrayInit(array.Type.GetElementType(), expressions);
+                }
+            }
+            else if (array.Expression is ConstantExpression cstArray)
+            {
             }
             else
             {
@@ -1091,10 +1109,16 @@ namespace DelegateDecompiler
 
         static void Call(ProcessorState state, MethodInfo m)
         {
-            var mArgs = GetArguments(state, m);
+            var debugName = m.Name;
+            bool methodIsMemberOfExpressionClass = m.DeclaringType == typeof(Expression) /*? && m.IsStatic ?*/;
+            var mArgs = GetArguments(state, m, !methodIsMemberOfExpressionClass);
 
             var instance = m.IsStatic ? new Address() : state.Stack.Pop();
-            var result = BuildMethodCallExpression(m, instance, mArgs);
+            var result = methodIsMemberOfExpressionClass
+                ? UnquoteLinqMethodCallExpression(state, m, instance, mArgs)
+                : BuildMethodCallExpression(m, instance, mArgs);
+            if (result == null) return;
+            result = TransparentIdentifierRemovingExpressionVisitor.RemoveTransparentIdentifiers(result);
             if (result.Type != typeof(void))
                 state.Stack.Push(result);
         }
@@ -1102,7 +1126,7 @@ namespace DelegateDecompiler
         static Expression BuildAssignment(Expression instance, MemberInfo member, Expression value, out bool push)
         {
             var adjustedValue = AdjustType(value, member.FieldOrPropertyType());
-            
+
             if (instance.NodeType == ExpressionType.New)
             {
                 push = false;
@@ -1132,7 +1156,7 @@ namespace DelegateDecompiler
             return Expression.Assign(Expression.MakeMemberAccess(instance, member), adjustedValue);
         }
 
-        static Expression[] GetArguments(ProcessorState state, MethodBase m)
+        static Expression[] GetArguments(ProcessorState state, MethodBase m, bool adjustType = true)
         {
             var parameterInfos = m.GetParameters();
             var mArgs = new Expression[parameterInfos.Length];
@@ -1141,9 +1165,68 @@ namespace DelegateDecompiler
                 var argument = state.Stack.Pop();
                 var parameter = parameterInfos[i];
                 var parameterType = parameter.ParameterType;
-                mArgs[i] = AdjustType(argument, parameterType.IsByRef ? parameterType.GetElementType() : parameterType);
+                mArgs[i] = adjustType ? AdjustType(argument, parameterType.IsByRef ? parameterType.GetElementType() : parameterType) : argument.Expression;
             }
             return mArgs;
+        }
+
+        // Converts compiled calls to Expression.xxx into their lambda representation
+        static Expression UnquoteLinqMethodCallExpression(ProcessorState state, MethodInfo m, Address instance, Expression[] arguments)
+        {
+            var expectedParameters = m.GetParameters();
+            object[] convertedArguments = new object[expectedParameters.Length];
+            for (int i = 0; i < expectedParameters.Count(); i++)
+            {
+                object arg = arguments[i];
+                bool requiresUnquoting = (m.IsStatic && i == 0) || !typeof(Expression).IsAssignableFrom(expectedParameters[i].ParameterType);
+                if (requiresUnquoting)
+                {
+                    //TODO find a better way to unquote into the parameter's expected type
+                    if (arg is UnaryExpression && !((arg as UnaryExpression).Operand is IConvertible)) arg = (arg as UnaryExpression).Operand;
+                    if (arg is ConstantExpression) arg = (arg as ConstantExpression).Value;
+                    if (arg is IConvertible && !expectedParameters[i].ParameterType.IsAssignableFrom(arg.GetType())) arg = Convert.ChangeType(arg, expectedParameters[i].ParameterType);
+                    //if (arg is NewArrayExpression && !expectedParameters[i].ParameterType.IsAssignableFrom(arg.GetType())) arg = (arg as NewArrayExpression).Expressions;
+                    if (arg is IEnumerable<Expression> && !expectedParameters[i].ParameterType.IsAssignableFrom(arg.GetType())) arg = (arg as IEnumerable<Expression>).ToArray();
+                }
+                convertedArguments[i] = arg;
+            }
+            if (m.Name == "Parameter")
+            {
+            }
+            if (m.Name == "Call")
+            {
+                m = (MethodInfo) convertedArguments[1];
+                arguments = (Expression[]) convertedArguments[2];
+                if (!m.IsStatic) state.Stack.Push((Expression) convertedArguments[0]);
+                for (int i = 0; i < arguments.Length; i++) state.Stack.Push(arguments[i]);
+                Call(state, m);
+                return null;
+            }
+            //WORKAROUND Decompiled instructions may call Expression.Constant with first parameter other than a constant
+            if (m.Name == "Constant" && convertedArguments.First() is Expression)
+            {
+                return convertedArguments.First() as Expression;
+            }
+            //In case of .Lambda  => casts 2nd argument into a ParameterExpression[]
+            if (m.Name == "Lambda")
+            {
+                convertedArguments[1] = (convertedArguments[1] as IEnumerable<Expression>).Cast<ParameterExpression>().ToArray();
+            }
+            try
+            {
+                if (m.IsStatic)
+                {
+                    return (Expression) m.Invoke(null, convertedArguments);
+                }
+                else
+                {
+                    return (Expression) m.Invoke(convertedArguments[0], convertedArguments.Skip(1).ToArray());
+                }
+            }
+            catch (Exception any)
+            {
+                throw any;
+            }
         }
 
         static Expression BuildMethodCallExpression(MethodInfo m, Address instance, Expression[] arguments)
@@ -1257,6 +1340,33 @@ namespace DelegateDecompiler
                 return Expression.NewArrayInit(arguments[0].Type.GetElementType(), initializers);
             }
 
+            #region .NET Runtime methods substitutions
+
+            if (m.Name == "GetTypeFromHandle" && m.DeclaringType == typeof(Type))
+            {
+                return Expression.Constant(Type.GetTypeFromHandle((RuntimeTypeHandle) (arguments[0] as ConstantExpression).Value));
+            }
+
+            if (m.Name == "GetMethodFromHandle" && m.DeclaringType == typeof(MethodBase))
+            {
+                if (arguments.Length > 1)
+                    return Expression.Constant(MethodBase.GetMethodFromHandle((RuntimeMethodHandle) (arguments[0] as ConstantExpression).Value, (RuntimeTypeHandle) (arguments[1] as ConstantExpression).Value));
+                return Expression.Constant(MethodBase.GetMethodFromHandle((RuntimeMethodHandle) (arguments[0] as ConstantExpression).Value));
+            }
+
+            if (m.Name == "GetFieldFromHandle" && m.DeclaringType == typeof(FieldInfo))
+            {
+                if (arguments.Length > 1)
+                    return Expression.Constant(FieldInfo.GetFieldFromHandle((RuntimeFieldHandle) (arguments[0] as ConstantExpression).Value, (RuntimeTypeHandle) (arguments[1] as ConstantExpression).Value));
+                return Expression.Constant(FieldInfo.GetFieldFromHandle((RuntimeFieldHandle) (arguments[0] as ConstantExpression).Value));
+            }
+
+            if (Configuration.Instance.ShouldDecompile(m))
+            {
+            }
+
+            #endregion .NET Runtime methods substitutions
+
             if (instance.Expression != null)
                 return Expression.Call(instance, m, arguments);
 
@@ -1267,12 +1377,12 @@ namespace DelegateDecompiler
         {
             switch (m.Name)
             {
-                /* The complete set of binary operator function names used is as follows: 
-                 * op_Addition, op_Subtraction, op_Multiply, op_Division, op_Modulus, 
-                 * op_BitwiseAnd, op_BitwiseOr, op_ExclusiveOr, op_LeftShift, op_RightShift, 
-                 * op_Equality, op_Inequality, op_LessThan, op_LessThanOrEqual, op_GreaterThan, 
+                /* The complete set of binary operator function names used is as follows:
+                 * op_Addition, op_Subtraction, op_Multiply, op_Division, op_Modulus,
+                 * op_BitwiseAnd, op_BitwiseOr, op_ExclusiveOr, op_LeftShift, op_RightShift,
+                 * op_Equality, op_Inequality, op_LessThan, op_LessThanOrEqual, op_GreaterThan,
                  * and op_GreaterThanOrEqual.
-                 */ 
+                 */
                 case "op_Addition":
                     type = ExpressionType.Add;
                     return true;
@@ -1300,7 +1410,7 @@ namespace DelegateDecompiler
                 case "op_BitwiseOr":
                     type = ExpressionType.Or;
                     return true;
-                
+
                 case "op_ExclusiveOr":
                     type = ExpressionType.ExclusiveOr;
                     return true;
@@ -1312,11 +1422,11 @@ namespace DelegateDecompiler
                 case "op_RightShift":
                     type = ExpressionType.RightShift;
                     return true;
-                
+
                 case "op_Equality":
                     type = ExpressionType.Equal;
                     return true;
-                
+
                 case "op_Inequality":
                     type = ExpressionType.NotEqual;
                     return true;
@@ -1338,7 +1448,7 @@ namespace DelegateDecompiler
                     return true;
 
                 /*
-                 * The complete set of unary operator function names used is as follows: 
+                 * The complete set of unary operator function names used is as follows:
                  * op_UnaryPlus, op_UnaryNegation, op_LogicalNot, op_OnesComplement, op_Increment, op_Decrement, op_True, and op_False.
                  */
                 case "op_UnaryPlus":

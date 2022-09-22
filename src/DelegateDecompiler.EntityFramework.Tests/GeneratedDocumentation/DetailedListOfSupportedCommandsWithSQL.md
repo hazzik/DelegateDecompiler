@@ -1,6 +1,6 @@
 Detail With Sql of supported commands
 ============
-## Documentation produced for DelegateDecompiler, version 0.30.0 on Tuesday, 14 December 2021 22:20
+## Documentation produced for DelegateDecompiler, version 0.30.0 on Thursday, 22 September 2022 12:30
 
 This file documents what linq commands **DelegateDecompiler** supports when
 working with [Entity Framework v6.1](http://msdn.microsoft.com/en-us/data/aa937723) (EF).
@@ -830,6 +830,40 @@ SELECT
     WHERE [Extent1].[StartDate] > @p__linq__0
 ```
 
+
+
+### Group: Additional Features
+#### [_Issue152](../TestGroup90AdditionalFeatures/Test01_Issue152.cs):
+- Supported
+  * Subquery As Context Extension Method (line 71)
+     * T-Sql executed is
+
+```SQL
+SELECT 
+    [Project4].[EfParentId] AS [EfParentId], 
+    CASE WHEN ([Project4].[C1] IS NULL) THEN 0 ELSE [Project4].[C2] END AS [C1]
+    FROM ( SELECT 
+        [Project2].[EfParentId] AS [EfParentId], 
+        [Project2].[C1] AS [C1], 
+        (SELECT TOP (1) 
+            [Extent3].[EfChildId] AS [EfChildId]
+            FROM [dbo].[EfChilds] AS [Extent3]
+            WHERE [Extent3].[EfParentId] = [Project2].[EfParentId]) AS [C2]
+        FROM ( SELECT 
+            [Extent1].[EfParentId] AS [EfParentId], 
+            (SELECT TOP (1) 
+                [Extent2].[EfChildId] AS [EfChildId]
+                FROM [dbo].[EfChilds] AS [Extent2]
+                WHERE [Extent2].[EfParentId] = [Extent1].[EfParentId]) AS [C1]
+            FROM [dbo].[EfParents] AS [Extent1]
+        )  AS [Project2]
+    )  AS [Project4]
+```
+
+
+#### [I Queryable Closures Tests](../TestGroup90AdditionalFeatures/Test02IQueryableClosuresTests.cs):
+- **Not Supported**
+  * _Can Use I Queryable Closure (line 25)
 
 
 

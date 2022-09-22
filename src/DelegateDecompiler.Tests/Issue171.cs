@@ -3,7 +3,7 @@
 namespace DelegateDecompiler.Tests
 {
     [TestFixture]
-    public class Issue171
+    public class Issue171 : DecompilerTestsBase
     {
         [Test]
         public void ShouldSupportStructsWithoutInitializer()

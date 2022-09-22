@@ -4,7 +4,7 @@ using NUnit.Framework;
 
 namespace DelegateDecompiler.Tests
 {
-    public class Issue162
+    public class Issue162 : DecompilerTestsBase
     {
         [Test]
         public void ShouldBeAbleToDecompileUsingProtectedProperty()
