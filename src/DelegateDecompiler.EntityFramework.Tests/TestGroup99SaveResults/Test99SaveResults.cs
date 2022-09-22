@@ -6,6 +6,7 @@ namespace DelegateDecompiler.EntityFramework.Tests.TestGroup99SaveResults
 {
     class Test99SaveResults
     {
+#if !DEBUG
         [Test]
         public void EndRun()
         {
@@ -13,6 +14,6 @@ namespace DelegateDecompiler.EntityFramework.Tests.TestGroup99SaveResults
             //var markupResults = MasterEnvironment.ResultsAsMarkup( OutputVersions.Summary);
             //Console.Write(markupResults);
         }
-
+#endif
     }
 }
