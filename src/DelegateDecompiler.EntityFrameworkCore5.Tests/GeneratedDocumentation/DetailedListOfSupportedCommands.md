@@ -1,6 +1,6 @@
 Detail of supported commands
 ============
-## Documentation produced for DelegateDecompiler, version 0.30.0 on Thursday, 22 September 2022 12:32
+## Documentation produced for DelegateDecompiler, version 0.30.0 on Friday, 23 September 2022 11:53
 
 This file documents what linq commands **DelegateDecompiler** supports when
 working with [Entity Framework Core](https://docs.microsoft.com/en-us/ef/core/) (EF).
@@ -145,11 +145,11 @@ More will appear as we move forward.*
 ### Group: Additional Features
 #### [_Issue152](../TestGroup90AdditionalFeatures/Test01_Issue152.cs):
 - Supported
-  * Subquery As Context Extension Method (line 71)
+  * Subquery As Context Extension Method (line 70)
 
 #### [I Queryable Closures Tests](../TestGroup90AdditionalFeatures/Test02IQueryableClosuresTests.cs):
 - **Not Supported**
-  * _Can Use I Queryable Closure (line 25)
+  * Can Use Queryable Closure (line 24)
 
 
 

@@ -1,6 +1,6 @@
 Detail With Sql of supported commands
 ============
-## Documentation produced for DelegateDecompiler, version 0.30.0 on Thursday, 22 September 2022 12:30
+## Documentation produced for DelegateDecompiler, version 0.30.0 on Friday, 23 September 2022 11:52
 
 This file documents what linq commands **DelegateDecompiler** supports when
 working with [Entity Framework v6.1](http://msdn.microsoft.com/en-us/data/aa937723) (EF).
@@ -835,7 +835,7 @@ SELECT
 ### Group: Additional Features
 #### [_Issue152](../TestGroup90AdditionalFeatures/Test01_Issue152.cs):
 - Supported
-  * Subquery As Context Extension Method (line 71)
+  * Subquery As Context Extension Method (line 70)
      * T-Sql executed is
 
 ```SQL
@@ -863,7 +863,7 @@ SELECT
 
 #### [I Queryable Closures Tests](../TestGroup90AdditionalFeatures/Test02IQueryableClosuresTests.cs):
 - **Not Supported**
-  * _Can Use I Queryable Closure (line 25)
+  * Can Use Queryable Closure (line 24)
 
 
 

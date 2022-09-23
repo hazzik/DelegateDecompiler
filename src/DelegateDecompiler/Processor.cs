@@ -1003,12 +1003,12 @@ namespace DelegateDecompiler
             {
                 return Expression.Convert(expression, type);
             }
-
+            
             if (type.IsValueType != expression.Type.IsValueType)
             {
                 return Expression.Convert(expression, type);
             }
-
+            
             return expression;
         }
 
@@ -1036,17 +1036,11 @@ namespace DelegateDecompiler
             {
                 var elementType = array.Type.GetElementType();
                 var expressions = CreateArrayInitExpressions(elementType, newArray, value, index);
-                if (typeof(Expression).IsAssignableFrom(array.Type.GetElementType()))
+                if (typeof(Expression).IsAssignableFrom(elementType) && expressions.Any(it => !elementType.IsAssignableFrom(it.Type)))
                 {
-                    array.Expression = Expression.Constant(expressions);
+                        expressions = expressions.Select(it => Expression.Constant(it, elementType));
                 }
-                else
-                {
-                    array.Expression = Expression.NewArrayInit(array.Type.GetElementType(), expressions);
-                }
-            }
-            else if (array.Expression is ConstantExpression cstArray)
-            {
+                array.Expression = Expression.NewArrayInit(elementType, expressions);
             }
             else
             {
@@ -1173,22 +1167,21 @@ namespace DelegateDecompiler
         // Converts compiled calls to Expression.xxx into their lambda representation
         static Expression UnquoteLinqMethodCallExpression(ProcessorState state, MethodInfo m, Address instance, Expression[] arguments)
         {
-            var expectedParameters = m.GetParameters();
-            object[] convertedArguments = new object[expectedParameters.Length];
-            for (int i = 0; i < expectedParameters.Count(); i++)
+            var expectedParametersTypes = m.GetParameters().Select(it => it.ParameterType).ToList();
+            var convertedArguments = new List<object>();
+
+            for (int i = 0; i < expectedParametersTypes.Count(); i++)
             {
                 object arg = arguments[i];
-                bool requiresUnquoting = (m.IsStatic && i == 0) || !typeof(Expression).IsAssignableFrom(expectedParameters[i].ParameterType);
+                bool requiresUnquoting = (m.IsStatic && i == 0) || !typeof(Expression).IsAssignableFrom(expectedParametersTypes[i]);
                 if (requiresUnquoting)
                 {
                     //TODO find a better way to unquote into the parameter's expected type
-                    if (arg is UnaryExpression && !((arg as UnaryExpression).Operand is IConvertible)) arg = (arg as UnaryExpression).Operand;
-                    if (arg is ConstantExpression) arg = (arg as ConstantExpression).Value;
-                    if (arg is IConvertible && !expectedParameters[i].ParameterType.IsAssignableFrom(arg.GetType())) arg = Convert.ChangeType(arg, expectedParameters[i].ParameterType);
-                    //if (arg is NewArrayExpression && !expectedParameters[i].ParameterType.IsAssignableFrom(arg.GetType())) arg = (arg as NewArrayExpression).Expressions;
-                    if (arg is IEnumerable<Expression> && !expectedParameters[i].ParameterType.IsAssignableFrom(arg.GetType())) arg = (arg as IEnumerable<Expression>).ToArray();
+                    if (arg is UnaryExpression unaryExpression /*&& !(unaryExpression.Operand is IConvertible)*/) arg = unaryExpression.Operand;
+                    if (arg is ConstantExpression constantExpression) arg = constantExpression.Value;
+                    if (arg is IConvertible && !expectedParametersTypes[i].IsAssignableFrom(arg.GetType())) arg = Convert.ChangeType(arg, expectedParametersTypes[i]);
                 }
-                convertedArguments[i] = arg;
+                convertedArguments.Add(arg);
             }
             if (m.Name == "Parameter")
             {
@@ -1210,13 +1203,13 @@ namespace DelegateDecompiler
             //In case of .Lambda  => casts 2nd argument into a ParameterExpression[]
             if (m.Name == "Lambda")
             {
-                convertedArguments[1] = (convertedArguments[1] as IEnumerable<Expression>).Cast<ParameterExpression>().ToArray();
+                convertedArguments[1] = (convertedArguments[1] as NewArrayExpression).Expressions.OfType<ConstantExpression>().Select(it => it.Value as ParameterExpression).ToArray();
             }
             try
             {
                 if (m.IsStatic)
                 {
-                    return (Expression) m.Invoke(null, convertedArguments);
+                    return (Expression) m.Invoke(null, convertedArguments.ToArray());
                 }
                 else
                 {

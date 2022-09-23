@@ -16,8 +16,7 @@ namespace DelegateDecompiler.EntityFramework.Tests.TestGroup90AdditionalFeatures
         }
     }
 
-    class Test01_Issue152
-
+    class Test01Issue152
     {
         private ClassEnvironment classEnv;
 
