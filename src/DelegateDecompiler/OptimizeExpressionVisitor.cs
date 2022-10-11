@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Linq.Expressions;
+using System.Security.AccessControl;
 
 namespace DelegateDecompiler
 {
@@ -334,6 +336,23 @@ namespace DelegateDecompiler
             return base.VisitUnary(node);
         }
 
+        protected override Expression VisitMethodCall(MethodCallExpression node)
+        {
+            if (node.Method.DeclaringType == typeof(Expression))
+            {
+                // Execute nested lambda expression methods
+                var fun = Expression.Lambda<Func<object>>(node).Compile();
+                var value = fun();
+                if (value is LambdaExpression expression)
+                {
+                    return Expression.Quote(expression);
+                }
+
+                return Expression.Constant(value);
+            }
+
+            return base.VisitMethodCall(node);
+        }
 
         static bool Invert(ref BinaryExpression expression)
         {
