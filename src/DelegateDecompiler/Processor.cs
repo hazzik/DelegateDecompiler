@@ -79,9 +79,19 @@ namespace DelegateDecompiler
 
             public Expression Final()
             {
-                return Stack.Count == 0
-                       ? Expression.Empty()
-                       : Stack.Pop();
+                if (Stack.Count == 0)
+                    return Expression.Empty();
+
+                if (Stack.Count == 1)
+                    return Stack.Pop();
+                
+                var expressions = new Expression[Stack.Count];
+                for (var i = expressions.Length - 1; i >= 0; i--)
+                {
+                    expressions[i] = Stack.Pop();
+                }
+
+                return Expression.Block(expressions);
             }
         }
   
@@ -1091,10 +1101,10 @@ namespace DelegateDecompiler
 
         static void Call(ProcessorState state, MethodInfo m)
         {
-            var mArgs = GetArguments(state, m);
+            var mArgs = GetArguments(state, m, out var addresses);
 
             var instance = m.IsStatic ? new Address() : state.Stack.Pop();
-            var result = BuildMethodCallExpression(m, instance, mArgs);
+            var result = BuildMethodCallExpression(m, instance, mArgs, addresses);
             if (result.Type != typeof(void))
                 state.Stack.Push(result);
         }
@@ -1134,19 +1144,27 @@ namespace DelegateDecompiler
 
         static Expression[] GetArguments(ProcessorState state, MethodBase m)
         {
+            return GetArguments(state, m, out _);
+        }
+
+        static Expression[] GetArguments(ProcessorState state, MethodBase m, out Address[] addresses)
+        {
             var parameterInfos = m.GetParameters();
-            var mArgs = new Expression[parameterInfos.Length];
+            addresses = new Address[parameterInfos.Length];
+            var args = new Expression[parameterInfos.Length];
             for (var i = parameterInfos.Length - 1; i >= 0; i--)
             {
                 var argument = state.Stack.Pop();
                 var parameter = parameterInfos[i];
                 var parameterType = parameter.ParameterType;
-                mArgs[i] = AdjustType(argument, parameterType.IsByRef ? parameterType.GetElementType() : parameterType);
+                args[i] = AdjustType(argument, parameterType.IsByRef ? parameterType.GetElementType() : parameterType);
+                addresses[i] = argument;
             }
-            return mArgs;
+
+            return args;
         }
 
-        static Expression BuildMethodCallExpression(MethodInfo m, Address instance, Expression[] arguments)
+        static Expression BuildMethodCallExpression(MethodInfo m, Address instance, Expression[] arguments, Address[] addresses)
         {
             if (m.Name == "Add" && instance.Expression != null && typeof(IEnumerable).IsAssignableFrom(instance.Type))
             {
@@ -1254,7 +1272,8 @@ namespace DelegateDecompiler
 
                 IEnumerable<Expression> initializers = array.Cast<object>().Select(Expression.Constant);
 
-                return Expression.NewArrayInit(arguments[0].Type.GetElementType(), initializers);
+                addresses[0].Expression = Expression.NewArrayInit(arguments[0].Type.GetElementType(), initializers);
+                return Expression.Empty();
             }
 
             if (instance.Expression != null)
