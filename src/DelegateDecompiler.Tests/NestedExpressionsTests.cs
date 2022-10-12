@@ -23,7 +23,26 @@ namespace DelegateDecompiler.Tests
             );
         }
        
-        [Test, Ignore("Not supported yet")]
+        [Test]
+        public void TestExpressionWithSimpleClosure()
+        {
+            var v = 0;
+            Test<Func<IQueryable<int>, IQueryable<int>>>(
+                ints => ints.Select(_ => v),
+                ints => ints.Select(_ => v)
+            );
+        }
+
+        [TestCase(1)]
+        public void TestExpressionWithParameterClosure(int p)
+        {
+            Test<Func<IQueryable<int>, IQueryable<int>>>(
+                ints => ints.Select(_ => p),
+                ints => ints.Select(_ => p)
+            );
+        }
+
+        [Test]
         public void TestExpressionWithClosure()
         {
             var v = 0;
@@ -33,7 +52,7 @@ namespace DelegateDecompiler.Tests
             );
         }
        
-        [Test, Ignore("Not supported yet")]
+        [Test]
         public void TestExpressionWithFieldClosure()
         {
             Test<Func<IQueryable<int>, int>>(
@@ -51,7 +70,7 @@ namespace DelegateDecompiler.Tests
             );
         }
        
-        [Test, Ignore("Not supported yet")]
+        [Test]
         public void TestExpressionWithPropertyClosure()
         {
             Test<Func<IQueryable<int>, int>>(
@@ -69,7 +88,7 @@ namespace DelegateDecompiler.Tests
             );
         }
        
-        [Test, Ignore("Not supported yet")]
+        [Test]
         public void TestExpressionWithMethodClosure()
         {
             Test<Func<IQueryable<int>, int>>(
