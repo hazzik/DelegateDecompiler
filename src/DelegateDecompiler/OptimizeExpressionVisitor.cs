@@ -333,17 +333,18 @@ namespace DelegateDecompiler
 
             return base.VisitUnary(node);
         }
-        
+
         protected override Expression VisitMethodCall(MethodCallExpression node)
         {
-            if (node.Method.DeclaringType == typeof(Expression))
+            if (node.Method.Name == nameof(Expression.Lambda) &&
+                node.Method.DeclaringType == typeof(Expression))
             {
                 return LinqExpressionUnwrapper.Unwrap(node);
             }
 
             return base.VisitMethodCall(node);
         }
- 
+
         static bool Invert(ref BinaryExpression expression)
         {
             switch (expression.NodeType)
@@ -451,21 +452,15 @@ namespace DelegateDecompiler
             public static Expression Unwrap(Expression expression)
             {
                 var visit = new LinqExpressionUnwrapper().Visit(expression);
-                var func = Expression.Lambda<Func<object>>(visit).Compile();
-                var value = func();
-                if (value is LambdaExpression lambda)
-                {
-                    return Expression.Quote(lambda);
-                }
-
-                return Expression.Constant(value);
+                var func = Expression.Lambda<Func<Expression>>(visit).Compile();
+                return Expression.Quote(func());
             }
 
             protected override Expression VisitMethodCall(MethodCallExpression node)
             {
                 if (node.Method.Name == nameof(Expression.Constant) && 
                     node.Method.DeclaringType == typeof(Expression) &&
-                    node.Arguments[0] is ParameterExpression parameter)
+                    node.Arguments[0] is Expression parameter)
                 {
                     return Expression.Constant(parameter);
                 }
