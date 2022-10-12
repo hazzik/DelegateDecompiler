@@ -13,7 +13,7 @@ namespace DelegateDecompiler.Tests
         static int p2 => 0;
         int M1() => 0;
         static int M2() => 0;
-       
+
         [Test]
         public void TestNestedExpression()
         {
@@ -22,7 +22,7 @@ namespace DelegateDecompiler.Tests
                 ints => ints.SingleOrDefault(i => i == 0)
             );
         }
-       
+
         [Test]
         public void TestExpressionWithSimpleClosure()
         {
@@ -51,7 +51,7 @@ namespace DelegateDecompiler.Tests
                 ints => ints.SingleOrDefault(i => i == v)
             );
         }
-       
+
         [Test]
         public void TestExpressionWithFieldClosure()
         {
@@ -60,7 +60,7 @@ namespace DelegateDecompiler.Tests
                 ints => ints.SingleOrDefault(i => i == f1)
             );
         }
-       
+
         [Test]
         public void TestExpressionWithStaticFieldClosure()
         {
@@ -69,7 +69,7 @@ namespace DelegateDecompiler.Tests
                 ints => ints.SingleOrDefault(i => i == f2)
             );
         }
-       
+
         [Test]
         public void TestExpressionWithPropertyClosure()
         {
@@ -78,7 +78,7 @@ namespace DelegateDecompiler.Tests
                 ints => ints.SingleOrDefault(i => i == p1)
             );
         }
-       
+
         [Test]
         public void TestExpressionWithStaticPropertyClosure()
         {
@@ -87,7 +87,7 @@ namespace DelegateDecompiler.Tests
                 ints => ints.SingleOrDefault(i => i == p2)
             );
         }
-       
+
         [Test]
         public void TestExpressionWithMethodClosure()
         {
@@ -96,7 +96,7 @@ namespace DelegateDecompiler.Tests
                 ints => ints.SingleOrDefault(i => i == M1())
             );
         }
-       
+
         [Test]
         public void TestExpressionWithStaticMethodClosure()
         {
@@ -105,7 +105,7 @@ namespace DelegateDecompiler.Tests
                 ints => ints.SingleOrDefault(i => i == M2())
             );
         }
-       
+
         [Test]
         public void TestNestedFunc()
         {
@@ -114,7 +114,7 @@ namespace DelegateDecompiler.Tests
                 ints => ints.SingleOrDefault(i => i == 0)
             );
         }
-       
+
         [Test]
         public void TestFuncWithClosure()
         {
@@ -124,7 +124,7 @@ namespace DelegateDecompiler.Tests
                 ints => ints.SingleOrDefault(i => i == v)
             );
         }
-       
+
         [Test]
         public void TestFuncWithFieldClosure()
         {
@@ -133,7 +133,7 @@ namespace DelegateDecompiler.Tests
                 ints => ints.SingleOrDefault(i => i == f1)
             );
         }
-       
+
         [Test]
         public void TestFuncWithStaticFieldClosure()
         {
@@ -142,7 +142,7 @@ namespace DelegateDecompiler.Tests
                 ints => ints.SingleOrDefault(i => i == f2)
             );
         }
-       
+
         [Test]
         public void TestFuncWithPropertyClosure()
         {
@@ -151,7 +151,7 @@ namespace DelegateDecompiler.Tests
                 ints => ints.SingleOrDefault(i => i == p1)
             );
         }
-       
+
         [Test]
         public void TestFuncWithStaticPropertyClosure()
         {
@@ -160,7 +160,7 @@ namespace DelegateDecompiler.Tests
                 ints => ints.SingleOrDefault(i => i == p2)
             );
         }
-       
+
         [Test]
         public void TestFuncWithMethodClosure()
         {
@@ -169,7 +169,7 @@ namespace DelegateDecompiler.Tests
                 ints => ints.SingleOrDefault(i => i == M1())
             );
         }
-       
+
         [Test]
         public void TestFuncWithStaticMethodClosure()
         {
