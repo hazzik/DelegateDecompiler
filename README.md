@@ -3,6 +3,10 @@ DelegateDecompiler
 
 A tool which is able to decompile a delegate or a method body to its lambda representation
 
+## Sponsorship
+
+If you like the library please consider [supporting my work](https://github.com/sponsors/hazzik).
+
 ## Examples
 
 ### Using computed properties in linq.
@@ -84,10 +88,6 @@ Available on [NuGet](https://nuget.org/)
 * Install-Package [DelegateDecompiler.EntityFramework](https://nuget.org/packages/DelegateDecompiler.EntityFramework)
 * Install-Package [DelegateDecompiler.EntityFrameworkCore](https://nuget.org/packages/DelegateDecompiler.EntityFrameworkCore)
 * Install-Package [DelegateDecompiler.EntityFrameworkCore5](https://nuget.org/packages/DelegateDecompiler.EntityFrameworkCore5)
-
-# Support
-
-If you like the library please [support my work](https://github.com/sponsors/hazzik).
 
 # License
 
