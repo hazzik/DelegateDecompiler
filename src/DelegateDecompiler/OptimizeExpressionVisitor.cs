@@ -333,25 +333,17 @@ namespace DelegateDecompiler
 
             return base.VisitUnary(node);
         }
-
+        
         protected override Expression VisitMethodCall(MethodCallExpression node)
         {
             if (node.Method.DeclaringType == typeof(Expression))
             {
-                // Execute nested lambda expression methods
-                var fun = Expression.Lambda<Func<object>>(node).Compile();
-                var value = fun();
-                if (value is LambdaExpression expression)
-                {
-                    return Expression.Quote(expression);
-                }
-
-                return Expression.Constant(value);
+                return LinqExpressionUnwrapper.Unwrap(node);
             }
 
             return base.VisitMethodCall(node);
         }
-
+ 
         static bool Invert(ref BinaryExpression expression)
         {
             switch (expression.NodeType)
@@ -448,6 +440,34 @@ namespace DelegateDecompiler
                 {
                     var @default = node.Arguments.Count == 0 ? ExpressionHelper.Default(node.Type) : node.Arguments[0];
                     return Expression.Coalesce(node.Object, @default);
+                }
+
+                return base.VisitMethodCall(node);
+            }
+        }
+        
+        class LinqExpressionUnwrapper : ExpressionVisitor
+        {
+            public static Expression Unwrap(Expression expression)
+            {
+                var visit = new LinqExpressionUnwrapper().Visit(expression);
+                var func = Expression.Lambda<Func<object>>(visit).Compile();
+                var value = func();
+                if (value is LambdaExpression lambda)
+                {
+                    return Expression.Quote(lambda);
+                }
+
+                return Expression.Constant(value);
+            }
+
+            protected override Expression VisitMethodCall(MethodCallExpression node)
+            {
+                if (node.Method.Name == nameof(Expression.Constant) && 
+                    node.Method.DeclaringType == typeof(Expression) &&
+                    node.Arguments[0] is ParameterExpression parameter)
+                {
+                    return Expression.Constant(parameter);
                 }
 
                 return base.VisitMethodCall(node);
