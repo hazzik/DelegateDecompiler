@@ -1,6 +1,6 @@
 Detail With Sql of supported commands
 ============
-## Documentation produced for DelegateDecompiler, version 0.30.0 on Tuesday, 14 December 2021 22:21
+## Documentation produced for DelegateDecompiler, version 0.30.0 on Thursday, 13 October 2022 15:40
 
 This file documents what linq commands **DelegateDecompiler** supports when
 working with [Entity Framework Core](https://docs.microsoft.com/en-us/ef/core/) (EF).
@@ -488,6 +488,18 @@ More will appear as we move forward.*
 #### [DateTime](../TestGroup50Types/Test05DateTime.cs):
 - Supported
   * DateTime Where Compare With Static Variable (line 35)
+     * T-Sql executed is
+
+```SQL
+
+```
+
+
+
+### Group: Additional Features
+#### [Nested Expressions](../TestGroup90AdditionalFeatures/Test01NestedExpressions.cs):
+- Supported
+  * Subquery As Context Extension Method (line 68)
      * T-Sql executed is
 
 ```SQL

@@ -339,10 +339,15 @@ namespace DelegateDecompiler
             if (node.Method.Name == nameof(Expression.Lambda) &&
                 node.Method.DeclaringType == typeof(Expression))
             {
-                return LinqExpressionUnwrapper.Unwrap(node);
+                var call = base.VisitMethodCall(node);
+                return LinqExpressionUnwrapper.Unwrap(call);
             }
 
             return base.VisitMethodCall(node);
+        }
+        static Expression EvaluateExpression(Expression node)
+        {
+            return Expression.Lambda<Func<Expression>>(node).Compile().Invoke();
         }
 
         static bool Invert(ref BinaryExpression expression)
@@ -452,51 +457,39 @@ namespace DelegateDecompiler
             public static Expression Unwrap(Expression expression)
             {
                 var visit = new LinqExpressionUnwrapper().Visit(expression);
-                var func = Expression.Lambda<Func<Expression>>(visit).Compile();
-                var output = UnwrappedParameterMerger.Merge(func());
-                return Expression.Quote(output);
+                return Expression.Quote(EvaluateExpression(visit));
             }
 
             protected override Expression VisitMethodCall(MethodCallExpression node)
             {
-                if (node.Method.Name == nameof(Expression.Constant) && 
-                    node.Method.DeclaringType == typeof(Expression) &&
-                    node.Arguments[0] is Expression parameter)
+                if (node.Method.Name == nameof(Expression.Constant) &&
+                    node.Method.DeclaringType == typeof(Expression))
                 {
-                    return Expression.Constant(parameter);
+                    var constant = ParametersDetector.ContainsParameters(node)
+                        ? node.Arguments[0]
+                        : EvaluateExpression(node);
+                    return Expression.Constant(constant);
                 }
 
                 return base.VisitMethodCall(node);
             }
         }
 
-        class UnwrappedParameterMerger : ExpressionVisitor
+        class ParametersDetector : ExpressionVisitor
         {
-            private Dictionary<string, ParameterExpression> parameters = new Dictionary<string, ParameterExpression>();
-            private LambdaExpression lambda;
+            bool hasParameters;
 
-            public static Expression Merge(Expression expression)
+            public static bool ContainsParameters(Expression node)
             {
-                var resolver = new UnwrappedParameterMerger();
-                resolver.lambda = expression as LambdaExpression;
-                return resolver.Visit(resolver.lambda);
+                var detector = new ParametersDetector();
+                detector.Visit(node);
+                return detector.hasParameters;
             }
 
             protected override Expression VisitParameter(ParameterExpression node)
             {
-                if (!parameters.TryGetValue(node.Name, out ParameterExpression parameter))
-                {
-                    for (var i = 0; i < lambda.Parameters.Count; i++)
-                    {
-                        if (node.Name == lambda.Parameters[i].Name)
-                        {
-                            node = lambda.Parameters[i];
-                            parameters.Add(node.Name, node);
-                            break;
-                        }
-                    }
-                }
-                return node;
+                hasParameters = true;
+                return base.VisitParameter(node);
             }
         }
 

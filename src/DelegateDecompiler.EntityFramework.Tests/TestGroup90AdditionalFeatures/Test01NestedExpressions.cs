@@ -1,7 +1,5 @@
 ﻿using System.Linq;
-using System.Net.Mail;
 using DelegateDecompiler.EntityFramework.Tests.EfItems;
-using DelegateDecompiler.EntityFramework.Tests.EfItems.Abstracts;
 using DelegateDecompiler.EntityFramework.Tests.Helpers;
 using NUnit.Framework;
 
@@ -10,13 +8,13 @@ namespace DelegateDecompiler.EntityFramework.Tests.TestGroup90AdditionalFeatures
     public static class EfTestDbContextExtensions
     {
         [Computed]
-        public static int GetFirstChildIdByParent(this EfTestDbContext context, int parentId)
+        public static int GetFirstChildIdByParent(this EfTestDbContext context, int pId)
         {
-            return context.EfChildren.Where(e => e.EfParentId == parentId).Select(e => e.EfChildId).FirstOrDefault();
+            return context.EfChildren.Where(a => a.EfParentId == pId).Select(b => b.EfChildId).FirstOrDefault();
         }
     }
 
-    class Test01Issue152
+    class Test01NestedExpressions
     {
         private ClassEnvironment classEnv;
 
@@ -33,7 +31,7 @@ namespace DelegateDecompiler.EntityFramework.Tests.TestGroup90AdditionalFeatures
 
             public override bool Equals(object obj)
             {
-                return (obj as ParentIdWithFirstChildId)?.ParentId == ParentId && (obj as ParentIdWithFirstChildId)?.FirstChildId == FirstChildId;
+                return obj is ParentIdWithFirstChildId id && id.ParentId == ParentId && id.FirstChildId == FirstChildId;
             }
 
             public override int GetHashCode()
@@ -54,7 +52,7 @@ namespace DelegateDecompiler.EntityFramework.Tests.TestGroup90AdditionalFeatures
                 var linq = env.Db.EfParents.Select(x => new ParentIdWithFirstChildId()
                 {
                     ParentId = x.EfParentId,
-                    FirstChildId = env.Db.EfChildren.Where(e => e.EfParentId == x.EfParentId).Select(e => e.EfChildId).FirstOrDefault()
+                    FirstChildId = env.Db.EfChildren.Where(a => a.EfParentId == x.EfParentId).Select(b => b.EfChildId).FirstOrDefault()
                 }).ToList();
 
                 //ATTEMPT
