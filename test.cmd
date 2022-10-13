@@ -11,3 +11,5 @@ dotnet test --no-build -c Release -f netcoreapp3.1 src\DelegateDecompiler.Entity
 dotnet test --no-build -c Release -f netcoreapp3.1 src\DelegateDecompiler.EntityFrameworkCore.Tests & ^
 dotnet test --no-build -c Release -f netcoreapp3.1 src\DelegateDecompiler.EntityFrameworkCore3.Tests & ^
 dotnet test --no-build -c Release -f net5.0 src\DelegateDecompiler.EntityFrameworkCore5.Tests
+
+exit /b %ERRORLEVEL%
