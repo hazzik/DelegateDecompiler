@@ -3,8 +3,6 @@
     <Product>DelegateDecompiler</Product>
     <Description />
 
-    <Version>0.30.0</Version>
-    <AssemblyVersion>1.0.0.0</AssemblyVersion>
     <Authors>Alexander Zaytsev</Authors>
     <Copyright>Copyright (c) Alexander Zaytsev 2012 - 2021</Copyright>
     <Description>A library which is able to decompile a delegate or a method body to its lambda representation</Description>
@@ -25,6 +23,7 @@
   </PropertyGroup>
   
   <ItemGroup>
+    <PackageReference Include="GitVersion.MsBuild" Version="5.10.3" PrivateAssets="All" />
     <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.3" PrivateAssets="All" />
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" />
   </ItemGroup>
