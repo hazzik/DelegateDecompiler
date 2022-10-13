@@ -457,18 +457,17 @@ namespace DelegateDecompiler
             public static Expression Unwrap(Expression expression)
             {
                 var visit = new LinqExpressionUnwrapper().Visit(expression);
-                return Expression.Quote(EvaluateExpression(visit));
+                var func = Expression.Lambda<Func<Expression>>(visit).Compile();
+                return Expression.Quote(func.Invoke());
             }
 
             protected override Expression VisitMethodCall(MethodCallExpression node)
             {
                 if (node.Method.Name == nameof(Expression.Constant) &&
-                    node.Method.DeclaringType == typeof(Expression))
+                    node.Method.DeclaringType == typeof(Expression) &&
+                    ParametersDetector.ContainsParameters(node))
                 {
-                    var constant = ParametersDetector.ContainsParameters(node)
-                        ? node.Arguments[0]
-                        : EvaluateExpression(node);
-                    return Expression.Constant(constant);
+                    return Expression.Constant(node.Arguments[0]);
                 }
 
                 return base.VisitMethodCall(node);
