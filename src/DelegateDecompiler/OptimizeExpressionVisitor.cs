@@ -339,7 +339,8 @@ namespace DelegateDecompiler
             if (node.Method.Name == nameof(Expression.Lambda) &&
                 node.Method.DeclaringType == typeof(Expression))
             {
-                return LinqExpressionUnwrapper.Unwrap(node);
+                var call = base.VisitMethodCall(node);
+                return LinqExpressionUnwrapper.Unwrap(call);
             }
 
             return base.VisitMethodCall(node);
@@ -449,23 +450,61 @@ namespace DelegateDecompiler
         
         class LinqExpressionUnwrapper : ExpressionVisitor
         {
+            readonly Dictionary<Expression, Expression> replacements = new Dictionary<Expression, Expression>();
+
             public static Expression Unwrap(Expression expression)
             {
                 var visit = new LinqExpressionUnwrapper().Visit(expression);
-                var func = Expression.Lambda<Func<Expression>>(visit).Compile();
-                return Expression.Quote(func());
+                var func = EvaluateExpression(visit);
+                return Expression.Quote(func);
             }
 
             protected override Expression VisitMethodCall(MethodCallExpression node)
             {
-                if (node.Method.Name == nameof(Expression.Constant) && 
+                if (node.Method.Name == nameof(Expression.Constant) &&
                     node.Method.DeclaringType == typeof(Expression) &&
-                    node.Arguments[0] is ParameterExpression parameter)
+                    ParametersDetector.ContainsParameters(node))
                 {
-                    return Expression.Constant(parameter);
+                    return Expression.Constant(node.Arguments[0]);
+                }
+
+                if (node.Method.Name == nameof(Expression.Parameter) &&
+                    node.Method.DeclaringType == typeof(Expression))
+                {
+                    if (!replacements.TryGetValue(node, out var parameter))
+                    {
+                        parameter = Expression.Constant(EvaluateExpression(node));
+                        replacements[node] = parameter;
+                    }
+
+                    return parameter;
                 }
 
                 return base.VisitMethodCall(node);
+            }
+
+            static Expression EvaluateExpression(Expression visit)
+            {
+                var func = Expression.Lambda<Func<Expression>>(visit).Compile();
+                return func.Invoke();
+            }
+        }
+
+        class ParametersDetector : ExpressionVisitor
+        {
+            bool hasParameters;
+
+            public static bool ContainsParameters(Expression node)
+            {
+                var detector = new ParametersDetector();
+                detector.Visit(node);
+                return detector.hasParameters;
+            }
+
+            protected override Expression VisitParameter(ParameterExpression node)
+            {
+                hasParameters = true;
+                return base.VisitParameter(node);
             }
         }
 
