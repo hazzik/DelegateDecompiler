@@ -4,7 +4,7 @@ using NUnit.Framework;
 
 namespace DelegateDecompiler.Tests
 {
-    public class Issue90
+    public class Issue90 : DecompilerTestsBase
     {
         public class Test 
         { 
@@ -22,7 +22,7 @@ namespace DelegateDecompiler.Tests
         [Test]
         public void ShouldBeAbleToDecompileLastOrDefault()
         {
-            var actual = Enumerable.Range(0, 3)
+            var query = Enumerable.Range(0, 3)
                 .Select(x => new Test2
                 {
                     Collection =
@@ -31,14 +31,14 @@ namespace DelegateDecompiler.Tests
                         new Test { A = (x * 3 + 1).ToString() },
                         new Test { A = (x * 3 + 2).ToString() },
                     }
-                })
-                .AsQueryable()
-                .Select(x => x.Last)
-                .Select(x => x.A)
-                .Decompile()
-                .ToList();
+                }).AsQueryable();
 
-            Assert.That(actual, Is.EqualTo(new[] { "2", "5", "8" }));
+            var expected = query.Select(x => x.Collection.LastOrDefault()).Select(x => x.A);
+            var actual = query.Select(x => x.Last).Select(x => x.A).Decompile();
+
+            AssertAreEqual(expected.Expression, actual.Expression);
+
+            Assert.That(actual.ToList(), Is.EqualTo(new[] { "2", "5", "8" }));
         }
     }
 }
