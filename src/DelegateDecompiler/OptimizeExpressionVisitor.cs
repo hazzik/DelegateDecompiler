@@ -461,7 +461,7 @@ namespace DelegateDecompiler
             {
                 if (node.Method.Name == nameof(Expression.Constant) && 
                     node.Method.DeclaringType == typeof(Expression) &&
-                    node.Arguments[0] is ParameterExpression parameter)
+                    node.Arguments[0] is Expression parameter)
                 {
                     return Expression.Constant(parameter);
                 }
