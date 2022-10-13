@@ -345,10 +345,6 @@ namespace DelegateDecompiler
 
             return base.VisitMethodCall(node);
         }
-        static Expression EvaluateExpression(Expression node)
-        {
-            return Expression.Lambda<Func<Expression>>(node).Compile().Invoke();
-        }
 
         static bool Invert(ref BinaryExpression expression)
         {
@@ -454,11 +450,13 @@ namespace DelegateDecompiler
         
         class LinqExpressionUnwrapper : ExpressionVisitor
         {
+            readonly Dictionary<Expression, Expression> replacements = new Dictionary<Expression, Expression>();
+
             public static Expression Unwrap(Expression expression)
             {
                 var visit = new LinqExpressionUnwrapper().Visit(expression);
-                var func = Expression.Lambda<Func<Expression>>(visit).Compile();
-                return Expression.Quote(func.Invoke());
+                var func = EvaluateExpression(visit);
+                return Expression.Quote(func);
             }
 
             protected override Expression VisitMethodCall(MethodCallExpression node)
@@ -470,7 +468,25 @@ namespace DelegateDecompiler
                     return Expression.Constant(node.Arguments[0]);
                 }
 
+                if (node.Method.Name == nameof(Expression.Parameter) &&
+                    node.Method.DeclaringType == typeof(Expression))
+                {
+                    if (!replacements.TryGetValue(node, out var parameter))
+                    {
+                        parameter = Expression.Constant(EvaluateExpression(node));
+                        replacements[node] = parameter;
+                    }
+
+                    return parameter;
+                }
+
                 return base.VisitMethodCall(node);
+            }
+
+            static Expression EvaluateExpression(Expression visit)
+            {
+                var func = Expression.Lambda<Func<Expression>>(visit).Compile();
+                return func.Invoke();
             }
         }
 
