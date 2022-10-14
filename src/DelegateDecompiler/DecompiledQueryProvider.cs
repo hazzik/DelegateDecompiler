@@ -40,7 +40,7 @@ namespace DelegateDecompiler
 
         public virtual IQueryable<TElement> CreateQuery<TElement>(Expression expression)
         {
-            var decompiled = DecompileExpressionVisitor.Decompile(expression);
+            var decompiled = DecompileExpressionVisitor.Decompile(expression, typeof(TElement));
             return new DecompiledQueryable<TElement>(this, Inner.CreateQuery<TElement>(decompiled));
         }
 
@@ -52,7 +52,7 @@ namespace DelegateDecompiler
 
         public TResult Execute<TResult>(Expression expression)
         {
-            var decompiled = DecompileExpressionVisitor.Decompile(expression);
+            var decompiled = DecompileExpressionVisitor.Decompile(expression, typeof(TResult));
             return Inner.Execute<TResult>(decompiled);
         }
     }
