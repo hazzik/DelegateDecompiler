@@ -3,16 +3,17 @@ using System.Linq.Expressions;
 
 namespace DelegateDecompiler
 {
-    internal static class ExpressionHelper
+    public static class ExpressionHelper
     {
-        internal static Expression Default(Type type) =>
+        public static Expression Default(Type type) =>
             // LINQ to entities and possibly other providers don't support Expression.Default, so this gets the default
             // value and then uses an Expression.Constant instead
             Expression.Constant(GetDefaultValue(type), type);
 
-        internal static object GetDefaultValue(Type type)
+        public static object GetDefaultValue(Type type)
         {
             return type.IsValueType ? Activator.CreateInstance(type) : null;
         }
+
     }
 }

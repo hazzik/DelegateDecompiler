@@ -7,11 +7,6 @@ namespace DelegateDecompiler
 {
     public class DecompileExpressionVisitor : ExpressionVisitor
     {
-        public static Expression Decompile(Expression expression)
-        {
-            return new DecompileExpressionVisitor().Visit(expression);
-        }
-
         protected override Expression VisitMember(MemberExpression node)
         {
             if (ShouldDecompile(node.Member) && node.Member is PropertyInfo property)

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Linq.Expressions;
 
 namespace DelegateDecompiler
@@ -51,7 +52,7 @@ namespace DelegateDecompiler
                 if (TryConvert1(test, ifTrueBinary, out result))
                     return result;
             }
-            
+
             var testBinary = test as BinaryExpression;
             var ifTrueConstant = ifTrue as ConstantExpression;
             var ifFalseConstant = ifFalse as ConstantExpression;
@@ -209,16 +210,16 @@ namespace DelegateDecompiler
 
         static Expression ConvertToNullable(Expression expression)
         {
-	        if (!expression.Type.IsValueType || expression.Type.IsNullableType()) return expression;
+            if (!expression.Type.IsValueType || expression.Type.IsNullableType()) return expression;
 
-	        var operand = expression.NodeType == ExpressionType.Convert
-		        ? ((UnaryExpression) expression).Operand
-		        : expression;
+            var operand = expression.NodeType == ExpressionType.Convert
+                ? ((UnaryExpression) expression).Operand
+                : expression;
 
-	        return Expression.Convert(operand, typeof(Nullable<>).MakeGenericType(expression.Type));
-		}
+            return Expression.Convert(operand, typeof(Nullable<>).MakeGenericType(expression.Type));
+        }
 
-		static Expression UnwrapConvertToNullable(Expression expression)
+        static Expression UnwrapConvertToNullable(Expression expression)
         {
             var unary = expression as UnaryExpression;
             if (unary != null && expression.NodeType == ExpressionType.Convert && expression.Type.IsNullableType())
@@ -233,11 +234,11 @@ namespace DelegateDecompiler
             MemberExpression memberExpression;
             if (IsHasValue(hasValue, out memberExpression))
             {
-	            expression = new GetValueOrDefaultRemover(memberExpression.Expression).Visit(getValueOrDefault);
+                expression = new GetValueOrDefaultRemover(memberExpression.Expression).Visit(getValueOrDefault);
                 if (expression != getValueOrDefault)
                     return true;
             }
-            
+
             expression = null;
             return false;
         }
@@ -252,12 +253,12 @@ namespace DelegateDecompiler
                 if (expression == callExpression.Object)
                     return true;
             }
-            
+
             expression = null;
             return false;
         }
 
-	    static bool IsHasValue(Expression expression, out MemberExpression property)
+        static bool IsHasValue(Expression expression, out MemberExpression property)
         {
             property = expression as MemberExpression;
             return property != null && property.Member.Name == "HasValue" && property.Expression != null && property.Expression.Type.IsNullableType();
@@ -324,7 +325,7 @@ namespace DelegateDecompiler
 
         protected override Expression VisitUnary(UnaryExpression node)
         {
-            if (node.NodeType == ExpressionType.Not && 
+            if (node.NodeType == ExpressionType.Not &&
                 node.Operand is BinaryExpression binary &&
                 Invert(ref binary))
             {
@@ -351,35 +352,35 @@ namespace DelegateDecompiler
             switch (expression.NodeType)
             {
                 case ExpressionType.Equal:
-                {
-                    expression = Expression.NotEqual(expression.Left, expression.Right);
-                    return true;
-                }
+                    {
+                        expression = Expression.NotEqual(expression.Left, expression.Right);
+                        return true;
+                    }
                 case ExpressionType.NotEqual:
-                {
-                    expression = Expression.Equal(expression.Left, expression.Right);
-                    return true;
-                }
+                    {
+                        expression = Expression.Equal(expression.Left, expression.Right);
+                        return true;
+                    }
                 case ExpressionType.LessThan:
-                {
-                    expression = Expression.GreaterThanOrEqual(expression.Left, expression.Right);
-                    return true;
-                }
+                    {
+                        expression = Expression.GreaterThanOrEqual(expression.Left, expression.Right);
+                        return true;
+                    }
                 case ExpressionType.LessThanOrEqual:
-                {
-                    expression = Expression.GreaterThan(expression.Left, expression.Right);
-                    return true;
-                }
+                    {
+                        expression = Expression.GreaterThan(expression.Left, expression.Right);
+                        return true;
+                    }
                 case ExpressionType.GreaterThan:
-                {
-                    expression = Expression.LessThanOrEqual(expression.Left, expression.Right);
-                    return true;
-                }
+                    {
+                        expression = Expression.LessThanOrEqual(expression.Left, expression.Right);
+                        return true;
+                    }
                 case ExpressionType.GreaterThanOrEqual:
-                {
-                    expression = Expression.LessThan(expression.Left, expression.Right);
-                    return true;
-                }
+                    {
+                        expression = Expression.LessThan(expression.Left, expression.Right);
+                        return true;
+                    }
             }
             return false;
         }
@@ -418,19 +419,19 @@ namespace DelegateDecompiler
                 return node.Update(left, conversion, right);
             }
 
-	        protected override Expression VisitUnary(UnaryExpression node)
-	        {
-		        var before = node;
-		        var operand = Visit(node.Operand);
+            protected override Expression VisitUnary(UnaryExpression node)
+            {
+                var before = node;
+                var operand = Visit(node.Operand);
 
-		        if (operand != before.Operand)
-		        {
-			        operand = ConvertToNullable(operand);
-		        }
+                if (operand != before.Operand)
+                {
+                    operand = ConvertToNullable(operand);
+                }
 
-		        return before.Update(operand);
-	        }
-		}
+                return before.Update(operand);
+            }
+        }
 
         class GetValueOrDefaultToCoalesceConverter : ExpressionVisitor
         {
@@ -447,7 +448,7 @@ namespace DelegateDecompiler
                 return base.VisitMethodCall(node);
             }
         }
-        
+
         class LinqExpressionUnwrapper : ExpressionVisitor
         {
             readonly Dictionary<Expression, Expression> replacements = new Dictionary<Expression, Expression>();
@@ -455,7 +456,7 @@ namespace DelegateDecompiler
             public static Expression Unwrap(Expression expression)
             {
                 var visit = new LinqExpressionUnwrapper().Visit(expression);
-                var func = EvaluateExpression(visit);
+                var func = visit.Evaluate() as Expression;
                 return Expression.Quote(func);
             }
 
@@ -473,7 +474,7 @@ namespace DelegateDecompiler
                 {
                     if (!replacements.TryGetValue(node, out var parameter))
                     {
-                        parameter = Expression.Constant(EvaluateExpression(node));
+                        parameter = Expression.Constant(node.Evaluate());
                         replacements[node] = parameter;
                     }
 
@@ -481,12 +482,6 @@ namespace DelegateDecompiler
                 }
 
                 return base.VisitMethodCall(node);
-            }
-
-            static Expression EvaluateExpression(Expression visit)
-            {
-                var func = Expression.Lambda<Func<Expression>>(visit).Compile();
-                return func.Invoke();
             }
         }
 
