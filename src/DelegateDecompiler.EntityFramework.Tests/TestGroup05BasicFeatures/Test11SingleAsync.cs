@@ -1,10 +1,11 @@
-﻿// Contributed by @JonPSmith (GitHub) www.thereformedprogrammer.com
+// Contributed by @JonPSmith (GitHub) www.thereformedprogrammer.com
 
 using System.Linq;
 using System.Threading.Tasks;
 using DelegateDecompiler.EntityFramework.Tests.EfItems;
 using DelegateDecompiler.EntityFramework.Tests.Helpers;
 using NUnit.Framework;
+using DelegateDecompiler.EntityFramework.Tests.EfItems.Abstracts;
 #if EF_CORE
 using DelegateDecompiler.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -45,6 +46,22 @@ namespace DelegateDecompiler.EntityFramework.Tests.TestGroup05BasicFeatures
                 //VERIFY
                 env.CompareAndLogSingleton(linq, dd);
             }
+        }
+
+        [Test]
+        public void TestSingleIntEqualsUniqueValue()
+        {
+            using (var env = new MethodEnvironment(classEnv))
+            {
+                var query = FilterNonConstantBools(env.Db.EfPersons).DecompileAsync();
+
+                var result = query.FirstOrDefault();
+            }
+        }
+
+        private IQueryable<T> FilterNonConstantBools<T>(IQueryable<T> query) where T : IPerson
+        {
+            return query.Where(x => x.FullNameHandleNull != null);
         }
     }
 }
