@@ -70,7 +70,7 @@ namespace DelegateDecompiler.EntityFramework.Tests.TestGroup50Types
         }
 
         [Test]
-        public void TestGenericMethodPersonHandle()
+        public void TestSelectGenericMethodPersonHandle()
         {
             using (var env = new MethodEnvironment(classEnv))
             {
@@ -86,10 +86,30 @@ namespace DelegateDecompiler.EntityFramework.Tests.TestGroup50Types
             }
         }
 
+        [Test]
+        public void TestFilterGenericMethodPersonHandle()
+        {
+            using (var env = new MethodEnvironment(classEnv))
+            {
+                var linq = env.Db.EfPersons.Where(x => x.FirstName + (x.MiddleName == null ? "" : " ") + x.MiddleName + " " + x.LastName != null).ToList();
+
+                env.AboutToUseDelegateDecompiler();
+                var dd = FilterGenericPersonHandle(env.Db.EfPersons).Decompile().ToList();
+
+                env.CompareAndLogList(linq, dd);
+            }
+        }
+
         public IQueryable<string> GetGenericPersonHandle<T>(IQueryable<T> people)
             where T : class, EfItems.Abstracts.IPerson
         {
             return people.Select(x => x.FullNameHandleNull);
+        }
+
+        static IQueryable<T> FilterGenericPersonHandle<T>(IQueryable<T> people)
+            where T : EfItems.Abstracts.IPerson
+        {
+            return people.Where(x => x.FullNameHandleNull != null);
         }
     }
 }
