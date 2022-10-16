@@ -26,13 +26,13 @@ namespace DelegateDecompiler.EntityFrameworkCore
 
         public virtual TResult ExecuteAsync<TResult>(Expression expression, CancellationToken cancellationToken)
         {
-            var decompiled = DecompileExpressionVisitor.Decompile(expression, typeof(TResult));
+            var decompiled = DecompileExpressionVisitor.Decompile(expression);
             return AsyncQueryProvider.ExecuteAsync<TResult>(decompiled, cancellationToken);
         }
 
         public override IQueryable<TElement> CreateQuery<TElement>(Expression expression)
         {
-            var decompiled = DecompileExpressionVisitor.Decompile(expression, typeof(TElement));
+            var decompiled = DecompileExpressionVisitor.Decompile(expression);
             return new EntityQueryable<TElement>(this, decompiled);
         }
     }
