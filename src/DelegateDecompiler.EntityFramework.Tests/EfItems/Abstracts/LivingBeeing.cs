@@ -1,9 +1,8 @@
-
 using System.ComponentModel.DataAnnotations;
 
 namespace DelegateDecompiler.EntityFramework.Tests.EfItems.Abstracts
 {
-    public abstract class LivingBeeing: IPerson
+    public abstract class LivingBeeing : IPerson
     {
         [Key]
         public int Id { get; set; }

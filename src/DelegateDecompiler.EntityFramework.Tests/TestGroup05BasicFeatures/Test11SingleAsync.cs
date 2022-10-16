@@ -1,4 +1,4 @@
-// Contributed by @JonPSmith (GitHub) www.thereformedprogrammer.com
+﻿// Contributed by @JonPSmith (GitHub) www.thereformedprogrammer.com
 
 using System.Linq;
 using System.Threading.Tasks;
