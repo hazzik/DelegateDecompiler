@@ -1,6 +1,9 @@
 DelegateDecompiler
 ====================
 
+![https://ci.appveyor.com/project/hazzik/delegatedecompiler/branch/main](https://ci.appveyor.com/api/projects/status/github/hazzik/delegatedecompiler?branch=main&svg=true)
+![https://nuget.org/packages/DelegateDecompiler](https://img.shields.io/nuget/dt/DelegateDecompiler.svg)
+
 A tool which is able to decompile a delegate or a method body to its lambda representation
 
 ## Sponsorship
