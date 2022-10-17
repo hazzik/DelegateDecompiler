@@ -10,21 +10,21 @@ using System.Text;
 
 namespace DelegateDecompiler.EntityFramework.Tests.Helpers
 {
-    public enum OutputVersions { Summary, Detail, DetailWithSql}
+    public enum OutputVersions { Summary, Detail, DetailWithSql }
 
     static class MasterEnvironment
     {
         public const string HeaderTestFilename = "DocumentationHeaderText.md";
 
         //list of filenames to produce (these names must be in the same order as OutputVersions)
-        public static readonly string[] NamesOfDocumentationFilesForVersions = new []
+        public static readonly string[] NamesOfDocumentationFilesForVersions = new[]
         {
             "SummaryOfSupportedCommands.md",
             "DetailedListOfSupportedCommands.md",
             "DetailedListOfSupportedCommandsWithSQL.md"
         };
 
-        private static int OrderInc ;
+        private static int OrderInc;
 
         private static bool RunStartedProperly;
 
@@ -42,7 +42,7 @@ namespace DelegateDecompiler.EntityFramework.Tests.Helpers
         }
 
         public static void ResetLogging()
-        {          
+        {
             _classLogs.Clear();
             OrderInc = 1;
         }
@@ -59,7 +59,7 @@ namespace DelegateDecompiler.EntityFramework.Tests.Helpers
             var sb = new StringBuilder();
             sb.Append(BuildHeaderAsMarkup(version));
 
-            sb.Append( version == OutputVersions.Summary
+            sb.Append(version == OutputVersions.Summary
                 ? BuildSummary()
                 : BuildDetailWithOptionalSql(version));
 
@@ -74,7 +74,7 @@ namespace DelegateDecompiler.EntityFramework.Tests.Helpers
 
             for (var version = OutputVersions.Summary; version <= OutputVersions.DetailWithSql; version++)
             {
-                MarkupFileHelpers.WriteTextToFileInMarkup(NamesOfDocumentationFilesForVersions[(int)version], ResultsAsMarkup(version));                
+                MarkupFileHelpers.WriteTextToFileInMarkup(NamesOfDocumentationFilesForVersions[(int)version], ResultsAsMarkup(version));
             }
 
         }
@@ -91,7 +91,7 @@ namespace DelegateDecompiler.EntityFramework.Tests.Helpers
                 sb.Append(BuildGroupHeaderAsMarkup(groupedTests.Key));
                 //now split into three groups: supported, partially supported and not supported
                 var classifiedtestsDict = groupedTests.Select(x => new ClassLogClassified(x))
-                    .GroupBy(x => x.Classification).ToDictionary(k => k.Key, v => v.Select( x => x.DisplayMarkupNoPrefix));
+                    .GroupBy(x => x.Classification).ToDictionary(k => k.Key, v => v.Select(x => x.DisplayMarkupNoPrefix));
 
                 sb.Append(ListInGroup(ClassClassifications.Supported, classifiedtestsDict));
                 sb.Append(ListInGroup(ClassClassifications.PartiallySupported, classifiedtestsDict));
@@ -108,7 +108,7 @@ namespace DelegateDecompiler.EntityFramework.Tests.Helpers
 
             if (!dict.ContainsKey(classification)) return sb;
 
-            sb.AppendFormat("- {0}\n", classification.ToString().SplitCamelCase( classification != ClassClassifications.Supported));
+            sb.AppendFormat("- {0}\n", classification.ToString().SplitCamelCase(classification != ClassClassifications.Supported));
             foreach (var markup in dict[classification])
                 sb.AppendFormat("  * {0}\n", markup);
 
@@ -125,7 +125,7 @@ namespace DelegateDecompiler.EntityFramework.Tests.Helpers
                 {
                     sb.Append(classLog.ResultsAsMarkup(version));
                 }
-                sb.AppendLine(); 
+                sb.AppendLine();
             }
             return sb;
         }
@@ -138,7 +138,7 @@ namespace DelegateDecompiler.EntityFramework.Tests.Helpers
         private static StringBuilder BuildHeaderAsMarkup(OutputVersions version)
         {
             var sb = new StringBuilder();
-            var delegateDecompilerAssembly = Assembly.GetAssembly(typeof (ComputedAttribute));
+            var delegateDecompilerAssembly = Assembly.GetAssembly(typeof(ComputedAttribute));
 
             sb.AppendFormat("{0} of supported commands\n============\n", version.ToString().SplitCamelCase());
 

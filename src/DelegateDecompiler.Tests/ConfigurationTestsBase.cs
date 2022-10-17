@@ -11,13 +11,13 @@ namespace DelegateDecompiler.Tests
 
         static Func<Configuration> BuildInstanceGetter()
         {
-            return Expression.Lambda<Func<Configuration>>(Expression.Field(null, typeof (Configuration), "instance")).Compile();
+            return Expression.Lambda<Func<Configuration>>(Expression.Field(null, typeof(Configuration), "instance")).Compile();
         }
 
         static Action<Configuration> BuildInstanceSetter()
         {
-            var arg = Expression.Parameter(typeof (Configuration));
-            return Expression.Lambda<Action<Configuration>>(Expression.Assign(Expression.Field(null, typeof (Configuration), "instance"), arg), arg).Compile();
+            var arg = Expression.Parameter(typeof(Configuration));
+            return Expression.Lambda<Action<Configuration>>(Expression.Assign(Expression.Field(null, typeof(Configuration), "instance"), arg), arg).Compile();
         }
 
         [TearDown]

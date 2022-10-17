@@ -122,9 +122,9 @@ namespace DelegateDecompiler.Tests
         [Test]
         public void DecimalCast()
         {
-            Expression<Func<decimal>> expected1 = () => (decimal) 1.21;
+            Expression<Func<decimal>> expected1 = () => (decimal)1.21;
             Expression<Func<decimal>> expected2 = () => new decimal(121, 0, 0, false, 2);
-            Func<decimal> compiled = () => (decimal) 1.21;
+            Func<decimal> compiled = () => (decimal)1.21;
             Test(expected1, expected2, compiled);
         }
 

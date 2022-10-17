@@ -50,7 +50,7 @@ namespace DelegateDecompiler.EntityFramework.Tests.TestGroup05BasicFeatures
                 env.CompareAndLogList(linq, dd);
             }
         }
-        
+
         [Test]
         public void TestIntEqualsStringLength()
         {
@@ -67,7 +67,7 @@ namespace DelegateDecompiler.EntityFramework.Tests.TestGroup05BasicFeatures
                 env.CompareAndLogList(linq, dd);
             }
         }
-        
+
         [Test]
         public void TestIntNotEqualsStringLength()
         {
@@ -83,5 +83,6 @@ namespace DelegateDecompiler.EntityFramework.Tests.TestGroup05BasicFeatures
                 //VERIFY
                 env.CompareAndLogList(linq, dd);
             }
-        }    }
+        }
+    }
 }

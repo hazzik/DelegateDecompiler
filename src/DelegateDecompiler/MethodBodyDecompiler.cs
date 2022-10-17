@@ -17,7 +17,7 @@ namespace DelegateDecompiler
         public static LambdaExpression Decompile(MethodInfo method, Type declaringType)
         {
             var args = method.GetParameters()
-                .Select(p => (Address) Expression.Parameter(p.ParameterType, p.Name))
+                .Select(p => (Address)Expression.Parameter(p.ParameterType, p.Name))
                 .ToList();
 
             var methodType = declaringType ?? method.DeclaringType;
@@ -30,7 +30,7 @@ namespace DelegateDecompiler
 
             var optimizedExpression = expression.Optimize();
 
-            return Expression.Lambda(optimizedExpression, args.Select(x => (ParameterExpression) x.Expression));
+            return Expression.Lambda(optimizedExpression, args.Select(x => (ParameterExpression)x.Expression));
         }
 
         static Expression DecompileConcrete(MethodInfo method, IList<Address> args)
@@ -69,7 +69,7 @@ namespace DelegateDecompiler
                 throw new InvalidOperationException($"Method {method.Name} does not have a declaring type");
 
             var baseCalls = new Dictionary<MethodInfo, Expression>();
-            
+
             var @this = args[0].Expression;
 
             var result = GetDefaultImplementation(declaringType, method, args, baseCalls);
@@ -138,8 +138,8 @@ namespace DelegateDecompiler
         }
 
         static Expression GetDefaultImplementation(
-            Type declaringType, 
-            MethodInfo method, 
+            Type declaringType,
+            MethodInfo method,
             IList<Address> args,
             IDictionary<MethodInfo, Expression> calls)
         {
@@ -182,7 +182,7 @@ namespace DelegateDecompiler
 
                 return base.VisitMethodCall(node);
             }
-            
+
             protected override Expression VisitMember(MemberExpression node)
             {
                 if (node.Member is PropertyInfo property &&

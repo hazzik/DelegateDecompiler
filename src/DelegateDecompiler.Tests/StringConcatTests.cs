@@ -21,7 +21,7 @@ namespace DelegateDecompiler.Tests
             Expression<Func<string, string, string, string, string, string>> expected = (u, w, x, y, z) => u + " " + w + " " + x + " " + y + " " + z;
             Func<string, string, string, string, string, string> compiled = (u, w, x, y, z) => u + " " + w + " " + x + " " + y + " " + z;
             Test(expected, compiled);
-        } 
+        }
 
         [Test]
         public void StringConcatSingleArg()
@@ -29,7 +29,7 @@ namespace DelegateDecompiler.Tests
             Expression<Func<object, string>> expected = x => string.Concat(x);
             Func<object, string> compiled = x => string.Concat(x);
             Test(expected, compiled);
-        } 
+        }
 
         [Test]
         public void StringConcatSingleArgParams()
@@ -55,6 +55,6 @@ namespace DelegateDecompiler.Tests
             Expression<Func<int, string, double, string>> expected2 = (x, y, z) => x.ToString() + y + z.ToString();
             Func<int, string, double, string> compiled = (x, y, z) => x + y + z;
             Test(expected1, expected2, compiled);
-        } 
+        }
     }
 }

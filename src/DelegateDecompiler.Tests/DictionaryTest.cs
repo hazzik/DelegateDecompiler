@@ -11,8 +11,8 @@ namespace DelegateDecompiler.Tests
         [Test]
         public void CanDecompileDictionaryIndexerGetter()
         {
-	        Expression<Func<IDictionary<string, object>, object>> expected = x => x["A"];
-	        Func<IDictionary<string, object>, object> compiled = x => x["A"];
+            Expression<Func<IDictionary<string, object>, object>> expected = x => x["A"];
+            Func<IDictionary<string, object>, object> compiled = x => x["A"];
             Test(expected, compiled);
         }
     }

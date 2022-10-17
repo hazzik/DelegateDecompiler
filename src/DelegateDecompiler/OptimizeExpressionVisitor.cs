@@ -96,7 +96,7 @@ namespace DelegateDecompiler
 
             if (test.NodeType == ExpressionType.Not)
             {
-                var testOperand = ((UnaryExpression) test).Operand;
+                var testOperand = ((UnaryExpression)test).Operand;
                 if (ifTrueConstant?.Value as bool? == false)
                 {
                     return Expression.AndAlso(testOperand, ifFalse);
@@ -156,7 +156,7 @@ namespace DelegateDecompiler
             {
                 return true;
             }
-            if (hasValue.NodeType == ExpressionType.Not && TryConvert1(((UnaryExpression) hasValue).Operand, getValueOrDefault, out result))
+            if (hasValue.NodeType == ExpressionType.Not && TryConvert1(((UnaryExpression)hasValue).Operand, getValueOrDefault, out result))
             {
                 return true;
             }
@@ -213,7 +213,7 @@ namespace DelegateDecompiler
             if (!expression.Type.IsValueType || expression.Type.IsNullableType()) return expression;
 
             var operand = expression.NodeType == ExpressionType.Convert
-                ? ((UnaryExpression) expression).Operand
+                ? ((UnaryExpression)expression).Operand
                 : expression;
 
             return Expression.Convert(operand, typeof(Nullable<>).MakeGenericType(expression.Type));
@@ -352,40 +352,40 @@ namespace DelegateDecompiler
             switch (expression.NodeType)
             {
                 case ExpressionType.Equal:
-                    {
-                        expression = Expression.NotEqual(expression.Left, expression.Right);
-                        return true;
-                    }
+                {
+                    expression = Expression.NotEqual(expression.Left, expression.Right);
+                    return true;
+                }
                 case ExpressionType.NotEqual:
-                    {
-                        expression = Expression.Equal(expression.Left, expression.Right);
-                        return true;
-                    }
+                {
+                    expression = Expression.Equal(expression.Left, expression.Right);
+                    return true;
+                }
                 case ExpressionType.LessThan:
-                    {
-                        expression = Expression.GreaterThanOrEqual(expression.Left, expression.Right);
-                        return true;
-                    }
+                {
+                    expression = Expression.GreaterThanOrEqual(expression.Left, expression.Right);
+                    return true;
+                }
                 case ExpressionType.LessThanOrEqual:
-                    {
-                        expression = Expression.GreaterThan(expression.Left, expression.Right);
-                        return true;
-                    }
+                {
+                    expression = Expression.GreaterThan(expression.Left, expression.Right);
+                    return true;
+                }
                 case ExpressionType.GreaterThan:
-                    {
-                        expression = Expression.LessThanOrEqual(expression.Left, expression.Right);
-                        return true;
-                    }
+                {
+                    expression = Expression.LessThanOrEqual(expression.Left, expression.Right);
+                    return true;
+                }
                 case ExpressionType.GreaterThanOrEqual:
-                    {
-                        expression = Expression.LessThan(expression.Left, expression.Right);
-                        return true;
-                    }
+                {
+                    expression = Expression.LessThan(expression.Left, expression.Right);
+                    return true;
+                }
             }
             return false;
         }
 
-        class GetValueOrDefaultRemover :ExpressionVisitor
+        class GetValueOrDefaultRemover : ExpressionVisitor
         {
             readonly Expression expected;
 

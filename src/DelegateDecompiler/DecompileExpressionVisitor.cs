@@ -19,7 +19,7 @@ namespace DelegateDecompiler
 
         protected override Expression VisitMethodCall(MethodCallExpression node)
         {
-            if (node.Method.IsGenericMethod && node.Method.GetGenericMethodDefinition() == typeof (ComputedExtension).GetMethod("Computed", BindingFlags.Static | BindingFlags.Public))
+            if (node.Method.IsGenericMethod && node.Method.GetGenericMethodDefinition() == typeof(ComputedExtension).GetMethod("Computed", BindingFlags.Static | BindingFlags.Public))
             {
                 var argument = node.Arguments.SingleOrDefault();
 
@@ -51,7 +51,8 @@ namespace DelegateDecompiler
 
         Expression Decompile(MethodInfo method, Expression instance, IList<Expression> arguments)
         {
-            var expression = method.Decompile(instance?.Type);
+            var unwrappedInstance = UnwrapUpcast(instance);
+            var expression = method.Decompile(unwrappedInstance?.Type);
 
             var expressions = new Dictionary<Expression, Expression>();
             var argIndex = 0;
@@ -60,7 +61,7 @@ namespace DelegateDecompiler
                 var parameter = expression.Parameters[index];
                 if (index == 0 && method.IsStatic == false)
                 {
-                    expressions.Add(parameter, instance);
+                    expressions.Add(parameter, unwrappedInstance);
                 }
                 else
                 {
@@ -71,6 +72,15 @@ namespace DelegateDecompiler
             var body = new ReplaceExpressionVisitor(expressions).Visit(expression.Body);
             body = TransparentIdentifierRemovingExpressionVisitor.RemoveTransparentIdentifiers(body);
             return Visit(body);
+        }
+
+        static Expression UnwrapUpcast(Expression instance)
+        {
+            return instance is UnaryExpression cast &&
+                   cast.NodeType == ExpressionType.Convert &&
+                   cast.Type.IsAssignableFrom(cast.Operand.Type)
+                ? cast.Operand
+                : instance;
         }
     }
 }

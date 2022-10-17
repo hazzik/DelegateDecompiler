@@ -42,15 +42,15 @@ namespace DelegateDecompiler
 
             if (expression is NewExpression newExpression && newExpression.Members != null)
                 return newExpression.Members.Select((t, i) => Expression.Bind(t, newExpression.Arguments[i]));
-            
+
             return null;
         }
 
         private static bool Match(MemberInfo a, MemberInfo b)
         {
             if (a == b) return true;
-            
-            if (a is PropertyInfo propertyInfo && b is MethodInfo methodInfo && propertyInfo.CanRead && methodInfo == propertyInfo.GetGetMethod(true)) 
+
+            if (a is PropertyInfo propertyInfo && b is MethodInfo methodInfo && propertyInfo.CanRead && methodInfo == propertyInfo.GetGetMethod(true))
                 return true;
 
             return false;
