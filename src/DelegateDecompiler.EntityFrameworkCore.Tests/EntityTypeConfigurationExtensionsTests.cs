@@ -59,7 +59,7 @@ namespace DelegateDecompiler.EntityFramework.Tests
 
         class TestClass
         {
-            public int Field;
+            public int Field = 1;
             public int Property { get { return Field; } }
 
             public int Method()
