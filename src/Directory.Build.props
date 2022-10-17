@@ -10,6 +10,7 @@
 
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/hazzik/DelegateDecompiler</PackageProjectUrl>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
 
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>$(SolutionDir)\DelegateDecompiler.snk</AssemblyOriginatorKeyFile>
@@ -28,5 +29,9 @@
     <PackageReference Include="GitVersion.MsBuild" Version="5.10.3" PrivateAssets="All" />
     <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.3" PrivateAssets="All" />
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="../../README.md" PackagePath="/" />
   </ItemGroup>
 </Project>
