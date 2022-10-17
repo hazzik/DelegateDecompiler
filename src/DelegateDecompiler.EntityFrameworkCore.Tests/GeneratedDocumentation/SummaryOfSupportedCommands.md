@@ -1,6 +1,6 @@
 Summary of supported commands
 ============
-## Documentation produced for DelegateDecompiler, version 0.30.0 on Thursday, 13 October 2022 16:12
+## Documentation produced for DelegateDecompiler, version 0.31.1.0 on Monday, 17 October 2022 17:28
 
 This file documents what linq commands **DelegateDecompiler** supports when
 working with [Entity Framework Core](https://docs.microsoft.com/en-us/ef/core/) (EF).
@@ -51,7 +51,7 @@ More will appear as we move forward.*
 
 ### Group: Types
 - Supported
-  * [Strings](../TestGroup50Types/Test01Strings.cs) (4 tests)
+  * [Strings](../TestGroup50Types/Test01Strings.cs) (5 tests)
   * [DateTime](../TestGroup50Types/Test05DateTime.cs) (1 tests)
 
 ### Group: Additional Features
