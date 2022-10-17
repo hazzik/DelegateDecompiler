@@ -1,6 +1,6 @@
 Detail With Sql of supported commands
 ============
-## Documentation produced for DelegateDecompiler, version 0.30.0 on Thursday, 13 October 2022 16:12
+## Documentation produced for DelegateDecompiler, version 0.31.1.0 on Monday, 17 October 2022 17:28
 
 This file documents what linq commands **DelegateDecompiler** supports when
 working with [Entity Framework Core](https://docs.microsoft.com/en-us/ef/core/) (EF).
@@ -491,7 +491,14 @@ More will appear as we move forward.*
 
 ```
 
-  * Generic Method Person Handle (line 85)
+  * Select Generic Method Person Handle (line 85)
+     * T-Sql executed is
+
+```SQL
+
+```
+
+  * Filter Generic Method Person Handle (line 99)
      * T-Sql executed is
 
 ```SQL
