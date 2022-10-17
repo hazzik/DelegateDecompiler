@@ -20,6 +20,8 @@
     <EmbedUntrackedSources>True</EmbedUntrackedSources>
     <IncludeSymbols>True</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+
+    <ContinuousIntegrationBuild Condition="'$(CI)' != ''">$(CI)</ContinuousIntegrationBuild>
   </PropertyGroup>
   
   <ItemGroup>
