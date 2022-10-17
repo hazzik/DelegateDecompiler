@@ -1,4 +1,6 @@
-﻿using System;
+﻿// ReSharper disable EqualExpressionComparison
+#pragma warning disable CS1718 // Comparison made to same variable
+using System;
 using System.Linq.Expressions;
 using NUnit.Framework;
 

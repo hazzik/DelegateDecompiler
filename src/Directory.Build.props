@@ -22,6 +22,8 @@
     <IncludeSymbols>True</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
 
+    <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
+
     <ContinuousIntegrationBuild Condition="'$(CI)' != ''">$(CI)</ContinuousIntegrationBuild>
   </PropertyGroup>
   
