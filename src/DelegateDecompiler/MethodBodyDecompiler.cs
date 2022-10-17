@@ -17,7 +17,7 @@ namespace DelegateDecompiler
         public static LambdaExpression Decompile(MethodInfo method, Type declaringType)
         {
             var args = method.GetParameters()
-                .Select(p => (Address) Expression.Parameter(p.ParameterType, p.Name))
+                .Select(p => (Address)Expression.Parameter(p.ParameterType, p.Name))
                 .ToList();
 
             var methodType = declaringType ?? method.DeclaringType;
@@ -28,9 +28,9 @@ namespace DelegateDecompiler
                 ? DecompileVirtual(methodType, method, args)
                 : DecompileConcrete(method, args);
 
-            var optimizedExpression = OptimizeExpressionVisitor.Optimize(expression);
+            var optimizedExpression = expression.Optimize();
 
-            return Expression.Lambda(optimizedExpression, args.Select(x => (ParameterExpression) x.Expression));
+            return Expression.Lambda(optimizedExpression, args.Select(x => (ParameterExpression)x.Expression));
         }
 
         static Expression DecompileConcrete(MethodInfo method, IList<Address> args)
@@ -69,15 +69,17 @@ namespace DelegateDecompiler
                 throw new InvalidOperationException($"Method {method.Name} does not have a declaring type");
 
             var baseCalls = new Dictionary<MethodInfo, Expression>();
-            
+
             var @this = args[0].Expression;
 
             var result = GetDefaultImplementation(declaringType, method, args, baseCalls);
- 
+
             var descendants = AppDomain.CurrentDomain.GetAssemblies()
                 .Where(a => !a.IsDynamic)
                 .SelectMany(a => SafeGetTypes(a))
-                .Where(t => declaringType.IsAssignableFrom(t) && t != declaringType);
+                .SelectMany(t => t.SelfAndBaseTypes())
+                .Distinct()
+                .Where(t => IsAssignableFrom(declaringType, t) && t != declaringType);
 
             var sorted = TypeHierarchy.Traverse(declaringType, descendants);
 
@@ -107,16 +109,20 @@ namespace DelegateDecompiler
             return new ReplaceMethodCallsExpressionVisitor(baseCalls).Visit(result);
         }
 
-        static IEnumerable<Type> BaseTypes(this Type type)
+        static bool IsAssignableFrom(Type p, Type c)
         {
-            var baseType = type.BaseType;
-            if (baseType != typeof(object) && baseType != null)
+            if (p.IsAssignableFrom(c))
             {
-                for (var t = baseType; t != typeof(object); t = t.BaseType)
-                {
-                    yield return t;
-                }
+                return true;
             }
+
+            if (!p.IsGenericType)
+            {
+                return false;
+            }
+
+            var definition = p.GetGenericTypeDefinition();
+            return c.SelfAndBaseTypes().Any(t => t.SafeGetGenericTypeDefinition() == definition);
         }
 
         static IEnumerable<Type> SafeGetTypes(Assembly a)
@@ -132,8 +138,8 @@ namespace DelegateDecompiler
         }
 
         static Expression GetDefaultImplementation(
-            Type declaringType, 
-            MethodInfo method, 
+            Type declaringType,
+            MethodInfo method,
             IList<Address> args,
             IDictionary<MethodInfo, Expression> calls)
         {
@@ -176,7 +182,7 @@ namespace DelegateDecompiler
 
                 return base.VisitMethodCall(node);
             }
-            
+
             protected override Expression VisitMember(MemberExpression node)
             {
                 if (node.Member is PropertyInfo property &&

@@ -1,6 +1,6 @@
 Detail With Sql of supported commands
 ============
-## Documentation produced for DelegateDecompiler, version 0.29.0 on Thursday, 04 February 2021 16:03
+## Documentation produced for DelegateDecompiler, version 0.31.1.0 on Monday, 17 October 2022 17:28
 
 This file documents what linq commands **DelegateDecompiler** supports when
 working with [Entity Framework v6.1](http://msdn.microsoft.com/en-us/data/aa937723) (EF).
@@ -90,7 +90,7 @@ SELECT
     WHERE ([Extent1].[Discriminator] IN (N'Dog',N'HoneyBee',N'Person')) AND ([Extent1].[Discriminator] IN (N'Dog',N'HoneyBee'))
 ```
 
-  * Select Multiple Levels Of Abstract Members Over Tph Hierarchy (line 155)
+  * Select Multiple Levels Of Abstract Members Over Tph Hierarchy (line 199)
      * T-Sql executed is
 
 ```SQL
@@ -122,7 +122,26 @@ SELECT
     FROM [dbo].[EfParents] AS [Extent1]
 ```
 
-  * Bool Equals Constant Async (line 56)
+  * Async Non Generic (line 57)
+     * T-Sql executed is
+
+```SQL
+SELECT 
+    [Extent1].[EfParentId] AS [EfParentId], 
+    [Extent1].[ParentBool] AS [ParentBool], 
+    [Extent1].[ParentInt] AS [ParentInt], 
+    [Extent1].[ParentNullableInt] AS [ParentNullableInt], 
+    [Extent1].[ParentNullableDecimal1] AS [ParentNullableDecimal1], 
+    [Extent1].[ParentNullableDecimal2] AS [ParentNullableDecimal2], 
+    [Extent1].[ParentDouble] AS [ParentDouble], 
+    [Extent1].[ParentString] AS [ParentString], 
+    [Extent1].[StartDate] AS [StartDate], 
+    [Extent1].[EndDate] AS [EndDate], 
+    [Extent1].[ParentTimeSpan] AS [ParentTimeSpan]
+    FROM [dbo].[EfParents] AS [Extent1]
+```
+
+  * Bool Equals Constant Async (line 75)
      * T-Sql executed is
 
 ```SQL
@@ -131,7 +150,7 @@ SELECT
     FROM [dbo].[EfParents] AS [Extent1]
 ```
 
-  * Decompile Upfront Bool Equals Constant Async (line 73)
+  * Decompile Upfront Bool Equals Constant Async (line 92)
      * T-Sql executed is
 
 ```SQL
@@ -140,7 +159,7 @@ SELECT
     FROM [dbo].[EfParents] AS [Extent1]
 ```
 
-  * Bool Equals Static Variable To Array Async (line 92)
+  * Bool Equals Static Variable To Array Async (line 111)
      * T-Sql executed is
 
 ```SQL
@@ -149,7 +168,7 @@ SELECT
     FROM [dbo].[EfParents] AS [Extent1]
 ```
 
-  * Int Equals Constant (line 109)
+  * Int Equals Constant (line 128)
      * T-Sql executed is
 
 ```SQL
@@ -789,13 +808,27 @@ SELECT
     FROM [dbo].[EfPersons] AS [Extent1]
 ```
 
-  * Generic Method Person Handle (line 85)
+  * Select Generic Method Person Handle (line 85)
      * T-Sql executed is
 
 ```SQL
 SELECT 
     [Extent1].[FirstName] + CASE WHEN (CASE WHEN ([Extent1].[MiddleName] IS NULL) THEN N'' ELSE N' ' END IS NULL) THEN N'' WHEN ([Extent1].[MiddleName] IS NULL) THEN N'' ELSE N' ' END + CASE WHEN ([Extent1].[MiddleName] IS NULL) THEN N'' ELSE [Extent1].[MiddleName] END + N' ' + [Extent1].[LastName] AS [C1]
     FROM [dbo].[EfPersons] AS [Extent1]
+```
+
+  * Filter Generic Method Person Handle (line 99)
+     * T-Sql executed is
+
+```SQL
+SELECT 
+    [Extent1].[EfPersonId] AS [EfPersonId], 
+    [Extent1].[FirstName] AS [FirstName], 
+    [Extent1].[MiddleName] AS [MiddleName], 
+    [Extent1].[LastName] AS [LastName], 
+    [Extent1].[NameOrder] AS [NameOrder]
+    FROM [dbo].[EfPersons] AS [Extent1]
+    WHERE [Extent1].[FirstName] + CASE WHEN (CASE WHEN ([Extent1].[MiddleName] IS NULL) THEN N'' ELSE N' ' END IS NULL) THEN N'' WHEN ([Extent1].[MiddleName] IS NULL) THEN N'' ELSE N' ' END + CASE WHEN ([Extent1].[MiddleName] IS NULL) THEN N'' ELSE [Extent1].[MiddleName] END + N' ' + [Extent1].[LastName] IS NOT NULL
 ```
 
 
@@ -809,6 +842,36 @@ SELECT
     [Extent1].[StartDate] AS [StartDate]
     FROM [dbo].[EfParents] AS [Extent1]
     WHERE [Extent1].[StartDate] > @p__linq__0
+```
+
+
+
+### Group: Additional Features
+#### [Nested Expressions](../TestGroup90AdditionalFeatures/Test01NestedExpressions.cs):
+- Supported
+  * Subquery As Context Extension Method (line 68)
+     * T-Sql executed is
+
+```SQL
+SELECT 
+    [Project4].[EfParentId] AS [EfParentId], 
+    CASE WHEN ([Project4].[C1] IS NULL) THEN 0 ELSE [Project4].[C2] END AS [C1]
+    FROM ( SELECT 
+        [Project2].[EfParentId] AS [EfParentId], 
+        [Project2].[C1] AS [C1], 
+        (SELECT TOP (1) 
+            [Extent3].[EfChildId] AS [EfChildId]
+            FROM [dbo].[EfChilds] AS [Extent3]
+            WHERE [Extent3].[EfParentId] = [Project2].[EfParentId]) AS [C2]
+        FROM ( SELECT 
+            [Extent1].[EfParentId] AS [EfParentId], 
+            (SELECT TOP (1) 
+                [Extent2].[EfChildId] AS [EfChildId]
+                FROM [dbo].[EfChilds] AS [Extent2]
+                WHERE [Extent2].[EfParentId] = [Extent1].[EfParentId]) AS [C1]
+            FROM [dbo].[EfParents] AS [Extent1]
+        )  AS [Project2]
+    )  AS [Project4]
 ```
 
 

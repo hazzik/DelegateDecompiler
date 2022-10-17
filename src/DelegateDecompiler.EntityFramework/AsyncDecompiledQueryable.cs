@@ -17,7 +17,7 @@ namespace DelegateDecompiler.EntityFramework
         IDbAsyncEnumerator IDbAsyncEnumerable.GetAsyncEnumerator()
         {
             IDbAsyncEnumerable<T> asyncEnumerable = inner as IDbAsyncEnumerable<T>;
-            if(asyncEnumerable == null)
+            if (asyncEnumerable == null)
             {
                 throw new InvalidOperationException("The source IQueryable doesn't implement IDbAsyncEnumerable<T>.");
             }

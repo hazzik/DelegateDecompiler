@@ -25,14 +25,14 @@ namespace DelegateDecompiler.EntityFramework.Tests.Helpers
         /// <summary>
         /// These are MethodLogs that we want to report (filtered out where Linq failed as not appropriate for documentation)
         /// </summary>
-        public IEnumerable<MethodLog> ValidMethodLogs { get
+        public IEnumerable<MethodLog> ValidMethodLogs
         {
-            return MethodLogs.Where(x => x.State != LogStates.EvenLinqDidNotWork);
-        } }
+            get { return MethodLogs.Where(x => x.State != LogStates.EvenLinqDidNotWork); }
+        }
 
         public string TestNameAsMarkupLinkRelativeToDocumentationDir
         {
-            get {  return string.Format("[{0}]({1})", TestDescription, "../" + FileUrlFragment);}
+            get { return string.Format("[{0}]({1})", TestDescription, "../" + FileUrlFragment); }
         }
 
         /// <summary>
@@ -55,7 +55,7 @@ namespace DelegateDecompiler.EntityFramework.Tests.Helpers
             var sb = new StringBuilder();
             sb.AppendFormat("#### {0}:\n", TestNameAsMarkupLinkRelativeToDocumentationDir);
 
-            var dict = MethodLogs.GroupBy(x => x.State).ToDictionary( g => g.Key, m => m.ToList());
+            var dict = MethodLogs.GroupBy(x => x.State).ToDictionary(g => g.Key, m => m.ToList());
             sb.Append(ListInGroup(LogStates.Supported, dict, version == OutputVersions.DetailWithSql));
             sb.Append(ListInGroup(LogStates.NotSupported, dict, false));
             sb.AppendLine();

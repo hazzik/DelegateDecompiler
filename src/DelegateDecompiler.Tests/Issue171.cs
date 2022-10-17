@@ -41,9 +41,9 @@ namespace DelegateDecompiler.Tests
 
         public DataOnStack X2()
         {
-            return new DataOnStack {StatementCount = 1};
+            return new DataOnStack { StatementCount = 1 };
         }
-        
+
         public DataOnStack X3()
         {
             DataOnStack x;

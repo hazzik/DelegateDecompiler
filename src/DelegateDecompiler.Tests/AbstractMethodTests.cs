@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Linq.Expressions;
-using System.Reflection;
 using NUnit.Framework;
 
 namespace DelegateDecompiler.Tests
@@ -23,17 +22,17 @@ namespace DelegateDecompiler.Tests
 
         public class Y : X
         {
-            public override string M5() => "Y";            
+            public override string M5() => "Y";
         }
 
         public class Y1 : Y
         {
-            public override string M5() => "Y1";            
+            public override string M5() => "Y1";
         }
-        
+
         public class Y2 : Y
         {
-            public override string M5() => "Y2";            
+            public override string M5() => "Y2";
         }
 
         public class Z : X
@@ -73,11 +72,11 @@ namespace DelegateDecompiler.Tests
             public override string M5() => "B";
 
             public override string M6() => "B is child of " + base.M6().ToString();
-           
+
             public override string M7 => "B is child of " + base.M7.ToString();
         }
 
-        public class C : A
+        public class C<T> : A
         {
             public string Me = "C";
 
@@ -88,15 +87,15 @@ namespace DelegateDecompiler.Tests
             public override string M3() => "C";
 
             public override string M5() => "C";
-            
+
             public override string M6() => "C is child of " + base.M6().ToString();
-           
+
             public override string M7 => "C is child of " + base.M7.ToString();
         }
 
-        public class D : C
+        public class D : C<int>
         {
-            public string Me = "C";
+            public new string Me = "C";
 
             public override string M1() => "D";
 
@@ -107,13 +106,13 @@ namespace DelegateDecompiler.Tests
             public override string M5() => "D";
 
             public override string M6() => "D is child of " + base.M6().ToString();
-            
+
             public override string M7 => "D is child of " + base.M7.ToString();
         }
 
-        public abstract class E : C
+        public abstract class E : C<int>
         {
-            public string Me = "C";
+            public new string Me = "C";
 
             public override string M1() => "E";
 
@@ -132,13 +131,33 @@ namespace DelegateDecompiler.Tests
             public string M1(int a) => a.ToString();
         }
 
+        public class F<T> : C<T>
+        {
+            public override string M1() => "F";
+
+            public override string M2() => Me;
+
+            public override string M3() => "F";
+
+            public override string M5() => "F";
+
+            public override string M6() => "F is child of " + base.M6().ToString();
+
+            public override string M7 => "F is child of " + base.M7.ToString();
+        }
+
+        public class G<T1, T2> : F<T1>
+        {
+        }
+
         [Test]
         public void DecompileMethod()
         {
             Expression<Func<A, string>> e = @this =>
-                @this is E ? "E"
+                @this is F<int> ? "F"
+                : @this is E ? "E"
                 : @this is D ? "D"
-                : @this is C ? "C"
+                : @this is C<int> ? "C"
                 : @this is B ? "B"
                 : null;
 
@@ -150,10 +169,11 @@ namespace DelegateDecompiler.Tests
         {
             // ReSharper disable MergeCastWithTypeCheck
             Expression<Func<A, string>> e = @this =>
-                @this is E ? ((E) @this).Me
-                : @this is D ? ((D) @this).Me
-                : @this is C ? ((C) @this).Me
-                : @this is B ? ((B) @this).Me
+                @this is F<int> ? ((F<int>)@this).Me
+                : @this is E ? ((E)@this).Me
+                : @this is D ? ((D)@this).Me
+                : @this is C<int> ? ((C<int>)@this).Me
+                : @this is B ? ((B)@this).Me
                 : null;
             // ReSharper restore MergeCastWithTypeCheck
 
@@ -164,9 +184,10 @@ namespace DelegateDecompiler.Tests
         public void DecompileVirtualMethod()
         {
             Expression<Func<A, string>> e = @this =>
-                @this is E ? "E"
+                @this is F<int> ? "F"
+                : @this is E ? "E"
                 : @this is D ? "D"
-                : @this is C ? "C"
+                : @this is C<int> ? "C"
                 : @this is B ? "B"
                 : "A";
 
@@ -185,9 +206,10 @@ namespace DelegateDecompiler.Tests
         public void DecompileVirtualMethodWithBaseCall()
         {
             Expression<Func<A, string>> e = @this =>
-                @this is E ? "E is child of " + ("C is child of " + "A".ToString()).ToString()
+                @this is F<int> ? "F is child of " + ("C is child of " + "A".ToString()).ToString()
+                : @this is E ? "E is child of " + ("C is child of " + "A".ToString()).ToString()
                 : @this is D ? "D is child of " + ("C is child of " + "A".ToString()).ToString()
-                : @this is C ? "C is child of " + "A".ToString()
+                : @this is C<int> ? "C is child of " + "A".ToString()
                 : @this is B ? "B is child of " + "A".ToString()
                 : "A";
 
@@ -198,9 +220,10 @@ namespace DelegateDecompiler.Tests
         public void DecompileVirtualPropertyWithBaseCall()
         {
             Expression<Func<A, string>> e = @this =>
-                @this is E ? "E is child of " + ("C is child of " + "A".ToString()).ToString()
+                @this is F<int> ? "F is child of " + ("C is child of " + "A".ToString()).ToString()
+                : @this is E ? "E is child of " + ("C is child of " + "A".ToString()).ToString()
                 : @this is D ? "D is child of " + ("C is child of " + "A".ToString()).ToString()
-                : @this is C ? "C is child of " + "A".ToString()
+                : @this is C<int> ? "C is child of " + "A".ToString()
                 : @this is B ? "B is child of " + "A".ToString()
                 : "A";
 
@@ -229,16 +252,16 @@ namespace DelegateDecompiler.Tests
                 : @this is Y1 ? "Y1"
                 : @this is Y ? "Y"
                 : @this is X ? "X"
+                : @this is F<int> ? "F"
                 : @this is E ? "E"
                 : @this is D ? "D"
-                : @this is C ? "C"
+                : @this is C<int> ? "C"
                 : @this is B ? "B"
                 : @this is A ? "A"
                 : null;
 
             Test(e, typeof(IA).GetMethod(nameof(IA.M5)));
         }
-
 
         [Test]
         public void DecompileFinalVirtualMethodWithBaseCall()
@@ -253,13 +276,13 @@ namespace DelegateDecompiler.Tests
         [Test]
         public void DecompileIntermediateVirtualMethodWithBaseCall()
         {
-            Expression<Func<C, string>> e = @this =>
-                @this is E ? "E is child of " + ("C is child of " + "A".ToString()).ToString()
+            Expression<Func<C<int>, string>> e = @this =>
+                @this is F<int> ? "F is child of " + ("C is child of " + "A".ToString()).ToString()
+                : @this is E ? "E is child of " + ("C is child of " + "A".ToString()).ToString()
                 : @this is D ? "D is child of " + ("C is child of " + "A".ToString()).ToString()
                 : "C is child of " + "A".ToString();
 
-            Test(e, typeof(C).GetMethod(nameof(C.M6)));
+            Test(e, typeof(C<int>).GetMethod(nameof(C<int>.M6)));
         }
-
     }
 }

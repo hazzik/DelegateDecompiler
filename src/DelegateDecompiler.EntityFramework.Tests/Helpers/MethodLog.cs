@@ -6,7 +6,7 @@ using System.Linq;
 
 namespace DelegateDecompiler.EntityFramework.Tests.Helpers
 {
-    public enum LogStates { Supported, NotSupported, EvenLinqDidNotWork}
+    public enum LogStates { Supported, NotSupported, EvenLinqDidNotWork }
 
     class MethodLog
     {

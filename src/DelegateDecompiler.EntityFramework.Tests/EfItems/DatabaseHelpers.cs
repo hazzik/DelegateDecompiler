@@ -94,14 +94,18 @@ namespace DelegateDecompiler.EntityFramework.Tests.EfItems
 
         private static ICollection<LivingBeeing> InitializeLivingBeeings()
         {
-            var animal1 = new Dog { Age = 2};
-            var animal2 = new Dog { Age = 3};
+            var animal1 = new Dog { Age = 2 };
+            var animal2 = new Dog { Age = 3 };
             return new List<LivingBeeing>
             {
                 animal1,
                 animal2,
                 new HoneyBee(),
                 new HoneyBee(),
+#if EF_CORE
+                new AtlanticCod() { Age = 4 },
+                new WhiteShark() { Age = 1 },
+#endif
                 new Person {Age = 1, Birthdate = new DateTime(1900, 1, 1), Name = "Joseph"},
                 new Person {Age = 2, Birthdate = new DateTime(1900, 1, 2), Name = "Maria"},
                 new Person

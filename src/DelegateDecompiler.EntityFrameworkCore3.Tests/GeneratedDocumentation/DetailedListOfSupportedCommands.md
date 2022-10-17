@@ -1,6 +1,6 @@
 Detail of supported commands
 ============
-## Documentation produced for DelegateDecompiler, version 0.29.0 on Thursday, 04 February 2021 16:05
+## Documentation produced for DelegateDecompiler, version 0.31.1.0 on Monday, 17 October 2022 17:27
 
 This file documents what linq commands **DelegateDecompiler** supports when
 working with [Entity Framework Core](https://docs.microsoft.com/en-us/ef/core/) (EF).
@@ -32,15 +32,17 @@ More will appear as we move forward.*
   * Select Method Without Computed Attribute (line 104)
   * Select Abstract Member Over Tph Hierarchy (line 121)
   * Select Abstract Member Over Tph Hierarchy After Restricting To Subtype (line 138)
-  * Select Multiple Levels Of Abstract Members Over Tph Hierarchy (line 155)
+  * Select Abstract Member Over Tph Hierarchy With Generic Classes After Restricting To Subtype (line 156)
+  * Select Abstract Member With Condition On It Over Tph Hierarchy With Generic Classes After Restricting To Subtype (line 181)
+  * Select Multiple Levels Of Abstract Members Over Tph Hierarchy (line 199)
 
 #### [Select Async](../TestGroup05BasicFeatures/Test02SelectAsync.cs):
 - Supported
   * Async (line 39)
-  * Bool Equals Constant Async (line 56)
-  * Decompile Upfront Bool Equals Constant Async (line 73)
-  * Bool Equals Static Variable To Array Async (line 92)
-  * Int Equals Constant (line 109)
+  * Bool Equals Constant Async (line 75)
+  * Decompile Upfront Bool Equals Constant Async (line 92)
+  * Bool Equals Static Variable To Array Async (line 111)
+  * Int Equals Constant (line 128)
 
 #### [Equals And Not Equals](../TestGroup05BasicFeatures/Test03EqualsAndNotEquals.cs):
 - Supported
@@ -133,11 +135,18 @@ More will appear as we move forward.*
   * Concatenate Person Not Handle Null (line 32)
   * Concatenate Person Handle Null (line 49)
   * Concatenate Person Handle Name Order (line 68)
-  * Generic Method Person Handle (line 85)
+  * Select Generic Method Person Handle (line 85)
+  * Filter Generic Method Person Handle (line 99)
 
 #### [DateTime](../TestGroup50Types/Test05DateTime.cs):
 - Supported
   * DateTime Where Compare With Static Variable (line 35)
+
+
+### Group: Additional Features
+#### [Nested Expressions](../TestGroup90AdditionalFeatures/Test01NestedExpressions.cs):
+- Supported
+  * Subquery As Context Extension Method (line 68)
 
 
 

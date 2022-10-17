@@ -1,4 +1,6 @@
-﻿using System;
+﻿// ReSharper disable EqualExpressionComparison
+#pragma warning disable CS1718 // Comparison made to same variable
+using System;
 using System.Linq.Expressions;
 using NUnit.Framework;
 
@@ -14,7 +16,7 @@ namespace DelegateDecompiler.Tests
             Func<string> compiled = () => null;
             Test(expected, compiled);
         }
-        
+
         [Test]
         public void ExpressionStringEqualsNull()
         {
@@ -136,7 +138,7 @@ namespace DelegateDecompiler.Tests
             Func<int?, int?, int?> compiled = (x, y) => x * y;
             Test(expected, compiled);
         }
-        
+
         [Test]
         public void ExpressionWithNullablePlus()
         {
@@ -251,7 +253,7 @@ namespace DelegateDecompiler.Tests
             Func<int?, int, int?> compiled = (x, y) => x * y;
             Test(expected, compiled);
         }
-        
+
         [Test]
         public void ExpressionWithNullablePlus2()
         {
@@ -364,7 +366,7 @@ namespace DelegateDecompiler.Tests
             Func<int, int?, int?> compiled = (x, y) => x * y;
             Test(expected, compiled);
         }
-        
+
         [Test]
         public void ExpressionWithNullablePlus3()
         {
@@ -428,7 +430,7 @@ namespace DelegateDecompiler.Tests
         public void ExpressionWithNullableGreaterThanOrEqualSelf()
         {
             Expression<Func<int?, bool>> expected = x => x >= x;
-            Func<int?,  bool> compiled = x => x >= x;
+            Func<int?, bool> compiled = x => x >= x;
             Test(expected, compiled);
         }
 
@@ -443,74 +445,74 @@ namespace DelegateDecompiler.Tests
         [Test]
         public void ExpressionWithNullableLessThanOrEqualSelf()
         {
-            Expression<Func<int?,  bool>> expected = x => x <= x;
-            Func<int?,  bool> compiled = x => x <= x;
+            Expression<Func<int?, bool>> expected = x => x <= x;
+            Func<int?, bool> compiled = x => x <= x;
             Test(expected, compiled);
         }
 
         [Test]
         public void ExpressionWithNullableXorSelf()
         {
-            Expression<Func<int?,  int?>> expected = x => x ^ x;
-            Func<int?,  int?> compiled = x => x ^ x;
+            Expression<Func<int?, int?>> expected = x => x ^ x;
+            Func<int?, int?> compiled = x => x ^ x;
             Test(expected, compiled);
         }
 
         [Test]
         public void ExpressionWithNullableAndSelf()
         {
-            Expression<Func<int?,  int?>> expected = x => x & x;
-            Func<int?,  int?> compiled = x => x & x;
+            Expression<Func<int?, int?>> expected = x => x & x;
+            Func<int?, int?> compiled = x => x & x;
             Test(expected, compiled);
         }
 
         [Test]
         public void ExpressionWithNullableOrSelf()
         {
-            Expression<Func<int?,  int?>> expected = x => x | x;
-            Func<int?,  int?> compiled = x => x | x;
+            Expression<Func<int?, int?>> expected = x => x | x;
+            Func<int?, int?> compiled = x => x | x;
             Test(expected, compiled);
         }
 
         [Test]
         public void ExpressionWithNullableMulSelf()
         {
-            Expression<Func<int?,  int?>> expected = x => x * x;
-            Func<int?,  int?> compiled = x => x * x;
+            Expression<Func<int?, int?>> expected = x => x * x;
+            Func<int?, int?> compiled = x => x * x;
             Test(expected, compiled);
         }
-        
+
         [Test]
         public void ExpressionWithNullablePlusSelf()
         {
-            Expression<Func<int?,  int?>> expected = x => x + x;
-            Func<int?,  int?> compiled = x => x + x;
+            Expression<Func<int?, int?>> expected = x => x + x;
+            Func<int?, int?> compiled = x => x + x;
             Test(expected, compiled);
         }
 
         [Test]
         public void ExpressionWithNullableDivSelf()
         {
-            Expression<Func<int?,  int?>> expected = x => x / x;
-            Func<int?,  int?> compiled = x => x / x;
+            Expression<Func<int?, int?>> expected = x => x / x;
+            Func<int?, int?> compiled = x => x / x;
             Test(expected, compiled);
         }
 
         [Test]
         public void ExpressionWithNullableRightShiftSelf()
         {
-            Expression<Func<int?,  int?>> expected = x => x >> x;
-            Expression<Func<int?,  int?>> expected2 = x => x >> (x & 31);
-            Func<int?,  int?> compiled = x => x >> x;
+            Expression<Func<int?, int?>> expected = x => x >> x;
+            Expression<Func<int?, int?>> expected2 = x => x >> (x & 31);
+            Func<int?, int?> compiled = x => x >> x;
             Test(expected, expected2, compiled);
         }
 
         [Test]
         public void ExpressionWithNullableLeftShiftSelf()
         {
-            Expression<Func<int?,  int?>> expected = x => x << x;
-            Expression<Func<int?,  int?>> expected2 = x => x << (x & 31);
-            Func<int?,  int?> compiled = x => x << x;
+            Expression<Func<int?, int?>> expected = x => x << x;
+            Expression<Func<int?, int?>> expected2 = x => x << (x & 31);
+            Func<int?, int?> compiled = x => x << x;
             Test(expected, expected2, compiled);
         }
 
@@ -549,8 +551,8 @@ namespace DelegateDecompiler.Tests
         [Test, Ignore("Minor difference")]
         public void IntToBool()
         {
-            Expression<Func<int?, bool?>> expected = x => x.HasValue ? x == 1 : (bool?) null;
-            Func<int?, bool?> compiled = x => x.HasValue ? x == 1 : (bool?) null;
+            Expression<Func<int?, bool?>> expected = x => x.HasValue ? x == 1 : (bool?)null;
+            Func<int?, bool?> compiled = x => x.HasValue ? x == 1 : (bool?)null;
             Test(expected, compiled);
         }
     }

@@ -1,4 +1,4 @@
-﻿using System;
+﻿using System.Linq.Expressions;
 using NUnit.Framework;
 
 namespace DelegateDecompiler.Tests
@@ -26,8 +26,15 @@ namespace DelegateDecompiler.Tests
             {
                 MyProperty = value;
             }
+
+            public void SetMultiple(int value)
+            {
+                staticField = value;
+                myField = value;
+                MyProperty = value;
+            }
         }
-        
+
         [Test]
         public void TestSetStaticField()
         {
@@ -53,6 +60,20 @@ namespace DelegateDecompiler.Tests
             var expression = method.Decompile();
 
             Assert.That(expression.ToString(), Is.EqualTo("(this, value) => (this.MyProperty = value)"));
+        }
+
+        [Test]
+        public void TestSetMultiple()
+        {
+            var method = typeof(TestClass).GetMethod(nameof(TestClass.SetMultiple));
+            var expression = method.Decompile();
+
+            Assert.That(expression.ToString(), Is.EqualTo("(this, value) => { ... }"));
+            Assert.That(expression.Body, Is.InstanceOf<BlockExpression>());
+            var block = (BlockExpression)expression.Body;
+            Assert.That(block.Expressions[0].ToString(), Is.EqualTo("(TestClass.staticField = value)"));
+            Assert.That(block.Expressions[1].ToString(), Is.EqualTo("(this.myField = value)"));
+            Assert.That(block.Expressions[2].ToString(), Is.EqualTo("(this.MyProperty = value)"));
         }
     }
 }

@@ -40,17 +40,35 @@ namespace DelegateDecompiler.Tests
         }
 
         [Test]
+        public void InlinePropertyNonGeneric()
+        {
+            var employees = new[] { new Employee { FirstName = "Test", LastName = "User" } };
+
+            var expected = (
+                from employee in employees.AsQueryable()
+                where (employee.FirstName + " " + employee.LastName) == "Test User"
+                select employee);
+
+            var actual = ((IQueryable)(
+                from employee in employees.AsQueryable()
+                where employee.FullName == "Test User"
+                select employee)).Decompile();
+
+            AssertAreEqual(expected.Expression, actual.Expression);
+        }
+
+        [Test]
         public void ConcatNonStringInlineProperty()
         {
             var employees = new[] { new Employee { FirstName = "Test", LastName = "User", From = 0, To = 100 } };
 
             var expected1 = (from employee in employees.AsQueryable()
-                            where (employee.From + "-" + employee.To) == "0-100"
-                            select employee);
+                             where (employee.From + "-" + employee.To) == "0-100"
+                             select employee);
 
             var expected2 = (from employee in employees.AsQueryable()
-                            where (employee.From.ToString() + "-" + employee.To.ToString()) == "0-100"
-                            select employee);
+                             where (employee.From.ToString() + "-" + employee.To.ToString()) == "0-100"
+                             select employee);
 
             var actual = (from employee in employees.AsQueryable()
                           where employee.FromTo == "0-100"
@@ -89,7 +107,7 @@ namespace DelegateDecompiler.Tests
 
             var actual = (from employee in employees.AsQueryable().Decompile()
                           where employee.FullName == "Test User"
-                          orderby employee.FullName 
+                          orderby employee.FullName
                           select employee).ThenBy(x => x.IsActive);
 
             AssertAreEqual(expected.Expression, actual.Expression);
@@ -117,12 +135,12 @@ namespace DelegateDecompiler.Tests
             var employees = new[] { new Employee { FirstName = "Test", LastName = "User" } };
 
             var expected = (from employee in employees.AsQueryable()
-                where employee.Reference.Count == 0
-                select employee);
+                            where employee.Reference.Count == 0
+                            select employee);
 
             var actual = (from employee in employees.AsQueryable()
-                where employee.Count == 0
-                select employee).Decompile();
+                          where employee.Count == 0
+                          select employee).Decompile();
 
             AssertAreEqual(expected.Expression, actual.Expression);
         }
@@ -250,7 +268,7 @@ namespace DelegateDecompiler.Tests
                           where employee.FullName().Computed() == "Test User"
                           select employee).Decompile();
 
-                        AssertAreEqual(expected.Expression, actual.Expression);
+            AssertAreEqual(expected.Expression, actual.Expression);
         }
 
         [Test]
@@ -265,7 +283,7 @@ namespace DelegateDecompiler.Tests
 
             var actual = (from employee in employees.AsQueryable().Decompile()
                           where employee.FullName().Computed() == "Test User"
-                          orderby employee.FullName ().Computed()
+                          orderby employee.FullName().Computed()
                           select employee);
 
             AssertAreEqual(expected.Expression, actual.Expression);

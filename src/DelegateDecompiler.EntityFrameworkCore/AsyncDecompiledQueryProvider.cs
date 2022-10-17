@@ -15,10 +15,10 @@ namespace DelegateDecompiler.EntityFrameworkCore
     class AsyncDecompiledQueryProviderBase : DecompiledQueryProvider
     {
         static readonly MethodInfo OpenGenericExecuteAsync2 = typeof(IAsyncQueryProvider)
-            .GetMethod("ExecuteAsync", new[] {typeof(Expression), typeof(CancellationToken)});
+            .GetMethod("ExecuteAsync", new[] { typeof(Expression), typeof(CancellationToken) });
 
         static readonly MethodInfo OpenGenericExecuteAsync1 = typeof(IAsyncQueryProvider)
-            .GetMethod("ExecuteAsync", new[] {typeof(Expression)});
+            .GetMethod("ExecuteAsync", new[] { typeof(Expression) });
 
         protected AsyncDecompiledQueryProviderBase(IQueryProvider inner)
             : base(inner)
@@ -39,17 +39,17 @@ namespace DelegateDecompiler.EntityFrameworkCore
         // ReSharper disable once VirtualMemberNeverOverridden.Global
         public virtual TResult ExecuteAsync<TResult>(Expression expression, CancellationToken cancellationToken)
         {
-            var decompiled = DecompileExpressionVisitor.Decompile(expression);
-            return (TResult) MethodCache<TResult>.ExecuteAsync(AsyncQueryProvider, decompiled, cancellationToken);
+            var decompiled = expression.Decompile();
+            return (TResult)MethodCache<TResult>.ExecuteAsync(AsyncQueryProvider, decompiled, cancellationToken);
         }
 
         protected static class MethodCache<T>
         {
             static readonly Func<IAsyncQueryProvider, Expression, object> ExecuteAsync1 =
-                (Func<IAsyncQueryProvider, Expression, object>) CompileDelegate(OpenGenericExecuteAsync1?.MakeGenericMethod(typeof(T)));
+                (Func<IAsyncQueryProvider, Expression, object>)CompileDelegate(OpenGenericExecuteAsync1?.MakeGenericMethod(typeof(T)));
 
             static readonly Func<IAsyncQueryProvider, Expression, CancellationToken, object> ExecuteAsync2 =
-                (Func<IAsyncQueryProvider, Expression, CancellationToken, object>) CompileDelegate(OpenGenericExecuteAsync2?.MakeGenericMethod(typeof(T)));
+                (Func<IAsyncQueryProvider, Expression, CancellationToken, object>)CompileDelegate(OpenGenericExecuteAsync2?.MakeGenericMethod(typeof(T)));
 
             public static object ExecuteAsync(IAsyncQueryProvider asyncQueryProvider, Expression expression)
             {
@@ -80,7 +80,7 @@ namespace DelegateDecompiler.EntityFrameworkCore
                             instance,
                             method,
                             parameters),
-                        new[] {instance}.Concat(parameters))
+                        new[] { instance }.Concat(parameters))
                     .Compile();
             }
         }
@@ -95,20 +95,20 @@ namespace DelegateDecompiler.EntityFrameworkCore
 
         public override IQueryable<TElement> CreateQuery<TElement>(Expression expression)
         {
-            var decompiled = DecompileExpressionVisitor.Decompile(expression);
+            var decompiled = expression.Decompile();
             return new EntityQueryable<TElement>(this, decompiled);
         }
 
         public virtual IAsyncEnumerable<TResult> ExecuteAsync<TResult>(Expression expression)
         {
-            var decompiled = DecompileExpressionVisitor.Decompile(expression);
-            return (IAsyncEnumerable<TResult>) MethodCache<TResult>.ExecuteAsync(AsyncQueryProvider, decompiled);
+            var decompiled = expression.Decompile();
+            return (IAsyncEnumerable<TResult>)MethodCache<TResult>.ExecuteAsync(AsyncQueryProvider, decompiled);
         }
 
         public new virtual Task<TResult> ExecuteAsync<TResult>(Expression expression, CancellationToken cancellationToken)
         {
-            var decompiled = DecompileExpressionVisitor.Decompile(expression);
-            return (Task<TResult>) MethodCache<TResult>.ExecuteAsync(AsyncQueryProvider, decompiled, cancellationToken);
+            var decompiled = expression.Decompile();
+            return (Task<TResult>)MethodCache<TResult>.ExecuteAsync(AsyncQueryProvider, decompiled, cancellationToken);
         }
     }
 }

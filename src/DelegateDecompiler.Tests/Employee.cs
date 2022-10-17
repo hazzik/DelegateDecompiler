@@ -112,12 +112,12 @@ namespace DelegateDecompiler.Tests
         [Computed]
         public short TheBad
         {
-            get { return MyField.HasValue ? (short) MyField : (short) 0; }
+            get { return MyField.HasValue ? (short)MyField : (short)0; }
         }
 
 
         [Computed]
-        public short TheGood => MyField.HasValue ? (short) 0 : (short) 1;
+        public short TheGood => MyField.HasValue ? (short)0 : (short)1;
 
         public TimePeriodMode TimesheetMode { get; set; }
         public TimeSpan? StartTimeOfDay { get; set; }
@@ -131,7 +131,7 @@ namespace DelegateDecompiler.Tests
             {
                 if (TimesheetMode != TimePeriodMode.Duration)
                 {
-                    return ((decimal?) DbFunctions.DiffMinutes(StartTimeOfDay, EndTimeOfDay)) / 60m ?? 100m;
+                    return ((decimal?)DbFunctions.DiffMinutes(StartTimeOfDay, EndTimeOfDay)) / 60m ?? 100m;
                 }
                 return DurationHours ?? 100m;
             }

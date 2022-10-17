@@ -28,7 +28,7 @@ namespace DelegateDecompiler.EntityFramework.Tests.TestGroup01Infrastructure
 
                 //VERIFY
                 db.EfParents.Count().ShouldEqual(DatabaseHelpers.BaseData.Count);
-                db.EfChildren.Count().ShouldEqual(DatabaseHelpers.BaseData.SelectMany( x => x.Children).Count());
+                db.EfChildren.Count().ShouldEqual(DatabaseHelpers.BaseData.SelectMany(x => x.Children).Count());
 
                 db.EfPersons.Count().ShouldEqual(DatabaseHelpers.PersonsData.Count);
             }

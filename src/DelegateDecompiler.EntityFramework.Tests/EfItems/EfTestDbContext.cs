@@ -7,6 +7,7 @@ using DelegateDecompiler.EntityFramework.Tests.EfItems.Concretes;
 #if EF_CORE
 using DelegateDecompiler.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 using DbModelBuilder = Microsoft.EntityFrameworkCore.ModelBuilder;
 #else
 using System.Data.Entity;
@@ -16,17 +17,25 @@ namespace DelegateDecompiler.EntityFramework.Tests.EfItems
 {
     public class EfTestDbContext : DbContext
     {
-
 #if EF_CORE
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             var connectionString = GetConnectionString();
             optionsBuilder.UseSqlServer(connectionString);
+#if EF_CORE5
+            optionsBuilder.LogTo((id, _) => id == RelationalEventId.CommandExecuted, d =>
+            {
+                if (Log != null && d is CommandExecutedEventData e)
+                {
+                    Log(e.Command.CommandText);
+                }
+            });
+#endif
         }
 #else
-        static EfTestDbContext() 
+        static EfTestDbContext()
         {
-            Database.SetInitializer(new DropCreateDatabaseAlways<EfTestDbContext>()); 
+            Database.SetInitializer(new DropCreateDatabaseAlways<EfTestDbContext>());
         }
 
 #if NETFRAMEWORK
@@ -39,7 +48,7 @@ namespace DelegateDecompiler.EntityFramework.Tests.EfItems
 #if NETCOREAPP
         static string GetConnectionString()
         {
-            var location = new Uri(typeof(EfTestDbContext).Assembly.EscapedCodeBase).LocalPath;
+            var location = new Uri(typeof(EfTestDbContext).Assembly.Location).LocalPath;
             var configuration = ConfigurationManager.OpenExeConfiguration(location);
             var connectionString = configuration.ConnectionStrings.ConnectionStrings["DelegateDecompilerEfTestDb"]
                 .ConnectionString;
@@ -55,15 +64,24 @@ namespace DelegateDecompiler.EntityFramework.Tests.EfItems
 
         public DbSet<LivingBeeing> LivingBeeing { get; set; }
 
+        public Action<string> Log { get; set; }
+
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
             modelBuilder.Entity<EfPerson>()
                 .Computed(x => x.FullNameNoAttibute)
                 .Computed(x => x.GetFullNameNoAttibute());
-            
+
             modelBuilder.Entity<Dog>();
             modelBuilder.Entity<HoneyBee>();
             modelBuilder.Entity<Person>();
+#if EF_CORE
+            modelBuilder.Entity<Fish>();
+            modelBuilder.Entity<Fish<string>>().HasBaseType<Fish>();
+            modelBuilder.Entity<Fish<int>>().HasBaseType<Fish>();
+            modelBuilder.Entity<WhiteShark>().HasBaseType<Fish<string>>();
+            modelBuilder.Entity<AtlanticCod>().HasBaseType<Fish<int>>();
+#endif
             base.OnModelCreating(modelBuilder);
         }
     }

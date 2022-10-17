@@ -39,7 +39,7 @@ namespace DelegateDecompiler.EntityFramework.Tests.Helpers
             {
                 //Has subdirectory in search pattern, so change directory
                 directory = Path.Combine(directory, searchPattern.Substring(0, searchPattern.LastIndexOf('\\')));
-                searchPattern = searchPattern.Substring(searchPattern.LastIndexOf('\\')+1);
+                searchPattern = searchPattern.Substring(searchPattern.LastIndexOf('\\') + 1);
             }
 
             string[] fileList = Directory.GetFiles(directory, searchPattern);
@@ -51,7 +51,7 @@ namespace DelegateDecompiler.EntityFramework.Tests.Helpers
         {
             string path;
             if (GetMarkupFileDirectory(Environment.CurrentDirectory, alternateTestDir, out path) ||
-                GetMarkupFileDirectory(Path.GetDirectoryName(new Uri(typeof(MarkupFileHelpers).Assembly.CodeBase).LocalPath), alternateTestDir, out path))
+                GetMarkupFileDirectory(Path.GetDirectoryName(new Uri(typeof(MarkupFileHelpers).Assembly.Location).LocalPath), alternateTestDir, out path))
             {
                 return path;
             }

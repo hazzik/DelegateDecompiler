@@ -172,7 +172,7 @@ namespace DelegateDecompiler.Tests
         public void TwoIifs2()
         {
             Expression<Func<Employee, string, bool>> expected = (u, term) => (u.FirstName != null && (u.FirstName.Contains(term) || term.Contains(u.FirstName))) && !u.IsBlocked;
-            Func<Employee, string, bool> compiled = (u,term) => (u.FirstName != null && (u.FirstName.Contains(term) || term.Contains(u.FirstName))) && !u.IsBlocked;
+            Func<Employee, string, bool> compiled = (u, term) => (u.FirstName != null && (u.FirstName.Contains(term) || term.Contains(u.FirstName))) && !u.IsBlocked;
             Test(expected, compiled);
         }
 
@@ -210,6 +210,25 @@ namespace DelegateDecompiler.Tests
             Expression<Func<int, bool>> expected = x => (x <= 3 ? (x <= 3 ? 2 : 3) : 1) == 1;
             Func<int, bool> compiled = x => (x <= 3 ? (x <= 3 ? 2 : 3) : 1) == 1;
             Test(expected, compiled);
+        }
+
+        [Test]
+        public void Issue183Get()
+        {
+            Test<Func<string, bool?>>(
+                x => x == "Yes" ? true : x == "No" ? (bool?)false : null,
+                x => x == "Yes" ? true : x == "No" ? (bool?)false : null
+            );
+        }
+
+        [Test]
+        public void Issue183Set()
+        {
+            Test<Func<bool?, string>>(
+                x => x.HasValue && x.Value ? "Yes" : x.HasValue ? "No" : null,
+                x => x.HasValue ? x.Value ? "Yes" : x.HasValue ? "No" : null : x.HasValue ? "No" : null,
+                x => x.HasValue && x.Value ? "Yes" : x.HasValue ? "No" : null
+            );
         }
 
         [Test]

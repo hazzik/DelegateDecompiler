@@ -23,11 +23,11 @@ namespace DelegateDecompiler.EntityFramework.Tests.TestGroup10OrderTake
             {
                 //SETUP
 
-                var linq = env.Db.EfParents.OrderBy(x => x.Children.Count).Select( x => x.EfParentId).ToList();
+                var linq = env.Db.EfParents.OrderBy(x => x.Children.Count).Select(x => x.EfParentId).ToList();
 
                 //ATTEMPT
                 env.AboutToUseDelegateDecompiler();
-                var dd = env.Db.EfParents.OrderBy(x => x.CountChildren).Select( x => x.EfParentId).Decompile().ToList();
+                var dd = env.Db.EfParents.OrderBy(x => x.CountChildren).Select(x => x.EfParentId).Decompile().ToList();
 
                 //VERIFY
                 env.CompareAndLogList(linq, dd);
@@ -41,11 +41,11 @@ namespace DelegateDecompiler.EntityFramework.Tests.TestGroup10OrderTake
             {
                 //SETUP
 
-                var linq = env.Db.EfParents.OrderBy(x => x.Children.Count).ThenBy( x => x.ParentString.Length).Select(x => x.EfParentId).ToList();
+                var linq = env.Db.EfParents.OrderBy(x => x.Children.Count).ThenBy(x => x.ParentString.Length).Select(x => x.EfParentId).ToList();
 
                 //ATTEMPT
                 env.AboutToUseDelegateDecompiler();
-                var dd = env.Db.EfParents.OrderBy(x => x.CountChildren).ThenBy( x => x.GetStringLength).Select(x => x.EfParentId).Decompile().ToList();
+                var dd = env.Db.EfParents.OrderBy(x => x.CountChildren).ThenBy(x => x.GetStringLength).Select(x => x.EfParentId).Decompile().ToList();
 
                 //VERIFY
                 env.CompareAndLogList(linq, dd);

@@ -70,7 +70,7 @@ namespace DelegateDecompiler.Tests
             Func<decimal?, decimal?, decimal?> compiled = (x, y) => x * y;
             Test(expected, compiled);
         }
-        
+
         [Test]
         public void ExpressionWithNullablePlus()
         {
@@ -150,7 +150,7 @@ namespace DelegateDecompiler.Tests
             Func<decimal?, decimal, decimal?> compiled = (x, y) => x * y;
             Test(expected, compiled);
         }
-        
+
         [Test]
         public void ExpressionWithNullablePlus2()
         {
@@ -230,7 +230,7 @@ namespace DelegateDecompiler.Tests
             Func<decimal, decimal?, decimal?> compiled = (x, y) => x * y;
             Test(expected, compiled);
         }
-        
+
         [Test]
         public void ExpressionWithNullablePlus3()
         {

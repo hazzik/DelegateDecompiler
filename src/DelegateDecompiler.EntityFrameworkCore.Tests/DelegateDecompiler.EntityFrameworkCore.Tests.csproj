@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>netcoreapp2.1;netcoreapp3.1</TargetFrameworks>
+    <TargetFrameworks>netcoreapp3.1</TargetFrameworks>
     <Copyright>Copyright © Dave Glick 2014, Jon Smith 2014, Alexander Zaytsev 2014 - 2021</Copyright>
     <DefineConstants>$(DefineConstants);EF_CORE</DefineConstants>
     <RootNamespace>DelegateDecompiler.EntityFramework.Tests</RootNamespace>

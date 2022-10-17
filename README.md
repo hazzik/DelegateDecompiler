@@ -1,7 +1,14 @@
 DelegateDecompiler
 ====================
 
+![https://ci.appveyor.com/project/hazzik/delegatedecompiler/branch/main](https://ci.appveyor.com/api/projects/status/github/hazzik/delegatedecompiler?branch=main&svg=true)
+![https://nuget.org/packages/DelegateDecompiler](https://img.shields.io/nuget/dt/DelegateDecompiler.svg)
+
 A tool which is able to decompile a delegate or a method body to its lambda representation
+
+## Sponsorship
+
+If you like the library please consider [supporting my work](https://github.com/sponsors/hazzik).
 
 ## Examples
 
@@ -72,7 +79,7 @@ The [DelegateDecompiler.EntityFramework](https://nuget.org/packages/DelegateDeco
 
 The [DelegateDecompiler.EntityFrameworkCore](https://nuget.org/packages/DelegateDecompiler.EntityFrameworkCore) package provides `DecompileAsync` extension method which adds support for EF's Async operations.
  
-### Async Support with [EntityFramework Core 5.0](https://www.nuget.org/packages/DelegateDecompiler.EntityFrameworkCore5)
+### Async Support with [EntityFramework Core 5.0 and later](https://www.nuget.org/packages/DelegateDecompiler.EntityFrameworkCore5)
 
 The [DelegateDecompiler.EntityFrameworkCore5](https://nuget.org/packages/DelegateDecompiler.EntityFrameworkCore5) package provides `DecompileAsync` extension method which adds support for EF's Async operations.
  
@@ -83,10 +90,7 @@ Available on [NuGet](https://nuget.org/)
 * Install-Package [DelegateDecompiler](https://nuget.org/packages/DelegateDecompiler)
 * Install-Package [DelegateDecompiler.EntityFramework](https://nuget.org/packages/DelegateDecompiler.EntityFramework)
 * Install-Package [DelegateDecompiler.EntityFrameworkCore](https://nuget.org/packages/DelegateDecompiler.EntityFrameworkCore)
-
-# Donations
-
-If you like the library please [support my work](https://github.com/sponsors/hazzik).
+* Install-Package [DelegateDecompiler.EntityFrameworkCore5](https://nuget.org/packages/DelegateDecompiler.EntityFrameworkCore5)
 
 # License
 

@@ -5,6 +5,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Mono.Reflection.Core" Version="1.1.1" />
+    <PackageReference Include="Mono.Reflection" Version="2.0.0" />
   </ItemGroup>
 </Project>
