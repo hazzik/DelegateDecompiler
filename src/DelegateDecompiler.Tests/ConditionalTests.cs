@@ -213,6 +213,25 @@ namespace DelegateDecompiler.Tests
         }
 
         [Test]
+        public void Issue183Get()
+        {
+            Test<Func<string, bool?>>(
+                x => x == "Yes" ? true : x == "No" ? (bool?)false : null,
+                x => x == "Yes" ? true : x == "No" ? (bool?)false : null
+            );
+        }
+
+        [Test]
+        public void Issue183Set()
+        {
+            Test<Func<bool?, string>>(
+                x => x.HasValue && x.Value ? "Yes" : x.HasValue ? "No" : null,
+                x => x.HasValue ? x.Value ? "Yes" : x.HasValue ? "No" : null : x.HasValue ? "No" : null,
+                x => x.HasValue && x.Value ? "Yes" : x.HasValue ? "No" : null
+            );
+        }
+
+        [Test]
         public void IfElseStatementWithTwoLocalVariables()
         {
             Expression<Func<int, int, int>> expected = (a, b) => a + b + (a >= b ? 2 : 1) + 10;

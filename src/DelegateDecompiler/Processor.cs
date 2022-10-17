@@ -674,13 +674,14 @@ namespace DelegateDecompiler
                     else if (state.Instruction.OpCode == OpCodes.Newobj)
                     {
                         var constructor = (ConstructorInfo)state.Instruction.Operand;
+                        var arguments = GetArguments(state, constructor);
                         if (constructor.DeclaringType.IsNullableType() && constructor.GetParameters().Length == 1)
                         {
-                            state.Stack.Push(Expression.Convert(state.Stack.Pop(), constructor.DeclaringType));
+                            state.Stack.Push(Expression.Convert(arguments[0], constructor.DeclaringType));
                         }
                         else
                         {
-                            state.Stack.Push(Expression.New(constructor, GetArguments(state, constructor)));
+                            state.Stack.Push(Expression.New(constructor, arguments));
                         }
                     }
                     else if (state.Instruction.OpCode == OpCodes.Call || state.Instruction.OpCode == OpCodes.Callvirt)
