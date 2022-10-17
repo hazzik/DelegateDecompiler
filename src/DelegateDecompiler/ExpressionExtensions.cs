@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
-using System.Text;
 
 namespace DelegateDecompiler
 {
@@ -10,7 +7,7 @@ namespace DelegateDecompiler
     {
         public static Expression Decompile(this Expression expression)
         {
-            return new DecompileExpressionVisitor().Visit(expression);
+            return DecompileExpressionVisitor.Decompile(expression);
         }
 
         public static Expression Optimize(this Expression expression)
@@ -18,9 +15,9 @@ namespace DelegateDecompiler
             return OptimizeExpressionVisitor.Optimize(expression);
         }
 
-        public static object Evaluate(this Expression expression)
+        public static T Evaluate<T>(this Expression expression)
         {
-            var func = Expression.Lambda<Func<object>>(expression).Compile();
+            var func = Expression.Lambda<Func<T>>(expression).Compile();
             return func.Invoke();
         }
     }

@@ -14,6 +14,5 @@ namespace DelegateDecompiler
         {
             return type.IsValueType ? Activator.CreateInstance(type) : null;
         }
-
     }
 }

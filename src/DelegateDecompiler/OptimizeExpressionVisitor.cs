@@ -456,7 +456,7 @@ namespace DelegateDecompiler
             public static Expression Unwrap(Expression expression)
             {
                 var visit = new LinqExpressionUnwrapper().Visit(expression);
-                var func = visit.Evaluate() as Expression;
+                var func = visit.Evaluate<Expression>();
                 return Expression.Quote(func);
             }
 
@@ -474,7 +474,7 @@ namespace DelegateDecompiler
                 {
                     if (!replacements.TryGetValue(node, out var parameter))
                     {
-                        parameter = Expression.Constant(node.Evaluate());
+                        parameter = Expression.Constant(node.Evaluate<Expression>());
                         replacements[node] = parameter;
                     }
 
