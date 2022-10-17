@@ -23,7 +23,7 @@ namespace DelegateDecompiler.Tests
         public void TestAddYears()
         {
             Func<DateTime, bool> actual = dt => dt < DbFunctions.AddYears(DateTime.Now, -10);
-            Expression< Func<DateTime, bool>> expected = dt => dt < DbFunctions.AddYears(DateTime.Now, -10);
+            Expression<Func<DateTime, bool>> expected = dt => dt < DbFunctions.AddYears(DateTime.Now, -10);
 
             Test(expected, actual);
         }
@@ -32,7 +32,7 @@ namespace DelegateDecompiler.Tests
         public void TestAddYearsNullable()
         {
             Func<DateTime, bool?> actual = dt => dt < DbFunctions.AddYears(DateTime.Now, -10);
-            Expression< Func<DateTime, bool?>> expected = dt => dt < DbFunctions.AddYears(DateTime.Now, -10);
+            Expression<Func<DateTime, bool?>> expected = dt => dt < DbFunctions.AddYears(DateTime.Now, -10);
 
             Test(expected, actual);
         }

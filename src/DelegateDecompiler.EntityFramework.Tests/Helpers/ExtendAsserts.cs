@@ -61,19 +61,19 @@ namespace DelegateDecompiler.EntityFramework.Tests.Helpers
             Assert.AreEqual(expectedValue, actualValue, tolerance, errorMessage);
         }
 
-        internal static void ShouldEqual<T>( this T actualValue, T expectedValue, string errorMessage = null)
+        internal static void ShouldEqual<T>(this T actualValue, T expectedValue, string errorMessage = null)
         {
             Assert.AreEqual(expectedValue, actualValue, errorMessage);
         }
 
         internal static void ShouldEqual<T>(this T actualValue, T expectedValue, IEnumerable<string> errorMessages)
         {
-            Assert.AreEqual(expectedValue, actualValue,  string.Join("\n", errorMessages));
+            Assert.AreEqual(expectedValue, actualValue, string.Join("\n", errorMessages));
         }
 
         internal static void ShouldEqual<T>(this T actualValue, T expectedValue, IEnumerable<ValidationResult> validationResults)
         {
-            Assert.AreEqual(expectedValue, actualValue, string.Join("\n", validationResults.Select( x => x.ErrorMessage)));
+            Assert.AreEqual(expectedValue, actualValue, string.Join("\n", validationResults.Select(x => x.ErrorMessage)));
         }
 
         internal static void ShouldNotEqual<T>(this T actualValue, T unexpectedValue, string errorMessage = null)
@@ -83,7 +83,7 @@ namespace DelegateDecompiler.EntityFramework.Tests.Helpers
 
         internal static void ShouldNotEqualNull<T>(this T actualValue, string errorMessage = null) where T : class
         {
-            Assert.NotNull( actualValue);
+            Assert.NotNull(actualValue);
         }
 
         internal static void ShouldBeGreaterThan(this int actualValue, int greaterThanThis, string errorMessage = null)

@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace DelegateDecompiler.EntityFramework.Tests.Helpers
 {
-    public enum ClassClassifications { NoTestsFound, Supported, PartiallySupported, NotSupported}
+    public enum ClassClassifications { NoTestsFound, Supported, PartiallySupported, NotSupported }
 
     class ClassLogClassified
     {
@@ -19,8 +19,8 @@ namespace DelegateDecompiler.EntityFramework.Tests.Helpers
             if (numTests == 0) return;
 
             var numSupportedResults = classLog.ValidMethodLogs.Count(x => x.State == LogStates.Supported);
-            Classification = numTests == numSupportedResults 
-                ? ClassClassifications.Supported 
+            Classification = numTests == numSupportedResults
+                ? ClassClassifications.Supported
                 : numSupportedResults == 0
                     ? ClassClassifications.NotSupported
                     : ClassClassifications.PartiallySupported;

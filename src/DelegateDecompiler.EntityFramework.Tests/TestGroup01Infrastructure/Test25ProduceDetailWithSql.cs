@@ -11,14 +11,14 @@ namespace DelegateDecompiler.EntityFramework.Tests.TestGroup01Infrastructure
 
         private List<MethodLog> example1PartiallySupported = new List<MethodLog>
         {
-            new MethodLog(LogStates.Supported, "TestGood", 1, 
+            new MethodLog(LogStates.Supported, "TestGood", 1,
                 new List<string>{ "LinqSql1a", "LinqSql1b"}, new List<string>{"ddSql1a", "ddSql1a"}),
-            new MethodLog(LogStates.NotSupported, "TestBad", 2, 
+            new MethodLog(LogStates.NotSupported, "TestBad", 2,
                 new List<string>{ "LinqSql1a", "LinqSql1b"}, new List<string>()),
             new MethodLog(LogStates.EvenLinqDidNotWork, "TestLinqFailed", 3, new List<string>(), new List<string>())
         };
 
-        
+
 
         [Test]
         public void TestDetailWithSqlOneGroupPartiallySupported()
@@ -40,6 +40,6 @@ namespace DelegateDecompiler.EntityFramework.Tests.TestGroup01Infrastructure
             markup.ShouldContain("\n- **Not Supported**\n  * Bad (line 2)");
         }
 
-        
+
     }
 }

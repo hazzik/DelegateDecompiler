@@ -34,7 +34,7 @@ namespace DelegateDecompiler.Tests
                 MyProperty = value;
             }
         }
-        
+
         [Test]
         public void TestSetStaticField()
         {
@@ -61,7 +61,7 @@ namespace DelegateDecompiler.Tests
 
             Assert.That(expression.ToString(), Is.EqualTo("(this, value) => (this.MyProperty = value)"));
         }
- 
+
         [Test]
         public void TestSetMultiple()
         {

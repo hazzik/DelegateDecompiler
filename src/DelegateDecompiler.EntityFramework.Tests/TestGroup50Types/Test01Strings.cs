@@ -56,8 +56,8 @@ namespace DelegateDecompiler.EntityFramework.Tests.TestGroup50Types
             using (var env = new MethodEnvironment(classEnv))
             {
                 //SETUP
-                var linq = env.Db.EfPersons.Select(x => x.NameOrder 
-                    ? x.LastName +", " + x.FirstName + (x.MiddleName == null ? "" : " ")
+                var linq = env.Db.EfPersons.Select(x => x.NameOrder
+                    ? x.LastName + ", " + x.FirstName + (x.MiddleName == null ? "" : " ")
                     : x.FirstName + (x.MiddleName == null ? "" : " ") + x.MiddleName + " " + x.LastName).ToList();
 
                 //ATTEMPT

@@ -172,7 +172,7 @@ namespace DelegateDecompiler.Tests
         public void TwoIifs2()
         {
             Expression<Func<Employee, string, bool>> expected = (u, term) => (u.FirstName != null && (u.FirstName.Contains(term) || term.Contains(u.FirstName))) && !u.IsBlocked;
-            Func<Employee, string, bool> compiled = (u,term) => (u.FirstName != null && (u.FirstName.Contains(term) || term.Contains(u.FirstName))) && !u.IsBlocked;
+            Func<Employee, string, bool> compiled = (u, term) => (u.FirstName != null && (u.FirstName.Contains(term) || term.Contains(u.FirstName))) && !u.IsBlocked;
             Test(expected, compiled);
         }
 

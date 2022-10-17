@@ -23,7 +23,7 @@ namespace DelegateDecompiler.EntityFramework.Tests.TestGroup05BasicFeatures
             using (var env = new MethodEnvironment(classEnv))
             {
                 //SETUP
-                var linq = env.Db.EfParents.Where(x => x.ParentBool == true).Select( x => x.EfParentId).ToList();
+                var linq = env.Db.EfParents.Where(x => x.ParentBool == true).Select(x => x.EfParentId).ToList();
 
                 //ATTEMPT
                 env.AboutToUseDelegateDecompiler();

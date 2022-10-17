@@ -14,7 +14,7 @@ namespace DelegateDecompiler.EntityFramework.Tests.TestGroup01Infrastructure
         private MethodLog TestMethodLogCreate([CallerMemberName] string memberName = "",
                                        [CallerLineNumber] int lineNumber = 0)
         {
-            return new MethodLog(LogStates.Supported, memberName, lineNumber, new List<string>{ "LinqSql"}, new List<string>{"ddSql"});
+            return new MethodLog(LogStates.Supported, memberName, lineNumber, new List<string> { "LinqSql" }, new List<string> { "ddSql" });
         }
 
         [Test]
@@ -38,7 +38,7 @@ namespace DelegateDecompiler.EntityFramework.Tests.TestGroup01Infrastructure
             //SETUP
 
             //ATTEMPT
-            var ex = Assert.Throws<ArgumentException>( () => TestMethodLogCreate());
+            var ex = Assert.Throws<ArgumentException>(() => TestMethodLogCreate());
 
             //VERIFY
             ex.Message.ShouldEqual("The test method must start with the characters 'Test'");

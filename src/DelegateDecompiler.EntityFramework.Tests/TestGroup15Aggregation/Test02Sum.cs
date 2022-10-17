@@ -43,7 +43,7 @@ namespace DelegateDecompiler.EntityFramework.Tests.TestGroup15Aggregation
             {
                 //SETUP
 
-                var linq = env.Db.EfParents.Select(x => x.Children.Sum( y => (int?)y.ChildInt) ?? 0).ToList();
+                var linq = env.Db.EfParents.Select(x => x.Children.Sum(y => (int?)y.ChildInt) ?? 0).ToList();
 
                 //ATTEMPT
                 env.AboutToUseDelegateDecompiler();
