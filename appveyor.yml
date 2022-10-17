@@ -1,5 +1,5 @@
 image:
-  - Visual Studio 2019
+  - Visual Studio 2022
 
 environment:
   DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
