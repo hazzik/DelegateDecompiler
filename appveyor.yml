@@ -27,4 +27,4 @@ before_test:
     $doc.Save($config);
 
 artifacts:
-- path: '**/*.nuget'
+- path: '**/*.*nupkg'
