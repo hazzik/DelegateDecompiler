@@ -29,3 +29,8 @@ before_test:
 artifacts:
 - path: '**/*.nupkg'
 - path: '**/*.snupkg'
+
+deploy:
+- provider: NuGet
+  api_key:
+    secure: jvtF15G6C62Mw4rutAgf401eKAzsI8zFC7CZwFfFcteWTRBeu8gbG1HRr5t62ly9
