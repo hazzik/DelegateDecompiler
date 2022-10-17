@@ -25,3 +25,14 @@ before_test:
     $doc = (gc $config) -as [xml]; 
     $doc.SelectSingleNode('//connectionStrings/add[@name="DelegateDecompilerEfTestDb"]').connectionString = "Server=(local)\\SQL2017;Database=DelegateDecompilerEfTestDb;MultipleActiveResultSets=True;User ID=sa;Password=Password12!;Trusted_connection=True"; 
     $doc.Save($config);
+
+artifacts:
+- path: '**/*.nupkg'
+- path: '**/*.snupkg'
+
+deploy:
+- provider: NuGet
+  on:
+    APPVEYOR_REPO_TAG: true
+  api_key:
+    secure: jvtF15G6C62Mw4rutAgf401eKAzsI8zFC7CZwFfFcteWTRBeu8gbG1HRr5t62ly9
