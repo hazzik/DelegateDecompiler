@@ -1,6 +1,6 @@
 Detail With Sql of supported commands
 ============
-## Documentation produced for DelegateDecompiler, version 0.30.0 on Thursday, 13 October 2022 16:12
+## Documentation produced for DelegateDecompiler, version 0.31.1.0 on Monday, 17 October 2022 17:28
 
 This file documents what linq commands **DelegateDecompiler** supports when
 working with [Entity Framework v6.1](http://msdn.microsoft.com/en-us/data/aa937723) (EF).
@@ -808,13 +808,27 @@ SELECT
     FROM [dbo].[EfPersons] AS [Extent1]
 ```
 
-  * Generic Method Person Handle (line 85)
+  * Select Generic Method Person Handle (line 85)
      * T-Sql executed is
 
 ```SQL
 SELECT 
     [Extent1].[FirstName] + CASE WHEN (CASE WHEN ([Extent1].[MiddleName] IS NULL) THEN N'' ELSE N' ' END IS NULL) THEN N'' WHEN ([Extent1].[MiddleName] IS NULL) THEN N'' ELSE N' ' END + CASE WHEN ([Extent1].[MiddleName] IS NULL) THEN N'' ELSE [Extent1].[MiddleName] END + N' ' + [Extent1].[LastName] AS [C1]
     FROM [dbo].[EfPersons] AS [Extent1]
+```
+
+  * Filter Generic Method Person Handle (line 99)
+     * T-Sql executed is
+
+```SQL
+SELECT 
+    [Extent1].[EfPersonId] AS [EfPersonId], 
+    [Extent1].[FirstName] AS [FirstName], 
+    [Extent1].[MiddleName] AS [MiddleName], 
+    [Extent1].[LastName] AS [LastName], 
+    [Extent1].[NameOrder] AS [NameOrder]
+    FROM [dbo].[EfPersons] AS [Extent1]
+    WHERE [Extent1].[FirstName] + CASE WHEN (CASE WHEN ([Extent1].[MiddleName] IS NULL) THEN N'' ELSE N' ' END IS NULL) THEN N'' WHEN ([Extent1].[MiddleName] IS NULL) THEN N'' ELSE N' ' END + CASE WHEN ([Extent1].[MiddleName] IS NULL) THEN N'' ELSE [Extent1].[MiddleName] END + N' ' + [Extent1].[LastName] IS NOT NULL
 ```
 
 

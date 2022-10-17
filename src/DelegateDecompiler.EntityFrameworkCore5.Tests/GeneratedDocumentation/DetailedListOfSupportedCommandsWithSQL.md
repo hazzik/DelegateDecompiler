@@ -1,6 +1,6 @@
 Detail With Sql of supported commands
 ============
-## Documentation produced for DelegateDecompiler, version 0.30.0 on Thursday, 13 October 2022 16:11
+## Documentation produced for DelegateDecompiler, version 0.31.1.0 on Monday, 17 October 2022 17:28
 
 This file documents what linq commands **DelegateDecompiler** supports when
 working with [Entity Framework Core](https://docs.microsoft.com/en-us/ef/core/) (EF).
@@ -739,7 +739,7 @@ END
 FROM [EfPersons] AS [e]
 ```
 
-  * Generic Method Person Handle (line 85)
+  * Select Generic Method Person Handle (line 85)
      * T-Sql executed is
 
 ```SQL
@@ -747,6 +747,14 @@ SELECT ((([e].[FirstName] + CASE
     WHEN [e].[MiddleName] IS NULL THEN N''
     ELSE N' '
 END) + COALESCE([e].[MiddleName], N'')) + N' ') + [e].[LastName]
+FROM [EfPersons] AS [e]
+```
+
+  * Filter Generic Method Person Handle (line 99)
+     * T-Sql executed is
+
+```SQL
+SELECT [e].[EfPersonId], [e].[FirstName], [e].[LastName], [e].[MiddleName], [e].[NameOrder]
 FROM [EfPersons] AS [e]
 ```
 
