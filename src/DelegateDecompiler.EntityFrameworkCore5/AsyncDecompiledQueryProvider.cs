@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading;
@@ -30,6 +31,7 @@ namespace DelegateDecompiler.EntityFrameworkCore
             return AsyncQueryProvider.ExecuteAsync<TResult>(decompiled, cancellationToken);
         }
 
+        [SuppressMessage("EntityFramework", "EF1001")]
         public override IQueryable<TElement> CreateQuery<TElement>(Expression expression)
         {
             var decompiled = expression.Decompile();

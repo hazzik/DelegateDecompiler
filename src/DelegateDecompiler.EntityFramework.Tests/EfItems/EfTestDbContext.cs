@@ -48,7 +48,7 @@ namespace DelegateDecompiler.EntityFramework.Tests.EfItems
 #if NETCOREAPP
         static string GetConnectionString()
         {
-            var location = new Uri(typeof(EfTestDbContext).Assembly.EscapedCodeBase).LocalPath;
+            var location = new Uri(typeof(EfTestDbContext).Assembly.Location).LocalPath;
             var configuration = ConfigurationManager.OpenExeConfiguration(location);
             var connectionString = configuration.ConnectionStrings.ConnectionStrings["DelegateDecompilerEfTestDb"]
                 .ConnectionString;

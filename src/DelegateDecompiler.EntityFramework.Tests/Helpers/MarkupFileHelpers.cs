@@ -51,7 +51,7 @@ namespace DelegateDecompiler.EntityFramework.Tests.Helpers
         {
             string path;
             if (GetMarkupFileDirectory(Environment.CurrentDirectory, alternateTestDir, out path) ||
-                GetMarkupFileDirectory(Path.GetDirectoryName(new Uri(typeof(MarkupFileHelpers).Assembly.CodeBase).LocalPath), alternateTestDir, out path))
+                GetMarkupFileDirectory(Path.GetDirectoryName(new Uri(typeof(MarkupFileHelpers).Assembly.Location).LocalPath), alternateTestDir, out path))
             {
                 return path;
             }

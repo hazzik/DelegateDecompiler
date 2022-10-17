@@ -95,7 +95,7 @@ namespace DelegateDecompiler.Tests
 
         public class D : C<int>
         {
-            public string Me = "C";
+            public new string Me = "C";
 
             public override string M1() => "D";
 
@@ -112,7 +112,7 @@ namespace DelegateDecompiler.Tests
 
         public abstract class E : C<int>
         {
-            public string Me = "C";
+            public new string Me = "C";
 
             public override string M1() => "E";
 
