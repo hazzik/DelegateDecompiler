@@ -1,4 +1,5 @@
-﻿using System;
+﻿#pragma warning disable CS0162 // Code is unreachable
+using System;
 using System.Linq.Expressions;
 using NUnit.Framework;
 
