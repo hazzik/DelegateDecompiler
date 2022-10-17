@@ -24,7 +24,7 @@ namespace DelegateDecompiler
             {
                 {expression.Parameters[0], Expression.Constant(@delegate.Target)}
             });
-            var transformed = visitor.Visit(expression.Body);
+            var transformed = visitor.Visit(expression.Body).Dereference();
             return Expression.Lambda(transformed, expression.Parameters.Skip(1));
         }
 

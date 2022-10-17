@@ -1,6 +1,6 @@
 Detail With Sql of supported commands
 ============
-## Documentation produced for DelegateDecompiler, version 0.31.1.0 on Monday, 17 October 2022 17:28
+## Documentation produced for DelegateDecompiler, version 0.32.0.0 on Monday, 17 October 2022 16:21
 
 This file documents what linq commands **DelegateDecompiler** supports when
 working with [Entity Framework v6.1](http://msdn.microsoft.com/en-us/data/aa937723) (EF).
@@ -849,7 +849,7 @@ SELECT
 ### Group: Additional Features
 #### [Nested Expressions](../TestGroup90AdditionalFeatures/Test01NestedExpressions.cs):
 - Supported
-  * Subquery As Context Extension Method (line 68)
+  * Subquery As Context Extension Method (line 69)
      * T-Sql executed is
 
 ```SQL
@@ -874,6 +874,32 @@ SELECT
     )  AS [Project4]
 ```
 
+  * Filter With Subquery Reference (line 112)
+     * T-Sql executed is
+
+```SQL
+SELECT 
+    CASE WHEN ( EXISTS (SELECT 
+        1 AS [C1]
+        FROM [dbo].[EfParents] AS [Extent1]
+        WHERE  EXISTS (SELECT 
+            1 AS [C1]
+            FROM ( SELECT 
+                [Extent2].[EfParentId] AS [EfParentId], 
+                (SELECT 
+                    COUNT(1) AS [A1]
+                    FROM [dbo].[EfChilds] AS [Extent3]
+                    WHERE [Extent2].[EfParentId] = [Extent3].[EfParentId]) AS [C1]
+                FROM [dbo].[EfParents] AS [Extent2]
+            )  AS [Project1]
+            WHERE (0 = [Project1].[C1]) AND ([Project1].[EfParentId] = [Extent1].[EfParentId])
+        )
+    )) THEN cast(1 as bit) ELSE cast(0 as bit) END AS [C1]
+    FROM  ( SELECT 1 AS X ) AS [SingleRowTable1]
+```
+
+- **Not Supported**
+  * Subquery As Variable Reference (line 82)
 
 
 

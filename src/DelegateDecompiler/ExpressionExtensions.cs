@@ -10,6 +10,11 @@ namespace DelegateDecompiler
             return DecompileExpressionVisitor.Decompile(expression);
         }
 
+        public static Expression Dereference(this Expression expression)
+        {
+            return ReferencedQueryableExpressionVisitor.Decompile(expression);
+        }
+
         public static Expression Optimize(this Expression expression)
         {
             return OptimizeExpressionVisitor.Optimize(expression);
