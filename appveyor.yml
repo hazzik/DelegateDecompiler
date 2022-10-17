@@ -27,4 +27,5 @@ before_test:
     $doc.Save($config);
 
 artifacts:
-- path: '**/*.*nupkg'
+- path: '**/*.nupkg'
+- path: '**/*.snupkg'
