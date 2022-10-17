@@ -25,3 +25,6 @@ before_test:
     $doc = (gc $config) -as [xml]; 
     $doc.SelectSingleNode('//connectionStrings/add[@name="DelegateDecompilerEfTestDb"]').connectionString = "Server=(local)\\SQL2017;Database=DelegateDecompilerEfTestDb;MultipleActiveResultSets=True;User ID=sa;Password=Password12!;Trusted_connection=True"; 
     $doc.Save($config);
+
+artifacts:
+- path: '**/*.nuget'
