@@ -39,11 +39,14 @@ namespace DelegateDecompiler.EntityFramework.Tests.EfItems.Concretes
         public string FullNameHandleNull { get { return FirstName + (MiddleName == null ? "" : " ") + MiddleName + " " + LastName; } }
 
         [Computed]
-        public string UseOrderToFormatNameStyle { get
+        public string UseOrderToFormatNameStyle
         {
-            return NameOrder
-                ? LastName + ", " + FirstName + (MiddleName == null ? "" : " ")
-                : FirstName + (MiddleName == null ? "" : " ") + MiddleName + " " + LastName;
-        } }
+            get
+            {
+                return NameOrder
+                    ? LastName + ", " + FirstName + (MiddleName == null ? "" : " ")
+                    : FirstName + (MiddleName == null ? "" : " ") + MiddleName + " " + LastName;
+            }
+        }
     }
 }

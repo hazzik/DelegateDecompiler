@@ -20,7 +20,7 @@ namespace DelegateDecompiler.EntityFramework
         {
             if (body.NodeType == ExpressionType.MemberAccess)
             {
-                var member = ((MemberExpression) body).Member;
+                var member = ((MemberExpression)body).Member;
                 if (!(member is PropertyInfo))
                 {
                     throw new InvalidOperationException("MemberExpression expected to have a Member of PropertyInfo type, but got " + member.GetType().Name);
@@ -29,7 +29,7 @@ namespace DelegateDecompiler.EntityFramework
             }
             if (body.NodeType == ExpressionType.Call)
             {
-                return ((MethodCallExpression) body).Method;
+                return ((MethodCallExpression)body).Method;
             }
             throw new ArgumentException("Expression expected to be of MemberAccess or Call type, but got " + body.NodeType);
         }

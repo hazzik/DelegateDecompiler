@@ -39,16 +39,16 @@ namespace DelegateDecompiler.Tests
         [Test]
         public void MethodAcceptingByte()
         {
-            Expression<Func<string>> expected = () => Method((byte) 1);
-            Func<string> compiled = () => Method((byte) 1);
+            Expression<Func<string>> expected = () => Method((byte)1);
+            Func<string> compiled = () => Method((byte)1);
             Test(expected, compiled);
         }
 
         [Test]
         public void ConstantByteToString()
         {
-            Expression<Func<string>> expected = () => ((byte) 1).ToString();
-            Func<string> compiled = () => ((byte) 1).ToString();
+            Expression<Func<string>> expected = () => ((byte)1).ToString();
+            Func<string> compiled = () => ((byte)1).ToString();
             Test(expected, compiled);
         }
 
@@ -68,16 +68,16 @@ namespace DelegateDecompiler.Tests
         [Test]
         public void MethodAcceptingSByte()
         {
-            Expression<Func<string>> expected = () => Method((sbyte) 1);
-            Func<string> compiled = () => Method((sbyte) 1);
+            Expression<Func<string>> expected = () => Method((sbyte)1);
+            Func<string> compiled = () => Method((sbyte)1);
             Test(expected, compiled);
         }
 
         [Test]
         public void ConstantSByteToString()
         {
-            Expression<Func<string>> expected = () => ((sbyte) 1).ToString();
-            Func<string> compiled = () => ((sbyte) 1).ToString();
+            Expression<Func<string>> expected = () => ((sbyte)1).ToString();
+            Func<string> compiled = () => ((sbyte)1).ToString();
             Test(expected, compiled);
         }
 
@@ -97,16 +97,16 @@ namespace DelegateDecompiler.Tests
         [Test]
         public void MethodAcceptingInt16()
         {
-            Expression<Func<string>> expected = () => Method((short) 1);
-            Func<string> compiled = () => Method((short) 1);
+            Expression<Func<string>> expected = () => Method((short)1);
+            Func<string> compiled = () => Method((short)1);
             Test(expected, compiled);
         }
 
         [Test]
         public void ConstantInt16ToString()
         {
-            Expression<Func<string>> expected = () => ((short) 1).ToString();
-            Func<string> compiled = () => ((short) 1).ToString();
+            Expression<Func<string>> expected = () => ((short)1).ToString();
+            Func<string> compiled = () => ((short)1).ToString();
             Test(expected, compiled);
         }
 
@@ -126,16 +126,16 @@ namespace DelegateDecompiler.Tests
         [Test]
         public void MethodAcceptingUInt16()
         {
-            Expression<Func<string>> expected = () => Method((ushort) 1);
-            Func<string> compiled = () => Method((ushort) 1);
+            Expression<Func<string>> expected = () => Method((ushort)1);
+            Func<string> compiled = () => Method((ushort)1);
             Test(expected, compiled);
         }
 
         [Test]
         public void ConstantUInt16ToString()
         {
-            Expression<Func<string>> expected = () => ((ushort) 1).ToString();
-            Func<string> compiled = () => ((ushort) 1).ToString();
+            Expression<Func<string>> expected = () => ((ushort)1).ToString();
+            Func<string> compiled = () => ((ushort)1).ToString();
             Test(expected, compiled);
         }
 
@@ -155,16 +155,16 @@ namespace DelegateDecompiler.Tests
         [Test]
         public void MethodAcceptingInt32()
         {
-            Expression<Func<string>> expected = () => Method((int) 1);
-            Func<string> compiled = () => Method((int) 1);
+            Expression<Func<string>> expected = () => Method((int)1);
+            Func<string> compiled = () => Method((int)1);
             Test(expected, compiled);
         }
 
         [Test]
         public void ConstantInt32ToString()
         {
-            Expression<Func<string>> expected = () => ((int) 1).ToString();
-            Func<string> compiled = () => ((int) 1).ToString();
+            Expression<Func<string>> expected = () => ((int)1).ToString();
+            Func<string> compiled = () => ((int)1).ToString();
             Test(expected, compiled);
         }
 
@@ -184,16 +184,16 @@ namespace DelegateDecompiler.Tests
         [Test]
         public void MethodAcceptingUInt32()
         {
-            Expression<Func<string>> expected = () => Method((uint) 1);
-            Func<string> compiled = () => Method((uint) 1);
+            Expression<Func<string>> expected = () => Method((uint)1);
+            Func<string> compiled = () => Method((uint)1);
             Test(expected, compiled);
         }
 
         [Test]
         public void ConstantUInt32ToString()
         {
-            Expression<Func<string>> expected = () => ((uint) 1).ToString();
-            Func<string> compiled = () => ((uint) 1).ToString();
+            Expression<Func<string>> expected = () => ((uint)1).ToString();
+            Func<string> compiled = () => ((uint)1).ToString();
             Test(expected, compiled);
         }
 
@@ -213,16 +213,16 @@ namespace DelegateDecompiler.Tests
         [Test, Ignore("Acceptable difference")]
         public void MethodAcceptingInt64()
         {
-            Expression<Func<string>> expected = () => Method((long) 1);
-            Func<string> compiled = () => Method((long) 1);
+            Expression<Func<string>> expected = () => Method((long)1);
+            Func<string> compiled = () => Method((long)1);
             Test(expected, compiled);
         }
 
         [Test, Ignore("Acceptable difference")]
         public void ConstantInt64ToString()
         {
-            Expression<Func<string>> expected = () => ((long) 1).ToString();
-            Func<string> compiled = () => ((long) 1).ToString();
+            Expression<Func<string>> expected = () => ((long)1).ToString();
+            Func<string> compiled = () => ((long)1).ToString();
             Test(expected, compiled);
         }
 
@@ -242,16 +242,16 @@ namespace DelegateDecompiler.Tests
         [Test, Ignore("Not fixed yet")]
         public void MethodAcceptingUInt64()
         {
-            Expression<Func<string>> expected = () => Method((ulong) 1);
-            Func<string> compiled = () => Method((ulong) 1);
+            Expression<Func<string>> expected = () => Method((ulong)1);
+            Func<string> compiled = () => Method((ulong)1);
             Test(expected, compiled);
         }
 
         [Test, Ignore("Not fixed yet")]
         public void ConstantUInt64ToString()
         {
-            Expression<Func<string>> expected = () => ((ulong) 1).ToString();
-            Func<string> compiled = () => ((ulong) 1).ToString();
+            Expression<Func<string>> expected = () => ((ulong)1).ToString();
+            Func<string> compiled = () => ((ulong)1).ToString();
             Test(expected, compiled);
         }
 
@@ -271,16 +271,16 @@ namespace DelegateDecompiler.Tests
         [Test]
         public void MethodAcceptingSingle()
         {
-            Expression<Func<string>> expected = () => Method((float) 1);
-            Func<string> compiled = () => Method((float) 1);
+            Expression<Func<string>> expected = () => Method((float)1);
+            Func<string> compiled = () => Method((float)1);
             Test(expected, compiled);
         }
 
         [Test]
         public void ConstantSingleToString()
         {
-            Expression<Func<string>> expected = () => ((float) 1).ToString();
-            Func<string> compiled = () => ((float) 1).ToString();
+            Expression<Func<string>> expected = () => ((float)1).ToString();
+            Func<string> compiled = () => ((float)1).ToString();
             Test(expected, compiled);
         }
 
@@ -300,16 +300,16 @@ namespace DelegateDecompiler.Tests
         [Test]
         public void MethodAcceptingDouble()
         {
-            Expression<Func<string>> expected = () => Method((double) 1);
-            Func<string> compiled = () => Method((double) 1);
+            Expression<Func<string>> expected = () => Method((double)1);
+            Func<string> compiled = () => Method((double)1);
             Test(expected, compiled);
         }
 
         [Test]
         public void ConstantDoubleToString()
         {
-            Expression<Func<string>> expected = () => ((double) 1).ToString();
-            Func<string> compiled = () => ((double) 1).ToString();
+            Expression<Func<string>> expected = () => ((double)1).ToString();
+            Func<string> compiled = () => ((double)1).ToString();
             Test(expected, compiled);
         }
 
@@ -329,18 +329,18 @@ namespace DelegateDecompiler.Tests
         [Test, Ignore("Compiler optimizes code")]
         public void MethodAcceptingDecimalOne()
         {
-            Expression<Func<string>> expected1 = () => Method((decimal) 1);
+            Expression<Func<string>> expected1 = () => Method((decimal)1);
             Expression<Func<string>> expected2 = () => Method(decimal.One);
-            Func<string> compiled = () => Method((decimal) 1);
+            Func<string> compiled = () => Method((decimal)1);
             Test(expected1, expected2, compiled);
         }
 
         [Test, Ignore("Compiler optimizes code")]
         public void ConstantDecimalOneToString()
         {
-            Expression<Func<string>> expected1 = () => ((decimal) 1).ToString();
+            Expression<Func<string>> expected1 = () => ((decimal)1).ToString();
             Expression<Func<string>> expected2 = () => decimal.One.ToString();
-            Func<string> compiled = () => ((decimal) 1).ToString();
+            Func<string> compiled = () => ((decimal)1).ToString();
             Test(expected1, expected2, compiled);
         }
 
@@ -355,10 +355,10 @@ namespace DelegateDecompiler.Tests
         [Test]
         public void MethodAcceptingDecimal()
         {
-            Expression<Func<string>> expected1 = () => Method((decimal) 1.23);
+            Expression<Func<string>> expected1 = () => Method((decimal)1.23);
             Expression<Func<string>> expected2 = () => Method(new decimal(123, 0, 0, false, 2));
             Func<string> compiled = () => Method((decimal)1.23);
-            Test(expected1,expected2, compiled);
+            Test(expected1, expected2, compiled);
         }
 
         [Test]

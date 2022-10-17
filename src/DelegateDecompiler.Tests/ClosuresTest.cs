@@ -20,7 +20,7 @@ namespace DelegateDecompiler.Tests
             Expression<Func<object, int>> expected = o => x;
             Func<object, int> compiled = o => x;
             Test(expected, compiled);
-        } 
+        }
 
         [Test]
         public void CanUseFieldClosure()
@@ -29,7 +29,7 @@ namespace DelegateDecompiler.Tests
             Func<object, int> compiled = o => y;
             Test(expected, compiled);
         }
- 
+
         [Test]
         public void CanUseStaticFieldClosure()
         {
@@ -37,7 +37,7 @@ namespace DelegateDecompiler.Tests
             Func<object, int> compiled = o => z;
             Test(expected, compiled);
         }
- 
+
         [Test, Ignore("The difference is expected")]
         public void CanUseFieldAndVariableClosures()
         {
@@ -45,8 +45,8 @@ namespace DelegateDecompiler.Tests
             Expression<Func<object, int>> expected = o => x + y;
             Func<object, int> compiled = o => x + y;
             Test(expected, compiled);
-        } 
- 
+        }
+
         [Test, Ignore("The difference is expected")]
         public void CanUseFieldAndStaticFieldAndVariableClosures()
         {
@@ -54,7 +54,7 @@ namespace DelegateDecompiler.Tests
             Expression<Func<object, int>> expected = o => x + y + z;
             Func<object, int> compiled = o => x + y + z;
             Test(expected, compiled);
-        } 
+        }
 
         [Test]
         public void CanUseRefVariableClosure()
@@ -63,7 +63,7 @@ namespace DelegateDecompiler.Tests
             Expression<Func<object, TestClass>> expected = o => x;
             Func<object, TestClass> compiled = o => x;
             Test(expected, compiled);
-        } 
+        }
 
         [Test]
         public void CanUseRefFieldClosure()
@@ -72,7 +72,7 @@ namespace DelegateDecompiler.Tests
             Func<object, TestClass> compiled = o => instanceTestClass;
             Test(expected, compiled);
         }
- 
+
         [Test]
         public void CanUseRefStaticFieldClosure()
         {
@@ -80,7 +80,7 @@ namespace DelegateDecompiler.Tests
             Func<object, int> compiled = o => z;
             Test(expected, compiled);
         }
- 
+
         [Test, Ignore("The difference is expected")]
         public void CanUseRefFieldAndVariableClosures()
         {
@@ -88,8 +88,8 @@ namespace DelegateDecompiler.Tests
             Expression<Func<object, string>> expected = o => "" + x + instanceTestClass;
             Func<object, string> compiled = o => "" + x + instanceTestClass;
             Test(expected, compiled);
-        } 
- 
+        }
+
         [Test, Ignore("The difference is expected")]
         public void CanUseRefFieldAndStaticFieldAndVariableClosures()
         {
@@ -97,6 +97,6 @@ namespace DelegateDecompiler.Tests
             Expression<Func<object, string>> expected = o => "" + x + instanceTestClass + staticTestClass;
             Func<object, string> compiled = o => "" + x + instanceTestClass + staticTestClass;
             Test(expected, compiled);
-        } 
+        }
     }
 }

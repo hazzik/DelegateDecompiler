@@ -29,7 +29,7 @@ namespace DelegateDecompiler.Tests
             {
                 get
                 {
-                    return Enum.GetName(typeof (FooEnum), Value);
+                    return Enum.GetName(typeof(FooEnum), Value);
                 }
             }
         }

@@ -31,7 +31,7 @@ namespace DelegateDecompiler.Tests
             Func<int, int, int> compiled = (x, y) => x % y;
             Test(expected, compiled);
         }
-        
+
         [Test]
         public void ShouldBeAbleToDecompileExpressionWithXor()
         {
@@ -39,7 +39,7 @@ namespace DelegateDecompiler.Tests
             Func<int, int, int> compiled = (x, y) => x ^ y;
             Test(expected, compiled);
         }
-        
+
         [Test]
         public void ShouldBeAbleToDecompileExpressionWithShl()
         {
@@ -75,7 +75,7 @@ namespace DelegateDecompiler.Tests
         [Test]
         public void ShouldBeAbleToDecompileExpressionWithCastClass()
         {
-            Expression<Func<object, DecompileExtensionsTests>> expected = x => (DecompileExtensionsTests) x;
+            Expression<Func<object, DecompileExtensionsTests>> expected = x => (DecompileExtensionsTests)x;
             Func<object, DecompileExtensionsTests> compiled = x => (DecompileExtensionsTests)x;
             Test(expected, compiled);
         }
@@ -83,8 +83,8 @@ namespace DelegateDecompiler.Tests
         [Test]
         public void ShouldBeAbleToDecompileExpressionWithLdLen()
         {
-            Expression<Func<int[], int>> expected = x => (int) x.Length;
-            Func<int[], int> compiled = x => (int) x.Length;
+            Expression<Func<int[], int>> expected = x => (int)x.Length;
+            Func<int[], int> compiled = x => (int)x.Length;
             Test(expected, compiled);
         }
 
@@ -199,7 +199,7 @@ namespace DelegateDecompiler.Tests
             Func<int, int, int> compiled = (x, y) => Add(x, y);
             Test(expected, compiled);
         }
-        
+
         [Test]
         public void ShouldBeAbleToDecompileExpressionWithInstanceMethodCall()
         {

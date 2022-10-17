@@ -94,8 +94,8 @@ namespace DelegateDecompiler.EntityFramework.Tests.EfItems
 
         private static ICollection<LivingBeeing> InitializeLivingBeeings()
         {
-            var animal1 = new Dog { Age = 2};
-            var animal2 = new Dog { Age = 3};
+            var animal1 = new Dog { Age = 2 };
+            var animal2 = new Dog { Age = 3 };
             return new List<LivingBeeing>
             {
                 animal1,

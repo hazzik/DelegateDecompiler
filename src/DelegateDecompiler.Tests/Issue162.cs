@@ -9,7 +9,7 @@ namespace DelegateDecompiler.Tests
         [Test]
         public void ShouldBeAbleToDecompileUsingProtectedProperty()
         {
-            var actual = new[] {new Foo(42)}
+            var actual = new[] { new Foo(42) }
                 .AsQueryable()
                 .Select(x => x.PublicProperty)
                 .Decompile();

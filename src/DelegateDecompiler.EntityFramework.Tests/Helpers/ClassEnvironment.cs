@@ -13,7 +13,7 @@ namespace DelegateDecompiler.EntityFramework.Tests.Helpers
         public ClassEnvironment(string alternativeSourceFilePath = null, [CallerFilePath] string sourceFilePath = "")
         {
             ThisClassesLog = new ClassLog(alternativeSourceFilePath ?? sourceFilePath);
-            MasterEnvironment.AddClassLog( ThisClassesLog);
+            MasterEnvironment.AddClassLog(ThisClassesLog);
 
             //ensure the database is set up
             using (var db = new EfTestDbContext())

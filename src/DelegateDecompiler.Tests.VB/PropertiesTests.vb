@@ -5,7 +5,7 @@ Imports System.Linq
 Public Class PropertiesTests
     <Test>
     Public Sub InlineProperty()
-        Dim employees = New TestClass() {New TestClass() With { .A = True }}
+        Dim employees = New TestClass() {New TestClass() With {.A = True}}
         Dim expected = employees.AsQueryable().Where(Function(e) e.A)
         Dim actual As IQueryable(Of TestClass) = employees.AsQueryable().Where(Function(e) e.B).Decompile()
 

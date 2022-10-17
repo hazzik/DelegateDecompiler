@@ -41,7 +41,7 @@ namespace DelegateDecompiler.EntityFramework.Tests.TestGroup15Aggregation
             {
                 //SETUP
 
-                var linq = env.Db.EfParents.Select(x => x.Children.Count( y => y.ChildInt == 123)).ToList();
+                var linq = env.Db.EfParents.Select(x => x.Children.Count(y => y.ChildInt == 123)).ToList();
 
                 //ATTEMPT
                 env.AboutToUseDelegateDecompiler();
@@ -59,7 +59,7 @@ namespace DelegateDecompiler.EntityFramework.Tests.TestGroup15Aggregation
             {
                 //SETUP
 
-                var linq = env.Db.EfParents.Select(x => x.Children.Count( y => y.ChildInt == x.EfParentId)).ToList();
+                var linq = env.Db.EfParents.Select(x => x.Children.Count(y => y.ChildInt == x.EfParentId)).ToList();
 
                 //ATTEMPT
                 env.AboutToUseDelegateDecompiler();

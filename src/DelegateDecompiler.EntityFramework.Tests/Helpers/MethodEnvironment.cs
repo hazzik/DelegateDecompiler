@@ -48,7 +48,7 @@ namespace DelegateDecompiler.EntityFramework.Tests.Helpers
 
         public void LogFailer(int sourceLineNumber)
         {
-            classEnv.AddMethodlog( new MethodLog(LogStates.NotSupported, memberName, sourceLineNumber, loggedLinqSql, loggedDelegateDecompilerSql)) ;
+            classEnv.AddMethodlog(new MethodLog(LogStates.NotSupported, memberName, sourceLineNumber, loggedLinqSql, loggedDelegateDecompilerSql));
             hasLoggedError = true;
         }
 
@@ -60,7 +60,7 @@ namespace DelegateDecompiler.EntityFramework.Tests.Helpers
 
         private void LogExceptionHappended(int sourceLineNumber)
         {
-            classEnv.AddMethodlog( new MethodLog( finishedLinqPart ? LogStates.NotSupported : LogStates.EvenLinqDidNotWork,
+            classEnv.AddMethodlog(new MethodLog(finishedLinqPart ? LogStates.NotSupported : LogStates.EvenLinqDidNotWork,
                 memberName, sourceLineNumber, loggedLinqSql, loggedDelegateDecompilerSql));
         }
 

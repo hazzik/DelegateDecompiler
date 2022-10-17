@@ -20,7 +20,7 @@ namespace DelegateDecompiler
 
         public static implicit operator Address(Expression expression)
         {
-            return new Address {Expression = expression};
+            return new Address { Expression = expression };
         }
 
         public Address Clone(IDictionary<Address, Address> map)

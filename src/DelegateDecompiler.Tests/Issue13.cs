@@ -7,7 +7,7 @@ namespace DelegateDecompiler.Tests
 {
     [TestFixture]
     public class Issue13 : DecompilerTestsBase
-    {     
+    {
         [Test]
         public void Test()
         {

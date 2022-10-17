@@ -6,8 +6,8 @@ namespace DelegateDecompiler.Tests
 {
     public class Issue90 : DecompilerTestsBase
     {
-        public class Test 
-        { 
+        public class Test
+        {
             public string A { get; set; }
         }
 

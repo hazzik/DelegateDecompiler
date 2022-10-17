@@ -55,7 +55,7 @@ namespace DelegateDecompiler.EntityFramework.Tests.TestGroup01Infrastructure
                 //SETUP             
 
                 //ATTEMPT
-                Assert.Throws<ArgumentException>( () =>  env.CompareAndLogList(new String[] { }, new String[] {}));
+                Assert.Throws<ArgumentException>(() => env.CompareAndLogList(new String[] { }, new String[] { }));
 
                 //VERIFY
             }
@@ -84,7 +84,7 @@ namespace DelegateDecompiler.EntityFramework.Tests.TestGroup01Infrastructure
                 //SETUP             
 
                 //ATTEMPT
-                Assert.Throws<AssertionException>(() => env.CompareAndLogSingleton(1,2));
+                Assert.Throws<AssertionException>(() => env.CompareAndLogSingleton(1, 2));
 
                 //VERIFY
                 classEnv.GetLastMethodLog().State.ShouldEqual(LogStates.NotSupported);
@@ -105,7 +105,7 @@ namespace DelegateDecompiler.EntityFramework.Tests.TestGroup01Infrastructure
                 }
 
             }
-            catch 
+            catch
             {
                 //VERIFY
                 classEnv.GetLastMethodLog().State.ShouldEqual(LogStates.EvenLinqDidNotWork);

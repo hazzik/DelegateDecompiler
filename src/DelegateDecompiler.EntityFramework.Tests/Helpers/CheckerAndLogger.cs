@@ -11,7 +11,7 @@ namespace DelegateDecompiler.EntityFramework.Tests.Helpers
 {
     static class CheckerAndLogger
     {
-        public static void CompareAndLogList<T>(this MethodEnvironment env, IList<T> linqResult, IList<T> ddResult, 
+        public static void CompareAndLogList<T>(this MethodEnvironment env, IList<T> linqResult, IList<T> ddResult,
             [CallerLineNumber] int sourceLineNumber = 0)
         {
             if (!linqResult.Any())
@@ -19,7 +19,7 @@ namespace DelegateDecompiler.EntityFramework.Tests.Helpers
 
             try
             {
-                CollectionAssert.AreEqual( linqResult, ddResult);
+                CollectionAssert.AreEqual(linqResult, ddResult);
             }
             catch (Exception)
             {

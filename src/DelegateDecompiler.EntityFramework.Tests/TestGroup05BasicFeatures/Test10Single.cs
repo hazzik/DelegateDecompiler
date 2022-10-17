@@ -25,13 +25,13 @@ namespace DelegateDecompiler.EntityFramework.Tests.TestGroup05BasicFeatures
             {
                 //SETUP
                 var linq =
-                    env.Db.EfParents.Select(x => new {x.EfParentId, x.ParentInt})
+                    env.Db.EfParents.Select(x => new { x.EfParentId, x.ParentInt })
                         .Single(x => x.ParentInt == DatabaseHelpers.ParentIntUniqueValue).EfParentId;
 
                 //ATTEMPT
                 env.AboutToUseDelegateDecompiler();
                 var dd =
-                    env.Db.EfParents.Select(x => new {x.EfParentId, x.IntEqualsUniqueValue})
+                    env.Db.EfParents.Select(x => new { x.EfParentId, x.IntEqualsUniqueValue })
                         .Decompile()
                         .Single(x => x.IntEqualsUniqueValue)
                         .EfParentId;
