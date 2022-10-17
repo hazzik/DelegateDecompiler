@@ -39,7 +39,7 @@ namespace DelegateDecompiler.EntityFramework.Tests.TestGroup12QuantifierOperator
             using (var env = new MethodEnvironment(classEnv))
             {
                 //SETUP
-                var linq = env.Db.EfParents.Select(x => x.Children.Any( y => y.ChildInt == 123)).ToList();
+                var linq = env.Db.EfParents.Select(x => x.Children.Any(y => y.ChildInt == 123)).ToList();
 
                 //ATTEMPT
                 env.AboutToUseDelegateDecompiler();

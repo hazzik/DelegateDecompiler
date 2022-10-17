@@ -12,7 +12,7 @@ namespace DelegateDecompiler.Tests
         {
             var mi = typeof(OutParametersTests).GetMethod(nameof(GetInt));
 
-            var expression = (Expression<Func<string, int>>) MethodBodyDecompiler.Decompile(mi);
+            var expression = (Expression<Func<string, int>>)MethodBodyDecompiler.Decompile(mi);
 
             Assert.That(expression.ToString(), Is.EqualTo("s => {var Param_0; ... }"));
             Assert.That(DebugView(expression), Is.EqualTo(@".Lambda #Lambda1<System.Func`2[System.String,System.Int32]>(System.String $s) {

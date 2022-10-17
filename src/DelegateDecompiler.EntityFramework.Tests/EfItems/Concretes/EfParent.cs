@@ -81,7 +81,7 @@ namespace DelegateDecompiler.EntityFramework.Tests.EfItems.Concretes
         public bool IntEqualsStringLength { get { return ParentInt == ParentString.Length; } }
 
         [Computed]
-        public bool IntNotEqualsStringLength { get { return ParentInt != ParentString.Length; } }  
+        public bool IntNotEqualsStringLength { get { return ParentInt != ParentString.Length; } }
 
 
         //QUANTIFIER OPERATORS
@@ -89,7 +89,7 @@ namespace DelegateDecompiler.EntityFramework.Tests.EfItems.Concretes
         [Computed]
         public bool AnyChildren { get { return Children.Any(); } }
 
-        [Computed]        
+        [Computed]
         public bool AnyChildrenWithFilter { get { return Children.Any(y => y.ChildInt == 123); } }
 
         [Computed]
@@ -101,7 +101,7 @@ namespace DelegateDecompiler.EntityFramework.Tests.EfItems.Concretes
         //AGGREGATE GROUP/ORDERBY
 
         [Computed]
-        public int CountChildren { get { return Children.Count(); } }  
+        public int CountChildren { get { return Children.Count(); } }
 
         [Computed]
         public int CountChildrenWithFilter { get { return Children.Count(y => y.ChildInt == 123); } }

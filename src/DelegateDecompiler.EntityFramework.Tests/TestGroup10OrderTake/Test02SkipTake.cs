@@ -23,11 +23,11 @@ namespace DelegateDecompiler.EntityFramework.Tests.TestGroup10OrderTake
             {
                 //SETUP
 
-                var linq = env.Db.EfParents.OrderBy(x => x.Children.Count).Select( x => x.EfParentId).Take(2).ToList();
+                var linq = env.Db.EfParents.OrderBy(x => x.Children.Count).Select(x => x.EfParentId).Take(2).ToList();
 
                 //ATTEMPT
                 env.AboutToUseDelegateDecompiler();
-                var dd = env.Db.EfParents.OrderBy(x => x.CountChildren).Select( x => x.EfParentId).Take(2).Decompile().ToList();
+                var dd = env.Db.EfParents.OrderBy(x => x.CountChildren).Select(x => x.EfParentId).Take(2).Decompile().ToList();
 
                 //VERIFY
                 env.CompareAndLogList(linq, dd);

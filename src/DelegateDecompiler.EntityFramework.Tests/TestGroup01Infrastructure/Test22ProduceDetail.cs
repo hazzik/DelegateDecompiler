@@ -25,7 +25,7 @@ namespace DelegateDecompiler.EntityFramework.Tests.TestGroup01Infrastructure
             new MethodLog(LogStates.NotSupported, "TestBad1", 1, new List<string>{ "LinqSql"}, new List<string>{"ddSql"}),
             new MethodLog(LogStates.NotSupported, "TestBad2", 2, new List<string>{ "LinqSql"}, new List<string>{"ddSql"})
         };
-        
+
 
         [Test]
         public void TestDetailOneGroupPartiallySupported()

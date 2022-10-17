@@ -30,14 +30,14 @@ namespace DelegateDecompiler.EntityFramework.Tests.TestGroup05BasicFeatures
             using (var env = new MethodEnvironment(classEnv))
             {
                 //SETUP
-                var linq = (await 
-                    env.Db.EfParents.Select(x => new {x.EfParentId, x.ParentInt})
+                var linq = (await
+                    env.Db.EfParents.Select(x => new { x.EfParentId, x.ParentInt })
                         .SingleAsync(x => x.ParentInt == DatabaseHelpers.ParentIntUniqueValue)).EfParentId;
 
                 //ATTEMPT
                 env.AboutToUseDelegateDecompiler();
                 var dd = (await
-                    env.Db.EfParents.Select(x => new {x.EfParentId, x.IntEqualsUniqueValue})
+                    env.Db.EfParents.Select(x => new { x.EfParentId, x.IntEqualsUniqueValue })
                         .DecompileAsync()
                         .SingleAsync(x => x.IntEqualsUniqueValue))
                         .EfParentId;

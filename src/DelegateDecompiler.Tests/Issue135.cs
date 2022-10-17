@@ -9,7 +9,8 @@ namespace DelegateDecompiler.Tests
     [TestFixture]
     public class Issue135 : DecompilerTestsBase
     {
-        public class Post {
+        public class Post
+        {
             public bool IsActive { get; set; }
         }
 
@@ -39,7 +40,7 @@ namespace DelegateDecompiler.Tests
                 get { return Posts.Any(x => x.IsActive) && (HasBar || HasBaz); }
             }
         }
-       
+
         [Test]
         public void Test1()
         {
@@ -87,7 +88,7 @@ namespace DelegateDecompiler.Tests
         [Test, Ignore("Not fixed yet.")]
         public void TestQueryable1()
         {
-            var blogs = new[] {new Blog()}.AsQueryable();
+            var blogs = new[] { new Blog() }.AsQueryable();
 
             var expected = (
                 from b in blogs
@@ -105,7 +106,7 @@ namespace DelegateDecompiler.Tests
         [Test, Ignore("Not fixed yet.")]
         public void TestQueryable2()
         {
-            var blogs = new[] {new Blog()}.AsQueryable();
+            var blogs = new[] { new Blog() }.AsQueryable();
 
             var expected = (
                 from b in blogs
@@ -123,7 +124,7 @@ namespace DelegateDecompiler.Tests
         [Test]
         public void TestQueryable3()
         {
-            var blogs = new[] {new Blog()}.AsQueryable();
+            var blogs = new[] { new Blog() }.AsQueryable();
 
             var expected = (
                 from b in blogs

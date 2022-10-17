@@ -22,17 +22,17 @@ namespace DelegateDecompiler.Tests
 
         public class Y : X
         {
-            public override string M5() => "Y";            
+            public override string M5() => "Y";
         }
 
         public class Y1 : Y
         {
-            public override string M5() => "Y1";            
+            public override string M5() => "Y1";
         }
-        
+
         public class Y2 : Y
         {
-            public override string M5() => "Y2";            
+            public override string M5() => "Y2";
         }
 
         public class Z : X
@@ -72,7 +72,7 @@ namespace DelegateDecompiler.Tests
             public override string M5() => "B";
 
             public override string M6() => "B is child of " + base.M6().ToString();
-           
+
             public override string M7 => "B is child of " + base.M7.ToString();
         }
 
@@ -106,7 +106,7 @@ namespace DelegateDecompiler.Tests
             public override string M5() => "D";
 
             public override string M6() => "D is child of " + base.M6().ToString();
-            
+
             public override string M7 => "D is child of " + base.M7.ToString();
         }
 

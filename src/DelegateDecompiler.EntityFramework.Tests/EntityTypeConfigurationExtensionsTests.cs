@@ -52,7 +52,7 @@ namespace DelegateDecompiler.EntityFramework.Tests
 
             Assert.That(() =>
             {
-                default(EntityTypeConfiguration<TestClass>).Computed(x=>x.Field);
+                default(EntityTypeConfiguration<TestClass>).Computed(x => x.Field);
             }, Throws.InvalidOperationException);
         }
 

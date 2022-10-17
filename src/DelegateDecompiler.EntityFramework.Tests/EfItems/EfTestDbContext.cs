@@ -33,9 +33,9 @@ namespace DelegateDecompiler.EntityFramework.Tests.EfItems
 #endif
         }
 #else
-        static EfTestDbContext() 
+        static EfTestDbContext()
         {
-            Database.SetInitializer(new DropCreateDatabaseAlways<EfTestDbContext>()); 
+            Database.SetInitializer(new DropCreateDatabaseAlways<EfTestDbContext>());
         }
 
 #if NETFRAMEWORK
@@ -71,7 +71,7 @@ namespace DelegateDecompiler.EntityFramework.Tests.EfItems
             modelBuilder.Entity<EfPerson>()
                 .Computed(x => x.FullNameNoAttibute)
                 .Computed(x => x.GetFullNameNoAttibute());
-            
+
             modelBuilder.Entity<Dog>();
             modelBuilder.Entity<HoneyBee>();
             modelBuilder.Entity<Person>();

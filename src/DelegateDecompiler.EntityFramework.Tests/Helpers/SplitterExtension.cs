@@ -10,7 +10,7 @@ namespace DelegateDecompiler.EntityFramework.Tests.Helpers
     {
         private static readonly Regex Reg = new Regex("([a-z,0-9](?=[A-Z])|[A-Z](?=[A-Z][a-z]))", RegexOptions.Compiled);
 
-        private static readonly Tuple<string,string>[] ExceptionsToSplitting = new Tuple<string,string>[]
+        private static readonly Tuple<string, string>[] ExceptionsToSplitting = new Tuple<string, string>[]
         {
             new Tuple<string, string>("ToString", "To String"),
             new Tuple<string, string>("DateTime", "Date Time"),
