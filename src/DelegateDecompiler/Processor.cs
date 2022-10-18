@@ -145,7 +145,11 @@ namespace DelegateDecompiler
 	        { OpCodes.Rem, s => MakeBinaryExpression(s, ExpressionType.Modulo) },
 	        { OpCodes.Rem_Un, s => MakeBinaryExpression(s, ExpressionType.Modulo) },
 
+	        { OpCodes.And, s => MakeBinaryExpression(s, ExpressionType.And) },
+	        { OpCodes.Or, s => MakeBinaryExpression(s, ExpressionType.Or) },
 	        { OpCodes.Xor, s => MakeBinaryExpression(s, ExpressionType.ExclusiveOr) },
+	       
+	        { OpCodes.Ceq, s => MakeBinaryExpression(s, ExpressionType.Equal) },
 	        
 	        { OpCodes.Shl, s => MakeBinaryExpression(s, ExpressionType.LeftShift) },
 	       
@@ -485,18 +489,6 @@ namespace DelegateDecompiler
                         var val1 = state.Stack.Pop();
                         state.Stack.Push(Expression.Convert(val1, (Type)state.Instruction.Operand));
                     }
-                    else if (state.Instruction.OpCode == OpCodes.And)
-                    {
-                        var val1 = state.Stack.Pop();
-                        var val2 = state.Stack.Pop();
-                        state.Stack.Push(MakeBinaryExpression(val2, val1, ExpressionType.And));
-                    }
-                    else if (state.Instruction.OpCode == OpCodes.Or)
-                    {
-                        var val1 = state.Stack.Pop();
-                        var val2 = state.Stack.Pop();
-                        state.Stack.Push(MakeBinaryExpression(val2, val1, ExpressionType.Or));
-                    }
                     else if (state.Instruction.OpCode == OpCodes.Initobj)
                     {
                         var address = state.Stack.Pop();
@@ -547,13 +539,6 @@ namespace DelegateDecompiler
                         {
                             throw new NotSupportedException();
                         }
-                    }
-                    else if (state.Instruction.OpCode == OpCodes.Ceq)
-                    {
-                        var val1 = state.Stack.Pop();
-                        var val2 = state.Stack.Pop();
-
-                        state.Stack.Push(MakeBinaryExpression(val2, val1, ExpressionType.Equal));
                     }
                     else if (state.Instruction.OpCode == OpCodes.Cgt)
                     {
