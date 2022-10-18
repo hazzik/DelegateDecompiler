@@ -152,6 +152,18 @@ namespace DelegateDecompiler
 	        { OpCodes.Shr, s => MakeBinaryExpression(s, ExpressionType.RightShift) },
 	        { OpCodes.Shr_Un, s => MakeBinaryExpression(s, ExpressionType.RightShift) },
 	        
+	        { OpCodes.Conv_I, s => Conv(s, typeof(int)) }, // Support x64?
+	        { OpCodes.Conv_I1, s => Conv(s, typeof(sbyte)) },
+	        { OpCodes.Conv_I2, s => Conv(s, typeof(short)) },
+	        { OpCodes.Conv_I4, s => Conv(s, typeof(int)) },
+	        { OpCodes.Conv_I8, s => Conv(s, typeof(long)) },
+	        
+	        { OpCodes.Conv_U, s => Conv(s, typeof(uint)) }, // Support x64?
+	        { OpCodes.Conv_U1, s => Conv(s, typeof(byte)) }, 
+	        { OpCodes.Conv_U2, s => Conv(s, typeof(ushort)) },
+	        { OpCodes.Conv_U4, s => Conv(s, typeof(uint)) },
+	        { OpCodes.Conv_U8, s => Conv(s, typeof(ulong)) },
+	        
 	        { OpCodes.Ldarg, LdArg },
 	        { OpCodes.Ldarg_S, LdArg },
 	        { OpCodes.Ldarga, LdArg },
@@ -405,58 +417,8 @@ namespace DelegateDecompiler
                     }
                     else if (state.Instruction.OpCode == OpCodes.Not)
                     {
-                        var val = state.Stack.Pop();
-                        state.Stack.Push(MakeUnaryExpression(val, ExpressionType.Not));
-                    }
-                    else if (state.Instruction.OpCode == OpCodes.Conv_I)
-                    {
-                        var val1 = state.Stack.Pop();
-                        state.Stack.Push(Expression.Convert(val1, typeof(int))); // Support x64?
-                    }
-                    else if (state.Instruction.OpCode == OpCodes.Conv_I1)
-                    {
-                        var val1 = state.Stack.Pop();
-                        state.Stack.Push(Expression.Convert(val1, typeof(sbyte)));
-                    }
-                    else if (state.Instruction.OpCode == OpCodes.Conv_I2)
-                    {
-                        var val1 = state.Stack.Pop();
-                        state.Stack.Push(Expression.Convert(val1, typeof(short)));
-                    }
-                    else if (state.Instruction.OpCode == OpCodes.Conv_I4)
-                    {
-                        var val1 = state.Stack.Pop();
-                        state.Stack.Push(Expression.Convert(val1, typeof(int)));
-                    }
-                    else if (state.Instruction.OpCode == OpCodes.Conv_I8)
-                    {
-                        var val1 = state.Stack.Pop();
-                        state.Stack.Push(Expression.Convert(val1, typeof(long)));
-                    }
-                    else if (state.Instruction.OpCode == OpCodes.Conv_U)
-                    {
-                        var val1 = state.Stack.Pop();
-                        state.Stack.Push(Expression.Convert(val1, typeof(uint))); // Suppot x64?
-                    }
-                    else if (state.Instruction.OpCode == OpCodes.Conv_U1)
-                    {
-                        var val1 = state.Stack.Pop();
-                        state.Stack.Push(Expression.Convert(val1, typeof(byte)));
-                    }
-                    else if (state.Instruction.OpCode == OpCodes.Conv_U2)
-                    {
-                        var val1 = state.Stack.Pop();
-                        state.Stack.Push(Expression.Convert(val1, typeof(ushort)));
-                    }
-                    else if (state.Instruction.OpCode == OpCodes.Conv_U4)
-                    {
-                        var val1 = state.Stack.Pop();
-                        state.Stack.Push(Expression.Convert(val1, typeof(uint)));
-                    }
-                    else if (state.Instruction.OpCode == OpCodes.Conv_U8)
-                    {
-                        var val1 = state.Stack.Pop();
-                        state.Stack.Push(Expression.Convert(val1, typeof(ulong)));
+	                    var val = state.Stack.Pop();
+	                    state.Stack.Push(MakeUnaryExpression(val, ExpressionType.Not));
                     }
                     else if (state.Instruction.OpCode == OpCodes.Conv_Ovf_I || state.Instruction.OpCode == OpCodes.Conv_Ovf_I_Un)
                     {
@@ -655,6 +617,12 @@ namespace DelegateDecompiler
             }
 
             return state == null ? Expression.Empty() : state.Final();
+        }
+
+        static void Conv(ProcessorState state, Type type)
+        {
+	        var val1 = state.Stack.Pop();
+	        state.Stack.Push(Expression.Convert(val1, type));
         }
 
         static void MakeBinaryExpression(ProcessorState state, ExpressionType expressionType)
