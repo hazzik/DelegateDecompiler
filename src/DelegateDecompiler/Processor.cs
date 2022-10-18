@@ -127,6 +127,31 @@ namespace DelegateDecompiler
 
         static readonly Dictionary<OpCode, Action<ProcessorState>> handlers = new Dictionary<OpCode, Action<ProcessorState>>()
         {
+	        { OpCodes.Add, s => MakeBinaryExpression(s, ExpressionType.Add) },
+	        { OpCodes.Add_Ovf, s => MakeBinaryExpression(s, ExpressionType.AddChecked) },
+	        { OpCodes.Add_Ovf_Un, s => MakeBinaryExpression(s, ExpressionType.AddChecked) },
+	        
+	        { OpCodes.Sub, s => MakeBinaryExpression(s, ExpressionType.Subtract) },
+	        { OpCodes.Sub_Ovf, s => MakeBinaryExpression(s, ExpressionType.SubtractChecked) },
+	        { OpCodes.Sub_Ovf_Un, s => MakeBinaryExpression(s, ExpressionType.SubtractChecked) },
+	        
+	        { OpCodes.Mul, s => MakeBinaryExpression(s, ExpressionType.Multiply) },
+	        { OpCodes.Mul_Ovf, s => MakeBinaryExpression(s, ExpressionType.MultiplyChecked) },
+	        { OpCodes.Mul_Ovf_Un, s => MakeBinaryExpression(s, ExpressionType.MultiplyChecked) },
+	        
+	        { OpCodes.Div, s => MakeBinaryExpression(s, ExpressionType.Divide) },
+	        { OpCodes.Div_Un, s => MakeBinaryExpression(s, ExpressionType.Divide) },
+	        
+	        { OpCodes.Rem, s => MakeBinaryExpression(s, ExpressionType.Modulo) },
+	        { OpCodes.Rem_Un, s => MakeBinaryExpression(s, ExpressionType.Modulo) },
+
+	        { OpCodes.Xor, s => MakeBinaryExpression(s, ExpressionType.ExclusiveOr) },
+	        
+	        { OpCodes.Shl, s => MakeBinaryExpression(s, ExpressionType.LeftShift) },
+	       
+	        { OpCodes.Shr, s => MakeBinaryExpression(s, ExpressionType.RightShift) },
+	        { OpCodes.Shr_Un, s => MakeBinaryExpression(s, ExpressionType.RightShift) },
+	        
 	        { OpCodes.Ldarg, LdArg },
 	        { OpCodes.Ldarg_S, LdArg },
 	        { OpCodes.Ldarga, LdArg },
@@ -136,6 +161,7 @@ namespace DelegateDecompiler
 	        { OpCodes.Ldarg_2, s => LdArg(s, 2) },
 	        { OpCodes.Ldarg_3, s => LdArg(s, 3) },
 	        
+	        { OpCodes.Ldc_I4, LdC },
 	        { OpCodes.Ldc_I4_0, s => LdC(s, 0) },
 	        { OpCodes.Ldc_I4_1, s => LdC(s, 1) },
 	        { OpCodes.Ldc_I4_2, s => LdC(s, 2) },
@@ -145,7 +171,7 @@ namespace DelegateDecompiler
 	        { OpCodes.Ldc_I4_6, s => LdC(s, 6) },
 	        { OpCodes.Ldc_I4_7, s => LdC(s, 7) },
 	        { OpCodes.Ldc_I4_8, s => LdC(s, 8) },
-	        { OpCodes.Ldc_I4, LdC },
+	        { OpCodes.Ldc_I4_M1, s => LdC(s, -1) },
 	        
 	        { OpCodes.Ldelem, LdElem },
 	        { OpCodes.Ldelem_I, LdElem },
@@ -262,11 +288,7 @@ namespace DelegateDecompiler
                     }
                     else if (state.Instruction.OpCode == OpCodes.Ldc_I4_S)
                     {
-                        LdC(state, (sbyte)state.Instruction.Operand);
-                    }
-                    else if (state.Instruction.OpCode == OpCodes.Ldc_I4_M1)
-                    {
-                        LdC(state, -1);
+	                    LdC(state, (sbyte)state.Instruction.Operand);
                     }
                     else if (state.Instruction.OpCode == OpCodes.Ldc_I8)
                     {
@@ -370,71 +392,11 @@ namespace DelegateDecompiler
                     {
                         state.Stack.Pop();
                     }
-                    else if (state.Instruction.OpCode == OpCodes.Add)
-                    {
-                        var val1 = state.Stack.Pop();
-                        var val2 = state.Stack.Pop();
-                        state.Stack.Push(MakeBinaryExpression(val2, val1, ExpressionType.Add));
-                    }
-                    else if (state.Instruction.OpCode == OpCodes.Add_Ovf || state.Instruction.OpCode == OpCodes.Add_Ovf_Un)
-                    {
-                        var val1 = state.Stack.Pop();
-                        var val2 = state.Stack.Pop();
-                        state.Stack.Push(MakeBinaryExpression(val2, val1, ExpressionType.AddChecked));
-                    }
-                    else if (state.Instruction.OpCode == OpCodes.Sub)
-                    {
-                        var val1 = state.Stack.Pop();
-                        var val2 = state.Stack.Pop();
-                        state.Stack.Push(MakeBinaryExpression(val2, val1, ExpressionType.Subtract));
-                    }
-                    else if (state.Instruction.OpCode == OpCodes.Sub_Ovf || state.Instruction.OpCode == OpCodes.Sub_Ovf_Un)
-                    {
-                        var val1 = state.Stack.Pop();
-                        var val2 = state.Stack.Pop();
-                        state.Stack.Push(MakeBinaryExpression(val2, val1, ExpressionType.SubtractChecked));
-                    }
-                    else if (state.Instruction.OpCode == OpCodes.Mul)
-                    {
-                        var val1 = state.Stack.Pop();
-                        var val2 = state.Stack.Pop();
-                        state.Stack.Push(MakeBinaryExpression(val2, val1, ExpressionType.Multiply));
-                    }
-                    else if (state.Instruction.OpCode == OpCodes.Mul_Ovf || state.Instruction.OpCode == OpCodes.Mul_Ovf_Un)
-                    {
-                        var val1 = state.Stack.Pop();
-                        var val2 = state.Stack.Pop();
-                        state.Stack.Push(MakeBinaryExpression(val2, val1, ExpressionType.MultiplyChecked));
-                    }
-                    else if (state.Instruction.OpCode == OpCodes.Div || state.Instruction.OpCode == OpCodes.Div_Un)
-                    {
-                        var val1 = state.Stack.Pop();
-                        var val2 = state.Stack.Pop();
-                        state.Stack.Push(MakeBinaryExpression(val2, val1, ExpressionType.Divide));
-                    }
-                    else if (state.Instruction.OpCode == OpCodes.Rem || state.Instruction.OpCode == OpCodes.Rem_Un)
-                    {
-                        var val1 = state.Stack.Pop();
-                        var val2 = state.Stack.Pop();
-                        state.Stack.Push(MakeBinaryExpression(val2, val1, ExpressionType.Modulo));
-                    }
-                    else if (state.Instruction.OpCode == OpCodes.Xor)
-                    {
-                        var val1 = state.Stack.Pop();
-                        var val2 = state.Stack.Pop();
-                        state.Stack.Push(MakeBinaryExpression(val2, val1, ExpressionType.ExclusiveOr));
-                    }
                     else if (state.Instruction.OpCode == OpCodes.Shl)
                     {
                         var val1 = state.Stack.Pop();
                         var val2 = state.Stack.Pop();
                         state.Stack.Push(MakeBinaryExpression(val2, val1, ExpressionType.LeftShift));
-                    }
-                    else if (state.Instruction.OpCode == OpCodes.Shr || state.Instruction.OpCode == OpCodes.Shr_Un)
-                    {
-                        var val1 = state.Stack.Pop();
-                        var val2 = state.Stack.Pop();
-                        state.Stack.Push(MakeBinaryExpression(val2, val1, ExpressionType.RightShift));
                     }
                     else if (state.Instruction.OpCode == OpCodes.Neg)
                     {
@@ -693,6 +655,13 @@ namespace DelegateDecompiler
             }
 
             return state == null ? Expression.Empty() : state.Final();
+        }
+
+        static void MakeBinaryExpression(ProcessorState state, ExpressionType expressionType)
+        {
+	        var val1 = state.Stack.Pop();
+	        var val2 = state.Stack.Pop();
+	        state.Stack.Push(MakeBinaryExpression(val2, val1, expressionType));
         }
 
         static void LdC(ProcessorState state)
