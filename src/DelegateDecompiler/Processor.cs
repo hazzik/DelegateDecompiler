@@ -125,6 +125,73 @@ namespace DelegateDecompiler
         {
         }
 
+        static readonly Dictionary<OpCode, Action<ProcessorState>> handlers = new Dictionary<OpCode, Action<ProcessorState>>()
+        {
+	        { OpCodes.Ldarg, LdArg },
+	        { OpCodes.Ldarg_S, LdArg },
+	        { OpCodes.Ldarga, LdArg },
+	        { OpCodes.Ldarga_S, LdArg },
+	        { OpCodes.Ldarg_0, s => LdArg(s, 0) },
+	        { OpCodes.Ldarg_1, s => LdArg(s, 1) },
+	        { OpCodes.Ldarg_2, s => LdArg(s, 2) },
+	        { OpCodes.Ldarg_3, s => LdArg(s, 3) },
+	        
+	        { OpCodes.Ldc_I4_0, s => LdC(s, 0) },
+	        { OpCodes.Ldc_I4_1, s => LdC(s, 1) },
+	        { OpCodes.Ldc_I4_2, s => LdC(s, 2) },
+	        { OpCodes.Ldc_I4_3, s => LdC(s, 3) },
+	        { OpCodes.Ldc_I4_4, s => LdC(s, 4) },
+	        { OpCodes.Ldc_I4_5, s => LdC(s, 5) },
+	        { OpCodes.Ldc_I4_6, s => LdC(s, 6) },
+	        { OpCodes.Ldc_I4_7, s => LdC(s, 7) },
+	        { OpCodes.Ldc_I4_8, s => LdC(s, 8) },
+	        { OpCodes.Ldc_I4, LdC },
+	        
+	        { OpCodes.Ldelem, LdElem },
+	        { OpCodes.Ldelem_I, LdElem },
+	        { OpCodes.Ldelem_I1, LdElem },
+	        { OpCodes.Ldelem_I2, LdElem },
+	        { OpCodes.Ldelem_I4, LdElem },
+	        { OpCodes.Ldelem_I8, LdElem },
+	        { OpCodes.Ldelem_U1, LdElem },
+	        { OpCodes.Ldelem_U2, LdElem },
+	        { OpCodes.Ldelem_U4, LdElem },
+	        { OpCodes.Ldelem_R4, LdElem },
+	        { OpCodes.Ldelem_R8, LdElem },
+	        { OpCodes.Ldelem_Ref, LdElem },
+	        
+	        { OpCodes.Ldlen, LdLen },
+	        
+	        { OpCodes.Ldloc, LdLoc },
+	        { OpCodes.Ldloc_S, LdLoc },
+	        { OpCodes.Ldloca, LdLoc },
+	        { OpCodes.Ldloca_S, LdLoc },
+	        { OpCodes.Ldloc_0, s => LdLoc(s, 0) },
+	        { OpCodes.Ldloc_1, s => LdLoc(s, 1) },
+	        { OpCodes.Ldloc_2, s => LdLoc(s, 2) },
+	        { OpCodes.Ldloc_3, s => LdLoc(s, 3) },
+	        
+	        { OpCodes.Ldnull, LdNull },
+	        
+	        { OpCodes.Ldtoken, LdToken },
+
+	        { OpCodes.Stloc, StLoc },
+	        { OpCodes.Stloc_S, StLoc },
+	        { OpCodes.Stloc_0, s => StLoc(s, 0) },
+	        { OpCodes.Stloc_1, s => StLoc(s, 1) },
+	        { OpCodes.Stloc_2, s => StLoc(s, 2) },
+	        { OpCodes.Stloc_3, s => StLoc(s, 3) },
+	        { OpCodes.Stelem, StElem },
+	        { OpCodes.Stelem_I, StElem },
+	        { OpCodes.Stelem_I1, StElem },
+	        { OpCodes.Stelem_I2, StElem },
+	        { OpCodes.Stelem_I4, StElem },
+	        { OpCodes.Stelem_I8, StElem },
+	        { OpCodes.Stelem_R4, StElem },
+	        { OpCodes.Stelem_R8, StElem },
+	        { OpCodes.Stelem_Ref, StElem },
+        };
+        
         Expression Process()
         {
             ProcessorState state = null;
@@ -146,91 +213,9 @@ namespace DelegateDecompiler
                     {
                         //do nothing;
                     }
-                    else if (state.Instruction.OpCode == OpCodes.Ldtoken)
+                    else if (handlers.TryGetValue(state.Instruction.OpCode, out var handler))
                     {
-                        var runtimeHandle = GetRuntimeHandle(state.Instruction.Operand);
-                        state.Stack.Push(Expression.Constant(runtimeHandle));
-                    }
-                    else if (state.Instruction.OpCode == OpCodes.Ldarg_0)
-                    {
-                        LdArg(state, 0);
-                    }
-                    else if (state.Instruction.OpCode == OpCodes.Ldarg_1)
-                    {
-                        LdArg(state, 1);
-                    }
-                    else if (state.Instruction.OpCode == OpCodes.Ldarg_2)
-                    {
-                        LdArg(state, 2);
-                    }
-                    else if (state.Instruction.OpCode == OpCodes.Ldarg_3)
-                    {
-                        LdArg(state, 3);
-                    }
-                    else if (state.Instruction.OpCode == OpCodes.Ldarg_S || state.Instruction.OpCode == OpCodes.Ldarg || state.Instruction.OpCode == OpCodes.Ldarga || state.Instruction.OpCode == OpCodes.Ldarga_S)
-                    {
-                        var operand = (ParameterInfo)state.Instruction.Operand;
-                        state.Stack.Push(state.Args.Single(x => ((ParameterExpression)x.Expression).Name == operand.Name));
-                    }
-                    else if (state.Instruction.OpCode == OpCodes.Ldlen)
-                    {
-                        var array = state.Stack.Pop();
-                        state.Stack.Push(Expression.ArrayLength(array));
-                    }
-                    else if (state.Instruction.OpCode == OpCodes.Ldelem ||
-                             state.Instruction.OpCode == OpCodes.Ldelem_I ||
-                             state.Instruction.OpCode == OpCodes.Ldelem_I1 ||
-                             state.Instruction.OpCode == OpCodes.Ldelem_I2 ||
-                             state.Instruction.OpCode == OpCodes.Ldelem_I4 ||
-                             state.Instruction.OpCode == OpCodes.Ldelem_I8 ||
-                             state.Instruction.OpCode == OpCodes.Ldelem_U1 ||
-                             state.Instruction.OpCode == OpCodes.Ldelem_U2 ||
-                             state.Instruction.OpCode == OpCodes.Ldelem_U4 ||
-                             state.Instruction.OpCode == OpCodes.Ldelem_R4 ||
-                             state.Instruction.OpCode == OpCodes.Ldelem_R8 ||
-                             state.Instruction.OpCode == OpCodes.Ldelem_Ref)
-                    {
-                        var index = state.Stack.Pop();
-                        var array = state.Stack.Pop();
-                        state.Stack.Push(Expression.ArrayIndex(array, index));
-                    }
-                    else if (state.Instruction.OpCode == OpCodes.Stloc_0)
-                    {
-                        StLoc(state, 0);
-                    }
-                    else if (state.Instruction.OpCode == OpCodes.Stloc_1)
-                    {
-                        StLoc(state, 1);
-                    }
-                    else if (state.Instruction.OpCode == OpCodes.Stloc_2)
-                    {
-                        StLoc(state, 2);
-                    }
-                    else if (state.Instruction.OpCode == OpCodes.Stloc_3)
-                    {
-                        StLoc(state, 3);
-                    }
-                    else if (state.Instruction.OpCode == OpCodes.Stloc_S ||
-                             state.Instruction.OpCode == OpCodes.Stloc)
-                    {
-                        var operand = (LocalVariableInfo)state.Instruction.Operand;
-                        StLoc(state, operand.LocalIndex);
-                    }
-                    else if (state.Instruction.OpCode == OpCodes.Stelem ||
-                             state.Instruction.OpCode == OpCodes.Stelem_I ||
-                             state.Instruction.OpCode == OpCodes.Stelem_I1 ||
-                             state.Instruction.OpCode == OpCodes.Stelem_I2 ||
-                             state.Instruction.OpCode == OpCodes.Stelem_I4 ||
-                             state.Instruction.OpCode == OpCodes.Stelem_I8 ||
-                             state.Instruction.OpCode == OpCodes.Stelem_R4 ||
-                             state.Instruction.OpCode == OpCodes.Stelem_R8 ||
-                             state.Instruction.OpCode == OpCodes.Stelem_Ref)
-                    {
-                        StElem(state);
-                    }
-                    else if (state.Instruction.OpCode == OpCodes.Ldnull)
-                    {
-                        state.Stack.Push(Expression.Constant(null));
+	                    handler(state);
                     }
                     else if (state.Instruction.OpCode == OpCodes.Ldfld || state.Instruction.OpCode == OpCodes.Ldflda)
                     {
@@ -271,69 +256,9 @@ namespace DelegateDecompiler
                                 instance.Expression = expression;
                         }
                     }
-                    else if (state.Instruction.OpCode == OpCodes.Ldloc_0)
-                    {
-                        LdLoc(state, 0);
-                    }
-                    else if (state.Instruction.OpCode == OpCodes.Ldloc_1)
-                    {
-                        LdLoc(state, 1);
-                    }
-                    else if (state.Instruction.OpCode == OpCodes.Ldloc_2)
-                    {
-                        LdLoc(state, 2);
-                    }
-                    else if (state.Instruction.OpCode == OpCodes.Ldloc_3)
-                    {
-                        LdLoc(state, 3);
-                    }
-                    else if (state.Instruction.OpCode == OpCodes.Ldloc ||
-                             state.Instruction.OpCode == OpCodes.Ldloc_S ||
-                             state.Instruction.OpCode == OpCodes.Ldloca ||
-                             state.Instruction.OpCode == OpCodes.Ldloca_S)
-                    {
-                        var operand = (LocalVariableInfo)state.Instruction.Operand;
-                        LdLoc(state, operand.LocalIndex);
-                    }
                     else if (state.Instruction.OpCode == OpCodes.Ldstr)
                     {
                         state.Stack.Push(Expression.Constant((string)state.Instruction.Operand));
-                    }
-                    else if (state.Instruction.OpCode == OpCodes.Ldc_I4_0)
-                    {
-                        LdC(state, 0);
-                    }
-                    else if (state.Instruction.OpCode == OpCodes.Ldc_I4_1)
-                    {
-                        LdC(state, 1);
-                    }
-                    else if (state.Instruction.OpCode == OpCodes.Ldc_I4_2)
-                    {
-                        LdC(state, 2);
-                    }
-                    else if (state.Instruction.OpCode == OpCodes.Ldc_I4_3)
-                    {
-                        LdC(state, 3);
-                    }
-                    else if (state.Instruction.OpCode == OpCodes.Ldc_I4_4)
-                    {
-                        LdC(state, 4);
-                    }
-                    else if (state.Instruction.OpCode == OpCodes.Ldc_I4_5)
-                    {
-                        LdC(state, 5);
-                    }
-                    else if (state.Instruction.OpCode == OpCodes.Ldc_I4_6)
-                    {
-                        LdC(state, 6);
-                    }
-                    else if (state.Instruction.OpCode == OpCodes.Ldc_I4_7)
-                    {
-                        LdC(state, 7);
-                    }
-                    else if (state.Instruction.OpCode == OpCodes.Ldc_I4_8)
-                    {
-                        LdC(state, 8);
                     }
                     else if (state.Instruction.OpCode == OpCodes.Ldc_I4_S)
                     {
@@ -343,17 +268,13 @@ namespace DelegateDecompiler
                     {
                         LdC(state, -1);
                     }
-                    else if (state.Instruction.OpCode == OpCodes.Ldc_I4)
-                    {
-                        LdC(state, (int)state.Instruction.Operand);
-                    }
                     else if (state.Instruction.OpCode == OpCodes.Ldc_I8)
                     {
-                        LdC(state, (long)state.Instruction.Operand);
+	                    LdC(state, (long)state.Instruction.Operand);
                     }
                     else if (state.Instruction.OpCode == OpCodes.Ldc_R4)
                     {
-                        LdC(state, (float)state.Instruction.Operand);
+	                    LdC(state, (float)state.Instruction.Operand);
                     }
                     else if (state.Instruction.OpCode == OpCodes.Ldc_R8)
                     {
@@ -772,6 +693,53 @@ namespace DelegateDecompiler
             }
 
             return state == null ? Expression.Empty() : state.Final();
+        }
+
+        static void LdC(ProcessorState state)
+        {
+	        state.Stack.Push(Expression.Constant(state.Instruction.Operand));
+        }
+
+        static void LdLoc(ProcessorState state)
+        {
+	        var operand = (LocalVariableInfo)state.Instruction.Operand;
+	        LdLoc(state, operand.LocalIndex);
+        }
+
+        static void LdNull(ProcessorState state)
+        {
+	        state.Stack.Push(Expression.Constant(null));
+        }
+
+        static void StLoc(ProcessorState state)
+        {
+	        var operand = (LocalVariableInfo)state.Instruction.Operand;
+	        StLoc(state, operand.LocalIndex);
+        }
+
+        static void LdElem(ProcessorState state)
+        {
+	        var index = state.Stack.Pop();
+	        var array = state.Stack.Pop();
+	        state.Stack.Push(Expression.ArrayIndex(array, index));
+        }
+
+        static void LdLen(ProcessorState state)
+        {
+	        var array = state.Stack.Pop();
+	        state.Stack.Push(Expression.ArrayLength(array));
+        }
+
+        static void LdArg(ProcessorState state)
+        {
+	        var operand = (ParameterInfo)state.Instruction.Operand;
+	        state.Stack.Push(state.Args.Single(x => ((ParameterExpression)x.Expression).Name == operand.Name));
+        }
+
+        static void LdToken(ProcessorState state)
+        {
+	        var runtimeHandle = GetRuntimeHandle(state.Instruction.Operand);
+	        state.Stack.Push(Expression.Constant(runtimeHandle));
         }
 
         static void LdFld(ProcessorState state, Address instance)
