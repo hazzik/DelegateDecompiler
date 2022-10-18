@@ -50,7 +50,7 @@ namespace DelegateDecompiler.EntityFramework.Tests.Helpers
         public static void CompareAndLogSingleton<T>(this MethodEnvironment env, T linqResult, T ddResult,
             [CallerLineNumber] int sourceLineNumber = 0)
         {
-            if (typeof(T).IsSubclassOf(typeof(List)))
+            if (typeof(T).IsSubclassOf(typeof(IEnumerable)))
                 throw new ArgumentException("You should use CompareAndLogCollection for comparing lists.");
 
             try
