@@ -1001,12 +1001,18 @@ namespace DelegateDecompiler
                     return Expression.NotEqual(expression, Expression.Constant(0));
                 }
             }
+
             if (!type.IsAssignableFrom(expression.Type) && expression.Type.IsEnum && expression.Type.GetEnumUnderlyingType() == type)
             {
                 return Expression.Convert(expression, type);
             }
+            
+            if (type.IsValueType != expression.Type.IsValueType)
+            {
+                return Expression.Convert(expression, type);
+            }
 
-            return Expression.Convert(expression, type);
+            return expression;
         }
 
         static Expression AdjustBooleanConstant(Expression expression, Type type)
@@ -1414,7 +1420,12 @@ namespace DelegateDecompiler
         static void StLoc(ProcessorState state, int index)
         {
             var info = state.Locals[index];
-            info.Address = AdjustType(state.Stack.Pop(), info.Type);
+            var expression = AdjustType(state.Stack.Pop(), info.Type);
+            if (expression.Type != info.Type)
+            {
+                expression = Expression.Convert(expression, info.Type);
+            }
+            info.Address = expression;
         }
 
         static void LdArg(ProcessorState state, int index)
