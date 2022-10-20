@@ -968,26 +968,32 @@ namespace DelegateDecompiler
                     {
                         return Expression.Constant(Enum.ToObject(type, constant.Value));
                     }
+
                     if (type == typeof(bool))
                     {
                         return Expression.Constant(Convert.ToBoolean(constant.Value));
                     }
+
                     if (type == typeof(byte))
                     {
                         return Expression.Constant(Convert.ToByte(constant.Value));
                     }
+
                     if (type == typeof(sbyte))
                     {
                         return Expression.Constant(Convert.ToSByte(constant.Value));
                     }
+
                     if (type == typeof(short))
                     {
                         return Expression.Constant(Convert.ToInt16(constant.Value));
                     }
+
                     if (type == typeof(ushort))
                     {
                         return Expression.Constant(Convert.ToUInt16(constant.Value));
                     }
+
                     if (type == typeof(uint))
                     {
                         return Expression.Constant(Convert.ToUInt32(constant.Value));
@@ -1006,7 +1012,7 @@ namespace DelegateDecompiler
             {
                 return Expression.Convert(expression, type);
             }
-            
+
             if (type.IsValueType != expression.Type.IsValueType)
             {
                 return Expression.Convert(expression, type);
@@ -1421,11 +1427,7 @@ namespace DelegateDecompiler
         {
             var info = state.Locals[index];
             var expression = AdjustType(state.Stack.Pop(), info.Type);
-            if (expression.Type != info.Type)
-            {
-                expression = Expression.Convert(expression, info.Type);
-            }
-            info.Address = expression;
+            info.Address = expression.Type == info.Type ? expression : Expression.Convert(expression, info.Type);
         }
 
         static void LdArg(ProcessorState state, int index)
