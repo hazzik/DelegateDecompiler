@@ -39,7 +39,7 @@ namespace DelegateDecompiler.EntityFrameworkCore
         // ReSharper disable once VirtualMemberNeverOverridden.Global
         public virtual TResult ExecuteAsync<TResult>(Expression expression, CancellationToken cancellationToken)
         {
-            var decompiled = expression.Decompile().Dereference();
+            var decompiled = expression.Decompile().Optimize().Dereference();
             return (TResult)MethodCache<TResult>.ExecuteAsync(AsyncQueryProvider, decompiled, cancellationToken);
         }
 
@@ -95,19 +95,19 @@ namespace DelegateDecompiler.EntityFrameworkCore
 
         public override IQueryable<TElement> CreateQuery<TElement>(Expression expression)
         {
-            var decompiled = expression.Decompile().Dereference();
+            var decompiled = expression.Decompile().Optimize().Dereference();
             return new EntityQueryable<TElement>(this, decompiled);
         }
 
         public virtual IAsyncEnumerable<TResult> ExecuteAsync<TResult>(Expression expression)
         {
-            var decompiled = expression.Decompile().Dereference();
+            var decompiled = expression.Decompile().Optimize().Dereference();
             return (IAsyncEnumerable<TResult>)MethodCache<TResult>.ExecuteAsync(AsyncQueryProvider, decompiled);
         }
 
         public new virtual Task<TResult> ExecuteAsync<TResult>(Expression expression, CancellationToken cancellationToken)
         {
-            var decompiled = expression.Decompile().Dereference();
+            var decompiled = expression.Decompile().Optimize().Dereference();
             return (Task<TResult>)MethodCache<TResult>.ExecuteAsync(AsyncQueryProvider, decompiled, cancellationToken);
         }
     }

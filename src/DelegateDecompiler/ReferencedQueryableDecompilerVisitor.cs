@@ -29,7 +29,7 @@ namespace DelegateDecompiler
                 }
                 else if (node.Member is FieldInfo)
                 {
-                    return (node.Evaluate<IQueryable>()).Expression.Decompile();
+                    return (node.Evaluate<IQueryable>()).Expression.Decompile().Dereference();
                 }
             }
             return base.VisitMember(node);

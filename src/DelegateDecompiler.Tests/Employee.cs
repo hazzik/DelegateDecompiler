@@ -19,27 +19,18 @@ namespace DelegateDecompiler.Tests
         public int To;
 
         [Computed]
-        public string FullName
-        {
-            get { return FirstName + " " + LastName; }
-        }
+        public string FullName => FirstName + " " + LastName;
 
-        public string FullNameWithoutAttribute
-        {
-            get { return FirstName + " " + LastName; }
-        }
+        public string FullNameWithoutAttribute => FirstName + " " + LastName;
 
         [Computed]
-        public string FromTo
-        {
-            get { return From + "-" + To; }
-        }
+        public string FromTo => From + "-" + To;
 
         [Computed]
-        public bool IsActive
-        {
-            get { return true; }
-        }
+        public bool IsActive => true;
+
+        [Computed]
+        public IEmployeeStatus Status => IsActive ? (IEmployeeStatus)new Active() : new Terminated();
 
         [Computed]
         public int Count
@@ -150,5 +141,17 @@ namespace DelegateDecompiler.Tests
         {
             return e.FirstName + " " + e.LastName;
         }
+    }
+
+    public interface IEmployeeStatus
+    {
+    }
+
+    public class Active : IEmployeeStatus
+    {
+    }
+    
+    public class Terminated : IEmployeeStatus
+    {
     }
 }
