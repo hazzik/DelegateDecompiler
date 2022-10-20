@@ -40,19 +40,19 @@ namespace DelegateDecompiler
 
         public virtual IQueryable<TElement> CreateQuery<TElement>(Expression expression)
         {
-            var decompiled = expression.Decompile();
+            var decompiled = expression.Decompile().Optimize();
             return new DecompiledQueryable<TElement>(this, Inner.CreateQuery<TElement>(decompiled));
         }
 
         public object Execute(Expression expression)
         {
-            var decompiled = expression.Decompile();
+            var decompiled = expression.Decompile().Optimize();
             return Inner.Execute(decompiled);
         }
 
         public TResult Execute<TResult>(Expression expression)
         {
-            var decompiled = expression.Decompile();
+            var decompiled = expression.Decompile().Optimize();
             return Inner.Execute<TResult>(decompiled);
         }
     }
