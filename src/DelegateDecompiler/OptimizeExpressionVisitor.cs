@@ -39,6 +39,11 @@ namespace DelegateDecompiler
             var test = Visit(node.Test);
             var ifTrue = Visit(node.IfTrue);
             var ifFalse = Visit(node.IfFalse);
+            
+            if (test is ConstantExpression constant && constant.Value is bool boolValue)
+            {
+                return boolValue ? ifTrue : ifFalse;
+            }
 
             if (IsCoalesce(test, ifTrue, out var expression))
             {
