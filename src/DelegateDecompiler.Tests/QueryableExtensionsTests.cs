@@ -359,7 +359,7 @@ namespace DelegateDecompiler.Tests
             var employees = new[] { new Employee { FirstName = "Test", LastName = "User" } };
 
             var expected = (from employee in employees.AsQueryable()
-                where true
+                where ((IEmployeeStatus)new Active()) is Active
                 select employee);
 
             var actual = (from employee in employees.AsQueryable()

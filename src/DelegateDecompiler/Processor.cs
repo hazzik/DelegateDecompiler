@@ -955,43 +955,42 @@ namespace DelegateDecompiler
                 return expression;
             }
 
-            var constantExpression = expression as ConstantExpression;
-            if (constantExpression != null)
+            if (expression is ConstantExpression constant)
             {
-                if (constantExpression.Value == null)
+                if (constant.Value == null)
                 {
                     return Expression.Constant(null, type);
                 }
 
-                if (constantExpression.Type == typeof(int))
+                if (constant.Type == typeof(int))
                 {
                     if (type.IsEnum)
                     {
-                        return Expression.Constant(Enum.ToObject(type, constantExpression.Value));
+                        return Expression.Constant(Enum.ToObject(type, constant.Value));
                     }
                     if (type == typeof(bool))
                     {
-                        return Expression.Constant(Convert.ToBoolean(constantExpression.Value));
+                        return Expression.Constant(Convert.ToBoolean(constant.Value));
                     }
                     if (type == typeof(byte))
                     {
-                        return Expression.Constant(Convert.ToByte(constantExpression.Value));
+                        return Expression.Constant(Convert.ToByte(constant.Value));
                     }
                     if (type == typeof(sbyte))
                     {
-                        return Expression.Constant(Convert.ToSByte(constantExpression.Value));
+                        return Expression.Constant(Convert.ToSByte(constant.Value));
                     }
                     if (type == typeof(short))
                     {
-                        return Expression.Constant(Convert.ToInt16(constantExpression.Value));
+                        return Expression.Constant(Convert.ToInt16(constant.Value));
                     }
                     if (type == typeof(ushort))
                     {
-                        return Expression.Constant(Convert.ToUInt16(constantExpression.Value));
+                        return Expression.Constant(Convert.ToUInt16(constant.Value));
                     }
                     if (type == typeof(uint))
                     {
-                        return Expression.Constant(Convert.ToUInt32(constantExpression.Value));
+                        return Expression.Constant(Convert.ToUInt32(constant.Value));
                     }
                 }
             }
@@ -1007,12 +1006,7 @@ namespace DelegateDecompiler
                 return Expression.Convert(expression, type);
             }
 
-            if (type.IsValueType != expression.Type.IsValueType)
-            {
-                return Expression.Convert(expression, type);
-            }
-
-            return expression;
+            return Expression.Convert(expression, type);
         }
 
         static Expression AdjustBooleanConstant(Expression expression, Type type)
