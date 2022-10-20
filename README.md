@@ -1,10 +1,10 @@
-DelegateDecompiler
-====================
+DelegateDecompiler celebrates 10th year anniversary 🎂
+======================================================
 
 ![https://ci.appveyor.com/project/hazzik/delegatedecompiler/branch/main](https://ci.appveyor.com/api/projects/status/github/hazzik/delegatedecompiler?branch=main&svg=true)
 ![https://nuget.org/packages/DelegateDecompiler](https://img.shields.io/nuget/dt/DelegateDecompiler.svg)
 
-A tool which is able to decompile a delegate or a method body to its lambda representation
+A library that is able to decompile a delegate or a method body to their lambda representation
 
 ## Sponsorship
 
@@ -20,10 +20,7 @@ Asume we have a class with a computed property
 class Employee
 {
     [Computed]
-    public string FullName
-    {
-        get { return FirstName + " " + LastName; }
-    }
+    public string FullName => FirstName + " " + LastName;
 
     public string LastName { get; set; }
 
