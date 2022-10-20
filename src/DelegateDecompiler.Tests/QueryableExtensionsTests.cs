@@ -352,5 +352,21 @@ namespace DelegateDecompiler.Tests
 
             AssertAreEqual(expected.Expression, actual.Expression);
         }
+
+        [Test]
+        public void Issue127()
+        {
+            var employees = new[] { new Employee { FirstName = "Test", LastName = "User" } };
+
+            var expected = (from employee in employees.AsQueryable()
+                where true
+                select employee);
+
+            var actual = (from employee in employees.AsQueryable()
+                where employee.Status is Active
+                select employee).Decompile();
+
+            AssertAreEqual(expected.Expression, actual.Expression);
+        }
     }
 }
