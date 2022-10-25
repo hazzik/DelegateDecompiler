@@ -31,7 +31,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DelegateDecompiler.EntityFr
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DelegateDecompiler.EntityFrameworkCore3.Tests", "src\DelegateDecompiler.EntityFrameworkCore3.Tests\DelegateDecompiler.EntityFrameworkCore3.Tests.csproj", "{B8F5E18F-723A-46FF-A7FB-7F25F95A62DD}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DelegateDecompiler.EntityFrameworkCore5.Tests", "src\DelegateDecompiler.EntityFrameworkCore5.Tests\DelegateDecompiler.EntityFrameworkCore5.Tests.csproj", "{0EC42D3F-C97B-4803-96BF-953B0139578C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DelegateDecompiler.EntityFrameworkCore6.Tests", "src\DelegateDecompiler.EntityFrameworkCore6.Tests\DelegateDecompiler.EntityFrameworkCore6.Tests.csproj", "{0EC42D3F-C97B-4803-96BF-953B0139578C}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DelegateDecompiler.EntityFrameworkCore5", "src\DelegateDecompiler.EntityFrameworkCore5\DelegateDecompiler.EntityFrameworkCore5.csproj", "{79DA2FBB-7A35-4AFF-A89B-CF8F5DADC1B2}"
 EndProject
