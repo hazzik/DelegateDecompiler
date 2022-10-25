@@ -1,6 +1,6 @@
 Detail With Sql of supported commands
 ============
-## Documentation produced for DelegateDecompiler, version 0.31.1.0 on Monday, 17 October 2022 17:28
+## Documentation produced for DelegateDecompiler, version 0.32.1.0 on Tuesday, 25 October 2022 19:37
 
 This file documents what linq commands **DelegateDecompiler** supports when
 working with [Entity Framework Core](https://docs.microsoft.com/en-us/ef/core/) (EF).
@@ -130,15 +130,15 @@ END AS [Species], CASE
     ELSE NULL
 END AS [Group]
 FROM [LivingBeeing] AS [l]
-WHERE [l].[Discriminator] IN (N'AtlanticCod', N'WhiteShark') AND (CASE
+WHERE [l].[Discriminator] IN (N'AtlanticCod', N'WhiteShark') AND ((CASE
     WHEN [l].[Discriminator] = N'WhiteShark' THEN N'Carcharodon carcharias'
     WHEN [l].[Discriminator] = N'AtlanticCod' THEN N'Gadus morhua'
     ELSE NULL
-END IS NOT NULL AND CASE
+END IS NOT NULL) AND (CASE
     WHEN [l].[Discriminator] = N'WhiteShark' THEN N'Fish'
     WHEN [l].[Discriminator] = N'AtlanticCod' THEN N'Fish'
     ELSE NULL
-END IS NOT NULL)
+END IS NOT NULL))
 ```
 
   * Select Multiple Levels Of Abstract Members Over Tph Hierarchy (line 199)
@@ -239,7 +239,7 @@ FROM [EfParents] AS [e]
 
 ```SQL
 SELECT CASE
-    WHEN ([e].[ParentInt] = CAST(LEN([e].[ParentString]) AS int)) AND [e].[ParentString] IS NOT NULL THEN CAST(1 AS bit)
+    WHEN ([e].[ParentInt] = CAST(LEN([e].[ParentString]) AS int)) AND ([e].[ParentString] IS NOT NULL) THEN CAST(1 AS bit)
     ELSE CAST(0 AS bit)
 END
 FROM [EfParents] AS [e]
@@ -250,7 +250,7 @@ FROM [EfParents] AS [e]
 
 ```SQL
 SELECT CASE
-    WHEN ([e].[ParentInt] <> CAST(LEN([e].[ParentString]) AS int)) OR [e].[ParentString] IS NULL THEN CAST(1 AS bit)
+    WHEN ([e].[ParentInt] <> CAST(LEN([e].[ParentString]) AS int)) OR ([e].[ParentString] IS NULL) THEN CAST(1 AS bit)
     ELSE CAST(0 AS bit)
 END
 FROM [EfParents] AS [e]
@@ -286,7 +286,7 @@ FROM [EfParents] AS [e]
 
 ```SQL
 SELECT CASE
-    WHEN ([e].[ParentNullableInt] = 123) AND [e].[ParentNullableInt] IS NOT NULL THEN CAST(1 AS bit)
+    WHEN ([e].[ParentNullableInt] = 123) AND ([e].[ParentNullableInt] IS NOT NULL) THEN CAST(1 AS bit)
     ELSE CAST(0 AS bit)
 END
 FROM [EfParents] AS [e]
@@ -479,11 +479,11 @@ OFFSET @__p_0 ROWS FETCH NEXT @__p_0 ROWS ONLY
 SELECT CASE
     WHEN EXISTS (
         SELECT 1
-        FROM [EfChildren] AS [e]
-        WHERE [e0].[EfParentId] = [e].[EfParentId]) THEN CAST(1 AS bit)
+        FROM [EfChildren] AS [e0]
+        WHERE [e].[EfParentId] = [e0].[EfParentId]) THEN CAST(1 AS bit)
     ELSE CAST(0 AS bit)
 END
-FROM [EfParents] AS [e0]
+FROM [EfParents] AS [e]
 ```
 
   * Any Children With Filter (line 49)
@@ -493,11 +493,11 @@ FROM [EfParents] AS [e0]
 SELECT CASE
     WHEN EXISTS (
         SELECT 1
-        FROM [EfChildren] AS [e]
-        WHERE ([e0].[EfParentId] = [e].[EfParentId]) AND ([e].[ChildInt] = 123)) THEN CAST(1 AS bit)
+        FROM [EfChildren] AS [e0]
+        WHERE ([e].[EfParentId] = [e0].[EfParentId]) AND ([e0].[ChildInt] = 123)) THEN CAST(1 AS bit)
     ELSE CAST(0 AS bit)
 END
-FROM [EfParents] AS [e0]
+FROM [EfParents] AS [e]
 ```
 
 
@@ -523,11 +523,11 @@ END
 SELECT CASE
     WHEN NOT EXISTS (
         SELECT 1
-        FROM [EfChildren] AS [e]
-        WHERE ([e0].[EfParentId] = [e].[EfParentId]) AND ([e].[ChildInt] <> 123)) THEN CAST(1 AS bit)
+        FROM [EfChildren] AS [e0]
+        WHERE ([e].[EfParentId] = [e0].[EfParentId]) AND ([e0].[ChildInt] <> 123)) THEN CAST(1 AS bit)
     ELSE CAST(0 AS bit)
 END
-FROM [EfParents] AS [e0]
+FROM [EfParents] AS [e]
 ```
 
 
@@ -553,9 +553,9 @@ WHERE [e].[ParentString] LIKE N'%2%'
 ```SQL
 SELECT (
     SELECT COUNT(*)
-    FROM [EfChildren] AS [e]
-    WHERE [e0].[EfParentId] = [e].[EfParentId])
-FROM [EfParents] AS [e0]
+    FROM [EfChildren] AS [e0]
+    WHERE [e].[EfParentId] = [e0].[EfParentId])
+FROM [EfParents] AS [e]
 ```
 
   * Count Children With Filter (line 51)
@@ -564,9 +564,9 @@ FROM [EfParents] AS [e0]
 ```SQL
 SELECT (
     SELECT COUNT(*)
-    FROM [EfChildren] AS [e]
-    WHERE ([e0].[EfParentId] = [e].[EfParentId]) AND ([e].[ChildInt] = 123))
-FROM [EfParents] AS [e0]
+    FROM [EfChildren] AS [e0]
+    WHERE ([e].[EfParentId] = [e0].[EfParentId]) AND ([e0].[ChildInt] = 123))
+FROM [EfParents] AS [e]
 ```
 
   * Count Children With Filter By Closure (line 69)
@@ -575,9 +575,9 @@ FROM [EfParents] AS [e0]
 ```SQL
 SELECT (
     SELECT COUNT(*)
-    FROM [EfChildren] AS [e]
-    WHERE ([e0].[EfParentId] = [e].[EfParentId]) AND ([e].[ChildInt] = [e0].[ParentInt]))
-FROM [EfParents] AS [e0]
+    FROM [EfChildren] AS [e0]
+    WHERE ([e].[EfParentId] = [e0].[EfParentId]) AND ([e0].[ChildInt] = [e].[ParentInt]))
+FROM [EfParents] AS [e]
 ```
 
   * Count Children With Filter By External Closure (line 88)
@@ -586,9 +586,9 @@ FROM [EfParents] AS [e0]
 ```SQL
 SELECT (
     SELECT COUNT(*)
-    FROM [EfChildren] AS [e]
-    WHERE ([e0].[EfParentId] = [e].[EfParentId]) AND ([e].[ChildInt] = @__i_0))
-FROM [EfParents] AS [e0]
+    FROM [EfChildren] AS [e0]
+    WHERE ([e].[EfParentId] = [e0].[EfParentId]) AND ([e0].[ChildInt] = @__i_0))
+FROM [EfParents] AS [e]
 ```
 
   * Count Children With Filter By External Closure2 (line 108)
@@ -597,9 +597,9 @@ FROM [EfParents] AS [e0]
 ```SQL
 SELECT (
     SELECT COUNT(*)
-    FROM [EfChildren] AS [e]
-    WHERE ([e0].[EfParentId] = [e].[EfParentId]) AND (([e].[ChildInt] = @__i_0) AND ([e].[EfParentId] = @__j_1)))
-FROM [EfParents] AS [e0]
+    FROM [EfChildren] AS [e0]
+    WHERE ([e].[EfParentId] = [e0].[EfParentId]) AND (([e0].[ChildInt] = @__i_0) AND ([e0].[EfParentId] = @__j_1)))
+FROM [EfParents] AS [e]
 ```
 
   * Singleton Count Children With Filter (line 126)
@@ -622,10 +622,10 @@ WHERE (
 
 ```SQL
 SELECT COALESCE((
-    SELECT COALESCE(SUM([e].[ChildInt]), 0)
-    FROM [EfChildren] AS [e]
-    WHERE [e0].[EfParentId] = [e].[EfParentId]), 0)
-FROM [EfParents] AS [e0]
+    SELECT COALESCE(SUM([e0].[ChildInt]), 0)
+    FROM [EfChildren] AS [e0]
+    WHERE [e].[EfParentId] = [e0].[EfParentId]), 0)
+FROM [EfParents] AS [e]
 ```
 
 
@@ -637,9 +637,9 @@ FROM [EfParents] AS [e0]
 ```SQL
 SELECT (
     SELECT COUNT(*)
-    FROM [EfChildren] AS [e]
-    WHERE [e0].[EfParentId] = [e].[EfParentId])
-FROM [EfParents] AS [e0]
+    FROM [EfChildren] AS [e0]
+    WHERE [e].[EfParentId] = [e0].[EfParentId])
+FROM [EfParents] AS [e]
 ```
 
   * Count Children With Filter Async (line 58)
@@ -648,9 +648,9 @@ FROM [EfParents] AS [e0]
 ```SQL
 SELECT (
     SELECT COUNT(*)
-    FROM [EfChildren] AS [e]
-    WHERE ([e0].[EfParentId] = [e].[EfParentId]) AND ([e].[ChildInt] = 123))
-FROM [EfParents] AS [e0]
+    FROM [EfChildren] AS [e0]
+    WHERE ([e].[EfParentId] = [e0].[EfParentId]) AND ([e0].[ChildInt] = 123))
+FROM [EfParents] AS [e]
 ```
 
   * Count Children With Filter By Closure Async (line 76)
@@ -659,9 +659,9 @@ FROM [EfParents] AS [e0]
 ```SQL
 SELECT (
     SELECT COUNT(*)
-    FROM [EfChildren] AS [e]
-    WHERE ([e0].[EfParentId] = [e].[EfParentId]) AND ([e].[ChildInt] = [e0].[ParentInt]))
-FROM [EfParents] AS [e0]
+    FROM [EfChildren] AS [e0]
+    WHERE ([e].[EfParentId] = [e0].[EfParentId]) AND ([e0].[ChildInt] = [e].[ParentInt]))
+FROM [EfParents] AS [e]
 ```
 
   * Count Children With Filter By External Closure Async (line 95)
@@ -670,9 +670,9 @@ FROM [EfParents] AS [e0]
 ```SQL
 SELECT (
     SELECT COUNT(*)
-    FROM [EfChildren] AS [e]
-    WHERE ([e0].[EfParentId] = [e].[EfParentId]) AND ([e].[ChildInt] = @__i_0))
-FROM [EfParents] AS [e0]
+    FROM [EfChildren] AS [e0]
+    WHERE ([e].[EfParentId] = [e0].[EfParentId]) AND ([e0].[ChildInt] = @__i_0))
+FROM [EfParents] AS [e]
 ```
 
   * Count Children With Filter By External Closure2 Async (line 115)
@@ -681,9 +681,9 @@ FROM [EfParents] AS [e0]
 ```SQL
 SELECT (
     SELECT COUNT(*)
-    FROM [EfChildren] AS [e]
-    WHERE ([e0].[EfParentId] = [e].[EfParentId]) AND (([e].[ChildInt] = @__i_0) AND ([e].[EfParentId] = @__j_1)))
-FROM [EfParents] AS [e0]
+    FROM [EfChildren] AS [e0]
+    WHERE ([e].[EfParentId] = [e0].[EfParentId]) AND (([e0].[ChildInt] = @__i_0) AND ([e0].[EfParentId] = @__j_1)))
+FROM [EfParents] AS [e]
 ```
 
   * Singleton Count Children With Filter Async (line 133)
@@ -779,11 +779,11 @@ WHERE [e].[StartDate] > '2000-01-01T00:00:00.0000000'
      * T-Sql executed is
 
 ```SQL
-SELECT [e0].[EfParentId] AS [ParentId], COALESCE((
-    SELECT TOP(1) [e].[EfChildId]
-    FROM [EfChildren] AS [e]
-    WHERE [e].[EfParentId] = [e0].[EfParentId]), 0) AS [FirstChildId]
-FROM [EfParents] AS [e0]
+SELECT [e].[EfParentId] AS [ParentId], COALESCE((
+    SELECT TOP(1) [e0].[EfChildId]
+    FROM [EfChildren] AS [e0]
+    WHERE [e0].[EfParentId] = [e].[EfParentId]), 0) AS [FirstChildId]
+FROM [EfParents] AS [e]
 ```
 
 
