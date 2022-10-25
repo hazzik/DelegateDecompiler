@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using DelegateDecompiler.EntityFramework.Tests.EfItems;
+using DelegateDecompiler.EntityFramework.Tests.EfItems.Abstracts;
 using DelegateDecompiler.EntityFramework.Tests.Helpers;
 using NUnit.Framework;
 
@@ -66,6 +67,49 @@ namespace DelegateDecompiler.EntityFramework.Tests.TestGroup90AdditionalFeatures
 
                 //VERIFY
                 env.CompareAndLogList(linq, dd);
+            }
+        }
+
+        [Test]
+#if EF_CORE && !EF_CORE3 && !EF_CORE5
+        [Ignore("Not natively supported in EF_CORE < 3")]
+#endif
+        public void TestSubqueryAsVariableReference()
+        {
+            using (var env = new MethodEnvironment(classEnv))
+            {
+                //ATTEMPT
+                env.AboutToUseDelegateDecompiler();
+
+                var referencedQuery = env.Db.Set<Animal>().Where(it => it.Species == "Canis lupus");
+                var query = env.Db.Set<Person>().Where(it => it.Animals.Intersect(referencedQuery).Any()).Decompile();
+
+
+                var list = query.ToList();
+
+                //VERIFY
+                Assert.AreEqual(1, list.Count());
+            }
+        }
+
+        [Test]
+#if EF_CORE && !EF_CORE3 && !EF_CORE5
+        [Ignore("Not natively supported in EF_CORE < 3")]
+#endif
+        public void TestFilterWithSubqueryReference()
+        {
+            using (var env = new MethodEnvironment(classEnv))
+            {
+                //SETUP
+                var linq = env.Db.EfParents.Any(x => env.Db.EfParents.Where(p => p.Children.Count() == 0).Contains(x));
+
+                //ATTEMPT
+                env.AboutToUseDelegateDecompiler();
+                var referencedQuery = env.Db.EfParents.Where(p => p.CountChildren == 0);
+                var dd = env.Db.EfParents.Decompile().Any(x => referencedQuery.Contains(x));
+
+                //VERIFY
+                env.CompareAndLogSingleton(linq, dd);
             }
         }
     }

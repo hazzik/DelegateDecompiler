@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using NUnit.Framework;
 
 namespace DelegateDecompiler.Tests
@@ -13,6 +14,21 @@ namespace DelegateDecompiler.Tests
         static int p2 => 0;
         int M1() => 0;
         static int M2() => 0;
+
+        readonly IQueryable<int> fQref1 = Enumerable.Empty<int>().AsQueryable();
+        static IQueryable<int> fQref2 = Enumerable.Empty<int>().AsQueryable();
+        [Decompile]
+        IQueryable<int> pQref1 => Enumerable.Empty<int>().AsQueryable();
+        [Decompile]
+        static IQueryable<int> pQref2 => Enumerable.Empty<int>().AsQueryable();
+        [Decompile]
+        IQueryable<int> MQref1() => Enumerable.Empty<int>().AsQueryable();
+        [Decompile]
+        static IQueryable<int> MQref2() => Enumerable.Empty<int>().AsQueryable();
+        [Decompile]
+        IQueryable<int> ParamedMQref1(int floor) => Enumerable.Empty<int>().AsQueryable().Where(x => x >= floor);
+        [Decompile]
+        static IQueryable<int> ParamedMQref2(int floor) => Enumerable.Empty<int>().AsQueryable().Where(x => x >= floor);
 
         [Test]
         public void TestNestedExpression()
@@ -176,6 +192,111 @@ namespace DelegateDecompiler.Tests
             Test<Func<IEnumerable<int>, int>>(
                 ints => ints.SingleOrDefault(i => i == M2()),
                 ints => ints.SingleOrDefault(i => i == M2())
+            );
+        }
+
+        [Test]
+        //[Test, Ignore("Difference is expected")]
+        public void TestQueryableBoundAsVariable()
+        {
+            IQueryable<int> query = Enumerable.Empty<int>().AsQueryable().Where(i => i >= 0);
+            Test<Func<IQueryable<int>, IQueryable<int>>>(
+                ints => Enumerable.Empty<int>().AsQueryable().Where(i => i >= 0),
+                ints => query
+            );
+        }
+
+        [Test]
+        //[Test, Ignore("Difference is expected")]
+        public void TestQueryableRefFromField()
+        {
+            Test<Func<IQueryable<int>, IQueryable<int>>>(
+                ints => Enumerable.Empty<int>().AsQueryable().Where(i => i >= 0),
+                ints => fQref1.Where(i => i >= 0)
+            );
+        }
+
+        [Test]
+        //[Test, Ignore("Difference is expected")]
+        public void TestQueryableRefFromStaticField()
+        {
+            Test<Func<IQueryable<int>, IQueryable<int>>>(
+                ints => Enumerable.Empty<int>().AsQueryable().Where(i => i >= 0),
+                ints => fQref2.Where(i => i >= 0)
+            );
+        }
+
+        [Test]
+        public void TestQueryableRefFromProperty()
+        {
+            Test<Func<IQueryable<int>, IQueryable<int>>>(
+                ints => Enumerable.Empty<int>().AsQueryable().Where(i => i >= 0),
+                ints => pQref1.Where(i => i >= 0)
+            );
+        }
+
+        [Test]
+        public void TestQueryableRefFromStaticProperty()
+        {
+            Test<Func<IQueryable<int>, IQueryable<int>>>(
+                ints => Enumerable.Empty<int>().AsQueryable().Where(i => i >= 0),
+                ints => pQref2.Where(i => i >= 0)
+            );
+        }
+
+        [Test]
+        public void TestQueryableRefFromMethod()
+        {
+            Test<Func<IQueryable<int>, IQueryable<int>>>(
+                ints => Enumerable.Empty<int>().AsQueryable().Where(i => i >= 0),
+                ints => MQref1().Where(i => i >= 0)
+            );
+        }
+
+        [Test]
+        public void TestQueryableRefFromStaticMethod()
+        {
+            Test<Func<IQueryable<int>, IQueryable<int>>>(
+                ints => Enumerable.Empty<int>().AsQueryable().Where(i => i >= 0),
+                ints => MQref2().Where(i => i >= 0)
+            );
+        }
+
+        [Test]
+        public void TestQueryableRefFromMethodWithBoundParameters()
+        {
+            var floor = 10;
+            Test<Func<IQueryable<int>, IQueryable<int>>>(
+                ints => Enumerable.Empty<int>().AsQueryable().Where(x => x >= floor).Where(i => i >= 0),
+                ints => ParamedMQref1(floor).Where(i => i >= 0)
+            );
+        }
+
+        [Test]
+        public void TestQueryableRefFromStaticMethoWithBoundParameters()
+        {
+            var floor = 10;
+            Test<Func<IQueryable<int>, IQueryable<int>>>(
+                ints => Enumerable.Empty<int>().AsQueryable().Where(x => x >= floor).Where(i => i >= 0),
+                ints => ParamedMQref1(floor).Where(i => i >= 0)
+            );
+        }
+
+        [Test]
+        public void TestQueryableRefFromMethodWithUnboundParameters()
+        {
+            Test<Func<IQueryable<int>, int, IQueryable<int>>>(
+                (ints, floor) => Enumerable.Empty<int>().AsQueryable().Where(x => x >= floor).Where(i => i >= 0),
+                (ints, floor) => ParamedMQref1(floor).Where(i => i >= 0)
+            );
+        }
+
+        [Test]
+        public void TestQueryableRefFromStaticMethoWithUnboundParameters()
+        {
+            Test<Func<IQueryable<int>, int, IQueryable<int>>>(
+                (ints, floor) => Enumerable.Empty<int>().AsQueryable().Where(x => x >= floor).Where(i => i >= 0),
+                (ints, floor) => ParamedMQref1(floor).Where(i => i >= 0)
             );
         }
     }
