@@ -1,6 +1,6 @@
 Summary of supported commands
 ============
-## Documentation produced for DelegateDecompiler, version 0.32.1.0 on Tuesday, 25 October 2022 19:37
+## Documentation produced for DelegateDecompiler, version 0.32.1.0 on Tuesday, 25 October 2022 13:32
 
 This file documents what linq commands **DelegateDecompiler** supports when
 working with [Entity Framework Core](https://docs.microsoft.com/en-us/ef/core/) (EF).
@@ -55,8 +55,8 @@ More will appear as we move forward.*
   * [DateTime](../TestGroup50Types/Test05DateTime.cs) (1 tests)
 
 ### Group: Additional Features
-- Supported
-  * [Nested Expressions](../TestGroup90AdditionalFeatures/Test01NestedExpressions.cs) (1 tests)
+- **Partially Supported**
+  * [Nested Expressions](../TestGroup90AdditionalFeatures/Test01NestedExpressions.cs) (2 of 3 tests passed)
 
 
 The End

@@ -195,8 +195,7 @@ namespace DelegateDecompiler.Tests
             );
         }
 
-        [Test]
-        //[Test, Ignore("Difference is expected")]
+        [Test, Ignore("Difference is expected")]
         public void TestQueryableBoundAsVariable()
         {
             IQueryable<int> query = Enumerable.Empty<int>().AsQueryable().Where(i => i >= 0);
@@ -206,8 +205,7 @@ namespace DelegateDecompiler.Tests
             );
         }
 
-        [Test]
-        //[Test, Ignore("Difference is expected")]
+        [Test, Ignore("Difference is expected")]
         public void TestQueryableRefFromField()
         {
             Test<Func<IQueryable<int>, IQueryable<int>>>(
@@ -216,8 +214,7 @@ namespace DelegateDecompiler.Tests
             );
         }
 
-        [Test]
-        //[Test, Ignore("Difference is expected")]
+        [Test, Ignore("Difference is expected")]
         public void TestQueryableRefFromStaticField()
         {
             Test<Func<IQueryable<int>, IQueryable<int>>>(
