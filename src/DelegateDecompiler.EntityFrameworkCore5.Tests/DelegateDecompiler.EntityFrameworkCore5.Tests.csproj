@@ -32,6 +32,7 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="5.0.0" PrivateAssets="All" />
     <PackageReference Include="NUnit3TestAdapter" Version="4.2.1" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.3.2" />
+    <PackageReference Include="System.Text.RegularExpressions" Version="4.3.1" />
   </ItemGroup>
 
   <ItemGroup>
