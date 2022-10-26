@@ -345,13 +345,11 @@ namespace DelegateDecompiler
         {
             if (typeof(IQueryable).IsAssignableFrom(node.Type))
             {
-                if (Configuration.Instance.ShouldDecompile(node.Member))
+                if (!(node.Expression is ParameterExpression) && node.Member is FieldInfo)
                 {
-                    return Visit(node.Decompile());
-                }
-                else if (!(node.Expression is ParameterExpression) && node.Member is FieldInfo)
-                {
-                    return Visit((node.Evaluate<IQueryable>()).Expression.Decompile());
+                    var referencedQueryable = node.Evaluate<IQueryable>();
+                    if (referencedQueryable is IDecompiledQueryable)
+                        return Visit(referencedQueryable.Expression);    
                 }
             }
             return base.VisitMember(node);

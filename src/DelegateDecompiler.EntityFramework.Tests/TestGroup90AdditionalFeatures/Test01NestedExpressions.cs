@@ -81,7 +81,7 @@ namespace DelegateDecompiler.EntityFramework.Tests.TestGroup90AdditionalFeatures
                 //ATTEMPT
                 env.AboutToUseDelegateDecompiler();
 
-                var referencedQuery = env.Db.Set<Animal>().Where(it => it.Species == "Canis lupus");
+                var referencedQuery = env.Db.Set<Animal>().Where(it => it.Species == "Canis lupus").Decompile();
                 var query = env.Db.Set<Person>().Where(it => it.Animals.Intersect(referencedQuery).Any()).Decompile();
 
 
@@ -105,7 +105,7 @@ namespace DelegateDecompiler.EntityFramework.Tests.TestGroup90AdditionalFeatures
 
                 //ATTEMPT
                 env.AboutToUseDelegateDecompiler();
-                var referencedQuery = env.Db.EfParents.Where(p => p.CountChildren == 0);
+                var referencedQuery = env.Db.EfParents.Where(p => p.CountChildren == 0).Decompile();
                 var dd = env.Db.EfParents.Decompile().Any(x => referencedQuery.Contains(x));
 
                 //VERIFY
