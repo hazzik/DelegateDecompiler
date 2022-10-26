@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
 using NUnit.Framework;
 
 namespace DelegateDecompiler.Tests
@@ -196,32 +195,29 @@ namespace DelegateDecompiler.Tests
         }
 
         [Test]
-        //[Test, Ignore("Difference is expected")]
         public void TestQueryableBoundAsVariable()
         {
             IQueryable<int> query = Enumerable.Empty<int>().AsQueryable().Where(i => i >= 0);
             Test<Func<IQueryable<int>, IQueryable<int>>>(
-                ints => Enumerable.Empty<int>().AsQueryable().Where(i => i >= 0),
+                ints => query,
                 ints => query
             );
         }
 
         [Test]
-        //[Test, Ignore("Difference is expected")]
         public void TestQueryableRefFromField()
         {
             Test<Func<IQueryable<int>, IQueryable<int>>>(
-                ints => Enumerable.Empty<int>().AsQueryable().Where(i => i >= 0),
+                ints => fQref1.Where(i => i >= 0),
                 ints => fQref1.Where(i => i >= 0)
             );
         }
 
         [Test]
-        //[Test, Ignore("Difference is expected")]
         public void TestQueryableRefFromStaticField()
         {
             Test<Func<IQueryable<int>, IQueryable<int>>>(
-                ints => Enumerable.Empty<int>().AsQueryable().Where(i => i >= 0),
+                ints => fQref2.Where(i => i >= 0),
                 ints => fQref2.Where(i => i >= 0)
             );
         }
