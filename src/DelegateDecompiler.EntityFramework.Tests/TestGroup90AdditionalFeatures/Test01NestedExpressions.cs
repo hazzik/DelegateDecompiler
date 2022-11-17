@@ -85,7 +85,11 @@ namespace DelegateDecompiler.EntityFramework.Tests.TestGroup90AdditionalFeatures
                 var query = env.Db.Set<Person>().Where(it => it.Animals.Intersect(referencedQuery).Any()).Decompile();
 
                 //VERIFY
+#if EF_CORE
+                Assert.Throws<InvalidOperationException>(() => query.ToList());
+#else
                 Assert.Throws<NotSupportedException>(() => query.ToList());
+#endif
             }
         }
 
