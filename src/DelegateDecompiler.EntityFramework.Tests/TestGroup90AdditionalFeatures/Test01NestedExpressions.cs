@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using DelegateDecompiler.EntityFramework.Tests.EfItems;
 using DelegateDecompiler.EntityFramework.Tests.EfItems.Abstracts;
 using DelegateDecompiler.EntityFramework.Tests.Helpers;
@@ -74,13 +75,34 @@ namespace DelegateDecompiler.EntityFramework.Tests.TestGroup90AdditionalFeatures
 #if EF_CORE && !EF_CORE3 && !EF_CORE5
         [Ignore("Not natively supported in EF_CORE < 3")]
 #endif
-        public void TestSubqueryAsVariableReference()
+        public void TestFailingSubqueryAsVariableReference()
         {
             using (var env = new MethodEnvironment(classEnv))
             {
                 //ATTEMPT
                 env.AboutToUseDelegateDecompiler();
+                var referencedQuery = env.Db.Set<Animal>().Where(it => it.Species == "Canis lupus");
+                var query = env.Db.Set<Person>().Where(it => it.Animals.Intersect(referencedQuery).Any()).Decompile();
 
+                //VERIFY
+                Assert.Throws<NotSupportedException>(() => query.ToList());
+            }
+        }
+
+        [Test]
+#if EF_CORE && !EF_CORE3 && !EF_CORE5
+        [Ignore("Not natively supported in EF_CORE < 3")]
+#endif
+        public void TestSubqueryAsVariableReference()
+        {
+            using (var env = new MethodEnvironment(classEnv))
+            {
+                //SETUP
+                var linq = env.Db.Set<Person>().Where(it => it.Animals.Intersect(env.Db.Set<Animal>().Where(a => a is Dog)).Any())
+                    .ToList();
+
+                //ATTEMPT
+                env.AboutToUseDelegateDecompiler();
                 var referencedQuery = env.Db.Set<Animal>().Where(it => it.Species == "Canis lupus").Decompile();
                 var query = env.Db.Set<Person>().Where(it => it.Animals.Intersect(referencedQuery).Any()).Decompile();
 
@@ -88,7 +110,7 @@ namespace DelegateDecompiler.EntityFramework.Tests.TestGroup90AdditionalFeatures
                 var list = query.ToList();
 
                 //VERIFY
-                Assert.AreEqual(1, list.Count());
+                env.CompareAndLogList(linq, list);
             }
         }
 
