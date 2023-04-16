@@ -47,6 +47,11 @@ namespace DelegateDecompiler
 
         static IEnumerable<Type> BuildChildren(Type type, ILookup<Type, Type> children)
         {
+            if (type == null)
+            {
+                return Enumerable.Empty<Type>();
+            }
+
             if (!type.IsGenericType)
             {
                 return children[type];
