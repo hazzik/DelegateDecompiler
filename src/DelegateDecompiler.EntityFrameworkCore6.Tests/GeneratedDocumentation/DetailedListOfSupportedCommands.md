@@ -1,6 +1,6 @@
 Detail of supported commands
 ============
-## Documentation produced for DelegateDecompiler, version 0.32.1.0 on Tuesday, 25 October 2022 19:37
+## Documentation produced for DelegateDecompiler, version 0.33.0.0 on Wednesday, 26 October 2022 12:42
 
 This file documents what linq commands **DelegateDecompiler** supports when
 working with [Entity Framework Core](https://docs.microsoft.com/en-us/ef/core/) (EF).
@@ -146,7 +146,10 @@ More will appear as we move forward.*
 ### Group: Additional Features
 #### [Nested Expressions](../TestGroup90AdditionalFeatures/Test01NestedExpressions.cs):
 - Supported
-  * Subquery As Context Extension Method (line 68)
+  * Subquery As Context Extension Method (line 69)
+  * Filter With Subquery Reference (line 112)
+- **Not Supported**
+  * Subquery As Variable Reference (line 82)
 
 
 

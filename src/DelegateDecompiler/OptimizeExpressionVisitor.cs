@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Linq.Expressions;
+using System.Reflection;
 
 namespace DelegateDecompiler
 {
@@ -339,6 +341,20 @@ namespace DelegateDecompiler
             return base.VisitUnary(node);
         }
 
+        protected override Expression VisitMember(MemberExpression node)
+        {
+            if (typeof(IQueryable).IsAssignableFrom(node.Type))
+            {
+                if (!(node.Expression is ParameterExpression) && node.Member is FieldInfo)
+                {
+                    var referencedQueryable = node.Evaluate<IQueryable>();
+                    if (referencedQueryable is IDecompiledQueryable)
+                        return Visit(referencedQueryable.Expression);    
+                }
+            }
+            return base.VisitMember(node);
+        }
+
         protected override Expression VisitMethodCall(MethodCallExpression node)
         {
             if (node.Method.Name == nameof(Expression.Lambda) &&
@@ -347,7 +363,13 @@ namespace DelegateDecompiler
                 var call = base.VisitMethodCall(node);
                 return LinqExpressionUnwrapper.Unwrap(call);
             }
-
+            if (typeof(IQueryable).IsAssignableFrom(node.Type))
+            {
+                if (Configuration.Instance.ShouldDecompile(node.Method))
+                {
+                    return Visit(node.Decompile());
+                }
+            }
             return base.VisitMethodCall(node);
         }
 

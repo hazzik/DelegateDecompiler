@@ -43,7 +43,7 @@ namespace DelegateDecompiler.EntityFramework
 
         public override IQueryable<TElement> CreateQuery<TElement>(Expression expression)
         {
-            var decompiled = expression.Decompile();
+            var decompiled = expression.Decompile().Optimize();
             return new AsyncDecompiledQueryable<TElement>(this, inner.CreateQuery<TElement>(decompiled));
         }
 
@@ -54,7 +54,7 @@ namespace DelegateDecompiler.EntityFramework
             {
                 throw new InvalidOperationException("The source IQueryProvider doesn't implement IDbAsyncQueryProvider.");
             }
-            var decompiled = expression.Decompile();
+            var decompiled = expression.Decompile().Optimize();
             return asyncProvider.ExecuteAsync(decompiled, cancellationToken);
         }
 
@@ -65,7 +65,7 @@ namespace DelegateDecompiler.EntityFramework
             {
                 throw new InvalidOperationException("The source IQueryProvider doesn't implement IDbAsyncQueryProvider.");
             }
-            var decompiled = expression.Decompile();
+            var decompiled = expression.Decompile().Optimize();
             return asyncProvider.ExecuteAsync<TResult>(decompiled, cancellationToken);
         }
     }

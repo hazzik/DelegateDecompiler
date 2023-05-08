@@ -1,6 +1,6 @@
 Detail With Sql of supported commands
 ============
-## Documentation produced for DelegateDecompiler, version 0.32.1.0 on Tuesday, 25 October 2022 19:37
+## Documentation produced for DelegateDecompiler, version 0.33.0.0 on Wednesday, 26 October 2022 12:42
 
 This file documents what linq commands **DelegateDecompiler** supports when
 working with [Entity Framework Core](https://docs.microsoft.com/en-us/ef/core/) (EF).
@@ -775,7 +775,7 @@ WHERE [e].[StartDate] > '2000-01-01T00:00:00.0000000'
 ### Group: Additional Features
 #### [Nested Expressions](../TestGroup90AdditionalFeatures/Test01NestedExpressions.cs):
 - Supported
-  * Subquery As Context Extension Method (line 68)
+  * Subquery As Context Extension Method (line 69)
      * T-Sql executed is
 
 ```SQL
@@ -786,6 +786,27 @@ SELECT [e].[EfParentId] AS [ParentId], COALESCE((
 FROM [EfParents] AS [e]
 ```
 
+  * Filter With Subquery Reference (line 112)
+     * T-Sql executed is
+
+```SQL
+SELECT CASE
+    WHEN EXISTS (
+        SELECT 1
+        FROM [EfParents] AS [e]
+        WHERE EXISTS (
+            SELECT 1
+            FROM [EfParents] AS [e0]
+            WHERE ((
+                SELECT COUNT(*)
+                FROM [EfChildren] AS [e1]
+                WHERE [e0].[EfParentId] = [e1].[EfParentId]) = 0) AND ([e0].[EfParentId] = [e].[EfParentId]))) THEN CAST(1 AS bit)
+    ELSE CAST(0 AS bit)
+END
+```
+
+- **Not Supported**
+  * Subquery As Variable Reference (line 82)
 
 
 
