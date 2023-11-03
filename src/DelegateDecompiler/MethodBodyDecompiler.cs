@@ -24,8 +24,11 @@ namespace DelegateDecompiler
             if (!method.IsStatic)
                 args.Insert(0, Expression.Parameter(methodType, "this"));
 
-            var expression = method.IsVirtual
-                ? DecompileVirtual(methodType, method, args)
+            // If a method is final, it is not overridable:
+            // https://learn.microsoft.com/en-us/dotnet/api/system.reflection.methodbase.isvirtual?view=netframework-4.7.2#remarks
+            var methodIsOverridable = method.IsVirtual && !method.IsFinal;
+            var expression = methodIsOverridable
+                ? DecompileOverridable(methodType, method, args)
                 : DecompileConcrete(method, args);
 
             var optimizedExpression = expression.Optimize();
@@ -63,7 +66,7 @@ namespace DelegateDecompiler
             return result;
         }
 
-        static Expression DecompileVirtual(Type declaringType, MethodInfo method, IList<Address> args)
+        static Expression DecompileOverridable(Type declaringType, MethodInfo method, IList<Address> args)
         {
             if (declaringType == null)
                 throw new InvalidOperationException($"Method {method.Name} does not have a declaring type");
