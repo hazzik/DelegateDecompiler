@@ -424,7 +424,7 @@ namespace DelegateDecompiler
                              state.Instruction.OpCode == OpCodes.Ble_Un_S)
                     {
                         var val1 = state.Stack.Pop();
-                        state.Instruction = ConditionalBranch(state, val => Expression.LessThanOrEqual(val, val1));
+                        state.Instruction = ConditionalBranch(state, val => MakeBinaryExpression(val, val1, ExpressionType.LessThanOrEqual));
                         continue;
                     }
                     else if (state.Instruction.OpCode == OpCodes.Beq ||

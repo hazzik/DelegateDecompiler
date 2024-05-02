@@ -131,6 +131,12 @@ namespace DelegateDecompiler
                             if (TryConvertOrElse(right, left, out result))
                                 return true;
 
+                            if (right is ConstantExpression rightConstant && rightConstant.Value is false)
+                            {
+                                result = left;
+                                return true;
+                            }
+
                             result = Expression.OrElse(left, right);
                             return true;
                         }
