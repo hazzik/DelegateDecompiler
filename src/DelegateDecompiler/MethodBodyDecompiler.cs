@@ -24,10 +24,7 @@ namespace DelegateDecompiler
             if (!method.IsStatic)
                 args.Insert(0, Expression.Parameter(methodType, "this"));
 
-            // If a method is final, it is not overridable:
-            // https://learn.microsoft.com/en-us/dotnet/api/system.reflection.methodbase.isvirtual?view=netframework-4.7.2#remarks
-            var methodIsOverridable = method.IsVirtual && !method.IsFinal;
-            var expression = methodIsOverridable
+            var expression = method.IsVirtual && !method.IsFinal
                 ? DecompileOverridable(methodType, method, args)
                 : DecompileConcrete(method, args);
 
