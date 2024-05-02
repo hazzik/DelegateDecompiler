@@ -59,7 +59,7 @@ FROM [EfParents] AS [e]
      * T-Sql executed is
 
 ```SQL
-SELECT ((([e].[FirstName] + N' ') + COALESCE([e].[MiddleName], N'')) + N' ') + [e].[LastName]
+SELECT [e].[FirstName] + N' ' + COALESCE([e].[MiddleName], N'') + N' ' + [e].[LastName]
 FROM [EfPersons] AS [e]
 ```
 
@@ -67,7 +67,7 @@ FROM [EfPersons] AS [e]
      * T-Sql executed is
 
 ```SQL
-SELECT ((([e].[FirstName] + N' ') + COALESCE([e].[MiddleName], N'')) + N' ') + [e].[LastName]
+SELECT [e].[FirstName] + N' ' + COALESCE([e].[MiddleName], N'') + N' ' + [e].[LastName]
 FROM [EfPersons] AS [e]
 ```
 
@@ -130,15 +130,15 @@ END AS [Species], CASE
     ELSE NULL
 END AS [Group]
 FROM [LivingBeeing] AS [l]
-WHERE [l].[Discriminator] IN (N'AtlanticCod', N'WhiteShark') AND ((CASE
+WHERE [l].[Discriminator] IN (N'AtlanticCod', N'WhiteShark') AND CASE
     WHEN [l].[Discriminator] = N'WhiteShark' THEN N'Carcharodon carcharias'
     WHEN [l].[Discriminator] = N'AtlanticCod' THEN N'Gadus morhua'
     ELSE NULL
-END IS NOT NULL) AND (CASE
+END IS NOT NULL AND CASE
     WHEN [l].[Discriminator] = N'WhiteShark' THEN N'Fish'
     WHEN [l].[Discriminator] = N'AtlanticCod' THEN N'Fish'
     ELSE NULL
-END IS NOT NULL))
+END IS NOT NULL
 ```
 
   * Select Multiple Levels Of Abstract Members Over Tph Hierarchy (line 199)
@@ -239,7 +239,7 @@ FROM [EfParents] AS [e]
 
 ```SQL
 SELECT CASE
-    WHEN ([e].[ParentInt] = CAST(LEN([e].[ParentString]) AS int)) AND ([e].[ParentString] IS NOT NULL) THEN CAST(1 AS bit)
+    WHEN [e].[ParentInt] = CAST(LEN([e].[ParentString]) AS int) AND [e].[ParentString] IS NOT NULL THEN CAST(1 AS bit)
     ELSE CAST(0 AS bit)
 END
 FROM [EfParents] AS [e]
@@ -250,7 +250,7 @@ FROM [EfParents] AS [e]
 
 ```SQL
 SELECT CASE
-    WHEN ([e].[ParentInt] <> CAST(LEN([e].[ParentString]) AS int)) OR ([e].[ParentString] IS NULL) THEN CAST(1 AS bit)
+    WHEN [e].[ParentInt] <> CAST(LEN([e].[ParentString]) AS int) OR [e].[ParentString] IS NULL THEN CAST(1 AS bit)
     ELSE CAST(0 AS bit)
 END
 FROM [EfParents] AS [e]
@@ -286,7 +286,7 @@ FROM [EfParents] AS [e]
 
 ```SQL
 SELECT CASE
-    WHEN ([e].[ParentNullableInt] = 123) AND ([e].[ParentNullableInt] IS NOT NULL) THEN CAST(1 AS bit)
+    WHEN [e].[ParentNullableInt] = 123 AND [e].[ParentNullableInt] IS NOT NULL THEN CAST(1 AS bit)
     ELSE CAST(0 AS bit)
 END
 FROM [EfParents] AS [e]
@@ -344,7 +344,14 @@ WHERE [e].[ParentInt] = 123
 ```SQL
 SELECT [l].[Id]
 FROM [LivingBeeing] AS [l]
-WHERE [l].[Discriminator] = N'Person'
+WHERE CASE
+    WHEN [l].[Discriminator] = N'Person' THEN N'Human'
+    WHEN [l].[Discriminator] = N'WhiteShark' THEN N'Carcharodon carcharias'
+    WHEN [l].[Discriminator] = N'AtlanticCod' THEN N'Gadus morhua'
+    WHEN [l].[Discriminator] = N'HoneyBee' THEN N'Apis mellifera'
+    WHEN [l].[Discriminator] = N'Dog' THEN N'Canis lupus'
+    ELSE NULL
+END = N'Human'
 ```
 
 
@@ -494,7 +501,7 @@ SELECT CASE
     WHEN EXISTS (
         SELECT 1
         FROM [EfChildren] AS [e0]
-        WHERE ([e].[EfParentId] = [e0].[EfParentId]) AND ([e0].[ChildInt] = 123)) THEN CAST(1 AS bit)
+        WHERE [e].[EfParentId] = [e0].[EfParentId] AND [e0].[ChildInt] = 123) THEN CAST(1 AS bit)
     ELSE CAST(0 AS bit)
 END
 FROM [EfParents] AS [e]
@@ -524,7 +531,7 @@ SELECT CASE
     WHEN NOT EXISTS (
         SELECT 1
         FROM [EfChildren] AS [e0]
-        WHERE ([e].[EfParentId] = [e0].[EfParentId]) AND ([e0].[ChildInt] <> 123)) THEN CAST(1 AS bit)
+        WHERE [e].[EfParentId] = [e0].[EfParentId] AND [e0].[ChildInt] <> 123) THEN CAST(1 AS bit)
     ELSE CAST(0 AS bit)
 END
 FROM [EfParents] AS [e]
@@ -565,7 +572,7 @@ FROM [EfParents] AS [e]
 SELECT (
     SELECT COUNT(*)
     FROM [EfChildren] AS [e0]
-    WHERE ([e].[EfParentId] = [e0].[EfParentId]) AND ([e0].[ChildInt] = 123))
+    WHERE [e].[EfParentId] = [e0].[EfParentId] AND [e0].[ChildInt] = 123)
 FROM [EfParents] AS [e]
 ```
 
@@ -576,7 +583,7 @@ FROM [EfParents] AS [e]
 SELECT (
     SELECT COUNT(*)
     FROM [EfChildren] AS [e0]
-    WHERE ([e].[EfParentId] = [e0].[EfParentId]) AND ([e0].[ChildInt] = [e].[ParentInt]))
+    WHERE [e].[EfParentId] = [e0].[EfParentId] AND [e0].[ChildInt] = [e].[ParentInt])
 FROM [EfParents] AS [e]
 ```
 
@@ -587,7 +594,7 @@ FROM [EfParents] AS [e]
 SELECT (
     SELECT COUNT(*)
     FROM [EfChildren] AS [e0]
-    WHERE ([e].[EfParentId] = [e0].[EfParentId]) AND ([e0].[ChildInt] = @__i_0))
+    WHERE [e].[EfParentId] = [e0].[EfParentId] AND [e0].[ChildInt] = @__i_0)
 FROM [EfParents] AS [e]
 ```
 
@@ -598,7 +605,7 @@ FROM [EfParents] AS [e]
 SELECT (
     SELECT COUNT(*)
     FROM [EfChildren] AS [e0]
-    WHERE ([e].[EfParentId] = [e0].[EfParentId]) AND (([e0].[ChildInt] = @__i_0) AND ([e0].[EfParentId] = @__j_1)))
+    WHERE [e].[EfParentId] = [e0].[EfParentId] AND [e0].[ChildInt] = @__i_0 AND [e0].[EfParentId] = @__j_1)
 FROM [EfParents] AS [e]
 ```
 
@@ -649,7 +656,7 @@ FROM [EfParents] AS [e]
 SELECT (
     SELECT COUNT(*)
     FROM [EfChildren] AS [e0]
-    WHERE ([e].[EfParentId] = [e0].[EfParentId]) AND ([e0].[ChildInt] = 123))
+    WHERE [e].[EfParentId] = [e0].[EfParentId] AND [e0].[ChildInt] = 123)
 FROM [EfParents] AS [e]
 ```
 
@@ -660,7 +667,7 @@ FROM [EfParents] AS [e]
 SELECT (
     SELECT COUNT(*)
     FROM [EfChildren] AS [e0]
-    WHERE ([e].[EfParentId] = [e0].[EfParentId]) AND ([e0].[ChildInt] = [e].[ParentInt]))
+    WHERE [e].[EfParentId] = [e0].[EfParentId] AND [e0].[ChildInt] = [e].[ParentInt])
 FROM [EfParents] AS [e]
 ```
 
@@ -671,7 +678,7 @@ FROM [EfParents] AS [e]
 SELECT (
     SELECT COUNT(*)
     FROM [EfChildren] AS [e0]
-    WHERE ([e].[EfParentId] = [e0].[EfParentId]) AND ([e0].[ChildInt] = @__i_0))
+    WHERE [e].[EfParentId] = [e0].[EfParentId] AND [e0].[ChildInt] = @__i_0)
 FROM [EfParents] AS [e]
 ```
 
@@ -682,7 +689,7 @@ FROM [EfParents] AS [e]
 SELECT (
     SELECT COUNT(*)
     FROM [EfChildren] AS [e0]
-    WHERE ([e].[EfParentId] = [e0].[EfParentId]) AND (([e0].[ChildInt] = @__i_0) AND ([e0].[EfParentId] = @__j_1)))
+    WHERE [e].[EfParentId] = [e0].[EfParentId] AND [e0].[ChildInt] = @__i_0 AND [e0].[EfParentId] = @__j_1)
 FROM [EfParents] AS [e]
 ```
 
@@ -707,7 +714,7 @@ WHERE (
      * T-Sql executed is
 
 ```SQL
-SELECT ((([e].[FirstName] + N' ') + COALESCE([e].[MiddleName], N'')) + N' ') + [e].[LastName]
+SELECT [e].[FirstName] + N' ' + COALESCE([e].[MiddleName], N'') + N' ' + [e].[LastName]
 FROM [EfPersons] AS [e]
 ```
 
@@ -715,10 +722,10 @@ FROM [EfPersons] AS [e]
      * T-Sql executed is
 
 ```SQL
-SELECT ((([e].[FirstName] + CASE
+SELECT [e].[FirstName] + CASE
     WHEN [e].[MiddleName] IS NULL THEN N''
     ELSE N' '
-END) + COALESCE([e].[MiddleName], N'')) + N' ') + [e].[LastName]
+END + COALESCE([e].[MiddleName], N'') + N' ' + [e].[LastName]
 FROM [EfPersons] AS [e]
 ```
 
@@ -727,14 +734,14 @@ FROM [EfPersons] AS [e]
 
 ```SQL
 SELECT CASE
-    WHEN [e].[NameOrder] = CAST(1 AS bit) THEN (([e].[LastName] + N', ') + [e].[FirstName]) + CASE
+    WHEN [e].[NameOrder] = CAST(1 AS bit) THEN [e].[LastName] + N', ' + [e].[FirstName] + CASE
         WHEN [e].[MiddleName] IS NULL THEN N''
         ELSE N' '
     END
-    ELSE ((([e].[FirstName] + CASE
+    ELSE [e].[FirstName] + CASE
         WHEN [e].[MiddleName] IS NULL THEN N''
         ELSE N' '
-    END) + COALESCE([e].[MiddleName], N'')) + N' ') + [e].[LastName]
+    END + COALESCE([e].[MiddleName], N'') + N' ' + [e].[LastName]
 END
 FROM [EfPersons] AS [e]
 ```
@@ -743,10 +750,10 @@ FROM [EfPersons] AS [e]
      * T-Sql executed is
 
 ```SQL
-SELECT ((([e].[FirstName] + CASE
+SELECT [e].[FirstName] + CASE
     WHEN [e].[MiddleName] IS NULL THEN N''
     ELSE N' '
-END) + COALESCE([e].[MiddleName], N'')) + N' ') + [e].[LastName]
+END + COALESCE([e].[MiddleName], N'') + N' ' + [e].[LastName]
 FROM [EfPersons] AS [e]
 ```
 
