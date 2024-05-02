@@ -18,14 +18,6 @@ before_build:
 test_script:
   - test.cmd
 
-# replace the db connection with the local instance :
-before_test:
-- ps: >-
-    $config = join-path (Resolve-Path .\).Path '.\src\DelegateDecompiler.EntityFramework.Tests\App.config';
-    $doc = (gc $config) -as [xml]; 
-    $doc.SelectSingleNode('//connectionStrings/add[@name="DelegateDecompilerEfTestDb"]').connectionString = "Server=(local)\\SQL2019;Database=DelegateDecompilerEfTestDb;MultipleActiveResultSets=True;User ID=sa;Password=Password12!;Encrypt=False;TrustServerCertificate=True;"; 
-    $doc.Save($config);
-
 artifacts:
 - path: '**/*.nupkg'
 - path: '**/*.snupkg'
