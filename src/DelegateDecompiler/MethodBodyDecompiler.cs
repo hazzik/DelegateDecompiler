@@ -24,8 +24,8 @@ namespace DelegateDecompiler
             if (!method.IsStatic)
                 args.Insert(0, Expression.Parameter(methodType, "this"));
 
-            var expression = method.IsVirtual
-                ? DecompileVirtual(methodType, method, args)
+            var expression = method.IsVirtual && !method.IsFinal
+                ? DecompileOverridable(methodType, method, args)
                 : DecompileConcrete(method, args);
 
             var optimizedExpression = expression.Optimize();
@@ -63,7 +63,7 @@ namespace DelegateDecompiler
             return result;
         }
 
-        static Expression DecompileVirtual(Type declaringType, MethodInfo method, IList<Address> args)
+        static Expression DecompileOverridable(Type declaringType, MethodInfo method, IList<Address> args)
         {
             if (declaringType == null)
                 throw new InvalidOperationException($"Method {method.Name} does not have a declaring type");
