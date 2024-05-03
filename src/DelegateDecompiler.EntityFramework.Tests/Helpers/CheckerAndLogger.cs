@@ -19,7 +19,7 @@ namespace DelegateDecompiler.EntityFramework.Tests.Helpers
 
             try
             {
-                CollectionAssert.AreEqual(linqResult, ddResult);
+                Assert.That(ddResult, Is.EqualTo(linqResult).AsCollection);
             }
             catch (Exception)
             {
@@ -37,7 +37,7 @@ namespace DelegateDecompiler.EntityFramework.Tests.Helpers
 
             try
             {
-                CollectionAssert.AreEqual(linqResult, ddResult);
+                Assert.That(ddResult, Is.EqualTo(linqResult).AsCollection);
             }
             catch (Exception)
             {
@@ -55,7 +55,7 @@ namespace DelegateDecompiler.EntityFramework.Tests.Helpers
 
             try
             {
-                Assert.AreEqual(linqResult, ddResult);
+                Assert.That(ddResult, Is.EqualTo(linqResult));
             }
             catch (Exception)
             {

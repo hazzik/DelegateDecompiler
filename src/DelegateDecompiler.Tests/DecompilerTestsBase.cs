@@ -24,8 +24,8 @@ namespace DelegateDecompiler.Tests
             Console.WriteLine(x);
             var y = decompiled.Body.ToString();
             Console.WriteLine(y);
-            Assert.AreEqual(x, y);
-            Assert.AreEqual(DebugView(expected.Body), DebugView(decompiled.Body));
+            Assert.That(y, Is.EqualTo(x));
+            Assert.That(DebugView(decompiled.Body), Is.EqualTo(DebugView(expected.Body)));
         }
 
         protected static void Test<T>(Expression<T> expected, MethodInfo compiled)
@@ -37,8 +37,8 @@ namespace DelegateDecompiler.Tests
             Console.WriteLine(x);
             var y = decompiled.Body.ToString();
             Console.WriteLine(y);
-            Assert.AreEqual(x, y);
-            Assert.AreEqual(DebugView(expected.Body), DebugView(decompiled.Body));
+            Assert.That(y, Is.EqualTo(x));
+            Assert.That(DebugView(decompiled.Body), Is.EqualTo(DebugView(expected.Body)));
         }
 
         protected static void Test<T>(Expression<T> expected1, Expression<T> expected2, T compiled, bool compareDebugView = true)
@@ -59,9 +59,9 @@ namespace DelegateDecompiler.Tests
 
         protected static void AssertAreEqual(Expression expected, Expression actual, bool compareDebugView = true)
         {
-            Assert.AreEqual(expected.ToString(), actual.ToString());
+            Assert.That(actual.ToString(), Is.EqualTo(expected.ToString()));
             if (compareDebugView)
-                Assert.AreEqual(DebugView(expected), DebugView(actual));
+                Assert.That(DebugView(actual), Is.EqualTo(DebugView(expected)));
         }
 
         protected static void AssertAreEqual(Expression expected1, Expression expected2, Expression actual, bool compareDebugView = true)

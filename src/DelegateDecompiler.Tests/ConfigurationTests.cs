@@ -30,7 +30,7 @@ namespace DelegateDecompiler.Tests
             var configuration = new DefaultConfiguration();
             Configuration.Configure(configuration);
             var configured = Configuration.Instance;
-            Assert.AreSame(configuration, configured);
+            Assert.That(configured, Is.SameAs(configuration));
         }
     }
 }
