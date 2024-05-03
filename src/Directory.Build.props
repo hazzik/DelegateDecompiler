@@ -24,6 +24,9 @@
     <LangVersion>12.0</LangVersion>
 
     <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
+    
+    <NuGetAudit>true</NuGetAudit>
+    <NuGetAuditLevel>low</NuGetAuditLevel>
 
     <ContinuousIntegrationBuild Condition="'$(CI)' != ''">$(CI)</ContinuousIntegrationBuild>
   </PropertyGroup>
