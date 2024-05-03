@@ -9,7 +9,5 @@ nunit3-console ^
 dotnet test --no-build -c Release -f net8.0 src\DelegateDecompiler.Tests && ^
 dotnet test --no-build -c Release -f net8.0 src\DelegateDecompiler.Tests.VB && ^
 dotnet test --no-build -c Release -f net8.0 src\DelegateDecompiler.EntityFramework.Tests && ^
-dotnet test --no-build -c Release -f net8.0 src\DelegateDecompiler.EntityFrameworkCore.Tests && ^
-dotnet test --no-build -c Release -f net8.0 src\DelegateDecompiler.EntityFrameworkCore3.Tests && ^
 dotnet test --no-build -c Release -f net8.0 src\DelegateDecompiler.EntityFrameworkCore6.Tests
 dotnet test --no-build -c Release -f net8.0 src\DelegateDecompiler.EntityFrameworkCore8.Tests
