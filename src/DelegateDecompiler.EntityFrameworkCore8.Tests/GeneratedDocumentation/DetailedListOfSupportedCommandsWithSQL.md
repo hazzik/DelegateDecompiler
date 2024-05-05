@@ -1,6 +1,6 @@
 Detail With Sql of supported commands
 ============
-## Documentation produced for DelegateDecompiler, version 0.33.0.0 on Thursday, 02 May 2024 21:08
+## Documentation produced for DelegateDecompiler, version 0.34.0.0 on Sunday, 05 May 2024 18:31
 
 This file documents what linq commands **DelegateDecompiler** supports when
 working with [Entity Framework Core](https://docs.microsoft.com/en-us/ef/core/) (EF).
@@ -163,7 +163,7 @@ WHERE [l].[Discriminator] IN (N'Dog', N'HoneyBee')
 
 #### [Select Async](../TestGroup05BasicFeatures/Test02SelectAsync.cs):
 - Supported
-  * Async (line 39)
+  * Async (line 43)
      * T-Sql executed is
 
 ```SQL
@@ -171,7 +171,7 @@ SELECT [e].[EfParentId], [e].[EndDate], [e].[ParentBool], [e].[ParentDouble], [e
 FROM [EfParents] AS [e]
 ```
 
-  * Bool Equals Constant Async (line 75)
+  * Bool Equals Constant Async (line 83)
      * T-Sql executed is
 
 ```SQL
@@ -179,7 +179,7 @@ SELECT [e].[ParentBool]
 FROM [EfParents] AS [e]
 ```
 
-  * Decompile Upfront Bool Equals Constant Async (line 92)
+  * Decompile Upfront Bool Equals Constant Async (line 104)
      * T-Sql executed is
 
 ```SQL
@@ -187,18 +187,15 @@ SELECT [e].[ParentBool]
 FROM [EfParents] AS [e]
 ```
 
-  * Bool Equals Static Variable To Array Async (line 111)
+  * Bool Equals Static Variable To Array Async (line 127)
      * T-Sql executed is
 
 ```SQL
-SELECT CASE
-    WHEN [e].[ParentBool] = @__staticBool_0 THEN CAST(1 AS bit)
-    ELSE CAST(0 AS bit)
-END
+SELECT [e].[ParentBool]
 FROM [EfParents] AS [e]
 ```
 
-  * Int Equals Constant (line 128)
+  * Int Equals Constant (line 148)
      * T-Sql executed is
 
 ```SQL
@@ -372,7 +369,7 @@ WHERE [e].[ParentInt] = 987
 
 #### [Single Async](../TestGroup05BasicFeatures/Test11SingleAsync.cs):
 - Supported
-  * Single Int Equals Unique Value Async (line 46)
+  * Single Int Equals Unique Value Async (line 48)
      * T-Sql executed is
 
 ```SQL
@@ -638,7 +635,7 @@ FROM [EfParents] AS [e]
 
 #### [Count Async](../TestGroup15Aggregation/Test03CountAsync.cs):
 - Supported
-  * Count Children Async (line 40)
+  * Count Children Async (line 44)
      * T-Sql executed is
 
 ```SQL
@@ -649,7 +646,7 @@ SELECT (
 FROM [EfParents] AS [e]
 ```
 
-  * Count Children With Filter Async (line 58)
+  * Count Children With Filter Async (line 66)
      * T-Sql executed is
 
 ```SQL
@@ -660,7 +657,7 @@ SELECT (
 FROM [EfParents] AS [e]
 ```
 
-  * Count Children With Filter By Closure Async (line 76)
+  * Count Children With Filter By Closure Async (line 88)
      * T-Sql executed is
 
 ```SQL
@@ -671,7 +668,7 @@ SELECT (
 FROM [EfParents] AS [e]
 ```
 
-  * Count Children With Filter By External Closure Async (line 95)
+  * Count Children With Filter By External Closure Async (line 111)
      * T-Sql executed is
 
 ```SQL
@@ -682,7 +679,7 @@ SELECT (
 FROM [EfParents] AS [e]
 ```
 
-  * Count Children With Filter By External Closure2 Async (line 115)
+  * Count Children With Filter By External Closure2 Async (line 135)
      * T-Sql executed is
 
 ```SQL
@@ -693,7 +690,7 @@ SELECT (
 FROM [EfParents] AS [e]
 ```
 
-  * Singleton Count Children With Filter Async (line 133)
+  * Singleton Count Children With Filter Async (line 157)
      * T-Sql executed is
 
 ```SQL

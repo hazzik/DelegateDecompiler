@@ -81,3 +81,8 @@ csharp_space_after_cast = false
 csharp_space_around_binary_operators = before_and_after
 csharp_style_implicit_object_creation_when_type_is_apparent = true:suggestion
 csharp_indent_case_contents_when_block = false
+
+[{*.csproj,*.vbproj,*.props}]
+indent_style = space
+indent_size = 2
+tab_width = 2

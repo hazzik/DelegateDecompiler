@@ -33,7 +33,11 @@ namespace DelegateDecompiler.EntityFramework.Tests.TestGroup05BasicFeatures
 
                 //ATTEMPT
                 env.AboutToUseDelegateDecompiler();
-                var dd = await env.Db.EfParents.DecompileAsync().ToListAsync();
+                var dd = await env.Db.EfParents
+#if !EF_CORE7
+                    .DecompileAsync()
+#endif
+                    .ToListAsync();
 
                 //VERIFY
                 env.CompareAndLogList(linq, dd);
@@ -69,7 +73,11 @@ namespace DelegateDecompiler.EntityFramework.Tests.TestGroup05BasicFeatures
 
                 //ATTEMPT
                 env.AboutToUseDelegateDecompiler();
-                var dd = await env.Db.EfParents.Select(x => x.BoolEqualsConstant).DecompileAsync().ToListAsync();
+                var dd = await env.Db.EfParents.Select(x => x.BoolEqualsConstant)
+#if !EF_CORE7
+                    .DecompileAsync()
+#endif
+                    .ToListAsync();
 
                 //VERIFY
                 env.CompareAndLogList(linq, dd);
@@ -86,7 +94,11 @@ namespace DelegateDecompiler.EntityFramework.Tests.TestGroup05BasicFeatures
 
                 //ATTEMPT
                 env.AboutToUseDelegateDecompiler();
-                var dd = await env.Db.EfParents.DecompileAsync().Select(x => x.BoolEqualsConstant).ToListAsync();
+                var dd = await env.Db.EfParents
+#if !EF_CORE7
+                    .DecompileAsync()
+#endif
+                    .Select(x => x.BoolEqualsConstant).ToListAsync();
 
                 //VERIFY
                 env.CompareAndLogList(linq, dd);
@@ -105,7 +117,11 @@ namespace DelegateDecompiler.EntityFramework.Tests.TestGroup05BasicFeatures
 
                 //ATTEMPT
                 env.AboutToUseDelegateDecompiler();
-                var dd = await env.Db.EfParents.Select(x => x.BoolEqualsStaticVariable).DecompileAsync().ToListAsync();
+                var dd = await env.Db.EfParents.Select(x => x.BoolEqualsStaticVariable)
+#if !EF_CORE7
+                    .DecompileAsync()
+#endif
+                    .ToListAsync();
 
                 //VERIFY
                 env.CompareAndLogList(linq, dd);
@@ -122,7 +138,11 @@ namespace DelegateDecompiler.EntityFramework.Tests.TestGroup05BasicFeatures
 
                 //ATTEMPT
                 env.AboutToUseDelegateDecompiler();
-                var dd = await env.Db.EfParents.Select(x => x.IntEqualsConstant).DecompileAsync().ToListAsync();
+                var dd = await env.Db.EfParents.Select(x => x.IntEqualsConstant)
+#if !EF_CORE7
+                    .DecompileAsync()
+#endif
+                    .ToListAsync();
 
                 //VERIFY
                 env.CompareAndLogList(linq, dd);

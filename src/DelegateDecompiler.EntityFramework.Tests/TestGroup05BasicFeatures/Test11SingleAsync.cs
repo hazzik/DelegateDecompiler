@@ -38,7 +38,9 @@ namespace DelegateDecompiler.EntityFramework.Tests.TestGroup05BasicFeatures
                 env.AboutToUseDelegateDecompiler();
                 var dd = (await
                     env.Db.EfParents.Select(x => new { x.EfParentId, x.IntEqualsUniqueValue })
+#if !EF_CORE7
                         .DecompileAsync()
+#endif
                         .SingleAsync(x => x.IntEqualsUniqueValue))
                         .EfParentId;
 

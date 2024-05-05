@@ -1,6 +1,6 @@
 Detail of supported commands
 ============
-## Documentation produced for DelegateDecompiler, version 0.33.0.0 on Thursday, 02 May 2024 21:08
+## Documentation produced for DelegateDecompiler, version 0.34.0.0 on Sunday, 05 May 2024 18:31
 
 This file documents what linq commands **DelegateDecompiler** supports when
 working with [Entity Framework Core](https://docs.microsoft.com/en-us/ef/core/) (EF).
@@ -38,11 +38,11 @@ More will appear as we move forward.*
 
 #### [Select Async](../TestGroup05BasicFeatures/Test02SelectAsync.cs):
 - Supported
-  * Async (line 39)
-  * Bool Equals Constant Async (line 75)
-  * Decompile Upfront Bool Equals Constant Async (line 92)
-  * Bool Equals Static Variable To Array Async (line 111)
-  * Int Equals Constant (line 128)
+  * Async (line 43)
+  * Bool Equals Constant Async (line 83)
+  * Decompile Upfront Bool Equals Constant Async (line 104)
+  * Bool Equals Static Variable To Array Async (line 127)
+  * Int Equals Constant (line 148)
 
 #### [Equals And Not Equals](../TestGroup05BasicFeatures/Test03EqualsAndNotEquals.cs):
 - Supported
@@ -72,7 +72,7 @@ More will appear as we move forward.*
 
 #### [Single Async](../TestGroup05BasicFeatures/Test11SingleAsync.cs):
 - Supported
-  * Single Int Equals Unique Value Async (line 46)
+  * Single Int Equals Unique Value Async (line 48)
 
 
 ### Group: Order Take
@@ -121,12 +121,12 @@ More will appear as we move forward.*
 
 #### [Count Async](../TestGroup15Aggregation/Test03CountAsync.cs):
 - Supported
-  * Count Children Async (line 40)
-  * Count Children With Filter Async (line 58)
-  * Count Children With Filter By Closure Async (line 76)
-  * Count Children With Filter By External Closure Async (line 95)
-  * Count Children With Filter By External Closure2 Async (line 115)
-  * Singleton Count Children With Filter Async (line 133)
+  * Count Children Async (line 44)
+  * Count Children With Filter Async (line 66)
+  * Count Children With Filter By Closure Async (line 88)
+  * Count Children With Filter By External Closure Async (line 111)
+  * Count Children With Filter By External Closure2 Async (line 135)
+  * Singleton Count Children With Filter Async (line 157)
 
 
 ### Group: Types

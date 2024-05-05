@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net7.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <Copyright>Copyright © Alexander Zaytsev 2024</Copyright>
+    <PackageTags>$(PackageTags) EF EntityFrameworkCore Entity-Framework-Core</PackageTags>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <RootNamespace>DelegateDecompiler.EntityFrameworkCore</RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="7.0.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\DelegateDecompiler.EntityFrameworkCore5\DelegateDecompiler.EntityFrameworkCore5.csproj" />
+    <ProjectReference Include="..\DelegateDecompiler\DelegateDecompiler.csproj" />
+  </ItemGroup>
+</Project>

@@ -31,6 +31,9 @@ namespace DelegateDecompiler.EntityFramework.Tests.EfItems
                 }
             });
 #endif
+#if EF_CORE7
+            optionsBuilder.AddDelegateDecompiler();
+#endif
         }
 #else
         static EfTestDbContext()
