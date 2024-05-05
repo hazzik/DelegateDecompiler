@@ -1,6 +1,6 @@
 Detail of supported commands
 ============
-## Documentation produced for DelegateDecompiler, version 0.34.0.0 on Sunday, 05 May 2024 23:15
+## Documentation produced for DelegateDecompiler, version 0.34.0.0 on Sunday, 05 May 2024 23:45
 
 This file documents what linq commands **DelegateDecompiler** supports when
 working with [Entity Framework Core](https://docs.microsoft.com/en-us/ef/core/) (EF).
@@ -20,6 +20,12 @@ That will make it much easier to diagnose your issue.
 
 *Note: The test suite has only recently been set up and has only a handful of tests at the moment.
 More will appear as we move forward.*
+
+
+### Group: Relationship
+#### [Include](../TestGroup20Relationship/Test01Include.cs):
+- **Not Supported**
+  * Include (line 42)
 
 
 ### Group: Basic Features
