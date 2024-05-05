@@ -29,7 +29,11 @@ namespace DelegateDecompiler.EntityFramework.Tests.TestGroup05BasicFeatures
 
                 //ATTEMPT
                 env.AboutToUseDelegateDecompiler();
-                var dd = env.Db.EfParents.Select(x => x.ParentNullableIntIsNull).Decompile().ToList();
+                var dd = env.Db.EfParents.Select(x => x.ParentNullableIntIsNull)
+#if !EF_CORE
+                    .Decompile()
+#endif
+                    .ToList();
 
                 //VERIFY
                 env.CompareAndLogList(linq, dd);
@@ -48,7 +52,11 @@ namespace DelegateDecompiler.EntityFramework.Tests.TestGroup05BasicFeatures
 
                 //ATTEMPT
                 env.AboutToUseDelegateDecompiler();
-                var dd = env.Db.EfParents.Select(x => x.ParentNullableIntEqualsStaticVariable).Decompile().ToList();
+                var dd = env.Db.EfParents.Select(x => x.ParentNullableIntEqualsStaticVariable)
+#if !EF_CORE
+                    .Decompile()
+#endif
+                    .ToList();
 
                 //VERIFY
                 env.CompareAndLogList(linq, dd);
@@ -65,7 +73,11 @@ namespace DelegateDecompiler.EntityFramework.Tests.TestGroup05BasicFeatures
 
                 //ATTEMPT
                 env.AboutToUseDelegateDecompiler();
-                var dd = env.Db.EfParents.Select(x => x.ParentNullableIntEqualsConstant).Decompile().ToList();
+                var dd = env.Db.EfParents.Select(x => x.ParentNullableIntEqualsConstant)
+#if !EF_CORE
+                    .Decompile()
+#endif
+                    .ToList();
 
                 //VERIFY
                 env.CompareAndLogList(linq, dd);
@@ -82,7 +94,11 @@ namespace DelegateDecompiler.EntityFramework.Tests.TestGroup05BasicFeatures
 
                 //ATTEMPT
                 env.AboutToUseDelegateDecompiler();
-                var dd = env.Db.EfParents.Select(x => x.NullableInit).Decompile().ToList();
+                var dd = env.Db.EfParents.Select(x => x.NullableInit)
+#if !EF_CORE
+                    .Decompile()
+#endif
+                    .ToList();
 
                 //VERIFY
                 env.CompareAndLogList(linq, dd);
@@ -99,7 +115,11 @@ namespace DelegateDecompiler.EntityFramework.Tests.TestGroup05BasicFeatures
 
                 //ATTEMPT
                 env.AboutToUseDelegateDecompiler();
-                var dd = env.Db.EfParents.Select(x => x.ParentNullableDecimalAdd).Decompile().ToList();
+                var dd = env.Db.EfParents.Select(x => x.ParentNullableDecimalAdd)
+#if !EF_CORE
+                    .Decompile()
+#endif
+                    .ToList();
 
                 //VERIFY
                 env.CompareAndLogList(linq, dd);

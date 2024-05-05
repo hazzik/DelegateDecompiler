@@ -21,7 +21,7 @@ namespace DelegateDecompiler.EntityFramework.Tests.EfItems
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             var connectionString = GetConnectionString();
-            optionsBuilder.UseSqlServer(connectionString);
+            optionsBuilder.AddDelegateDecompiler().UseSqlServer(connectionString);
 #if EF_CORE5
             optionsBuilder.LogTo((id, _) => id == RelationalEventId.CommandExecuted, d =>
             {

@@ -26,7 +26,11 @@ namespace DelegateDecompiler.EntityFramework.Tests.TestGroup05BasicFeatures
 
                 //ATTEMPT
                 env.AboutToUseDelegateDecompiler();
-                var dd = env.Db.EfParents.Select(x => x.IntEqualsConstant).Decompile().ToList();
+                var dd = env.Db.EfParents.Select(x => x.IntEqualsConstant)
+#if !EF_CORE
+                    .Decompile()
+#endif
+                    .ToList();
 
                 //VERIFY
                 env.CompareAndLogList(linq, dd);
@@ -44,7 +48,11 @@ namespace DelegateDecompiler.EntityFramework.Tests.TestGroup05BasicFeatures
 
                 //ATTEMPT
                 env.AboutToUseDelegateDecompiler();
-                var dd = env.Db.EfParents.Select(x => x.IntEqualsStaticVariable).Decompile().ToList();
+                var dd = env.Db.EfParents.Select(x => x.IntEqualsStaticVariable)
+#if !EF_CORE
+                    .Decompile()
+#endif
+                    .ToList();
 
                 //VERIFY
                 env.CompareAndLogList(linq, dd);
@@ -61,7 +69,11 @@ namespace DelegateDecompiler.EntityFramework.Tests.TestGroup05BasicFeatures
 
                 //ATTEMPT
                 env.AboutToUseDelegateDecompiler();
-                var dd = env.Db.EfParents.Select(x => x.IntEqualsStringLength).Decompile().ToList();
+                var dd = env.Db.EfParents.Select(x => x.IntEqualsStringLength)
+#if !EF_CORE
+                    .Decompile()
+#endif
+                    .ToList();
 
                 //VERIFY
                 env.CompareAndLogList(linq, dd);
@@ -78,7 +90,11 @@ namespace DelegateDecompiler.EntityFramework.Tests.TestGroup05BasicFeatures
 
                 //ATTEMPT
                 env.AboutToUseDelegateDecompiler();
-                var dd = env.Db.EfParents.Select(x => x.IntNotEqualsStringLength).Decompile().ToList();
+                var dd = env.Db.EfParents.Select(x => x.IntNotEqualsStringLength)
+#if !EF_CORE
+                    .Decompile()
+#endif
+                    .ToList();
 
                 //VERIFY
                 env.CompareAndLogList(linq, dd);

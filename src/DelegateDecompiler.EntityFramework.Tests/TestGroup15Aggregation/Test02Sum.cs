@@ -28,7 +28,11 @@ namespace DelegateDecompiler.EntityFramework.Tests.TestGroup15Aggregation
 
                 //ATTEMPT
                 env.AboutToUseDelegateDecompiler();
-                var dd = env.Db.EfParents.Decompile().Sum(x => x.CountChildren);
+                var dd = env.Db.EfParents
+#if !EF_CORE
+                    .Decompile()
+#endif
+                    .Sum(x => x.CountChildren);
 
                 //VERIFY
                 env.CompareAndLogSingleton(linq, dd);
@@ -47,7 +51,11 @@ namespace DelegateDecompiler.EntityFramework.Tests.TestGroup15Aggregation
 
                 //ATTEMPT
                 env.AboutToUseDelegateDecompiler();
-                var dd = env.Db.EfParents.Select(x => x.SumIntInChildrenWhereChildrenCanBeNone).Decompile().ToList();
+                var dd = env.Db.EfParents.Select(x => x.SumIntInChildrenWhereChildrenCanBeNone)
+#if !EF_CORE
+                    .Decompile()
+#endif
+                    .ToList();
 
                 //VERIFY
                 env.CompareAndLogList(linq, dd);

@@ -1,6 +1,6 @@
 Detail With Sql of supported commands
 ============
-## Documentation produced for DelegateDecompiler, version 0.34.0.0 on Sunday, 05 May 2024 22:25
+## Documentation produced for DelegateDecompiler, version 0.34.0.0 on Sunday, 05 May 2024 23:01
 
 This file documents what linq commands **DelegateDecompiler** supports when
 working with [Entity Framework Core](https://docs.microsoft.com/en-us/ef/core/) (EF).
@@ -25,7 +25,7 @@ More will appear as we move forward.*
 ### Group: Basic Features
 #### [Select](../TestGroup05BasicFeatures/Test01Select.cs):
 - Supported
-  * Bool Equals Constant (line 34)
+  * Bool Equals Constant (line 38)
      * T-Sql executed is
 
 ```SQL
@@ -33,7 +33,7 @@ SELECT [e].[ParentBool]
 FROM [EfParents] AS [e]
 ```
 
-  * Bool Equals Static Variable (line 53)
+  * Bool Equals Static Variable (line 61)
      * T-Sql executed is
 
 ```SQL
@@ -44,7 +44,7 @@ END
 FROM [EfParents] AS [e]
 ```
 
-  * Int Equals Constant (line 70)
+  * Int Equals Constant (line 82)
      * T-Sql executed is
 
 ```SQL
@@ -55,7 +55,7 @@ END
 FROM [EfParents] AS [e]
 ```
 
-  * Select Property Without Computed Attribute (line 87)
+  * Select Property Without Computed Attribute (line 103)
      * T-Sql executed is
 
 ```SQL
@@ -63,7 +63,7 @@ SELECT ((([e].[FirstName] + N' ') + COALESCE([e].[MiddleName], N'')) + N' ') + [
 FROM [EfPersons] AS [e]
 ```
 
-  * Select Method Without Computed Attribute (line 104)
+  * Select Method Without Computed Attribute (line 124)
      * T-Sql executed is
 
 ```SQL
@@ -71,7 +71,7 @@ SELECT ((([e].[FirstName] + N' ') + COALESCE([e].[MiddleName], N'')) + N' ') + [
 FROM [EfPersons] AS [e]
 ```
 
-  * Select Abstract Member Over Tph Hierarchy (line 121)
+  * Select Abstract Member Over Tph Hierarchy (line 145)
      * T-Sql executed is
 
 ```SQL
@@ -86,7 +86,7 @@ END
 FROM [LivingBeeing] AS [l]
 ```
 
-  * Select Abstract Member Over Tph Hierarchy After Restricting To Subtype (line 138)
+  * Select Abstract Member Over Tph Hierarchy After Restricting To Subtype (line 166)
      * T-Sql executed is
 
 ```SQL
@@ -99,7 +99,7 @@ FROM [LivingBeeing] AS [l]
 WHERE [l].[Discriminator] IN (N'Dog', N'HoneyBee')
 ```
 
-  * Select Abstract Member Over Tph Hierarchy With Generic Classes After Restricting To Subtype (line 156)
+  * Select Abstract Member Over Tph Hierarchy With Generic Classes After Restricting To Subtype (line 184)
      * T-Sql executed is
 
 ```SQL
@@ -116,7 +116,7 @@ FROM [LivingBeeing] AS [l]
 WHERE [l].[Discriminator] IN (N'AtlanticCod', N'WhiteShark')
 ```
 
-  * Select Abstract Member With Condition On It Over Tph Hierarchy With Generic Classes After Restricting To Subtype (line 181)
+  * Select Abstract Member With Condition On It Over Tph Hierarchy With Generic Classes After Restricting To Subtype (line 208)
      * T-Sql executed is
 
 ```SQL
@@ -141,7 +141,7 @@ END IS NOT NULL) AND (CASE
 END IS NOT NULL))
 ```
 
-  * Select Multiple Levels Of Abstract Members Over Tph Hierarchy (line 199)
+  * Select Multiple Levels Of Abstract Members Over Tph Hierarchy (line 230)
      * T-Sql executed is
 
 ```SQL
@@ -163,7 +163,7 @@ WHERE [l].[Discriminator] IN (N'Dog', N'HoneyBee')
 
 #### [Select Async](../TestGroup05BasicFeatures/Test02SelectAsync.cs):
 - Supported
-  * Async (line 39)
+  * Async (line 43)
      * T-Sql executed is
 
 ```SQL
@@ -171,7 +171,7 @@ SELECT [e].[EfParentId], [e].[EndDate], [e].[ParentBool], [e].[ParentDouble], [e
 FROM [EfParents] AS [e]
 ```
 
-  * Bool Equals Constant Async (line 75)
+  * Bool Equals Constant Async (line 83)
      * T-Sql executed is
 
 ```SQL
@@ -179,7 +179,7 @@ SELECT [e].[ParentBool]
 FROM [EfParents] AS [e]
 ```
 
-  * Decompile Upfront Bool Equals Constant Async (line 92)
+  * Decompile Upfront Bool Equals Constant Async (line 104)
      * T-Sql executed is
 
 ```SQL
@@ -187,7 +187,7 @@ SELECT [e].[ParentBool]
 FROM [EfParents] AS [e]
 ```
 
-  * Bool Equals Static Variable To Array Async (line 111)
+  * Bool Equals Static Variable To Array Async (line 127)
      * T-Sql executed is
 
 ```SQL
@@ -198,7 +198,7 @@ END
 FROM [EfParents] AS [e]
 ```
 
-  * Int Equals Constant (line 128)
+  * Int Equals Constant (line 148)
      * T-Sql executed is
 
 ```SQL
@@ -212,7 +212,7 @@ FROM [EfParents] AS [e]
 
 #### [Equals And Not Equals](../TestGroup05BasicFeatures/Test03EqualsAndNotEquals.cs):
 - Supported
-  * Int Equals Constant (line 32)
+  * Int Equals Constant (line 36)
      * T-Sql executed is
 
 ```SQL
@@ -223,7 +223,7 @@ END
 FROM [EfParents] AS [e]
 ```
 
-  * Int Equals Static Variable (line 50)
+  * Int Equals Static Variable (line 58)
      * T-Sql executed is
 
 ```SQL
@@ -234,7 +234,7 @@ END
 FROM [EfParents] AS [e]
 ```
 
-  * Int Equals String Length (line 67)
+  * Int Equals String Length (line 79)
      * T-Sql executed is
 
 ```SQL
@@ -245,7 +245,7 @@ END
 FROM [EfParents] AS [e]
 ```
 
-  * Int Not Equals String Length (line 84)
+  * Int Not Equals String Length (line 100)
      * T-Sql executed is
 
 ```SQL
@@ -259,7 +259,7 @@ FROM [EfParents] AS [e]
 
 #### [Nullable](../TestGroup05BasicFeatures/Test04Nullable.cs):
 - Supported
-  * Property Is Null (line 35)
+  * Property Is Null (line 39)
      * T-Sql executed is
 
 ```SQL
@@ -270,7 +270,7 @@ END
 FROM [EfParents] AS [e]
 ```
 
-  * Bool Equals Static Variable (line 54)
+  * Bool Equals Static Variable (line 62)
      * T-Sql executed is
 
 ```SQL
@@ -281,7 +281,7 @@ END
 FROM [EfParents] AS [e]
 ```
 
-  * Int Equals Constant (line 71)
+  * Int Equals Constant (line 83)
      * T-Sql executed is
 
 ```SQL
@@ -292,7 +292,7 @@ END
 FROM [EfParents] AS [e]
 ```
 
-  * Nullable Init (line 88)
+  * Nullable Init (line 104)
      * T-Sql executed is
 
 ```SQL
@@ -300,7 +300,7 @@ SELECT NULL
 FROM [EfParents] AS [e]
 ```
 
-  * Nullable Add (line 105)
+  * Nullable Add (line 125)
      * T-Sql executed is
 
 ```SQL
@@ -311,7 +311,7 @@ FROM [EfParents] AS [e]
 
 #### [Where](../TestGroup05BasicFeatures/Test05Where.cs):
 - Supported
-  * Where Bool Equals Constant (line 33)
+  * Where Bool Equals Constant (line 37)
      * T-Sql executed is
 
 ```SQL
@@ -320,7 +320,7 @@ FROM [EfParents] AS [e]
 WHERE [e].[ParentBool] = CAST(1 AS bit)
 ```
 
-  * Where Bool Equals Static Variable (line 52)
+  * Where Bool Equals Static Variable (line 60)
      * T-Sql executed is
 
 ```SQL
@@ -329,7 +329,7 @@ FROM [EfParents] AS [e]
 WHERE [e].[ParentBool] = @__staticBool_0
 ```
 
-  * Where Int Equals Constant (line 69)
+  * Where Int Equals Constant (line 81)
      * T-Sql executed is
 
 ```SQL
@@ -338,7 +338,7 @@ FROM [EfParents] AS [e]
 WHERE [e].[ParentInt] = 123
 ```
 
-  * Where Filters On Abstract Members Over Tph Hierarchy (line 86)
+  * Where Filters On Abstract Members Over Tph Hierarchy (line 102)
      * T-Sql executed is
 
 ```SQL
@@ -350,7 +350,7 @@ WHERE [l].[Discriminator] = N'Person'
 
 #### [Single](../TestGroup05BasicFeatures/Test10Single.cs):
 - Supported
-  * Single Int Equals Unique Value (line 40)
+  * Single Int Equals Unique Value (line 42)
      * T-Sql executed is
 
 ```SQL
@@ -365,7 +365,7 @@ WHERE [e].[ParentInt] = 987
 
 #### [Single Async](../TestGroup05BasicFeatures/Test11SingleAsync.cs):
 - Supported
-  * Single Int Equals Unique Value Async (line 46)
+  * Single Int Equals Unique Value Async (line 48)
      * T-Sql executed is
 
 ```SQL
@@ -382,7 +382,7 @@ WHERE [e].[ParentInt] = 987
 ### Group: Order Take
 #### [Order By](../TestGroup10OrderTake/Test01OrderBy.cs):
 - Supported
-  * Order By Children Count (line 33)
+  * Order By Children Count (line 37)
      * T-Sql executed is
 
 ```SQL
@@ -394,7 +394,7 @@ ORDER BY (
     WHERE [e].[EfParentId] = [e0].[EfParentId])
 ```
 
-  * Order By Children Count Then By String Length (line 51)
+  * Order By Children Count Then By String Length (line 59)
      * T-Sql executed is
 
 ```SQL
@@ -406,7 +406,7 @@ ORDER BY (
     WHERE [e].[EfParentId] = [e0].[EfParentId]), CAST(LEN([e].[ParentString]) AS int)
 ```
 
-  * Where Any Children Then Order By Children Count (line 69)
+  * Where Any Children Then Order By Children Count (line 81)
      * T-Sql executed is
 
 ```SQL
@@ -425,7 +425,7 @@ ORDER BY (
 
 #### [Skip Take](../TestGroup10OrderTake/Test02SkipTake.cs):
 - Supported
-  * Order By Children Count Then Take (line 33)
+  * Order By Children Count Then Take (line 37)
      * T-Sql executed is
 
 ```SQL
@@ -437,7 +437,7 @@ ORDER BY (
     WHERE [e].[EfParentId] = [e0].[EfParentId])
 ```
 
-  * Order By Children Count Then Skip And Take (line 51)
+  * Order By Children Count Then Skip And Take (line 59)
      * T-Sql executed is
 
 ```SQL
@@ -450,7 +450,7 @@ ORDER BY (
 OFFSET @__p_0 ROWS FETCH NEXT @__p_1 ROWS ONLY
 ```
 
-  * Where Any Children Then Order By Then Skip Take (line 69)
+  * Where Any Children Then Order By Then Skip Take (line 81)
      * T-Sql executed is
 
 ```SQL
@@ -472,7 +472,7 @@ OFFSET @__p_0 ROWS FETCH NEXT @__p_0 ROWS ONLY
 ### Group: Quantifier Operators
 #### [Any](../TestGroup12QuantifierOperators/Test01Any.cs):
 - Supported
-  * Any Children (line 32)
+  * Any Children (line 36)
      * T-Sql executed is
 
 ```SQL
@@ -486,7 +486,7 @@ END
 FROM [EfParents] AS [e]
 ```
 
-  * Any Children With Filter (line 49)
+  * Any Children With Filter (line 57)
      * T-Sql executed is
 
 ```SQL
@@ -503,7 +503,7 @@ FROM [EfParents] AS [e]
 
 #### [All](../TestGroup12QuantifierOperators/Test02All.cs):
 - Supported
-  * Singleton All Filter (line 32)
+  * Singleton All Filter (line 36)
      * T-Sql executed is
 
 ```SQL
@@ -516,7 +516,7 @@ SELECT CASE
 END
 ```
 
-  * All Filter On Children Int (line 49)
+  * All Filter On Children Int (line 57)
      * T-Sql executed is
 
 ```SQL
@@ -533,7 +533,7 @@ FROM [EfParents] AS [e]
 
 #### [Contains](../TestGroup12QuantifierOperators/Test03Contains.cs):
 - Supported
-  * String Contains Constant String With Filter (line 33)
+  * String Contains Constant String With Filter (line 37)
      * T-Sql executed is
 
 ```SQL
@@ -547,7 +547,7 @@ WHERE [e].[ParentString] LIKE N'%2%'
 ### Group: Aggregation
 #### [Count](../TestGroup15Aggregation/Test01Count.cs):
 - Supported
-  * Count Children (line 33)
+  * Count Children (line 37)
      * T-Sql executed is
 
 ```SQL
@@ -558,7 +558,7 @@ SELECT (
 FROM [EfParents] AS [e]
 ```
 
-  * Count Children With Filter (line 51)
+  * Count Children With Filter (line 59)
      * T-Sql executed is
 
 ```SQL
@@ -569,7 +569,7 @@ SELECT (
 FROM [EfParents] AS [e]
 ```
 
-  * Count Children With Filter By Closure (line 69)
+  * Count Children With Filter By Closure (line 81)
      * T-Sql executed is
 
 ```SQL
@@ -580,7 +580,7 @@ SELECT (
 FROM [EfParents] AS [e]
 ```
 
-  * Count Children With Filter By External Closure (line 88)
+  * Count Children With Filter By External Closure (line 104)
      * T-Sql executed is
 
 ```SQL
@@ -591,7 +591,7 @@ SELECT (
 FROM [EfParents] AS [e]
 ```
 
-  * Count Children With Filter By External Closure2 (line 108)
+  * Count Children With Filter By External Closure2 (line 128)
      * T-Sql executed is
 
 ```SQL
@@ -602,7 +602,7 @@ SELECT (
 FROM [EfParents] AS [e]
 ```
 
-  * Singleton Count Children With Filter (line 126)
+  * Singleton Count Children With Filter (line 150)
      * T-Sql executed is
 
 ```SQL
@@ -617,7 +617,7 @@ WHERE (
 
 #### [Sum](../TestGroup15Aggregation/Test02Sum.cs):
 - Supported
-  * Sum Count In Children Where Children Can Be None (line 53)
+  * Sum Count In Children Where Children Can Be None (line 61)
      * T-Sql executed is
 
 ```SQL
@@ -631,7 +631,7 @@ FROM [EfParents] AS [e]
 
 #### [Count Async](../TestGroup15Aggregation/Test03CountAsync.cs):
 - Supported
-  * Count Children Async (line 40)
+  * Count Children Async (line 44)
      * T-Sql executed is
 
 ```SQL
@@ -642,7 +642,7 @@ SELECT (
 FROM [EfParents] AS [e]
 ```
 
-  * Count Children With Filter Async (line 58)
+  * Count Children With Filter Async (line 66)
      * T-Sql executed is
 
 ```SQL
@@ -653,7 +653,7 @@ SELECT (
 FROM [EfParents] AS [e]
 ```
 
-  * Count Children With Filter By Closure Async (line 76)
+  * Count Children With Filter By Closure Async (line 88)
      * T-Sql executed is
 
 ```SQL
@@ -664,7 +664,7 @@ SELECT (
 FROM [EfParents] AS [e]
 ```
 
-  * Count Children With Filter By External Closure Async (line 95)
+  * Count Children With Filter By External Closure Async (line 111)
      * T-Sql executed is
 
 ```SQL
@@ -675,7 +675,7 @@ SELECT (
 FROM [EfParents] AS [e]
 ```
 
-  * Count Children With Filter By External Closure2 Async (line 115)
+  * Count Children With Filter By External Closure2 Async (line 135)
      * T-Sql executed is
 
 ```SQL
@@ -686,7 +686,7 @@ SELECT (
 FROM [EfParents] AS [e]
 ```
 
-  * Singleton Count Children With Filter Async (line 133)
+  * Singleton Count Children With Filter Async (line 157)
      * T-Sql executed is
 
 ```SQL
@@ -703,7 +703,7 @@ WHERE (
 ### Group: Types
 #### [Strings](../TestGroup50Types/Test01Strings.cs):
 - Supported
-  * Concatenate Person Not Handle Null (line 32)
+  * Concatenate Person Not Handle Null (line 36)
      * T-Sql executed is
 
 ```SQL
@@ -711,7 +711,7 @@ SELECT ((([e].[FirstName] + N' ') + COALESCE([e].[MiddleName], N'')) + N' ') + [
 FROM [EfPersons] AS [e]
 ```
 
-  * Concatenate Person Handle Null (line 49)
+  * Concatenate Person Handle Null (line 57)
      * T-Sql executed is
 
 ```SQL
@@ -722,7 +722,7 @@ END) + COALESCE([e].[MiddleName], N'')) + N' ') + [e].[LastName]
 FROM [EfPersons] AS [e]
 ```
 
-  * Concatenate Person Handle Name Order (line 68)
+  * Concatenate Person Handle Name Order (line 80)
      * T-Sql executed is
 
 ```SQL
@@ -739,7 +739,7 @@ END
 FROM [EfPersons] AS [e]
 ```
 
-  * Select Generic Method Person Handle (line 85)
+  * Select Generic Method Person Handle (line 101)
      * T-Sql executed is
 
 ```SQL
@@ -750,7 +750,7 @@ END) + COALESCE([e].[MiddleName], N'')) + N' ') + [e].[LastName]
 FROM [EfPersons] AS [e]
 ```
 
-  * Filter Generic Method Person Handle (line 99)
+  * Filter Generic Method Person Handle (line 119)
      * T-Sql executed is
 
 ```SQL
@@ -761,7 +761,7 @@ FROM [EfPersons] AS [e]
 
 #### [DateTime](../TestGroup50Types/Test05DateTime.cs):
 - Supported
-  * DateTime Where Compare With Static Variable (line 35)
+  * DateTime Where Compare With Static Variable (line 39)
      * T-Sql executed is
 
 ```SQL
@@ -775,7 +775,7 @@ WHERE [e].[StartDate] > '2000-01-01T00:00:00.0000000'
 ### Group: Additional Features
 #### [Nested Expressions](../TestGroup90AdditionalFeatures/Test01NestedExpressions.cs):
 - Supported
-  * Subquery As Context Extension Method (line 68)
+  * Subquery As Context Extension Method (line 72)
      * T-Sql executed is
 
 ```SQL
