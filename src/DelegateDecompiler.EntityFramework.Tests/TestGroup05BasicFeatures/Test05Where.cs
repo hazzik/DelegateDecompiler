@@ -27,7 +27,11 @@ namespace DelegateDecompiler.EntityFramework.Tests.TestGroup05BasicFeatures
 
                 //ATTEMPT
                 env.AboutToUseDelegateDecompiler();
-                var dd = env.Db.EfParents.Where(x => x.BoolEqualsConstant).Select(x => x.EfParentId).Decompile().ToList();
+                var dd = env.Db.EfParents.Where(x => x.BoolEqualsConstant).Select(x => x.EfParentId)
+#if !EF_CORE7
+                    .Decompile()
+#endif
+                    .ToList();
 
                 //VERIFY
                 env.CompareAndLogList(linq, dd);
@@ -46,7 +50,11 @@ namespace DelegateDecompiler.EntityFramework.Tests.TestGroup05BasicFeatures
 
                 //ATTEMPT
                 env.AboutToUseDelegateDecompiler();
-                var dd = env.Db.EfParents.Where(x => x.BoolEqualsStaticVariable).Select(x => x.EfParentId).Decompile().ToList();
+                var dd = env.Db.EfParents.Where(x => x.BoolEqualsStaticVariable).Select(x => x.EfParentId)
+#if !EF_CORE7
+                    .Decompile()
+#endif
+                    .ToList();
 
                 //VERIFY
                 env.CompareAndLogList(linq, dd);
@@ -63,7 +71,11 @@ namespace DelegateDecompiler.EntityFramework.Tests.TestGroup05BasicFeatures
 
                 //ATTEMPT
                 env.AboutToUseDelegateDecompiler();
-                var dd = env.Db.EfParents.Where(x => x.IntEqualsConstant).Select(x => x.EfParentId).Decompile().ToList();
+                var dd = env.Db.EfParents.Where(x => x.IntEqualsConstant).Select(x => x.EfParentId)
+#if !EF_CORE7
+                    .Decompile()
+#endif
+                    .ToList();
 
                 //VERIFY
                 env.CompareAndLogList(linq, dd);
@@ -80,7 +92,11 @@ namespace DelegateDecompiler.EntityFramework.Tests.TestGroup05BasicFeatures
 
                 //ATTEMPT
                 env.AboutToUseDelegateDecompiler();
-                var dd = env.Db.LivingBeeing.Where(x => x.Species == "Human").Select(x => x.Id).Decompile().ToList();
+                var dd = env.Db.LivingBeeing.Where(x => x.Species == "Human").Select(x => x.Id)
+#if !EF_CORE7
+                    .Decompile()
+#endif
+                    .ToList();
 
                 //VERIFY
                 env.CompareAndLogList(linq, dd);

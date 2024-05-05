@@ -32,7 +32,9 @@ namespace DelegateDecompiler.EntityFramework.Tests.TestGroup05BasicFeatures
                 env.AboutToUseDelegateDecompiler();
                 var dd =
                     env.Db.EfParents.Select(x => new { x.EfParentId, x.IntEqualsUniqueValue })
+#if !EF_CORE7
                         .Decompile()
+#endif
                         .Single(x => x.IntEqualsUniqueValue)
                         .EfParentId;
 

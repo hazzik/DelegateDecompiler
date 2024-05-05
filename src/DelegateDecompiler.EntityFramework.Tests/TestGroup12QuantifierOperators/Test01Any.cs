@@ -26,7 +26,11 @@ namespace DelegateDecompiler.EntityFramework.Tests.TestGroup12QuantifierOperator
 
                 //ATTEMPT
                 env.AboutToUseDelegateDecompiler();
-                var dd = env.Db.EfParents.Select(x => x.AnyChildren).Decompile().ToList();
+                var dd = env.Db.EfParents.Select(x => x.AnyChildren)
+#if !EF_CORE7
+                    .Decompile()
+#endif
+                    .ToList();
 
                 //VERIFY
                 env.CompareAndLogList(linq, dd);
@@ -43,7 +47,11 @@ namespace DelegateDecompiler.EntityFramework.Tests.TestGroup12QuantifierOperator
 
                 //ATTEMPT
                 env.AboutToUseDelegateDecompiler();
-                var dd = env.Db.EfParents.Select(x => x.AnyChildrenWithFilter).Decompile().ToList();
+                var dd = env.Db.EfParents.Select(x => x.AnyChildrenWithFilter)
+#if !EF_CORE7
+                    .Decompile()
+#endif
+                    .ToList();
 
                 //VERIFY
                 env.CompareAndLogList(linq, dd);

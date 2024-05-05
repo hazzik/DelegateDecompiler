@@ -28,7 +28,11 @@ namespace DelegateDecompiler.EntityFramework.Tests.TestGroup05BasicFeatures
 
                 //ATTEMPT
                 env.AboutToUseDelegateDecompiler();
-                var dd = env.Db.EfParents.Select(x => x.BoolEqualsConstant).Decompile().ToList();
+                var dd = env.Db.EfParents.Select(x => x.BoolEqualsConstant)
+#if !EF_CORE7
+                    .Decompile()
+#endif
+                    .ToList();
 
                 //VERIFY
                 env.CompareAndLogList(linq, dd);
@@ -47,7 +51,11 @@ namespace DelegateDecompiler.EntityFramework.Tests.TestGroup05BasicFeatures
 
                 //ATTEMPT
                 env.AboutToUseDelegateDecompiler();
-                var dd = env.Db.EfParents.Select(x => x.BoolEqualsStaticVariable).Decompile().ToList();
+                var dd = env.Db.EfParents.Select(x => x.BoolEqualsStaticVariable)
+#if !EF_CORE7
+                    .Decompile()
+#endif
+                    .ToList();
 
                 //VERIFY
                 env.CompareAndLogList(linq, dd);
@@ -64,7 +72,11 @@ namespace DelegateDecompiler.EntityFramework.Tests.TestGroup05BasicFeatures
 
                 //ATTEMPT
                 env.AboutToUseDelegateDecompiler();
-                var dd = env.Db.EfParents.Select(x => x.IntEqualsConstant).Decompile().ToList();
+                var dd = env.Db.EfParents.Select(x => x.IntEqualsConstant)
+#if !EF_CORE7
+                    .Decompile()
+#endif
+                    .ToList();
 
                 //VERIFY
                 env.CompareAndLogList(linq, dd);
@@ -81,7 +93,11 @@ namespace DelegateDecompiler.EntityFramework.Tests.TestGroup05BasicFeatures
 
                 //ATTEMPT
                 env.AboutToUseDelegateDecompiler();
-                var dd = env.Db.EfPersons.Select(x => x.FullNameNoAttibute).Decompile().ToList();
+                var dd = env.Db.EfPersons.Select(x => x.FullNameNoAttibute)
+#if !EF_CORE7
+                    .Decompile()
+#endif
+                    .ToList();
 
                 //VERIFY
                 env.CompareAndLogList(linq, dd);
@@ -98,7 +114,11 @@ namespace DelegateDecompiler.EntityFramework.Tests.TestGroup05BasicFeatures
 
                 //ATTEMPT
                 env.AboutToUseDelegateDecompiler();
-                var dd = env.Db.EfPersons.Select(x => x.GetFullNameNoAttibute()).Decompile().ToList();
+                var dd = env.Db.EfPersons.Select(x => x.GetFullNameNoAttibute())
+#if !EF_CORE7
+                    .Decompile()
+#endif
+                    .ToList();
 
                 //VERIFY
                 env.CompareAndLogList(linq, dd);
@@ -115,7 +135,11 @@ namespace DelegateDecompiler.EntityFramework.Tests.TestGroup05BasicFeatures
 
                 //ATTEMPT
                 env.AboutToUseDelegateDecompiler();
-                var dd = env.Db.LivingBeeing.Select(p => p.Species).Decompile().ToList();
+                var dd = env.Db.LivingBeeing.Select(p => p.Species)
+#if !EF_CORE7
+                    .Decompile()
+#endif
+                    .ToList();
 
                 //VERIFY
                 env.CompareAndLogList(linq, dd);
@@ -132,7 +156,11 @@ namespace DelegateDecompiler.EntityFramework.Tests.TestGroup05BasicFeatures
 
                 //ATTEMPT
                 env.AboutToUseDelegateDecompiler();
-                var dd = env.Db.LivingBeeing.OfType<Animal>().Select(p => p.Species).Decompile().ToList();
+                var dd = env.Db.LivingBeeing.OfType<Animal>().Select(p => p.Species)
+#if !EF_CORE7
+                    .Decompile()
+#endif
+                    .ToList();
 
                 //VERIFY
                 env.CompareAndLogList(linq, dd);
@@ -150,7 +178,11 @@ namespace DelegateDecompiler.EntityFramework.Tests.TestGroup05BasicFeatures
 
                 //ATTEMPT
                 env.AboutToUseDelegateDecompiler();
-                var dd = env.Db.LivingBeeing.OfType<Fish>().Select(p => new { p.Species, p.Group }).Decompile().ToList();
+                var dd = env.Db.LivingBeeing.OfType<Fish>().Select(p => new { p.Species, p.Group })
+#if !EF_CORE7
+                    .Decompile()
+#endif
+                    .ToList();
 
                 //VERIFY
                 env.CompareAndLogList(linq, dd);
@@ -173,7 +205,10 @@ namespace DelegateDecompiler.EntityFramework.Tests.TestGroup05BasicFeatures
                 var dd1 = env.Db.LivingBeeing.OfType<Fish>()
                     .Select(p => new { p.Species, p.Group })
                     .Where(p => p.Species != null && p.Group != null)
-                    .Decompile();
+#if !EF_CORE7
+                    .Decompile()
+#endif
+                    ;
 
                 var dd = dd1.ToList();
 
@@ -193,7 +228,11 @@ namespace DelegateDecompiler.EntityFramework.Tests.TestGroup05BasicFeatures
 
                 //ATTEMPT
                 env.AboutToUseDelegateDecompiler();
-                var dd = env.Db.LivingBeeing.OfType<Animal>().Select(p => string.Concat(p.Species, " : ", p.IsPet)).Decompile().ToList();
+                var dd = env.Db.LivingBeeing.OfType<Animal>().Select(p => string.Concat(p.Species, " : ", p.IsPet))
+#if !EF_CORE7
+                    .Decompile()
+#endif
+                    .ToList();
 
                 //VERIFY
                 env.CompareAndLogList(linq, dd);

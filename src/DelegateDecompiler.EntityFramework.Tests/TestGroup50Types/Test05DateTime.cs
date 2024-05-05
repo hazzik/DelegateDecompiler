@@ -29,7 +29,11 @@ namespace DelegateDecompiler.EntityFramework.Tests.TestGroup50Types
 
                 //ATTEMPT
                 env.AboutToUseDelegateDecompiler();
-                var dd = env.Db.EfParents.Where(x => x.StartDateGreaterThanStaticVar).Select(x => x.StartDate).Decompile().ToList();
+                var dd = env.Db.EfParents.Where(x => x.StartDateGreaterThanStaticVar).Select(x => x.StartDate)
+#if !EF_CORE7
+                    .Decompile()
+#endif
+                    .ToList();
 
                 //VERIFY
                 env.CompareAndLogList(linq, dd);

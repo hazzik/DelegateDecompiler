@@ -26,7 +26,11 @@ namespace DelegateDecompiler.EntityFramework.Tests.TestGroup50Types
 
                 //ATTEMPT
                 env.AboutToUseDelegateDecompiler();
-                var dd = env.Db.EfPersons.Select(x => x.FullNameNoNull).Decompile().ToList();
+                var dd = env.Db.EfPersons.Select(x => x.FullNameNoNull)
+#if !EF_CORE7
+                    .Decompile()
+#endif
+                    .ToList();
 
                 //VERIFY
                 env.CompareAndLogList(linq, dd);
@@ -43,7 +47,11 @@ namespace DelegateDecompiler.EntityFramework.Tests.TestGroup50Types
 
                 //ATTEMPT
                 env.AboutToUseDelegateDecompiler();
-                var dd = env.Db.EfPersons.Select(x => x.FullNameHandleNull).Decompile().ToList();
+                var dd = env.Db.EfPersons.Select(x => x.FullNameHandleNull)
+#if !EF_CORE7
+                    .Decompile()
+#endif
+                    .ToList();
 
                 //VERIFY
                 env.CompareAndLogList(linq, dd);
@@ -62,7 +70,11 @@ namespace DelegateDecompiler.EntityFramework.Tests.TestGroup50Types
 
                 //ATTEMPT
                 env.AboutToUseDelegateDecompiler();
-                var dd = env.Db.EfPersons.Select(x => x.UseOrderToFormatNameStyle).Decompile().ToList();
+                var dd = env.Db.EfPersons.Select(x => x.UseOrderToFormatNameStyle)
+#if !EF_CORE7
+                    .Decompile()
+#endif
+                    .ToList();
 
                 //VERIFY
                 env.CompareAndLogList(linq, dd);
@@ -79,7 +91,11 @@ namespace DelegateDecompiler.EntityFramework.Tests.TestGroup50Types
 
                 //ATTEMPT
                 env.AboutToUseDelegateDecompiler();
-                var dd = GetGenericPersonHandle(env.Db.EfPersons).Decompile().ToList();
+                var dd = GetGenericPersonHandle(env.Db.EfPersons)
+#if !EF_CORE7
+                    .Decompile()
+#endif
+                    .ToList();
 
                 //VERIFY
                 env.CompareAndLogList(linq, dd);
@@ -94,7 +110,11 @@ namespace DelegateDecompiler.EntityFramework.Tests.TestGroup50Types
                 var linq = env.Db.EfPersons.Where(x => x.FirstName + (x.MiddleName == null ? "" : " ") + x.MiddleName + " " + x.LastName != null).ToList();
 
                 env.AboutToUseDelegateDecompiler();
-                var dd = FilterGenericPersonHandle(env.Db.EfPersons).Decompile().ToList();
+                var dd = FilterGenericPersonHandle(env.Db.EfPersons)
+#if !EF_CORE7
+                    .Decompile()
+#endif
+                    .ToList();
 
                 env.CompareAndLogList(linq, dd);
             }

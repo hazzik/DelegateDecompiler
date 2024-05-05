@@ -27,7 +27,11 @@ namespace DelegateDecompiler.EntityFramework.Tests.TestGroup15Aggregation
 
                 //ATTEMPT
                 env.AboutToUseDelegateDecompiler();
-                var dd = env.Db.EfParents.Select(x => x.CountChildren).Decompile().ToList();
+                var dd = env.Db.EfParents.Select(x => x.CountChildren)
+#if !EF_CORE7
+                    .Decompile()
+#endif
+                    .ToList();
 
                 //VERIFY
                 env.CompareAndLogList(linq, dd);
@@ -45,7 +49,11 @@ namespace DelegateDecompiler.EntityFramework.Tests.TestGroup15Aggregation
 
                 //ATTEMPT
                 env.AboutToUseDelegateDecompiler();
-                var dd = env.Db.EfParents.Select(x => x.CountChildrenWithFilter).Decompile().ToList();
+                var dd = env.Db.EfParents.Select(x => x.CountChildrenWithFilter)
+#if !EF_CORE7
+                    .Decompile()
+#endif
+                    .ToList();
 
                 //VERIFY
                 env.CompareAndLogList(linq, dd);
@@ -63,7 +71,11 @@ namespace DelegateDecompiler.EntityFramework.Tests.TestGroup15Aggregation
 
                 //ATTEMPT
                 env.AboutToUseDelegateDecompiler();
-                var dd = env.Db.EfParents.Select(x => x.CountChildrenWithFilterByClosure).Decompile().ToList();
+                var dd = env.Db.EfParents.Select(x => x.CountChildrenWithFilterByClosure)
+#if !EF_CORE7
+                    .Decompile()
+#endif
+                    .ToList();
 
                 //VERIFY
                 env.CompareAndLogList(linq, dd);
@@ -82,7 +94,11 @@ namespace DelegateDecompiler.EntityFramework.Tests.TestGroup15Aggregation
 
                 //ATTEMPT
                 env.AboutToUseDelegateDecompiler();
-                var dd = env.Db.EfParents.Select(x => x.GetCountChildrenWithFilterByExternalClosure(i)).Decompile().ToList();
+                var dd = env.Db.EfParents.Select(x => x.GetCountChildrenWithFilterByExternalClosure(i))
+#if !EF_CORE7
+                    .Decompile()
+#endif
+                    .ToList();
 
                 //VERIFY
                 env.CompareAndLogList(linq, dd);
@@ -102,7 +118,11 @@ namespace DelegateDecompiler.EntityFramework.Tests.TestGroup15Aggregation
 
                 //ATTEMPT
                 env.AboutToUseDelegateDecompiler();
-                var dd = env.Db.EfParents.Select(x => x.GetCountChildrenWithFilterByExternalClosure(i, j)).Decompile().ToList();
+                var dd = env.Db.EfParents.Select(x => x.GetCountChildrenWithFilterByExternalClosure(i, j))
+#if !EF_CORE7
+                    .Decompile()
+#endif
+                    .ToList();
 
                 //VERIFY
                 env.CompareAndLogList(linq, dd);
@@ -120,7 +140,11 @@ namespace DelegateDecompiler.EntityFramework.Tests.TestGroup15Aggregation
 
                 //ATTEMPT
                 env.AboutToUseDelegateDecompiler();
-                var dd = env.Db.EfParents.Decompile().Count(x => x.CountChildren == 2);
+                var dd = env.Db.EfParents
+#if !EF_CORE7
+                    .Decompile()
+#endif
+                    .Count(x => x.CountChildren == 2);
 
                 //VERIFY
                 env.CompareAndLogSingleton(linq, dd);
