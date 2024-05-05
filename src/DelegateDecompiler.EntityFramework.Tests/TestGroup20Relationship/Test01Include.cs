@@ -4,8 +4,11 @@ using System.Linq;
 using DelegateDecompiler.EntityFramework.Tests.Helpers;
 using NUnit.Framework;
 using DelegateDecompiler.EntityFramework.Tests.EfItems;
+#if EF_CORE
+using Microsoft.EntityFrameworkCore;
+#else 
 using System.Data.Entity;
-using System.Collections.Generic;
+#endif
 
 namespace DelegateDecompiler.EntityFramework.Tests.TestGroup05BasicFeatures
 {
