@@ -72,6 +72,22 @@ The [DelegateDecompiler.EntityFramework](https://nuget.org/packages/DelegateDeco
 ### Async Support with [EntityFramework Core 5.0 and later](https://www.nuget.org/packages/DelegateDecompiler.EntityFrameworkCore5)
 
 The [DelegateDecompiler.EntityFrameworkCore5](https://nuget.org/packages/DelegateDecompiler.EntityFrameworkCore5) package provides `DecompileAsync` extension method which adds support for EF's Async operations.
+
+#### Automatic decompilation
+
+You can configure DelegateDecompiler to automatically decompile all EF Core queries:
+
+```csharp
+public class YourDbContext : DbContext
+{
+    protected override void OnConfiguring(DbContextOptionsBuilder options) {
+        options.AddDelegateDecompiler();
+        // Other configuration
+    }
+}
+```
+
+With this approach you would not need to call `Decompile` or `DecompileAsync` methods on queries.
  
 # Installation
 

@@ -2,6 +2,7 @@
   <PropertyGroup>
     <TargetFrameworks>net45;net8.0</TargetFrameworks>
     <Copyright>Copyright © Dave Glick 2014, Jon Smith 2014, Alexander Zaytsev 2014 - 2024</Copyright>
+    <DefineConstants>$(DefineConstants);NO_AUTO_DECOMPILE</DefineConstants>
   </PropertyGroup>
 
   <ItemGroup>
