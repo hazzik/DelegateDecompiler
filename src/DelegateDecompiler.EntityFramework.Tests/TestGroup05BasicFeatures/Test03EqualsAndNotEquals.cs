@@ -27,7 +27,7 @@ namespace DelegateDecompiler.EntityFramework.Tests.TestGroup05BasicFeatures
                 //ATTEMPT
                 env.AboutToUseDelegateDecompiler();
                 var dd = env.Db.EfParents.Select(x => x.IntEqualsConstant)
-#if !EF_CORE
+#if NO_AUTO_DECOMPILE
                     .Decompile()
 #endif
                     .ToList();
@@ -49,7 +49,7 @@ namespace DelegateDecompiler.EntityFramework.Tests.TestGroup05BasicFeatures
                 //ATTEMPT
                 env.AboutToUseDelegateDecompiler();
                 var dd = env.Db.EfParents.Select(x => x.IntEqualsStaticVariable)
-#if !EF_CORE
+#if NO_AUTO_DECOMPILE
                     .Decompile()
 #endif
                     .ToList();
@@ -70,7 +70,7 @@ namespace DelegateDecompiler.EntityFramework.Tests.TestGroup05BasicFeatures
                 //ATTEMPT
                 env.AboutToUseDelegateDecompiler();
                 var dd = env.Db.EfParents.Select(x => x.IntEqualsStringLength)
-#if !EF_CORE
+#if NO_AUTO_DECOMPILE
                     .Decompile()
 #endif
                     .ToList();
@@ -91,7 +91,7 @@ namespace DelegateDecompiler.EntityFramework.Tests.TestGroup05BasicFeatures
                 //ATTEMPT
                 env.AboutToUseDelegateDecompiler();
                 var dd = env.Db.EfParents.Select(x => x.IntNotEqualsStringLength)
-#if !EF_CORE
+#if NO_AUTO_DECOMPILE
                     .Decompile()
 #endif
                     .ToList();

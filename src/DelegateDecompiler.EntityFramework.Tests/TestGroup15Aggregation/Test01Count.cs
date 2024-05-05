@@ -28,7 +28,7 @@ namespace DelegateDecompiler.EntityFramework.Tests.TestGroup15Aggregation
                 //ATTEMPT
                 env.AboutToUseDelegateDecompiler();
                 var dd = env.Db.EfParents.Select(x => x.CountChildren)
-#if !EF_CORE
+#if NO_AUTO_DECOMPILE
                     .Decompile()
 #endif
                     .ToList();
@@ -50,7 +50,7 @@ namespace DelegateDecompiler.EntityFramework.Tests.TestGroup15Aggregation
                 //ATTEMPT
                 env.AboutToUseDelegateDecompiler();
                 var dd = env.Db.EfParents.Select(x => x.CountChildrenWithFilter)
-#if !EF_CORE
+#if NO_AUTO_DECOMPILE
                     .Decompile()
 #endif
                     .ToList();
@@ -72,7 +72,7 @@ namespace DelegateDecompiler.EntityFramework.Tests.TestGroup15Aggregation
                 //ATTEMPT
                 env.AboutToUseDelegateDecompiler();
                 var dd = env.Db.EfParents.Select(x => x.CountChildrenWithFilterByClosure)
-#if !EF_CORE
+#if NO_AUTO_DECOMPILE
                     .Decompile()
 #endif
                     .ToList();
@@ -95,7 +95,7 @@ namespace DelegateDecompiler.EntityFramework.Tests.TestGroup15Aggregation
                 //ATTEMPT
                 env.AboutToUseDelegateDecompiler();
                 var dd = env.Db.EfParents.Select(x => x.GetCountChildrenWithFilterByExternalClosure(i))
-#if !EF_CORE
+#if NO_AUTO_DECOMPILE
                     .Decompile()
 #endif
                     .ToList();
@@ -119,7 +119,7 @@ namespace DelegateDecompiler.EntityFramework.Tests.TestGroup15Aggregation
                 //ATTEMPT
                 env.AboutToUseDelegateDecompiler();
                 var dd = env.Db.EfParents.Select(x => x.GetCountChildrenWithFilterByExternalClosure(i, j))
-#if !EF_CORE
+#if NO_AUTO_DECOMPILE
                     .Decompile()
 #endif
                     .ToList();
@@ -141,7 +141,7 @@ namespace DelegateDecompiler.EntityFramework.Tests.TestGroup15Aggregation
                 //ATTEMPT
                 env.AboutToUseDelegateDecompiler();
                 var dd = env.Db.EfParents
-#if !EF_CORE
+#if NO_AUTO_DECOMPILE
                     .Decompile()
 #endif
                     .Count(x => x.CountChildren == 2);

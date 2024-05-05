@@ -28,7 +28,7 @@ namespace DelegateDecompiler.EntityFramework.Tests.TestGroup12QuantifierOperator
                 //ATTEMPT
                 env.AboutToUseDelegateDecompiler();
                 var dd = env.Db.EfParents.Where(x => x.StringContainsConstantString).Select(x => x.ParentString)
-#if !EF_CORE
+#if NO_AUTO_DECOMPILE
                     .Decompile()
 #endif
                     .ToList();

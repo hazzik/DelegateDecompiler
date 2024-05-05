@@ -35,7 +35,7 @@ namespace DelegateDecompiler.EntityFramework.Tests.TestGroup15Aggregation
                 //ATTEMPT
                 env.AboutToUseDelegateDecompiler();
                 var dd = await env.Db.EfParents.Select(x => x.CountChildren)
-#if !EF_CORE
+#if NO_AUTO_DECOMPILE
                     .DecompileAsync()
 #endif
                     .ToListAsync();
@@ -57,7 +57,7 @@ namespace DelegateDecompiler.EntityFramework.Tests.TestGroup15Aggregation
                 //ATTEMPT
                 env.AboutToUseDelegateDecompiler();
                 var dd = await env.Db.EfParents.Select(x => x.CountChildrenWithFilter)
-#if !EF_CORE
+#if NO_AUTO_DECOMPILE
                     .DecompileAsync()
 #endif
                     .ToListAsync();
@@ -79,7 +79,7 @@ namespace DelegateDecompiler.EntityFramework.Tests.TestGroup15Aggregation
                 //ATTEMPT
                 env.AboutToUseDelegateDecompiler();
                 var dd = await env.Db.EfParents.Select(x => x.CountChildrenWithFilterByClosure)
-#if !EF_CORE
+#if NO_AUTO_DECOMPILE
                     .DecompileAsync()
 #endif
                     .ToListAsync();
@@ -102,7 +102,7 @@ namespace DelegateDecompiler.EntityFramework.Tests.TestGroup15Aggregation
                 //ATTEMPT
                 env.AboutToUseDelegateDecompiler();
                 var dd = await env.Db.EfParents.Select(x => x.GetCountChildrenWithFilterByExternalClosure(i))
-#if !EF_CORE
+#if NO_AUTO_DECOMPILE
                     .DecompileAsync()
 #endif
                     .ToListAsync();
@@ -126,7 +126,7 @@ namespace DelegateDecompiler.EntityFramework.Tests.TestGroup15Aggregation
                 //ATTEMPT
                 env.AboutToUseDelegateDecompiler();
                 var dd = await env.Db.EfParents.Select(x => x.GetCountChildrenWithFilterByExternalClosure(i, j))
-#if !EF_CORE
+#if NO_AUTO_DECOMPILE
                     .DecompileAsync()
 #endif
                     .ToListAsync();
@@ -148,7 +148,7 @@ namespace DelegateDecompiler.EntityFramework.Tests.TestGroup15Aggregation
                 //ATTEMPT
                 env.AboutToUseDelegateDecompiler();
                 var dd = await env.Db.EfParents
-#if !EF_CORE
+#if NO_AUTO_DECOMPILE
                     .DecompileAsync()
 #endif
                     .CountAsync(x => x.CountChildren == 2);

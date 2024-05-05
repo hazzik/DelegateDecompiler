@@ -21,8 +21,7 @@ namespace DelegateDecompiler.EntityFramework.Tests.EfItems
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             var connectionString = GetConnectionString();
-            optionsBuilder.AddDelegateDecompiler().UseSqlServer(connectionString);
-#if EF_CORE5
+            optionsBuilder.UseSqlServer(connectionString);
             optionsBuilder.LogTo((id, _) => id == RelationalEventId.CommandExecuted, d =>
             {
                 if (Log != null && d is CommandExecutedEventData e)
@@ -30,6 +29,8 @@ namespace DelegateDecompiler.EntityFramework.Tests.EfItems
                     Log(e.Command.CommandText);
                 }
             });
+#if !NO_AUTO_DECOMPILE
+            optionsBuilder.AddDelegateDecompiler();
 #endif
         }
 #else

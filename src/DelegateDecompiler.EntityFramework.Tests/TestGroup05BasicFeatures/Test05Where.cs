@@ -28,7 +28,7 @@ namespace DelegateDecompiler.EntityFramework.Tests.TestGroup05BasicFeatures
                 //ATTEMPT
                 env.AboutToUseDelegateDecompiler();
                 var dd = env.Db.EfParents.Where(x => x.BoolEqualsConstant).Select(x => x.EfParentId)
-#if !EF_CORE
+#if NO_AUTO_DECOMPILE
                     .Decompile()
 #endif
                     .ToList();
@@ -51,7 +51,7 @@ namespace DelegateDecompiler.EntityFramework.Tests.TestGroup05BasicFeatures
                 //ATTEMPT
                 env.AboutToUseDelegateDecompiler();
                 var dd = env.Db.EfParents.Where(x => x.BoolEqualsStaticVariable).Select(x => x.EfParentId)
-#if !EF_CORE
+#if NO_AUTO_DECOMPILE
                     .Decompile()
 #endif
                     .ToList();
@@ -72,7 +72,7 @@ namespace DelegateDecompiler.EntityFramework.Tests.TestGroup05BasicFeatures
                 //ATTEMPT
                 env.AboutToUseDelegateDecompiler();
                 var dd = env.Db.EfParents.Where(x => x.IntEqualsConstant).Select(x => x.EfParentId)
-#if !EF_CORE
+#if NO_AUTO_DECOMPILE
                     .Decompile()
 #endif
                     .ToList();
@@ -93,7 +93,7 @@ namespace DelegateDecompiler.EntityFramework.Tests.TestGroup05BasicFeatures
                 //ATTEMPT
                 env.AboutToUseDelegateDecompiler();
                 var dd = env.Db.LivingBeeing.Where(x => x.Species == "Human").Select(x => x.Id)
-#if !EF_CORE
+#if NO_AUTO_DECOMPILE
                     .Decompile()
 #endif
                     .ToList();
@@ -115,7 +115,7 @@ namespace DelegateDecompiler.EntityFramework.Tests.TestGroup05BasicFeatures
                 //ATTEMPT
                 env.AboutToUseDelegateDecompiler();
                 var dd = env.Db.LivingBeeing.OfType<Animal>().Where(p => string.Concat(p.Species, " : ", p.IsPet) == "Apis mellifera : False").Select(x => x.Id)
-#if !EF_CORE
+#if NO_AUTO_DECOMPILE
                     .Decompile()
 #endif
                     .ToList();

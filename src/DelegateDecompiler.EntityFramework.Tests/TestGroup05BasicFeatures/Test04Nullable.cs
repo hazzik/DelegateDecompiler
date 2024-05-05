@@ -30,7 +30,7 @@ namespace DelegateDecompiler.EntityFramework.Tests.TestGroup05BasicFeatures
                 //ATTEMPT
                 env.AboutToUseDelegateDecompiler();
                 var dd = env.Db.EfParents.Select(x => x.ParentNullableIntIsNull)
-#if !EF_CORE
+#if NO_AUTO_DECOMPILE
                     .Decompile()
 #endif
                     .ToList();
@@ -53,7 +53,7 @@ namespace DelegateDecompiler.EntityFramework.Tests.TestGroup05BasicFeatures
                 //ATTEMPT
                 env.AboutToUseDelegateDecompiler();
                 var dd = env.Db.EfParents.Select(x => x.ParentNullableIntEqualsStaticVariable)
-#if !EF_CORE
+#if NO_AUTO_DECOMPILE
                     .Decompile()
 #endif
                     .ToList();
@@ -74,7 +74,7 @@ namespace DelegateDecompiler.EntityFramework.Tests.TestGroup05BasicFeatures
                 //ATTEMPT
                 env.AboutToUseDelegateDecompiler();
                 var dd = env.Db.EfParents.Select(x => x.ParentNullableIntEqualsConstant)
-#if !EF_CORE
+#if NO_AUTO_DECOMPILE
                     .Decompile()
 #endif
                     .ToList();
@@ -95,7 +95,7 @@ namespace DelegateDecompiler.EntityFramework.Tests.TestGroup05BasicFeatures
                 //ATTEMPT
                 env.AboutToUseDelegateDecompiler();
                 var dd = env.Db.EfParents.Select(x => x.NullableInit)
-#if !EF_CORE
+#if NO_AUTO_DECOMPILE
                     .Decompile()
 #endif
                     .ToList();
@@ -116,7 +116,7 @@ namespace DelegateDecompiler.EntityFramework.Tests.TestGroup05BasicFeatures
                 //ATTEMPT
                 env.AboutToUseDelegateDecompiler();
                 var dd = env.Db.EfParents.Select(x => x.ParentNullableDecimalAdd)
-#if !EF_CORE
+#if NO_AUTO_DECOMPILE
                     .Decompile()
 #endif
                     .ToList();

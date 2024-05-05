@@ -62,7 +62,7 @@ namespace DelegateDecompiler.EntityFramework.Tests.TestGroup90AdditionalFeatures
                     ParentId = x.EfParentId,
                     FirstChildId = env.Db.GetFirstChildIdByParent(x.EfParentId)
                 })
-#if !EF_CORE
+#if NO_AUTO_DECOMPILE
                 .Decompile()
 #endif
                     ;

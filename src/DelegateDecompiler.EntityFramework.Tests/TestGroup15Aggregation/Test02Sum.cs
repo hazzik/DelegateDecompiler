@@ -29,7 +29,7 @@ namespace DelegateDecompiler.EntityFramework.Tests.TestGroup15Aggregation
                 //ATTEMPT
                 env.AboutToUseDelegateDecompiler();
                 var dd = env.Db.EfParents
-#if !EF_CORE
+#if NO_AUTO_DECOMPILE
                     .Decompile()
 #endif
                     .Sum(x => x.CountChildren);
@@ -52,7 +52,7 @@ namespace DelegateDecompiler.EntityFramework.Tests.TestGroup15Aggregation
                 //ATTEMPT
                 env.AboutToUseDelegateDecompiler();
                 var dd = env.Db.EfParents.Select(x => x.SumIntInChildrenWhereChildrenCanBeNone)
-#if !EF_CORE
+#if NO_AUTO_DECOMPILE
                     .Decompile()
 #endif
                     .ToList();

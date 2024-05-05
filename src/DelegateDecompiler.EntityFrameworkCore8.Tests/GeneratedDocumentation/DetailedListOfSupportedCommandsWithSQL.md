@@ -1,6 +1,6 @@
 Detail With Sql of supported commands
 ============
-## Documentation produced for DelegateDecompiler, version 0.34.0.0 on Sunday, 05 May 2024 23:01
+## Documentation produced for DelegateDecompiler, version 0.34.0.0 on Sunday, 05 May 2024 23:15
 
 This file documents what linq commands **DelegateDecompiler** supports when
 working with [Entity Framework Core](https://docs.microsoft.com/en-us/ef/core/) (EF).
@@ -116,7 +116,7 @@ FROM [LivingBeeing] AS [l]
 WHERE [l].[Discriminator] IN (N'AtlanticCod', N'WhiteShark')
 ```
 
-  * Select Abstract Member With Condition On It Over Tph Hierarchy With Generic Classes After Restricting To Subtype (line 208)
+  * Select Abstract Member With Condition On It Over Tph Hierarchy With Generic Classes After Restricting To Subtype (line 212)
      * T-Sql executed is
 
 ```SQL
@@ -141,7 +141,7 @@ END IS NOT NULL AND CASE
 END IS NOT NULL
 ```
 
-  * Select Multiple Levels Of Abstract Members Over Tph Hierarchy (line 230)
+  * Select Multiple Levels Of Abstract Members Over Tph Hierarchy (line 234)
      * T-Sql executed is
 
 ```SQL

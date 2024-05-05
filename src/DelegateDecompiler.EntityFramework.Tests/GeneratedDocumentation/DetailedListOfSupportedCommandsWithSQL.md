@@ -1,6 +1,6 @@
 Detail With Sql of supported commands
 ============
-## Documentation produced for DelegateDecompiler, version 0.34.0.0 on Sunday, 05 May 2024 23:01
+## Documentation produced for DelegateDecompiler, version 0.34.0.0 on Sunday, 05 May 2024 23:15
 
 This file documents what linq commands **DelegateDecompiler** supports when
 working with [Entity Framework v6.1](http://msdn.microsoft.com/en-us/data/aa937723) (EF).
@@ -90,7 +90,7 @@ SELECT
     WHERE ([Extent1].[Discriminator] IN (N'Dog',N'HoneyBee',N'Person')) AND ([Extent1].[Discriminator] IN (N'Dog',N'HoneyBee'))
 ```
 
-  * Select Multiple Levels Of Abstract Members Over Tph Hierarchy (line 230)
+  * Select Multiple Levels Of Abstract Members Over Tph Hierarchy (line 234)
      * T-Sql executed is
 
 ```SQL

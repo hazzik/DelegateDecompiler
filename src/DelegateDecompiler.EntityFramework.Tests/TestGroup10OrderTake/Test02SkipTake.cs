@@ -28,7 +28,7 @@ namespace DelegateDecompiler.EntityFramework.Tests.TestGroup10OrderTake
                 //ATTEMPT
                 env.AboutToUseDelegateDecompiler();
                 var dd = env.Db.EfParents.OrderBy(x => x.CountChildren).Select(x => x.EfParentId).Take(2)
-#if !EF_CORE
+#if NO_AUTO_DECOMPILE
                     .Decompile()
 #endif
                     .ToList();
@@ -50,7 +50,7 @@ namespace DelegateDecompiler.EntityFramework.Tests.TestGroup10OrderTake
                 //ATTEMPT
                 env.AboutToUseDelegateDecompiler();
                 var dd = env.Db.EfParents.OrderBy(x => x.CountChildren).Select(x => x.EfParentId).Skip(1).Take(2)
-#if !EF_CORE
+#if NO_AUTO_DECOMPILE
                     .Decompile()
 #endif
                     .ToList();
@@ -72,7 +72,7 @@ namespace DelegateDecompiler.EntityFramework.Tests.TestGroup10OrderTake
                 //ATTEMPT
                 env.AboutToUseDelegateDecompiler();
                 var dd = env.Db.EfParents.Where(x => x.AnyChildren).OrderBy(x => x.CountChildren).Select(x => x.EfParentId)
-#if !EF_CORE
+#if NO_AUTO_DECOMPILE
                     .Decompile()
 #endif
                     .Skip(1).Take(1).ToList();

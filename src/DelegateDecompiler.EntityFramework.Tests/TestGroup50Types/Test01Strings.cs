@@ -27,7 +27,7 @@ namespace DelegateDecompiler.EntityFramework.Tests.TestGroup50Types
                 //ATTEMPT
                 env.AboutToUseDelegateDecompiler();
                 var dd = env.Db.EfPersons.Select(x => x.FullNameNoNull)
-#if !EF_CORE
+#if NO_AUTO_DECOMPILE
                     .Decompile()
 #endif
                     .ToList();
@@ -48,7 +48,7 @@ namespace DelegateDecompiler.EntityFramework.Tests.TestGroup50Types
                 //ATTEMPT
                 env.AboutToUseDelegateDecompiler();
                 var dd = env.Db.EfPersons.Select(x => x.FullNameHandleNull)
-#if !EF_CORE
+#if NO_AUTO_DECOMPILE
                     .Decompile()
 #endif
                     .ToList();
@@ -71,7 +71,7 @@ namespace DelegateDecompiler.EntityFramework.Tests.TestGroup50Types
                 //ATTEMPT
                 env.AboutToUseDelegateDecompiler();
                 var dd = env.Db.EfPersons.Select(x => x.UseOrderToFormatNameStyle)
-#if !EF_CORE
+#if NO_AUTO_DECOMPILE
                     .Decompile()
 #endif
                     .ToList();
@@ -92,7 +92,7 @@ namespace DelegateDecompiler.EntityFramework.Tests.TestGroup50Types
                 //ATTEMPT
                 env.AboutToUseDelegateDecompiler();
                 var dd = GetGenericPersonHandle(env.Db.EfPersons)
-#if !EF_CORE
+#if NO_AUTO_DECOMPILE
                     .Decompile()
 #endif
                     .ToList();
@@ -111,7 +111,7 @@ namespace DelegateDecompiler.EntityFramework.Tests.TestGroup50Types
 
                 env.AboutToUseDelegateDecompiler();
                 var dd = FilterGenericPersonHandle(env.Db.EfPersons)
-#if !EF_CORE
+#if NO_AUTO_DECOMPILE
                     .Decompile()
 #endif
                     .ToList();

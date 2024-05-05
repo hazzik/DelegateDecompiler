@@ -27,7 +27,7 @@ namespace DelegateDecompiler.EntityFramework.Tests.TestGroup12QuantifierOperator
                 //ATTEMPT
                 env.AboutToUseDelegateDecompiler();
                 var dd = env.Db.EfParents.Select(x => x.AnyChildren)
-#if !EF_CORE
+#if NO_AUTO_DECOMPILE
                     .Decompile()
 #endif
                     .ToList();
@@ -48,7 +48,7 @@ namespace DelegateDecompiler.EntityFramework.Tests.TestGroup12QuantifierOperator
                 //ATTEMPT
                 env.AboutToUseDelegateDecompiler();
                 var dd = env.Db.EfParents.Select(x => x.AnyChildrenWithFilter)
-#if !EF_CORE
+#if NO_AUTO_DECOMPILE
                     .Decompile()
 #endif
                     .ToList();
