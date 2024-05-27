@@ -234,5 +234,27 @@ namespace DelegateDecompiler.EntityFramework.Tests.TestGroup05BasicFeatures
                 env.CompareAndLogList(linq, dd);
             }
         }
+
+        [Test]
+        public void TestSelectSelectMany()
+        {
+            using (var env = new MethodEnvironment(classEnv))
+            {
+                //SETUP
+                var children = env.Db.EfParents.Select(x => x.Children.SelectMany(c => c.GrandChildren).OrderBy(c => c.EfGrandChildId).FirstOrDefault());
+                var linq = children.ToList();
+
+                //ATTEMPT
+                env.AboutToUseDelegateDecompiler();
+                var dd = env.Db.EfParents.Select(x => x.FirstGrandChild)
+#if NO_AUTO_DECOMPILE
+                    .Decompile()
+#endif
+                    .ToList();
+
+                //VERIFY
+                env.CompareAndLogList(linq, dd);
+            }
+        }
     }
 }

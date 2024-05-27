@@ -111,7 +111,7 @@ namespace DelegateDecompiler
 
             var ex = AdjustType(processor.Process(), returnType);
 
-            if (ex.Type != returnType && returnType != typeof(void))
+            if (!returnType.IsAssignableFrom(ex.Type) && returnType != typeof(void))
             {
                 return Expression.Convert(ex, returnType);
             }
@@ -806,31 +806,37 @@ namespace DelegateDecompiler
                     {decompiled.Parameters[0], expression}
                 };
 
+                var delegateType = Expression.GetDelegateType(GetDelegateParameterTypes(m));
                 var body = new ReplaceExpressionVisitor(expressions).Visit(decompiled.Body);
                 body = TransparentIdentifierRemovingExpressionVisitor.RemoveTransparentIdentifiers(body);
-                return Expression.Lambda(body, decompiled.Parameters.Skip(1));
+                return Expression.Lambda(delegateType, body, decompiled.Parameters.Skip(1));
             });
         }
 
-        static object GetRuntimeHandle(object operand)
+        static Type[] GetDelegateParameterTypes(MethodInfo m)
         {
-            var fieldInfo = operand as FieldInfo;
-            if (fieldInfo != null)
+            var parameters = m.GetParameters();
+
+            var result = new Type[parameters.Length + 1];
+            var index = 0;
+            while (index < parameters.Length)
             {
-                return fieldInfo.FieldHandle;
+                result[index] = parameters[index].ParameterType;
+                index++;
             }
-            var methodBase = operand as MethodBase;
-            if (methodBase != null)
-            {
-                return methodBase.MethodHandle;
-            }
-            var type = operand as Type;
-            if (type != null)
-            {
-                return type.TypeHandle;
-            }
-            return null;
+
+            result[index] = m.ReturnType;
+
+            return result;
         }
+
+        static object GetRuntimeHandle(object operand) => operand switch
+        {
+            FieldInfo field => field.FieldHandle,
+            MethodBase method => method.MethodHandle,
+            Type type => type.TypeHandle,
+            _ => null
+        };
 
         static bool IsCachedAnonymousMethodDelegate(FieldInfo field)
         {

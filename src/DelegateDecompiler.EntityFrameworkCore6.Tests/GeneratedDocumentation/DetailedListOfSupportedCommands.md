@@ -1,6 +1,6 @@
 Detail of supported commands
 ============
-## Documentation produced for DelegateDecompiler, version 0.34.0.0 on Monday, 06 May 2024 01:04
+## Documentation produced for DelegateDecompiler, version 0.34.0.0 on Tuesday, 28 May 2024 00:08
 
 This file documents what linq commands **DelegateDecompiler** supports when
 working with [Entity Framework Core](https://docs.microsoft.com/en-us/ef/core/) (EF).
@@ -35,6 +35,7 @@ More will appear as we move forward.*
   * Select Abstract Member Over Tph Hierarchy With Generic Classes After Restricting To Subtype (line 184)
   * Select Abstract Member With Condition On It Over Tph Hierarchy With Generic Classes After Restricting To Subtype (line 212)
   * Select Multiple Levels Of Abstract Members Over Tph Hierarchy (line 234)
+  * Select Select Many (line 256)
 
 #### [Select Async](../TestGroup05BasicFeatures/Test02SelectAsync.cs):
 - Supported
