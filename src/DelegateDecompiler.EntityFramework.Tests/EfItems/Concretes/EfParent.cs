@@ -132,5 +132,9 @@ namespace DelegateDecompiler.EntityFramework.Tests.EfItems.Concretes
 
         [Computed]
         public bool StartDateGreaterThanStaticVar { get { return StartDate > dateConst; } }
+
+        [Computed]
+        public EfGrandChild FirstGrandChild =>
+            Children.SelectMany(c => c.GrandChildren).OrderBy(c => c.EfGrandChildId).FirstOrDefault();
     }
 }

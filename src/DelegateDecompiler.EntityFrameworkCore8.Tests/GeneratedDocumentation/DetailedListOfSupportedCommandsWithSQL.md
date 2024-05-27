@@ -1,6 +1,6 @@
 Detail With Sql of supported commands
 ============
-## Documentation produced for DelegateDecompiler, version 0.34.0.0 on Monday, 06 May 2024 01:03
+## Documentation produced for DelegateDecompiler, version 0.34.0.0 on Tuesday, 28 May 2024 00:08
 
 This file documents what linq commands **DelegateDecompiler** supports when
 working with [Entity Framework Core](https://docs.microsoft.com/en-us/ef/core/) (EF).
@@ -158,6 +158,23 @@ END, CASE
 END
 FROM [LivingBeeing] AS [l]
 WHERE [l].[Discriminator] IN (N'Dog', N'HoneyBee')
+```
+
+  * Select Select Many (line 256)
+     * T-Sql executed is
+
+```SQL
+SELECT [t0].[EfGrandChildId], [t0].[EfChildId], [t0].[GrandChildBool], [t0].[GrandChildDouble], [t0].[GrandChildInt], [t0].[GrandChildString]
+FROM [EfParents] AS [e]
+LEFT JOIN (
+    SELECT [t].[EfGrandChildId], [t].[EfChildId], [t].[GrandChildBool], [t].[GrandChildDouble], [t].[GrandChildInt], [t].[GrandChildString], [t].[EfParentId]
+    FROM (
+        SELECT [e1].[EfGrandChildId], [e1].[EfChildId], [e1].[GrandChildBool], [e1].[GrandChildDouble], [e1].[GrandChildInt], [e1].[GrandChildString], [e0].[EfParentId], ROW_NUMBER() OVER(PARTITION BY [e0].[EfParentId] ORDER BY [e1].[EfGrandChildId]) AS [row]
+        FROM [EfChildren] AS [e0]
+        INNER JOIN [EfGrandChildren] AS [e1] ON [e0].[EfChildId] = [e1].[EfChildId]
+    ) AS [t]
+    WHERE [t].[row] <= 1
+) AS [t0] ON [e].[EfParentId] = [t0].[EfParentId]
 ```
 
 
