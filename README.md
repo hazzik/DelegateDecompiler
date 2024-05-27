@@ -61,6 +61,30 @@ Again, the `FullName` property will be decompiled:
 bool exists = db.Employees.Any(employee => (employee.FirstName + " " + employee.LastName) == "Test User");
 ```
 
+## Limitations
+
+Not every compiled code can be represented as a lambda expression. Some cases are explicitly not supported, other can break and produce unexpected results.
+
+Some of the known cases listed below
+
+### Loops
+
+Loops often cannot be represented as an expression tree. 
+
+So, the following imperative code would probably throw a `StackOverflowException`:
+
+```csharp
+var total = 0;
+foreach (var item in this.Items) { total += item.TotalPrice; }
+return total;
+```
+
+Instead, write it as a declarative Linq expression, which would be supported.
+
+```csharp
+return this.Items.Sum(i => i.TotalPrice);
+```
+
 ## Using with EntityFramework and other ORMs
 
 If you are using ORM specific features, like EF's `Include`, `AsNoTracking` or NH's `Fetch` then `Decompile` method should be called after all ORM specific methods, otherwise it may not work. Ideally use `Decompile` extension method just before materialization methods such as `ToList`, `ToArray`, `First`, `FirstOrDefault`, `Count`, `Any`, and etc.
