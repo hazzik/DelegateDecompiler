@@ -30,7 +30,7 @@ namespace DelegateDecompiler
 
             var optimizedExpression = expression.Optimize();
 
-            return Expression.Lambda( optimizedExpression, args.Select(x => (ParameterExpression)x.Expression));
+            return Expression.Lambda(optimizedExpression, args.Select(x => (ParameterExpression)x.Expression));
         }
 
         static Expression DecompileConcrete(MethodInfo method, IList<Address> args)
