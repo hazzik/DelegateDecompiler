@@ -1,6 +1,6 @@
 Detail With Sql of supported commands
 ============
-## Documentation produced for DelegateDecompiler, version 0.34.0.0 on Monday, 06 May 2024 01:04
+## Documentation produced for DelegateDecompiler, version 0.34.0.0 on Tuesday, 28 May 2024 00:08
 
 This file documents what linq commands **DelegateDecompiler** supports when
 working with [Entity Framework v6.1](http://msdn.microsoft.com/en-us/data/aa937723) (EF).
@@ -98,6 +98,33 @@ SELECT
     CASE WHEN (CASE WHEN ([Extent1].[Discriminator] = N'HoneyBee') THEN N'Apis mellifera' WHEN ([Extent1].[Discriminator] = N'Dog') THEN N'Canis lupus' END IS NULL) THEN N'' WHEN ([Extent1].[Discriminator] = N'HoneyBee') THEN N'Apis mellifera' WHEN ([Extent1].[Discriminator] = N'Dog') THEN N'Canis lupus' END + N' : ' + CASE WHEN ((CASE WHEN ([Extent1].[Discriminator] = N'HoneyBee') THEN cast(0 as bit) WHEN ([Extent1].[Discriminator] = N'Dog') THEN cast(1 as bit) WHEN ([Extent1].[Discriminator] <> N'Dog') THEN cast(0 as bit) END) = 1) THEN N'True' WHEN ((CASE WHEN ([Extent1].[Discriminator] = N'HoneyBee') THEN cast(0 as bit) WHEN ([Extent1].[Discriminator] = N'Dog') THEN cast(1 as bit) WHEN ([Extent1].[Discriminator] <> N'Dog') THEN cast(0 as bit) END) = 0) THEN N'False' ELSE N'' END AS [C1]
     FROM [dbo].[LivingBeeings] AS [Extent1]
     WHERE ([Extent1].[Discriminator] IN (N'Dog',N'HoneyBee',N'Person')) AND ([Extent1].[Discriminator] IN (N'Dog',N'HoneyBee'))
+```
+
+  * Select Select Many (line 256)
+     * T-Sql executed is
+
+```SQL
+SELECT 
+    [Limit1].[EfGrandChildId] AS [EfGrandChildId], 
+    [Limit1].[GrandChildBool] AS [GrandChildBool], 
+    [Limit1].[GrandChildInt] AS [GrandChildInt], 
+    [Limit1].[GrandChildDouble] AS [GrandChildDouble], 
+    [Limit1].[GrandChildString] AS [GrandChildString], 
+    [Limit1].[EfChildId] AS [EfChildId]
+    FROM  [dbo].[EfParents] AS [Extent1]
+    OUTER APPLY  (SELECT TOP (1) [Project1].[EfGrandChildId] AS [EfGrandChildId], [Project1].[GrandChildBool] AS [GrandChildBool], [Project1].[GrandChildInt] AS [GrandChildInt], [Project1].[GrandChildDouble] AS [GrandChildDouble], [Project1].[GrandChildString] AS [GrandChildString], [Project1].[EfChildId] AS [EfChildId]
+        FROM ( SELECT 
+            [Extent3].[EfGrandChildId] AS [EfGrandChildId], 
+            [Extent3].[GrandChildBool] AS [GrandChildBool], 
+            [Extent3].[GrandChildInt] AS [GrandChildInt], 
+            [Extent3].[GrandChildDouble] AS [GrandChildDouble], 
+            [Extent3].[GrandChildString] AS [GrandChildString], 
+            [Extent3].[EfChildId] AS [EfChildId]
+            FROM  [dbo].[EfChilds] AS [Extent2]
+            INNER JOIN [dbo].[EfGrandChilds] AS [Extent3] ON [Extent2].[EfChildId] = [Extent3].[EfChildId]
+            WHERE [Extent1].[EfParentId] = [Extent2].[EfParentId]
+        )  AS [Project1]
+        ORDER BY [Project1].[EfGrandChildId] ASC ) AS [Limit1]
 ```
 
 
@@ -652,17 +679,17 @@ SELECT
 
 ```SQL
 SELECT 
-    [GroupBy3].[A1] AS [C1]
+    [GroupBy2].[A1] AS [C1]
     FROM ( SELECT 
         SUM([Extent1].[A1_0]) AS [A1]
         FROM ( SELECT 
             (SELECT 
                 COUNT(1) AS [A1]
-                FROM [dbo].[EfChilds] AS [Extent3]
-                WHERE [Extent1].[EfParentId] = [Extent3].[EfParentId]) AS [A1_0]
+                FROM [dbo].[EfChilds] AS [Extent2]
+                WHERE [Extent1].[EfParentId] = [Extent2].[EfParentId]) AS [A1_0]
             FROM [dbo].[EfParents] AS [Extent1]
         )  AS [Extent1]
-    )  AS [GroupBy3]
+    )  AS [GroupBy2]
 ```
 
   * Sum Count In Children Where Children Can Be None (line 61)
