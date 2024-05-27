@@ -85,6 +85,11 @@ Instead, write it as a declarative Linq expression, which would be supported.
 return this.Items.Sum(i => i.TotalPrice);
 ```
 
+### Recursion and self-referencing
+
+Recursion and self-referencing of computed properties cannot be represented as an Expression tree, 
+and would probably throw `StackOverflowException` similarly to loops.
+
 ## Using with EntityFramework and other ORMs
 
 If you are using ORM specific features, like EF's `Include`, `AsNoTracking` or NH's `Fetch` then `Decompile` method should be called after all ORM specific methods, otherwise it may not work. Ideally use `Decompile` extension method just before materialization methods such as `ToList`, `ToArray`, `First`, `FirstOrDefault`, `Count`, `Any`, and etc.
