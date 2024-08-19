@@ -66,9 +66,11 @@ namespace DelegateDecompiler.EntityFramework.Tests.Helpers
                 @"\bin\debug",
                 @"\bin\debug\net45",
                 @"\bin\debug\net8.0",
+                @"\bin\debug\net9.0",
                 @"\bin\release",
                 @"\bin\release\net45",
                 @"\bin\release\net8.0",
+                @"\bin\release\net9.0",
             };
             foreach (var ending in endings)
             {
