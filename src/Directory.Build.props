@@ -33,7 +33,7 @@
   </PropertyGroup>
   
   <ItemGroup>
-    <PackageReference Include="GitVersion.MsBuild" Version="5.10.3" PrivateAssets="All" />
+    <PackageReference Include="GitVersion.MsBuild" Version="6.1.0" PrivateAssets="All" />
     <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.3" PrivateAssets="All" />
   </ItemGroup>
 
