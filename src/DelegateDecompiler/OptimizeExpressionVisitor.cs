@@ -330,7 +330,7 @@ namespace DelegateDecompiler
                 }
             }
 
-            return base.VisitBinary(node);
+            return node.Update(left, VisitAndConvert(node.Conversion, nameof (VisitBinary)), right);
         }
 
         protected override Expression VisitUnary(UnaryExpression node)
