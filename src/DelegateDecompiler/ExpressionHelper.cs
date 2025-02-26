@@ -10,6 +10,12 @@ namespace DelegateDecompiler
             // value and then uses an Expression.Constant instead
             Expression.Constant(GetDefaultValue(type), type);
 
+        public static bool IsDefault(Expression expression, Type type)
+        {
+            //TODO maybe handle the possible convertions
+            return expression.Type == type && (expression as ConstantExpression)?.Value == ((ConstantExpression)Default(type)).Value;
+        }
+
         public static object GetDefaultValue(Type type)
         {
             return type.IsValueType ? Activator.CreateInstance(type) : null;

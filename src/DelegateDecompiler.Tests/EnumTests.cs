@@ -315,7 +315,7 @@ namespace DelegateDecompiler.Tests
         public void Issue160()
         {
             Expression<Func<int?, bool>> expected1 = x => (TestEnum?)x == TestEnum.Bar;
-            Expression<Func<int?, bool>> expected2 = x => (x.HasValue ? (TestEnum?)(x ?? 0) : null) == TestEnum.Bar;
+            Expression<Func<int?, bool>> expected2 = x => (((TestEnum?)x) ?? TestEnum.Foo) == TestEnum.Bar;
             Func<int?, bool> compiled = x => (TestEnum?)x == TestEnum.Bar;
             Test(expected1, expected2, compiled);
         }

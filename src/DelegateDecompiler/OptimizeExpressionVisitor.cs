@@ -47,7 +47,12 @@ namespace DelegateDecompiler
 
             if (IsCoalesce(test, ifTrue, out var expression))
             {
-                return Expression.Coalesce(expression, ifFalse);
+                if (expression.Type.IsNullableType() && ExpressionHelper.IsDefault(ifFalse, ifFalse.Type))
+                {
+                    if (expression.Type != ifFalse.Type)
+                        expression = Expression.Convert(expression, ifFalse.Type);
+                    return expression;
+                }
             }
             var ifTrueBinary = UnwrapConvertToNullable(ifTrue) as BinaryExpression;
             if (ifTrueBinary != null)
@@ -276,7 +281,7 @@ namespace DelegateDecompiler
 
         static bool IsGetValueOrDefault(Expression expression, out MethodCallExpression method)
         {
-            method = expression as MethodCallExpression;
+            method = UnwrapConvertToNullable(expression) as MethodCallExpression;
             return method != null && IsGetValueOrDefault(method);
         }
 
