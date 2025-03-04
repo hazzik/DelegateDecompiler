@@ -397,7 +397,7 @@ namespace DelegateDecompiler
                              state.Instruction.OpCode == OpCodes.Bgt_Un_S)
                     {
                         var val1 = state.Stack.Pop();
-                        state.Instruction = ConditionalBranch(state, val => Expression.GreaterThan(val, val1));
+                        state.Instruction = ConditionalBranch(state, val => MakeBinaryExpression(val, val1, ExpressionType.GreaterThan));
                         continue;
                     }
                     else if (state.Instruction.OpCode == OpCodes.Bge ||
@@ -406,7 +406,7 @@ namespace DelegateDecompiler
                              state.Instruction.OpCode == OpCodes.Bge_Un_S)
                     {
                         var val1 = state.Stack.Pop();
-                        state.Instruction = ConditionalBranch(state, val => Expression.GreaterThanOrEqual(val, val1));
+                        state.Instruction = ConditionalBranch(state, val => MakeBinaryExpression(val, val1, ExpressionType.GreaterThanOrEqual));
                         continue;
                     }
                     else if (state.Instruction.OpCode == OpCodes.Blt ||
@@ -415,7 +415,7 @@ namespace DelegateDecompiler
                              state.Instruction.OpCode == OpCodes.Blt_Un_S)
                     {
                         var val1 = state.Stack.Pop();
-                        state.Instruction = ConditionalBranch(state, val => Expression.LessThan(val, val1));
+                        state.Instruction = ConditionalBranch(state, val => MakeBinaryExpression(val, val1, ExpressionType.LessThan));
                         continue;
                     }
                     else if (state.Instruction.OpCode == OpCodes.Ble ||
