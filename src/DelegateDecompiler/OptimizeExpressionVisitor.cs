@@ -14,6 +14,7 @@ namespace DelegateDecompiler
             {
                 return Expression.Convert(Visit(node.Arguments[0]), node.Type);
             }
+
             return base.VisitNew(node);
         }
 
@@ -45,10 +46,21 @@ namespace DelegateDecompiler
                 return boolValue ? ifTrue : ifFalse;
             }
 
-            if (IsCoalesce(test, ifTrue, out var expression))
+            if (IsCoalesce(test, UnwrapConvertToNullable(ifTrue), out var expression))
             {
+                if (IsNullConstant(ifFalse))
+                {
+                    if (expression.Type != node.Type)
+                    {
+                        expression = Expression.Convert(expression, node.Type);
+                    }
+
+                    return expression;
+                }
+
                 return Expression.Coalesce(expression, ifFalse);
             }
+
             var ifTrueBinary = UnwrapConvertToNullable(ifTrue) as BinaryExpression;
             if (ifTrueBinary != null)
             {
@@ -110,6 +122,11 @@ namespace DelegateDecompiler
             }
 
             return node.Update(test, ifTrue, ifFalse);
+        }
+
+        static bool IsNullConstant(Expression expression)
+        {
+            return expression is ConstantExpression constant && constant.Value == null;
         }
 
         private static bool TryConvert(ConstantExpression constant, BinaryExpression left, Expression right, out BinaryExpression result, bool isLeft)
@@ -237,11 +254,13 @@ namespace DelegateDecompiler
 
         static Expression UnwrapConvertToNullable(Expression expression)
         {
-            var unary = expression as UnaryExpression;
-            if (unary != null && expression.NodeType == ExpressionType.Convert && expression.Type.IsNullableType())
+            if (expression is UnaryExpression unary &&
+                expression.NodeType == ExpressionType.Convert &&
+                expression.Type.IsNullableType())
             {
                 return unary.Operand;
             }
+
             return expression;
         }
 
@@ -261,9 +280,8 @@ namespace DelegateDecompiler
 
         static bool IsCoalesce(Expression hasValue, Expression getValueOrDefault, out Expression expression)
         {
-            MemberExpression memberExpression;
-            MethodCallExpression callExpression;
-            if (IsHasValue(hasValue, out memberExpression) && IsGetValueOrDefault(getValueOrDefault, out callExpression))
+            if (IsHasValue(hasValue, out var memberExpression) &&
+                IsGetValueOrDefault(getValueOrDefault, out var callExpression))
             {
                 expression = memberExpression.Expression;
                 if (expression == callExpression.Object)
