@@ -532,12 +532,13 @@ namespace DelegateDecompiler.Tests
             Test(expected, compiled);
         }
 
-        [Test, Ignore("Not fixed yet")]
+        [Test]
         public void BooleanCompareToTrue()
         {
-            Expression<Func<bool?, bool>> expected = x => x == true;
+            Expression<Func<bool?, bool>> expected1 = x => x == true;
+            Expression<Func<bool?, bool>> expected2 = x => x ?? false;
             Func<bool?, bool> compiled = x => x == true;
-            Test(expected, compiled);
+            Test(expected1, expected2, compiled);
         }
 
         [Test, Ignore("Overoptimized")]
