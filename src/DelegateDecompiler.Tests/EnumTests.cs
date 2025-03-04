@@ -59,7 +59,7 @@ namespace DelegateDecompiler.Tests
             Test(expected1, expected2, compiled);
         }
 
-        [Test, Ignore("Not fixed yet")]
+        [Test]
         public void TestEnumPropertyIsFooOrBar()
         {
             Expression<Func<TestEnum, bool>> expected = x => (int)x <= 1;
@@ -311,7 +311,7 @@ namespace DelegateDecompiler.Tests
             Test(expected, compiled);
         }
 
-        [Test, Ignore("Not fixed yet")]
+        [Test]
         public void Issue160()
         {
             Expression<Func<int?, bool>> expected1 = x => (TestEnum?)x == TestEnum.Bar;
