@@ -150,6 +150,12 @@ namespace DelegateDecompiler
                         if (TryConvertAndAlso(right, left, out result))
                             return true;
 
+                        if (right is ConstantExpression rightConstant && rightConstant.Value is true)
+                        {
+                            result = left;
+                            return true;
+                        }
+
                         result = Expression.AndAlso(left, right);
                         return true;
                     }
