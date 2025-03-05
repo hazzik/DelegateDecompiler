@@ -8,6 +8,7 @@ environment:
 
 init:
   - net start MSSQL$SQL2019
+  - choco install dotnet --pre -y
 
 build_script:
   - build.cmd
