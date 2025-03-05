@@ -35,6 +35,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DelegateDecompiler.EntityFr
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DelegateDecompiler.EntityFrameworkCore9.Tests", "src\DelegateDecompiler.EntityFrameworkCore9.Tests\DelegateDecompiler.EntityFrameworkCore9.Tests.csproj", "{1E051041-B9CB-44AC-B2A2-5D4A4B91B2DB}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DelegateDecompiler.EntityFrameworkCore10.Tests", "src\DelegateDecompiler.EntityFrameworkCore10.Tests\DelegateDecompiler.EntityFrameworkCore10.Tests.csproj", "{5C3905CC-6B38-4C95-80FC-0DB5B72C5ABD}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -77,6 +79,10 @@ Global
 		{1E051041-B9CB-44AC-B2A2-5D4A4B91B2DB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1E051041-B9CB-44AC-B2A2-5D4A4B91B2DB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1E051041-B9CB-44AC-B2A2-5D4A4B91B2DB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5C3905CC-6B38-4C95-80FC-0DB5B72C5ABD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5C3905CC-6B38-4C95-80FC-0DB5B72C5ABD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5C3905CC-6B38-4C95-80FC-0DB5B72C5ABD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5C3905CC-6B38-4C95-80FC-0DB5B72C5ABD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
