@@ -8,7 +8,9 @@ environment:
 
 init:
   - net start MSSQL$SQL2019
-  - choco install dotnet-sdk --pre -y
+  - ps: |
+      Invoke-WebRequest 'https://dot.net/v1/dotnet-install.ps1' -OutFile 'dotnet-install.ps1';
+      ./dotnet-install.ps1 -Channel 10.0 -Quality preview
 
 build_script:
   - build.cmd
