@@ -35,18 +35,11 @@ namespace DelegateDecompiler.EntityFramework.Tests.Helpers
         public static string[] SearchMarkupForManyFilesReturnFilePaths(string searchPattern = "")
         {
             var directory = GetMarkupFileDirectory();
-            if (searchPattern.Contains(@"\"))
+            if (searchPattern.Contains(Path.DirectorySeparatorChar.ToString()))
             {
                 //Has subdirectory in search pattern, so change directory
-                directory = Path.Combine(directory, searchPattern.Substring(0, searchPattern.LastIndexOf('\\')));
-                searchPattern = searchPattern.Substring(searchPattern.LastIndexOf('\\') + 1);
-            }
-
-            if (searchPattern.Contains(@"/"))
-            {
-                //Has subdirectory in search pattern, so change directory
-                directory = Path.Combine(directory, searchPattern.Substring(0, searchPattern.LastIndexOf('/')));
-                searchPattern = searchPattern.Substring(searchPattern.LastIndexOf('/') + 1);
+                directory = Path.Combine(directory, searchPattern.Substring(0, searchPattern.LastIndexOf(Path.DirectorySeparatorChar)));
+                searchPattern = searchPattern.Substring(searchPattern.LastIndexOf(Path.DirectorySeparatorChar) + 1);
             }
 
             return Directory.GetFiles(directory, searchPattern);
