@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Runtime.CompilerServices;
 using DelegateDecompiler.EntityFramework.Tests.Helpers;
 using NUnit.Framework;
@@ -65,7 +66,7 @@ namespace DelegateDecompiler.EntityFramework.Tests.TestGroup01Infrastructure
             //VERIFY
             log.GroupDescription.ShouldEqual("Infrastructure");
             log.TestDescription.ShouldEqual("Various Logs");
-            log.FileUrlFragment.ShouldEqual("TestGroup01Infrastructure/Test05VariousLogs.cs");
+            log.FileUrlFragment.ShouldEqual(Path.Combine("TestGroup01Infrastructure", "Test05VariousLogs.cs"));
         }
     }
 }
