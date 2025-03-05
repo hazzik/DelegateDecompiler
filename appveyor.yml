@@ -9,9 +9,8 @@ environment:
 init:
   - net start MSSQL$SQL2019
   - ps: |
-      Invoke-WebRequest 'https://dot.net/v1/dotnet-install.ps1' -OutFile 'dotnet-install.ps1';
-      ./dotnet-install.ps1 -Channel 10.0 -Quality preview
-      Remove-Item 'dotnet-install.ps1'
+      Invoke-WebRequest -Uri 'https://dot.net/v1/dotnet-install.ps1' -UseBasicParsing -OutFile "$env:temp\dotnet-install.ps1"
+      & $env:temp\dotnet-install.ps1 -Architecture x64 -Channel 10.0 -Quality preview -InstallDir "$env:ProgramFiles\dotnet"
 
 build_script:
   - build.cmd
