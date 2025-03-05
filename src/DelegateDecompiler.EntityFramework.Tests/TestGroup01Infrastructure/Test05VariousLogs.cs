@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Runtime.CompilerServices;
 using DelegateDecompiler.EntityFramework.Tests.Helpers;
 using NUnit.Framework;

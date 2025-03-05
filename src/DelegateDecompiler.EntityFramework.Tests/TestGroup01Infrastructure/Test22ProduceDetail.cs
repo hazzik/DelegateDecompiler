@@ -33,7 +33,7 @@ namespace DelegateDecompiler.EntityFramework.Tests.TestGroup01Infrastructure
         {
             //SETUP
             MasterEnvironment.ResetLogging();
-            var classLog = new ClassLog(Path.Combine("TestGroup01UnitTestGroup", "Test01MyUnitTest"));
+            var classLog = new ClassLog("TestGroup01UnitTestGroup/Test01MyUnitTest");
             MasterEnvironment.AddClassLog(classLog);
             example1PartiallySupported.ForEach(classLog.MethodLogs.Add);
 
@@ -53,7 +53,7 @@ namespace DelegateDecompiler.EntityFramework.Tests.TestGroup01Infrastructure
         {
             //SETUP
             MasterEnvironment.ResetLogging();
-            var classLog = new ClassLog(Path.Combine("TestGroup01UnitTestGroup", "Test01MyUnitTest"));
+            var classLog = new ClassLog("TestGroup01UnitTestGroup/Test01MyUnitTest");
             MasterEnvironment.AddClassLog(classLog);
             example2Supported.ForEach(classLog.MethodLogs.Add);
 
@@ -74,10 +74,10 @@ namespace DelegateDecompiler.EntityFramework.Tests.TestGroup01Infrastructure
         {
             //SETUP
             MasterEnvironment.ResetLogging();
-            var classLog1 = new ClassLog(Path.Combine("TestGroup01UnitTestGroup", "Test01MyUnitTest1"));
+            var classLog1 = new ClassLog("TestGroup01UnitTestGroup/Test01MyUnitTest1");
             MasterEnvironment.AddClassLog(classLog1);
             example2Supported.ForEach(classLog1.MethodLogs.Add);
-            var classLog2 = new ClassLog(Path.Combine("TestGroup01UnitTestGroup", "Test01MyUnitTest2"));
+            var classLog2 = new ClassLog("TestGroup01UnitTestGroup/Test01MyUnitTest2");
             MasterEnvironment.AddClassLog(classLog2);
             example2Supported.ForEach(classLog2.MethodLogs.Add);
 
@@ -97,10 +97,10 @@ namespace DelegateDecompiler.EntityFramework.Tests.TestGroup01Infrastructure
         {
             //SETUP
             MasterEnvironment.ResetLogging();
-            var classLog1 = new ClassLog(Path.Combine("TestGroup01UnitTestGroup1", "Test01MyUnitTest1"));
+            var classLog1 = new ClassLog("TestGroup01UnitTestGroup1/Test01MyUnitTest1");
             MasterEnvironment.AddClassLog(classLog1);
             example2Supported.ForEach(classLog1.MethodLogs.Add);
-            var classLog2 = new ClassLog(Path.Combine("TestGroup01UnitTestGroup2", "Test01MyUnitTest2"));
+            var classLog2 = new ClassLog("TestGroup01UnitTestGroup2/Test01MyUnitTest2");
             MasterEnvironment.AddClassLog(classLog2);
             example2Supported.ForEach(classLog2.MethodLogs.Add);
 

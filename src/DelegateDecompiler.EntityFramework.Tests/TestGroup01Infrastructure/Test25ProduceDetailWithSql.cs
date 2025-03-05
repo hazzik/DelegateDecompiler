@@ -26,7 +26,7 @@ namespace DelegateDecompiler.EntityFramework.Tests.TestGroup01Infrastructure
         {
             //SETUP
             MasterEnvironment.ResetLogging();
-            var classLog = new ClassLog(Path.Combine("TestGroup01UnitTestGroup", "Test01MyUnitTest"));
+            var classLog = new ClassLog("TestGroup01UnitTestGroup/Test01MyUnitTest");
             MasterEnvironment.AddClassLog(classLog);
             example1PartiallySupported.ForEach(classLog.MethodLogs.Add);
 
