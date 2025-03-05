@@ -1,6 +1,6 @@
 Detail With Sql of supported commands
 ============
-## Documentation produced for DelegateDecompiler, version 0.34.1.0 on Monday, 19 August 2024 18:06
+## Documentation produced for DelegateDecompiler, version 0.34.2.0 on Wednesday, 05 March 2025 13:06
 
 This file documents what linq commands **DelegateDecompiler** supports when
 working with [Entity Framework Core](https://docs.microsoft.com/en-us/ef/core/) (EF).
@@ -37,7 +37,7 @@ FROM [EfParents] AS [e]
      * T-Sql executed is
 
 ```SQL
-SELECT [e].[ParentBool] ^ @__staticBool_0 ^ CAST(1 AS bit)
+SELECT ~([e].[ParentBool] ^ @__staticBool_0)
 FROM [EfParents] AS [e]
 ```
 
@@ -45,7 +45,7 @@ FROM [EfParents] AS [e]
      * T-Sql executed is
 
 ```SQL
-SELECT CAST([e].[ParentInt] ^ 123 AS bit) ^ CAST(1 AS bit)
+SELECT ~CAST([e].[ParentInt] ^ 123 AS bit)
 FROM [EfParents] AS [e]
 ```
 
@@ -191,7 +191,7 @@ FROM [EfParents] AS [e]
      * T-Sql executed is
 
 ```SQL
-SELECT [e].[ParentBool] ^ @__staticBool_0 ^ CAST(1 AS bit)
+SELECT ~([e].[ParentBool] ^ @__staticBool_0)
 FROM [EfParents] AS [e]
 ```
 
@@ -199,7 +199,7 @@ FROM [EfParents] AS [e]
      * T-Sql executed is
 
 ```SQL
-SELECT CAST([e].[ParentInt] ^ 123 AS bit) ^ CAST(1 AS bit)
+SELECT ~CAST([e].[ParentInt] ^ 123 AS bit)
 FROM [EfParents] AS [e]
 ```
 
@@ -210,7 +210,7 @@ FROM [EfParents] AS [e]
      * T-Sql executed is
 
 ```SQL
-SELECT CAST([e].[ParentInt] ^ 123 AS bit) ^ CAST(1 AS bit)
+SELECT ~CAST([e].[ParentInt] ^ 123 AS bit)
 FROM [EfParents] AS [e]
 ```
 
@@ -218,7 +218,7 @@ FROM [EfParents] AS [e]
      * T-Sql executed is
 
 ```SQL
-SELECT CAST([e].[ParentInt] ^ @__staticInt_0 AS bit) ^ CAST(1 AS bit)
+SELECT ~CAST([e].[ParentInt] ^ @__staticInt_0 AS bit)
 FROM [EfParents] AS [e]
 ```
 
@@ -273,7 +273,7 @@ FROM [EfParents] AS [e]
      * T-Sql executed is
 
 ```SQL
-SELECT CAST(COALESCE([e].[ParentNullableInt], 0) ^ 123 AS bit) ^ CAST(1 AS bit)
+SELECT ~CAST(COALESCE([e].[ParentNullableInt], 0) ^ 123 AS bit)
 FROM [EfParents] AS [e]
 ```
 
@@ -345,7 +345,7 @@ END = N'Human'
      * T-Sql executed is
 
 ```SQL
-SELECT TOP(2) [e].[EfParentId], CAST([e].[ParentInt] ^ 987 AS bit) ^ CAST(1 AS bit) AS [IntEqualsUniqueValue]
+SELECT TOP(2) [e].[EfParentId], ~CAST([e].[ParentInt] ^ 987 AS bit) AS [IntEqualsUniqueValue]
 FROM [EfParents] AS [e]
 WHERE [e].[ParentInt] = 987
 ```
@@ -357,7 +357,7 @@ WHERE [e].[ParentInt] = 987
      * T-Sql executed is
 
 ```SQL
-SELECT TOP(2) [e].[EfParentId], CAST([e].[ParentInt] ^ 987 AS bit) ^ CAST(1 AS bit) AS [IntEqualsUniqueValue]
+SELECT TOP(2) [e].[EfParentId], ~CAST([e].[ParentInt] ^ 987 AS bit) AS [IntEqualsUniqueValue]
 FROM [EfParents] AS [e]
 WHERE [e].[ParentInt] = 987
 ```

@@ -1,6 +1,6 @@
 Detail With Sql of supported commands
 ============
-## Documentation produced for DelegateDecompiler, version 0.34.0.0 on Tuesday, 28 May 2024 00:08
+## Documentation produced for DelegateDecompiler, version 0.34.2.0 on Wednesday, 05 March 2025 13:06
 
 This file documents what linq commands **DelegateDecompiler** supports when
 working with [Entity Framework v6.1](http://msdn.microsoft.com/en-us/data/aa937723) (EF).
@@ -269,7 +269,7 @@ SELECT
 
 ```SQL
 SELECT 
-    CASE WHEN (123 = [Extent1].[ParentNullableInt]) THEN cast(1 as bit) WHEN ( NOT ((123 = [Extent1].[ParentNullableInt]) AND ([Extent1].[ParentNullableInt] IS NOT NULL))) THEN cast(0 as bit) END AS [C1]
+    CASE WHEN (123 = (CASE WHEN ([Extent1].[ParentNullableInt] IS NULL) THEN 0 ELSE [Extent1].[ParentNullableInt] END)) THEN cast(1 as bit) WHEN ( NOT ((123 = (CASE WHEN ([Extent1].[ParentNullableInt] IS NULL) THEN 0 ELSE [Extent1].[ParentNullableInt] END)) AND (CASE WHEN ([Extent1].[ParentNullableInt] IS NULL) THEN 0 ELSE [Extent1].[ParentNullableInt] END IS NOT NULL))) THEN cast(0 as bit) END AS [C1]
     FROM [dbo].[EfParents] AS [Extent1]
 ```
 
