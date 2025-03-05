@@ -89,10 +89,9 @@ namespace DelegateDecompiler.EntityFramework.Tests.Helpers
         {
             var filename = Path.GetFileNameWithoutExtension(testFilePath);
             var pathNoFile = Path.GetDirectoryName(testFilePath);
-            var directory = pathNoFile.Substring(pathNoFile.LastIndexOf('\\') + 1);
+            var directory = pathNoFile.Substring(pathNoFile.LastIndexOf(Path.DirectorySeparatorChar) + 1);
 
-            FileUrlFragment = directory + "/" + Path.GetFileName(testFilePath);
-
+            FileUrlFragment = Path.Combine(directory, Path.GetFileName(testFilePath));
             //now we decode the directory name to get the group of tests
             GroupDescription = DecodeNameWithPrefixAndNumber(directory, groupPrefix);
             TestDescription = DecodeNameWithPrefixAndNumber(filename, testPrefix);
