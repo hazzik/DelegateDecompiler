@@ -32,7 +32,7 @@ namespace DelegateDecompiler.EntityFramework.Tests.Helpers
 
         public string TestNameAsMarkupLinkRelativeToDocumentationDir
         {
-            get { return string.Format("[{0}]({1})", TestDescription, "../" + FileUrlFragment); }
+            get { return $"[{TestDescription}]({Path.Combine("..", FileUrlFragment).Replace("\\", "/")})"; }
         }
 
         /// <summary>
