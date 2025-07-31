@@ -76,7 +76,27 @@ namespace DelegateDecompiler
                 expressions[i] = Stack.Pop();
             }
 
+            // Special case: if we have an assignment followed by the assigned value,
+            // just return the assignment (since assignment expressions already return the assigned value)
+            if (expressions.Length == 2 && 
+                expressions[0] is BinaryExpression assignment && 
+                assignment.NodeType == ExpressionType.Assign &&
+                ExpressionsAreEqual(assignment.Right, expressions[1]))
+            {
+                return assignment;
+            }
+
             return Expression.Block(expressions);
+        }
+
+        private static bool ExpressionsAreEqual(Expression expr1, Expression expr2)
+        {
+            if (expr1 == null && expr2 == null) return true;
+            if (expr1 == null || expr2 == null) return false;
+            if (expr1.NodeType != expr2.NodeType) return false;
+            if (expr1.Type != expr2.Type) return false;
+            
+            return expr1.ToString() == expr2.ToString();
         }
     }
 }
