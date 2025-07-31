@@ -76,12 +76,14 @@ namespace DelegateDecompiler
                 expressions[i] = Stack.Pop();
             }
 
-            // Special case: if we have an assignment followed by the assigned value,
-            // just return the assignment (since assignment expressions already return the assigned value)
+            // Handle C# compiler pattern: assignment expressions that duplicate the assigned value
+            // The C# compiler generates IL with 'dup' instruction that leaves both the assignment
+            // and the assigned value on the stack. Since assignment expressions in .NET already
+            // return the assigned value, we can return just the assignment expression.
             if (expressions.Length == 2 && 
                 expressions[0] is BinaryExpression assignment && 
                 assignment.NodeType == ExpressionType.Assign &&
-                ExpressionsAreEqual(assignment.Right, expressions[1]))
+                IsSameValueAsAssignmentRight(assignment.Right, expressions[1]))
             {
                 return assignment;
             }
@@ -89,14 +91,17 @@ namespace DelegateDecompiler
             return Expression.Block(expressions);
         }
 
-        private static bool ExpressionsAreEqual(Expression expr1, Expression expr2)
+        /// <summary>
+        /// Determines if the second expression represents the same value as the first expression.
+        /// This uses reference equality which works for the C# compiler's 'dup' pattern where
+        /// the exact same expression object is placed on the stack twice.
+        /// </summary>
+        private static bool IsSameValueAsAssignmentRight(Expression assignmentRight, Expression stackValue)
         {
-            if (expr1 == null && expr2 == null) return true;
-            if (expr1 == null || expr2 == null) return false;
-            if (expr1.NodeType != expr2.NodeType) return false;
-            if (expr1.Type != expr2.Type) return false;
-            
-            return expr1.ToString() == expr2.ToString();
+            // Use reference equality as used elsewhere in the codebase (OptimizeExpressionVisitor, Address.cs)
+            // This works because the C# compiler's 'dup' instruction results in the same expression 
+            // object being referenced in both positions
+            return assignmentRight == stackValue;
         }
     }
 }
