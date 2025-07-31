@@ -1,0 +1,5 @@
+# Temporary modifications for development/testing
+# These files have been temporarily modified to disable GitVersion and signing for testing
+src/Directory.Build.props
+src/DelegateDecompiler/AssemblyInfo.cs
+global.json
