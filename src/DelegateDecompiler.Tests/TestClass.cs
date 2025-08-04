@@ -7,6 +7,7 @@ namespace DelegateDecompiler.Tests
     {
         public DateTime StartDate { get; set; }
         public DateTime? EndDate { get; set; }
+        public string MyStringProperty { get; set; } = "";
 
         public void Add(DateTime start, DateTime end)
         {

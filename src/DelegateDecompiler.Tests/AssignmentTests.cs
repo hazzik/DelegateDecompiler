@@ -1,10 +1,11 @@
-﻿using System.Linq.Expressions;
+﻿using System;
+using System.Linq.Expressions;
 using NUnit.Framework;
 
 namespace DelegateDecompiler.Tests
 {
     [TestFixture]
-    public class AssignmentTests
+    public class AssignmentTests : DecompilerTestsBase
     {
         public class TestClass
         {
@@ -74,6 +75,22 @@ namespace DelegateDecompiler.Tests
             Assert.That(block.Expressions[0].ToString(), Is.EqualTo("(TestClass.staticField = value)"));
             Assert.That(block.Expressions[1].ToString(), Is.EqualTo("(this.myField = value)"));
             Assert.That(block.Expressions[2].ToString(), Is.EqualTo("(this.MyProperty = value)"));
+        }
+
+        [Test]
+        public void ShouldDecompilePropertyAssignmentExpression()
+        {
+            Expression<Func<DelegateDecompiler.Tests.TestClass, string>> expected = v => v.MyStringProperty = "test value";
+            Func<DelegateDecompiler.Tests.TestClass, string> compiled = v => v.MyStringProperty = "test value";
+            Test(expected, compiled);
+        }
+
+        [Test]
+        public void ShouldDecompileComplexAssignmentExpression()
+        {
+            Expression<Func<DelegateDecompiler.Tests.TestClass, DateTime>> expected = v => v.StartDate = new DateTime(2023, 1, 1);
+            Func<DelegateDecompiler.Tests.TestClass, DateTime> compiled = v => v.StartDate = new DateTime(2023, 1, 1);
+            Test(expected, compiled);
         }
     }
 }
