@@ -76,32 +76,7 @@ namespace DelegateDecompiler
                 expressions[i] = Stack.Pop();
             }
 
-            // Handle C# compiler pattern: assignment expressions that duplicate the assigned value
-            // The C# compiler generates IL with 'dup' instruction that leaves both the assignment
-            // and the assigned value on the stack. Since assignment expressions in .NET already
-            // return the assigned value, we can return just the assignment expression.
-            if (expressions.Length == 2 && 
-                expressions[0] is BinaryExpression assignment && 
-                assignment.NodeType == ExpressionType.Assign &&
-                IsSameValueAsAssignmentRight(assignment.Right, expressions[1]))
-            {
-                return assignment;
-            }
-
             return Expression.Block(expressions);
-        }
-
-        /// <summary>
-        /// Determines if the second expression represents the same value as the first expression.
-        /// This uses reference equality which works for the C# compiler's 'dup' pattern where
-        /// the exact same expression object is placed on the stack twice.
-        /// </summary>
-        private static bool IsSameValueAsAssignmentRight(Expression assignmentRight, Expression stackValue)
-        {
-            // Use reference equality as used elsewhere in the codebase (OptimizeExpressionVisitor, Address.cs)
-            // This works because the C# compiler's 'dup' instruction results in the same expression 
-            // object being referenced in both positions
-            return assignmentRight == stackValue;
         }
     }
 }
