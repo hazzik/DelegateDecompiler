@@ -80,7 +80,13 @@ namespace DelegateDecompiler.Tests
         [Test]
         public void ShouldDecompilePropertyAssignmentExpression()
         {
-            Expression<Func<DelegateDecompiler.Tests.TestClass, string>> expected = v => v.MyStringProperty = "test value";
+            // Manually construct the expected assignment expression
+            var parameter = Expression.Parameter(typeof(DelegateDecompiler.Tests.TestClass), "v");
+            var property = Expression.Property(parameter, nameof(DelegateDecompiler.Tests.TestClass.MyStringProperty));
+            var value = Expression.Constant("test value", typeof(string));
+            var assignment = Expression.Assign(property, value);
+            var expected = Expression.Lambda<Func<DelegateDecompiler.Tests.TestClass, string>>(assignment, parameter);
+            
             Func<DelegateDecompiler.Tests.TestClass, string> compiled = v => v.MyStringProperty = "test value";
             Test(expected, compiled);
         }
@@ -88,7 +94,14 @@ namespace DelegateDecompiler.Tests
         [Test]
         public void ShouldDecompileComplexAssignmentExpression()
         {
-            Expression<Func<DelegateDecompiler.Tests.TestClass, DateTime>> expected = v => v.StartDate = new DateTime(2023, 1, 1);
+            // Manually construct the expected assignment expression
+            var parameter = Expression.Parameter(typeof(DelegateDecompiler.Tests.TestClass), "v");
+            var property = Expression.Property(parameter, nameof(DelegateDecompiler.Tests.TestClass.StartDate));
+            var newDateTime = Expression.New(typeof(DateTime).GetConstructor(new[] { typeof(int), typeof(int), typeof(int) }), 
+                Expression.Constant(2023), Expression.Constant(1), Expression.Constant(1));
+            var assignment = Expression.Assign(property, newDateTime);
+            var expected = Expression.Lambda<Func<DelegateDecompiler.Tests.TestClass, DateTime>>(assignment, parameter);
+            
             Func<DelegateDecompiler.Tests.TestClass, DateTime> compiled = v => v.StartDate = new DateTime(2023, 1, 1);
             Test(expected, compiled);
         }
