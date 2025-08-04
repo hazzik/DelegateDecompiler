@@ -12,6 +12,8 @@ namespace DelegateDecompiler.Tests
             private static int staticField;
             private int myField;
             private int MyProperty { get; set; }
+            public string MyStringProperty { get; set; } = "";
+            public DateTime StartDate { get; set; }
 
             public void SetStaticField(int value)
             {
@@ -81,13 +83,13 @@ namespace DelegateDecompiler.Tests
         public void ShouldDecompilePropertyAssignmentExpression()
         {
             // Manually construct the expected assignment expression
-            var parameter = Expression.Parameter(typeof(DelegateDecompiler.Tests.TestClass), "v");
-            var property = Expression.Property(parameter, nameof(DelegateDecompiler.Tests.TestClass.MyStringProperty));
+            var parameter = Expression.Parameter(typeof(TestClass), "v");
+            var property = Expression.Property(parameter, nameof(TestClass.MyStringProperty));
             var value = Expression.Constant("test value", typeof(string));
             var assignment = Expression.Assign(property, value);
-            var expected = Expression.Lambda<Func<DelegateDecompiler.Tests.TestClass, string>>(assignment, parameter);
+            var expected = Expression.Lambda<Func<TestClass, string>>(assignment, parameter);
             
-            Func<DelegateDecompiler.Tests.TestClass, string> compiled = v => v.MyStringProperty = "test value";
+            Func<TestClass, string> compiled = v => v.MyStringProperty = "test value";
             Test(expected, compiled);
         }
 
@@ -95,14 +97,14 @@ namespace DelegateDecompiler.Tests
         public void ShouldDecompileComplexAssignmentExpression()
         {
             // Manually construct the expected assignment expression
-            var parameter = Expression.Parameter(typeof(DelegateDecompiler.Tests.TestClass), "v");
-            var property = Expression.Property(parameter, nameof(DelegateDecompiler.Tests.TestClass.StartDate));
+            var parameter = Expression.Parameter(typeof(TestClass), "v");
+            var property = Expression.Property(parameter, nameof(TestClass.StartDate));
             var newDateTime = Expression.New(typeof(DateTime).GetConstructor(new[] { typeof(int), typeof(int), typeof(int) }), 
                 Expression.Constant(2023), Expression.Constant(1), Expression.Constant(1));
             var assignment = Expression.Assign(property, newDateTime);
-            var expected = Expression.Lambda<Func<DelegateDecompiler.Tests.TestClass, DateTime>>(assignment, parameter);
+            var expected = Expression.Lambda<Func<TestClass, DateTime>>(assignment, parameter);
             
-            Func<DelegateDecompiler.Tests.TestClass, DateTime> compiled = v => v.StartDate = new DateTime(2023, 1, 1);
+            Func<TestClass, DateTime> compiled = v => v.StartDate = new DateTime(2023, 1, 1);
             Test(expected, compiled);
         }
     }
