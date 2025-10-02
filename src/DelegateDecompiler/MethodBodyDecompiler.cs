@@ -46,7 +46,7 @@ namespace DelegateDecompiler
             var locals = addresses.ToArray();
 
             var instructions = method.GetInstructions();
-            var expression = Processor.Process(locals, args, instructions.First(), method.ReturnType, !method.IsStatic);
+            var expression = Processor.Process(method.IsStatic, locals, args, instructions.First(), method.ReturnType);
             var localParameters = locals
                 .Select(l => l.Address.Expression)
                 .OfType<ParameterExpression>()

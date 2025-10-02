@@ -41,6 +41,6 @@ internal class StargProcessor : IProcessor
         var operand = (ParameterInfo)state.Instruction.Operand;
         
         // For instance methods, parameters are offset by 1 due to the "this" parameter
-        return state.IsInstance ? operand.Position + 1 : operand.Position;
+        return !state.IsStatic ? operand.Position + 1 : operand.Position;
     }
 }
