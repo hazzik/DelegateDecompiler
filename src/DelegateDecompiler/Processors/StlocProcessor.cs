@@ -7,7 +7,7 @@ using Mono.Reflection;
 
 namespace DelegateDecompiler.Processors;
 
-internal class StoreProcessor : IProcessor
+internal class StlocProcessor : IProcessor
 {
     static readonly Dictionary<OpCode, Func<Instruction, int>> StLocOpcodes = new()
     {

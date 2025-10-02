@@ -50,7 +50,7 @@ namespace DelegateDecompiler
             new LdelemProcessor(),
             new LdlenProcessor(),
             new LdlocProcessor(),
-            new StoreProcessor(),
+            new StlocProcessor(),
             new ConstantProcessor(),
             new StackProcessor(),
             new ObjectProcessor()
