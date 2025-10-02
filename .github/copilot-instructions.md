@@ -29,6 +29,11 @@ dotnet test --no-build -c Release -f net8.0 src/DelegateDecompiler.EntityFramewo
 dotnet test --no-build -c Release -f net9.0 src/DelegateDecompiler.EntityFrameworkCore9.Tests
 ```
 
+**Development Guidelines:**
+- Use test-first approach when adding new features or fixing bugs
+- Ensure core unit tests pass: `src/DelegateDecompiler.Tests` and `src/DelegateDecompiler.Tests.VB` should have no failures
+- Run unit tests frequently during development to catch regressions early
+
 ## Project Structure
 
 ```
