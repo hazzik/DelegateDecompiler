@@ -24,13 +24,17 @@ namespace DelegateDecompiler
             if (!method.IsStatic)
                 args.Insert(0, Expression.Parameter(methodType, "this"));
 
+            // Store original parameter expressions for lambda construction
+            // This allows StargProcessor to modify arg expressions while preserving original parameters
+            var originalParameters = args.Select(x => (ParameterExpression)x.Expression).ToList();
+
             var expression = method.IsVirtual && !method.IsFinal
                 ? DecompileOverridable(methodType, method, args)
                 : DecompileConcrete(method, args);
 
             var optimizedExpression = expression.Optimize();
 
-            return Expression.Lambda(optimizedExpression, args.Select(x => (ParameterExpression)x.Expression));
+            return Expression.Lambda(optimizedExpression, originalParameters);
         }
 
         static Expression DecompileConcrete(MethodInfo method, IList<Address> args)
