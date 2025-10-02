@@ -42,9 +42,16 @@ namespace DelegateDecompiler.Tests
             Assert.That(decompiled, Is.Not.Null);
             Assert.That(decompiled.Body, Is.Not.Null);
             
-            // Should represent parameter modification operation
-            var bodyString = decompiled.Body.ToString();
-            Console.WriteLine($"Decompiled body: {bodyString}");
+            // Assert on the decompiled expression structure
+            Assert.That(decompiled.Parameters.Count, Is.EqualTo(1));
+            Assert.That(decompiled.Parameters[0].Name, Is.EqualTo("value"));
+            Assert.That(decompiled.Parameters[0].Type, Is.EqualTo(typeof(int)));
+            
+            // Currently, the StargProcessor implementation just discards the stored value
+            // so the body should just return the parameter unchanged
+            // This assertion validates the current behavior - TODO: enhance when semantics are fully implemented
+            Assert.That(decompiled.Body.ToString(), Is.EqualTo("value"));
+            Assert.That(decompiled.Body, Is.InstanceOf<ParameterExpression>());
         }
 
         [Test]
@@ -57,8 +64,14 @@ namespace DelegateDecompiler.Tests
             Assert.That(decompiled, Is.Not.Null);
             Assert.That(decompiled.Body, Is.Not.Null);
             
-            var bodyString = decompiled.Body.ToString();
-            Console.WriteLine($"Decompiled body: {bodyString}");
+            // Assert on the decompiled expression structure
+            Assert.That(decompiled.Parameters.Count, Is.EqualTo(1));
+            Assert.That(decompiled.Parameters[0].Name, Is.EqualTo("value"));
+            Assert.That(decompiled.Parameters[0].Type, Is.EqualTo(typeof(int)));
+            
+            // Currently returns parameter unchanged due to incomplete Starg semantics
+            Assert.That(decompiled.Body.ToString(), Is.EqualTo("value"));
+            Assert.That(decompiled.Body, Is.InstanceOf<ParameterExpression>());
         }
 
         [Test]
@@ -71,8 +84,14 @@ namespace DelegateDecompiler.Tests
             Assert.That(decompiled, Is.Not.Null);
             Assert.That(decompiled.Body, Is.Not.Null);
             
-            var bodyString = decompiled.Body.ToString();
-            Console.WriteLine($"Decompiled body: {bodyString}");
+            // Assert on the decompiled expression structure
+            Assert.That(decompiled.Parameters.Count, Is.EqualTo(1));
+            Assert.That(decompiled.Parameters[0].Name, Is.EqualTo("text"));
+            Assert.That(decompiled.Parameters[0].Type, Is.EqualTo(typeof(string)));
+            
+            // Currently returns parameter unchanged due to incomplete Starg semantics
+            Assert.That(decompiled.Body.ToString(), Is.EqualTo("text"));
+            Assert.That(decompiled.Body, Is.InstanceOf<ParameterExpression>());
         }
     }
 }
