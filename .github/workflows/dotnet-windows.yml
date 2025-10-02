@@ -1,0 +1,58 @@
+name: .NET Tests / Windows
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  dotnet-windows:
+    name: Tests
+    runs-on: windows-latest
+    defaults:
+      run:
+        shell: pwsh
+    env:
+      DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+      DOTNET_CLI_TELEMETRY_OPTOUT: true
+
+    steps:
+
+      - name: Install LocalDB
+        run: |
+          choco install sqllocaldb -y --no-progress
+
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # need for GitVersion to work properly
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: global.json
+
+      - name: Patch App.config for LocalDB
+        run: |
+          $cfg = 'src/DelegateDecompiler.EntityFramework.Tests/App.config'
+          [xml]$xml = Get-Content $cfg
+          $cs = $xml.configuration.connectionStrings.add | Where-Object name -eq 'DelegateDecompilerEfTestDb'
+          $cs.connectionString = 'Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=DelegateDecompilerEfTestDb;MultipleActiveResultSets=True;Integrated Security=True;TrustServerCertificate=True'
+          $xml.Save($cfg)
+
+      - name: Restore
+        run: dotnet restore
+
+      - name: Build
+        run: dotnet build --no-restore -c Release DelegateDecompiler.sln
+
+      - name: Run tests
+        run: |
+          dotnet test --no-build -c Release -f net8.0 src/DelegateDecompiler.Tests
+          dotnet test --no-build -c Release -f net8.0 src/DelegateDecompiler.Tests.VB
+          dotnet test --no-build -c Release -f net8.0 src/DelegateDecompiler.EntityFramework.Tests
+          dotnet test --no-build -c Release -f net8.0 src/DelegateDecompiler.EntityFrameworkCore6.Tests
+          dotnet test --no-build -c Release -f net8.0 src/DelegateDecompiler.EntityFrameworkCore8.Tests
+          dotnet test --no-build -c Release -f net9.0 src/DelegateDecompiler.EntityFrameworkCore9.Tests
