@@ -20,10 +20,7 @@ dotnet restore
 # Build the solution
 dotnet build --no-restore -c Release -p:DisableGitVersionTask=true
 
-# Run tests (requires building first)
-.\test.cmd
-
-# Cross-platform alternative (Linux/macOS):
+# Run tests
 dotnet test --no-build -c Release -f net8.0 src/DelegateDecompiler.Tests
 dotnet test --no-build -c Release -f net8.0 src/DelegateDecompiler.Tests.VB
 dotnet test --no-build -c Release -f net8.0 src/DelegateDecompiler.EntityFramework.Tests
