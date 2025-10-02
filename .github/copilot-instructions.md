@@ -27,6 +27,7 @@ dotnet test --no-build -c Release -f net8.0 src/DelegateDecompiler.EntityFramewo
 dotnet test --no-build -c Release -f net8.0 src/DelegateDecompiler.EntityFrameworkCore6.Tests
 dotnet test --no-build -c Release -f net8.0 src/DelegateDecompiler.EntityFrameworkCore8.Tests
 dotnet test --no-build -c Release -f net9.0 src/DelegateDecompiler.EntityFrameworkCore9.Tests
+dotnet test --no-build -c Release -f net10.0 src\DelegateDecompiler.EntityFrameworkCore10.Tests
 ```
 
 **Development Guidelines:**
