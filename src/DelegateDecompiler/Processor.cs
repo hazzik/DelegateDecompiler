@@ -296,7 +296,7 @@ namespace DelegateDecompiler
             _ => null
         };
 
-        static bool IsCachedAnonymousMethodDelegate(FieldInfo field)
+        internal static bool IsCachedAnonymousMethodDelegate(FieldInfo field)
         {
             if (field == null) return false;
             return field.Name.StartsWith(cachedAnonymousMethodDelegate) && Attribute.IsDefined(field, typeof(CompilerGeneratedAttribute), false) ||

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
@@ -30,8 +31,7 @@ internal class LdfldProcessor : IProcessor
             {
                 // Instance field
                 var instance = state.Stack.Pop();
-                var result = LdFld(instance, field);
-                state.Stack.Push(result);
+                LdFld(state, instance);
             }
             return true;
         }
@@ -39,24 +39,17 @@ internal class LdfldProcessor : IProcessor
         return false;
     }
 
-    static Expression LdFld(Expression instance, FieldInfo field)
+    static void LdFld(ProcessorState state, Address instance)
     {
-        if (instance is Address address)
+        var field = (FieldInfo)state.Instruction.Operand;
+        if (Processor.IsCachedAnonymousMethodDelegate(field) &&
+            state.Delegates.TryGetValue(Tuple.Create(instance, field), out var address))
         {
-            return address[field];
+            state.Stack.Push(address);
         }
-
-        if (IsCachedAnonymousMethodDelegate(instance, field))
+        else
         {
-            return ((ConstantExpression)instance).Value;
+            state.Stack.Push(Expression.Field(instance?.Expression, field));
         }
-
-        return Expression.Field(instance, field);
-    }
-
-    static bool IsCachedAnonymousMethodDelegate(Expression instance, FieldInfo field)
-    {
-        return instance is ConstantExpression &&
-               field.Name.Contains("CachedAnonymousMethodDelegate");
     }
 }
