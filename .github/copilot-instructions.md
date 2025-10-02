@@ -149,6 +149,23 @@ The EF test projects automatically generate documentation:
 - Use `ContinuousIntegrationBuild` for reproducible builds
 - Source link enabled for debugging into source
 
+### Performance Considerations
+- Decompilation results are cached using `ConcurrentDictionary`
+- First-time decompilation has higher cost due to IL analysis
+- Consider using automatic decompilation in EF Core for better performance
+- Complex computed properties may impact query performance
+
+### Troubleshooting Common Issues
+1. **"Method body not found"**: Ensure method has implementation (not abstract/interface)
+2. **"Unsupported IL instruction"**: Method contains opcodes not yet supported
+3. **"Expression tree too complex"**: Simplify computed property logic
+4. **EF translation errors**: Not all expressions translate to SQL - test with simple database queries first
+
+## Security Considerations
+- Uses Mono.Reflection for IL reading - ensure trusted assemblies only
+- Strong-name signed assemblies for integrity
+- Be cautious with computed properties containing sensitive logic
+
 ## Testing Specific Guidance
 
 ### Entity Framework Test Patterns
@@ -182,5 +199,63 @@ public void TestFeatureName()
 - Use descriptive test names as they appear in docs
 - Group related functionality in same test group
 - Test failures help identify unsupported scenarios
+
+## Example Usage Patterns
+
+### Basic Computed Property
+```csharp
+class Employee
+{
+    [Computed]
+    public string FullName => FirstName + " " + LastName;
+    public string FirstName { get; set; }
+    public string LastName { get; set; }
+}
+
+// Usage in LINQ
+var results = employees
+    .Where(e => e.FullName == "John Doe")
+    .Decompile() // Translates FullName to FirstName + " " + LastName
+    .ToList();
+```
+
+### Entity Framework Configuration
+```csharp
+// EF Core automatic decompilation
+public class MyDbContext : DbContext
+{
+    protected override void OnConfiguring(DbContextOptionsBuilder options)
+    {
+        options.AddDelegateDecompiler(); // Auto-decompiles all queries
+    }
+}
+```
+
+## Known Limitations
+
+### Pattern Matching
+- `is ... or ...` patterns may not decompile due to compiler optimizations
+- Complex switch expressions might not be supported
+- Some compiler-generated code cannot be reliably decompiled
+
+### Unsupported Scenarios
+- Async/await in computed properties
+- Dynamic expressions
+- Some advanced C# language features in method bodies
+- Recursive computed properties
+
+## Contribution Guidelines
+
+### When Adding New Processors
+1. Implement `IProcessor` interface
+2. Handle specific IL opcodes in `ProcessInstruction` method
+3. Ensure proper stack management in `ProcessorState`
+4. Add comprehensive unit tests covering edge cases
+
+### When Adding Entity Framework Support
+1. Create new test project following naming convention
+2. Implement test infrastructure similar to existing EF test projects
+3. Add tests covering various LINQ scenarios
+4. Ensure proper documentation generation
 
 This project requires careful attention to IL decompilation accuracy, Entity Framework compatibility, and comprehensive testing across multiple .NET versions.
