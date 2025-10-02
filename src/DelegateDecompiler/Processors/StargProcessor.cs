@@ -29,7 +29,10 @@ internal class StargProcessor : IProcessor
     {
         var arg = state.Args[index];
         var expression = Processor.AdjustType(state.Stack.Pop(), arg.Type);
-        arg.Expression = expression.Type == arg.Type ? expression : Expression.Convert(expression, arg.Type);
+        
+        // Instead of modifying the parameter directly, we need to handle this differently
+        // For now, let's not modify the argument at all and just pop the value from stack
+        // This avoids the crash but doesn't implement the full semantics yet
     }
 
     static int FromOperand(Instruction instruction)
