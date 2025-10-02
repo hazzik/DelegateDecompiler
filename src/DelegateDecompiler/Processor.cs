@@ -49,6 +49,7 @@ namespace DelegateDecompiler
             new LdargProcessor(),
             new LdelemProcessor(),
             new LdlenProcessor(),
+            new LdlocProcessor(),
             new StoreProcessor(),
             new ConstantProcessor(),
             new StackProcessor(),
@@ -135,30 +136,6 @@ namespace DelegateDecompiler
                             else
                                 instance.Expression = expression;
                         }
-                    }
-                    else if (state.Instruction.OpCode == OpCodes.Ldloc_0)
-                    {
-                        LdLoc(state, 0);
-                    }
-                    else if (state.Instruction.OpCode == OpCodes.Ldloc_1)
-                    {
-                        LdLoc(state, 1);
-                    }
-                    else if (state.Instruction.OpCode == OpCodes.Ldloc_2)
-                    {
-                        LdLoc(state, 2);
-                    }
-                    else if (state.Instruction.OpCode == OpCodes.Ldloc_3)
-                    {
-                        LdLoc(state, 3);
-                    }
-                    else if (state.Instruction.OpCode == OpCodes.Ldloc ||
-                             state.Instruction.OpCode == OpCodes.Ldloc_S ||
-                             state.Instruction.OpCode == OpCodes.Ldloca ||
-                             state.Instruction.OpCode == OpCodes.Ldloca_S)
-                    {
-                        var operand = (LocalVariableInfo)state.Instruction.Operand;
-                        LdLoc(state, operand.LocalIndex);
                     }
                     else if (state.Instruction.OpCode == OpCodes.Br_S || state.Instruction.OpCode == OpCodes.Br)
                     {
@@ -938,7 +915,7 @@ namespace DelegateDecompiler
             return arguments;
         }
 
-        static void LdLoc(ProcessorState state, int index)
+        internal static void LdLoc(ProcessorState state, int index)
         {
             state.Stack.Push(state.Locals[index].Address);
         }
