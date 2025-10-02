@@ -8,16 +8,18 @@ internal class StackProcessor : IProcessor
 {
     public bool Process(ProcessorState state)
     {
-        switch (state.Instruction.OpCode)
+        if (state.Instruction.OpCode == OpCodes.Dup)
         {
-            case OpCodes.Dup:
-                state.Stack.Push(state.Stack.Peek());
-                return true;
-            case OpCodes.Pop:
-                state.Stack.Pop();
-                return true;
-            default:
-                return false;
+            state.Stack.Push(state.Stack.Peek());
+            return true;
         }
+
+        if (state.Instruction.OpCode == OpCodes.Pop)
+        {
+            state.Stack.Pop();
+            return true;
+        }
+
+        return false;
     }
 }
