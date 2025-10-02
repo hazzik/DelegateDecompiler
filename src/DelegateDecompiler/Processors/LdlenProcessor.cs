@@ -7,13 +7,11 @@ internal class LdlenProcessor : IProcessor
 {
     public bool Process(ProcessorState state)
     {
-        if (state.Instruction.OpCode == OpCodes.Ldlen)
-        {
-            var array = state.Stack.Pop();
-            state.Stack.Push(Expression.ArrayLength(array));
-            return true;
-        }
+        if (state.Instruction.OpCode != OpCodes.Ldlen)
+            return false;
 
-        return false;
+        var array = state.Stack.Pop();
+        state.Stack.Push(Expression.ArrayLength(array));
+        return true;
     }
 }

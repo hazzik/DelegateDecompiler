@@ -37,8 +37,7 @@ internal class StlocProcessor : IProcessor
 
     static int FromOperand(Instruction i)
     {
-        var operand = (LocalVariableInfo)i.Operand;
-        return operand.LocalIndex;
+        return ((LocalVariableInfo)i.Operand).LocalIndex;
     }
 
     static Expression AdjustType(Expression expression, Type type)

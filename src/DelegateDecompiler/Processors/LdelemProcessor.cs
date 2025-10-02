@@ -6,7 +6,7 @@ namespace DelegateDecompiler.Processors;
 
 internal class LdelemProcessor : IProcessor
 {
-    static readonly HashSet<OpCode> LdElemOpcodes = new()
+    static readonly HashSet<OpCode> Operations = new()
     {
         OpCodes.Ldelem,
         OpCodes.Ldelem_I,
@@ -24,14 +24,12 @@ internal class LdelemProcessor : IProcessor
 
     public bool Process(ProcessorState state)
     {
-        if (LdElemOpcodes.Contains(state.Instruction.OpCode))
-        {
-            var index = state.Stack.Pop();
-            var array = state.Stack.Pop();
-            state.Stack.Push(Expression.ArrayIndex(array, index));
-            return true;
-        }
+        if (!Operations.Contains(state.Instruction.OpCode))
+            return false;
 
-        return false;
+        var index = state.Stack.Pop();
+        var array = state.Stack.Pop();
+        state.Stack.Push(Expression.ArrayIndex(array, index));
+        return true;
     }
 }

@@ -18,25 +18,24 @@ internal class LdfldProcessor : IProcessor
 
     public bool Process(ProcessorState state)
     {
-        if (LdfldOpcodes.Contains(state.Instruction.OpCode))
-        {
-            var field = (FieldInfo)state.Instruction.Operand;
-            
-            if (state.Instruction.OpCode == OpCodes.Ldsfld)
-            {
-                // Static field
-                state.Stack.Push(Expression.Field(null, field));
-            }
-            else
-            {
-                // Instance field
-                var instance = state.Stack.Pop();
-                LdFld(state, instance);
-            }
-            return true;
-        }
+        if (!LdfldOpcodes.Contains(state.Instruction.OpCode))
+            return false;
 
-        return false;
+        var field = (FieldInfo)state.Instruction.Operand;
+            
+        if (state.Instruction.OpCode == OpCodes.Ldsfld)
+        {
+            // Static field
+            state.Stack.Push(Expression.Field(null, field));
+        }
+        else
+        {
+            // Instance field
+            var instance = state.Stack.Pop();
+            LdFld(state, instance);
+        }
+        return true;
+
     }
 
     static void LdFld(ProcessorState state, Address instance)

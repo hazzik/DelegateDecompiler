@@ -560,7 +560,7 @@ namespace DelegateDecompiler
                 state.Stack.Push(result);
         }
 
-        static Expression BuildAssignment(Expression instance, MemberInfo member, Expression value, out bool push)
+        internal static Expression BuildAssignment(Expression instance, MemberInfo member, Expression value, out bool push)
         {
             var adjustedValue = AdjustType(value, member.FieldOrPropertyType());
 
