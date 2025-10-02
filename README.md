@@ -94,7 +94,16 @@ and would probably throw `StackOverflowException` similarly to loops.
 
 `is ... or ...` pattern matching cannot always be decompiled due to compiler optimizations. The compiler may optimize enum patterns to use comparison operators, making it impossible to distinguish between genuine comparisons and optimized patterns.
 
-For example, `x is SomeEnum.Value1 or SomeEnum.Value2` might compile to `(int)x <= 1`.
+For example:
+```csharp
+enum TestEnum { Foo, Bar, Baz }
+
+// This pattern matching:
+x is TestEnum.Foo or TestEnum.Bar
+
+// Might compile to:
+(int)x <= 1
+```
 
 ## Using with EntityFramework and other ORMs
 
