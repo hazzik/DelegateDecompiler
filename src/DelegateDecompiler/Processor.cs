@@ -56,6 +56,7 @@ namespace DelegateDecompiler
             new ObjectProcessor(),
             new LdfldProcessor(),
             new StfldProcessor(),
+            new StsfldProcessor(),
             new StelemProcessor()
         };
 
@@ -232,20 +233,6 @@ namespace DelegateDecompiler
             return state == null ? Expression.Empty() : state.Final();
         }
 
-        static void LdFld(ProcessorState state, Address instance)
-        {
-            var field = (FieldInfo)state.Instruction.Operand;
-            if (IsCachedAnonymousMethodDelegate(field) &&
-                state.Delegates.TryGetValue(Tuple.Create(instance, field), out var address))
-            {
-                state.Stack.Push(address);
-            }
-            else
-            {
-                state.Stack.Push(Expression.Field(instance?.Expression, field));
-            }
-        }
-
         static LambdaExpression DecompileLambdaExpression(MethodInfo method, Func<Expression> @this)
         {
             if (method.IsStatic)
@@ -287,14 +274,6 @@ namespace DelegateDecompiler
 
             return result;
         }
-
-        static object GetRuntimeHandle(object operand) => operand switch
-        {
-            FieldInfo field => field.FieldHandle,
-            MethodBase method => method.MethodHandle,
-            Type type => type.TypeHandle,
-            _ => null
-        };
 
         internal static bool IsCachedAnonymousMethodDelegate(FieldInfo field)
         {

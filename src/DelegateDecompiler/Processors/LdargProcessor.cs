@@ -23,13 +23,12 @@ internal class LdargProcessor : IProcessor
 
     public bool Process(ProcessorState state)
     {
-        if (Operations.TryGetValue(state.Instruction.OpCode, out var getIndex))
-        {
-            LdArg(state, getIndex(state));
-            return true;
-        }
+        if (!Operations.TryGetValue(state.Instruction.OpCode, out var value))
+            return false;
 
-        return false;
+        var index = value(state);
+        state.Stack.Push(state.Args[index]);
+        return true;
     }
 
     static int GetParameterIndex(ProcessorState state)
@@ -37,10 +36,5 @@ internal class LdargProcessor : IProcessor
         var operand = (ParameterInfo)state.Instruction.Operand;
         var arg = state.Args.Single(x => ((ParameterExpression)x.Expression).Name == operand.Name);
         return state.Args.IndexOf(arg);
-    }
-
-    static void LdArg(ProcessorState state, int index)
-    {
-        state.Stack.Push(state.Args[index]);
     }
 }

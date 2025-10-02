@@ -7,15 +7,9 @@ namespace DelegateDecompiler.Processors;
 
 internal class StfldProcessor : IProcessor
 {
-    static readonly HashSet<OpCode> Operations = new()
-    {
-        OpCodes.Stfld,
-        OpCodes.Stsfld
-    };
-
     public bool Process(ProcessorState state)
     {
-        if (!Operations.Contains(state.Instruction.OpCode))
+        if (state.Instruction.OpCode != OpCodes.Stfld)
             return false;
 
         var value = state.Stack.Pop();
