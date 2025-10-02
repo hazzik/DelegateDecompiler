@@ -10,10 +10,10 @@ namespace DelegateDecompiler.Processors;
 
 internal class StargProcessor : IProcessor
 {
-    static readonly Dictionary<OpCode, Func<Instruction, int>> Operations = new()
+    static readonly Dictionary<OpCode, Func<ProcessorState, int>> Operations = new()
     {
-        { OpCodes.Starg_S, FromOperand },
-        { OpCodes.Starg, FromOperand },
+        { OpCodes.Starg_S, GetParameterIndex },
+        { OpCodes.Starg, GetParameterIndex },
     };
 
     public bool Process(ProcessorState state)
@@ -21,7 +21,7 @@ internal class StargProcessor : IProcessor
         if (!Operations.TryGetValue(state.Instruction.OpCode, out var value))
             return false;
 
-        StArg(state, value(state.Instruction));
+        StArg(state, value(state));
         return true;
     }
 
@@ -36,10 +36,16 @@ internal class StargProcessor : IProcessor
         arg.Expression = expression.Type == arg.Type ? expression : Expression.Convert(expression, arg.Type);
     }
 
-    static int FromOperand(Instruction instruction)
+    static int GetParameterIndex(ProcessorState state)
     {
-        var operand = (ParameterInfo)instruction.Operand;
-        // For Starg operations, we need to find the parameter by its position or name
-        return operand.Position;
+        var operand = (ParameterInfo)state.Instruction.Operand;
+        
+        // Determine if this is an instance method by checking if the first argument is "this"
+        bool isInstanceMethod = state.Args.Count > 0 && 
+                               state.Args[0].Expression is ParameterExpression firstParam && 
+                               firstParam.Name == "this";
+        
+        // For instance methods, parameters are offset by 1 due to the "this" parameter
+        return isInstanceMethod ? operand.Position + 1 : operand.Position;
     }
 }

@@ -30,6 +30,13 @@ namespace DelegateDecompiler.Tests
                     text = text + " modified";
                 return text;
             }
+
+            // Non-static method for testing instance method parameter modification
+            public int ModifyInstanceParameter(int value)
+            {
+                value = value + 1;
+                return value;
+            }
         }
 
         [Test]
@@ -54,6 +61,15 @@ namespace DelegateDecompiler.Tests
             Expression<Func<string, string>> expected = text => text + " modified";
             Func<string, string> compiled = TestClass.ModifyStringParameter;
             Test(expected, compiled);
+        }
+
+        [Test]
+        public void StargProcessor_ShouldHandleInstanceMethodParameterModification()
+        {
+            var method = typeof(TestClass).GetMethod(nameof(TestClass.ModifyInstanceParameter));
+            var expression = method.Decompile();
+
+            Assert.That(expression.ToString(), Is.EqualTo("(this, value) => (value + 1)"));
         }
     }
 }
