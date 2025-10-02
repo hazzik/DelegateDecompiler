@@ -9,7 +9,6 @@ on:
 
 jobs:
   dotnet-windows:
-    name: Tests
     runs-on: windows-latest
     defaults:
       run:

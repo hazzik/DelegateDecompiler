@@ -8,7 +8,6 @@ on:
 
 jobs:
   dotnet-framework:
-    name: Tests
     runs-on: windows-latest
     defaults:
       run:
