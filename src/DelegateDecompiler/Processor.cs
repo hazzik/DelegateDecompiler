@@ -9,6 +9,7 @@ using System.Reflection;
 using System.Reflection.Emit;
 using Mono.Reflection;
 using System.Runtime.CompilerServices;
+using DelegateDecompiler.Processors;
 
 namespace DelegateDecompiler
 {
