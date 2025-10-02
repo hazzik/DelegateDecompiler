@@ -3,13 +3,19 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+#if NETSTANDARD2_1_OR_GREATER
+using System.Threading;
+#endif
 
 namespace DelegateDecompiler
 {
     public class DecompiledQueryable<T> : IOrderedQueryable<T>
+    #if NETSTANDARD2_1_OR_GREATER
+        , IAsyncEnumerable<T>
+    #endif
     {
-        private readonly IQueryable<T> inner;
-        private readonly IQueryProvider provider;
+        readonly IQueryable<T> inner;
+        readonly IQueryProvider provider;
 
         protected internal DecompiledQueryable(IQueryProvider provider, IQueryable<T> inner)
         {
@@ -41,6 +47,18 @@ namespace DelegateDecompiler
         {
             return inner.GetEnumerator();
         }
+
+#if NETSTANDARD2_1_OR_GREATER
+        public IAsyncEnumerator<T> GetAsyncEnumerator(CancellationToken cancellationToken = default)
+        {
+            if (inner is not IAsyncEnumerable<T> e)
+            {
+                throw new NotSupportedException($"The source 'IQueryable' doesn't implement {typeof(IAsyncEnumerable<T>)}.");
+            }
+
+            return e.GetAsyncEnumerator(cancellationToken);
+        }
+#endif
 
         public override string ToString()
         {

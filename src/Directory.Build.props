@@ -4,7 +4,7 @@
     <Description />
 
     <Authors>Alexander Zaytsev</Authors>
-    <Copyright>Copyright (c) Alexander Zaytsev 2012 - 2021</Copyright>
+    <Copyright>Copyright (c) Alexander Zaytsev 2012 - 2024</Copyright>
     <Description>A library which is able to decompile a delegate or a method body to its lambda representation</Description>
     <PackageTags>LINQ computed-properties computedproperties decompiler decompilation computed properties expressions expression-tree IL</PackageTags>
 
@@ -13,7 +13,7 @@
     <PackageReadmeFile>README.md</PackageReadmeFile>
 
     <SignAssembly>true</SignAssembly>
-    <AssemblyOriginatorKeyFile>$(SolutionDir)\DelegateDecompiler.snk</AssemblyOriginatorKeyFile>
+    <AssemblyOriginatorKeyFile>$(MSBuildThisFileDirectory)../DelegateDecompiler.snk</AssemblyOriginatorKeyFile>
 
     <FileVersion>$(Version)</FileVersion>
 
@@ -24,12 +24,16 @@
     <LangVersion>12.0</LangVersion>
 
     <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
+    
+    <NuGetAudit>true</NuGetAudit>
+    <NuGetAuditLevel>low</NuGetAuditLevel>
+    <NuGetAuditMode>direct</NuGetAuditMode>
 
     <ContinuousIntegrationBuild Condition="'$(CI)' != ''">$(CI)</ContinuousIntegrationBuild>
   </PropertyGroup>
   
   <ItemGroup>
-    <PackageReference Include="GitVersion.MsBuild" Version="5.10.3" PrivateAssets="All" />
+    <PackageReference Include="GitVersion.MsBuild" Version="6.1.0" PrivateAssets="All" />
     <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.3" PrivateAssets="All" />
   </ItemGroup>
 

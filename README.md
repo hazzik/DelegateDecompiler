@@ -1,5 +1,4 @@
-DelegateDecompiler celebrates 10th year anniversary 🎂
-======================================================
+# DelegateDecompiler
 
 ![https://ci.appveyor.com/project/hazzik/delegatedecompiler/branch/main](https://ci.appveyor.com/api/projects/status/github/hazzik/delegatedecompiler?branch=main&svg=true)
 ![https://nuget.org/packages/DelegateDecompiler](https://img.shields.io/nuget/dt/DelegateDecompiler.svg)
@@ -21,9 +20,7 @@ class Employee
 {
     [Computed]
     public string FullName => FirstName + " " + LastName;
-
     public string LastName { get; set; }
-
     public string FirstName { get; set; }
 }
 ```
@@ -64,6 +61,50 @@ Again, the `FullName` property will be decompiled:
 bool exists = db.Employees.Any(employee => (employee.FirstName + " " + employee.LastName) == "Test User");
 ```
 
+## Limitations
+
+Not every compiled code can be represented as a lambda expression. Some cases are explicitly not supported, other can break and produce unexpected results.
+
+Some of the known cases listed below
+
+### Loops
+
+Loops often cannot be represented as an expression tree. 
+
+So, the following imperative code would probably throw a `StackOverflowException`:
+
+```csharp
+var total = 0;
+foreach (var item in this.Items) { total += item.TotalPrice; }
+return total;
+```
+
+Instead, write it as a declarative Linq expression, which would be supported.
+
+```csharp
+return this.Items.Sum(i => i.TotalPrice);
+```
+
+### Recursion and self-referencing
+
+Recursion and self-referencing of computed properties cannot be represented as an Expression tree, 
+and would probably throw `StackOverflowException` similarly to loops.
+
+### Pattern matching with `is ... or ...`
+
+`is ... or ...` pattern matching cannot always be decompiled due to compiler optimizations. The compiler may optimize patterns to use comparison operators, making it impossible to distinguish between genuine comparisons and optimized patterns.
+
+For example:
+```csharp
+enum TestEnum { Foo, Bar, Baz }
+
+// This pattern matching:
+x is TestEnum.Foo or TestEnum.Bar
+
+// Might compile to:
+(uint)x <= 1
+```
+
 ## Using with EntityFramework and other ORMs
 
 If you are using ORM specific features, like EF's `Include`, `AsNoTracking` or NH's `Fetch` then `Decompile` method should be called after all ORM specific methods, otherwise it may not work. Ideally use `Decompile` extension method just before materialization methods such as `ToList`, `ToArray`, `First`, `FirstOrDefault`, `Count`, `Any`, and etc.
@@ -72,13 +113,25 @@ If you are using ORM specific features, like EF's `Include`, `AsNoTracking` or N
 
 The [DelegateDecompiler.EntityFramework](https://nuget.org/packages/DelegateDecompiler.EntityFramework) package provides `DecompileAsync` extension method which adds support for EF's Async operations.
  
-### Async Support with [EntityFramework Core 2.0-3.1](https://www.nuget.org/packages/DelegateDecompiler.EntityFrameworkCore)
-
-The [DelegateDecompiler.EntityFrameworkCore](https://nuget.org/packages/DelegateDecompiler.EntityFrameworkCore) package provides `DecompileAsync` extension method which adds support for EF's Async operations.
- 
 ### Async Support with [EntityFramework Core 5.0 and later](https://www.nuget.org/packages/DelegateDecompiler.EntityFrameworkCore5)
 
 The [DelegateDecompiler.EntityFrameworkCore5](https://nuget.org/packages/DelegateDecompiler.EntityFrameworkCore5) package provides `DecompileAsync` extension method which adds support for EF's Async operations.
+
+#### Automatic decompilation
+
+You can configure DelegateDecompiler to automatically decompile all EF Core queries:
+
+```csharp
+public class YourDbContext : DbContext
+{
+    protected override void OnConfiguring(DbContextOptionsBuilder options) {
+        options.AddDelegateDecompiler();
+        // Other configuration
+    }
+}
+```
+
+With this approach you would not need to call `Decompile` or `DecompileAsync` methods on queries.
  
 # Installation
 
@@ -86,7 +139,6 @@ Available on [NuGet](https://nuget.org/)
 
 * Install-Package [DelegateDecompiler](https://nuget.org/packages/DelegateDecompiler)
 * Install-Package [DelegateDecompiler.EntityFramework](https://nuget.org/packages/DelegateDecompiler.EntityFramework)
-* Install-Package [DelegateDecompiler.EntityFrameworkCore](https://nuget.org/packages/DelegateDecompiler.EntityFrameworkCore)
 * Install-Package [DelegateDecompiler.EntityFrameworkCore5](https://nuget.org/packages/DelegateDecompiler.EntityFrameworkCore5)
 
 # License

@@ -7,7 +7,7 @@ namespace DelegateDecompiler.EntityFramework.Tests.Helpers
 {
     internal static class MarkupFileHelpers
     {
-        private const string MarkupDirectoryName = @"\GeneratedDocumentation";
+        private const string MarkupDirectoryName = "GeneratedDocumentation";
 
         //-------------------------------------------------------------------
 
@@ -35,23 +35,21 @@ namespace DelegateDecompiler.EntityFramework.Tests.Helpers
         public static string[] SearchMarkupForManyFilesReturnFilePaths(string searchPattern = "")
         {
             var directory = GetMarkupFileDirectory();
-            if (searchPattern.Contains(@"\"))
+            if (searchPattern.Contains(Path.DirectorySeparatorChar.ToString()))
             {
                 //Has subdirectory in search pattern, so change directory
-                directory = Path.Combine(directory, searchPattern.Substring(0, searchPattern.LastIndexOf('\\')));
-                searchPattern = searchPattern.Substring(searchPattern.LastIndexOf('\\') + 1);
+                directory = Path.Combine(directory, searchPattern.Substring(0, searchPattern.LastIndexOf(Path.DirectorySeparatorChar)));
+                searchPattern = searchPattern.Substring(searchPattern.LastIndexOf(Path.DirectorySeparatorChar) + 1);
             }
 
-            string[] fileList = Directory.GetFiles(directory, searchPattern);
-
-            return fileList;
+            return Directory.GetFiles(directory, searchPattern);
         }
 
-        public static string GetMarkupFileDirectory(string alternateTestDir = MarkupDirectoryName)
+        public static string GetMarkupFileDirectory()
         {
             string path;
-            if (GetMarkupFileDirectory(Environment.CurrentDirectory, alternateTestDir, out path) ||
-                GetMarkupFileDirectory(Path.GetDirectoryName(new Uri(typeof(MarkupFileHelpers).Assembly.Location).LocalPath), alternateTestDir, out path))
+            if (GetMarkupFileDirectory(Environment.CurrentDirectory, out path) ||
+                GetMarkupFileDirectory(Path.GetDirectoryName(new Uri(typeof(MarkupFileHelpers).Assembly.Location).LocalPath), out path))
             {
                 return path;
             }
@@ -59,31 +57,27 @@ namespace DelegateDecompiler.EntityFramework.Tests.Helpers
             throw new Exception("bad news guys. Not the expected path");
         }
 
-        static bool GetMarkupFileDirectory(string pathToManipulate, string alternateTestDir, out string path)
+        static bool GetMarkupFileDirectory(string pathToManipulate, out string path)
         {
-            var endings = new[]
+            string[] configs = ["release", "debug"];
+            string[] frameworks = ["", "net45", "net8.0", "net9.0", "net10.0"];
+
+            foreach (var conf in configs)
             {
-                @"\bin\debug",
-                @"\bin\debug\net45",
-                @"\bin\debug\netcoreapp2.1",
-                @"\bin\debug\netcoreapp3.1",
-                @"\bin\debug\net6.0",
-                @"\bin\debug\net8.0",
-                @"\bin\release",
-                @"\bin\release\net45",
-                @"\bin\release\netcoreapp2.1",
-                @"\bin\release\netcoreapp3.1",
-                @"\bin\release\net6.0",
-                @"\bin\release\net8.0",
-            };
-            foreach (var ending in endings)
-            {
-                if (pathToManipulate.EndsWith(ending, StringComparison.InvariantCultureIgnoreCase))
+                foreach (var platform in frameworks)
                 {
-                    path = pathToManipulate.Substring(0, pathToManipulate.Length - ending.Length) + alternateTestDir;
-                    return true;
+                    var ending = Path.Combine("bin", conf, platform);
+
+                    if (pathToManipulate.EndsWith(ending, StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        path = Path.Combine(
+                            pathToManipulate.Substring(0, pathToManipulate.Length - ending.Length),
+                            MarkupDirectoryName);
+                        return true;
+                    }
                 }
             }
+
             path = null;
             return false;
         }

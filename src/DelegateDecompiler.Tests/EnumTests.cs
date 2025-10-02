@@ -11,7 +11,8 @@ namespace DelegateDecompiler.Tests
         public enum TestEnum
         {
             Foo,
-            Bar
+            Bar,
+            Baz
         }
 
         [Flags]
@@ -56,6 +57,30 @@ namespace DelegateDecompiler.Tests
             Expression<Func<TestEnum, bool>> expected2 = x => ((int)x == (int)TestEnum.Bar) || ((int)x == (int)TestEnum.Foo);
             Func<TestEnum, bool> compiled = x => (x == TestEnum.Bar) || (x == TestEnum.Foo);
             Test(expected1, expected2, compiled);
+        }
+
+        [Test]
+        public void TestEnumPropertyIsFooOrBar()
+        {
+            Expression<Func<TestEnum, bool>> expected = x => (int)x <= 1;
+            Func<TestEnum, bool> compiled = x => x is TestEnum.Foo or TestEnum.Bar;
+            Test(expected, compiled);
+        }
+
+        [Test, Ignore("Needs optimization")]
+        public void TestEnumPropertyIsFooOrBaz()
+        {
+            Expression<Func<TestEnum, bool>> expected = x => (x == TestEnum.Foo) || (x == TestEnum.Baz);
+            Func<TestEnum, bool> compiled = x => x is TestEnum.Foo or TestEnum.Baz;
+            Test(expected, compiled);
+        }
+
+        [Test]
+        public void TestEnumPropertyIsBarOrBaz()
+        {
+            Expression<Func<TestEnum, bool>> expected1 = x => (int)x - 1 <= 1;
+            Func<TestEnum, bool> compiled = x => x is TestEnum.Bar or TestEnum.Baz;
+            Test(expected1, compiled);
         }
 
         [Test]
@@ -298,7 +323,7 @@ namespace DelegateDecompiler.Tests
         public void Issue160()
         {
             Expression<Func<int?, bool>> expected1 = x => (TestEnum?)x == TestEnum.Bar;
-            Expression<Func<int?, bool>> expected2 = x => (x.HasValue ? (TestEnum?)(x ?? 0) : null) == TestEnum.Bar;
+            Expression<Func<int?, bool>> expected2 = x => (int)((TestEnum?)x ?? TestEnum.Foo) == 1;
             Func<int?, bool> compiled = x => (TestEnum?)x == TestEnum.Bar;
             Test(expected1, expected2, compiled);
         }

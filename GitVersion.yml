@@ -1,2 +1,5 @@
 assembly-versioning-scheme: MajorMinor
-mode: ContinuousDeployment
+mode: ContinuousDelivery
+branches:
+  main:
+    label: ci
