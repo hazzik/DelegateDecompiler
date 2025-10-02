@@ -1,4 +1,4 @@
-name: .NET Tests / Linux
+name: Linux / .NET Tests
 
 on:
   push:

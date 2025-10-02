@@ -1,4 +1,4 @@
-name: .NET Tests / Windows
+name: Windows / .NET Tests
 
 on:
   push:
