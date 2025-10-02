@@ -28,7 +28,15 @@ namespace DelegateDecompiler
         {
             var addressMap = new Dictionary<Address, Address>();
             var buffer = Stack.Select(address => address.Clone(addressMap)).Reverse();
-            var state = new ProcessorState(new Stack<Address>(buffer), new VariableInfo[Locals.Length], Args.ToArray(), instruction, last, Delegates);
+            
+            // Clone the Args array properly
+            var clonedArgs = new Address[Args.Count];
+            for (var i = 0; i < Args.Count; i++)
+            {
+                clonedArgs[i] = Args[i].Clone(addressMap);
+            }
+            
+            var state = new ProcessorState(new Stack<Address>(buffer), new VariableInfo[Locals.Length], clonedArgs, instruction, last, Delegates);
             for (var i = 0; i < Locals.Length; i++)
             {
                 state.Locals[i] = new VariableInfo(Locals[i].Type)
@@ -48,6 +56,15 @@ namespace DelegateDecompiler
                 var rightLocal = rightState.Locals[i];
                 Locals[i].Address = Address.Merge(test, leftLocal.Address, rightLocal.Address, addressMap);
             }
+            
+            // Merge arguments (parameters) - this is needed for Starg opcode support
+            for (var i = 0; i < leftState.Args.Count; i++)
+            {
+                var leftArg = leftState.Args[i];
+                var rightArg = rightState.Args[i];
+                Args[i] = Address.Merge(test, leftArg, rightArg, addressMap);
+            }
+            
             var buffer = new List<Address>();
             while (leftState.Stack.Count > 0 || rightState.Stack.Count > 0)
             {

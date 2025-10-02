@@ -50,7 +50,7 @@ namespace DelegateDecompiler.Tests
         [Test]
         public void StargProcessor_ShouldHandleConditionalParameterModification()
         {
-            Expression<Func<int, int>> expected = value => value > 0 ? value * 2 : -value;
+            Expression<Func<int, int>> expected = value => value <= 0 ? -value : value * 2;
             Func<int, int> compiled = TestClass.ModifyParameterWithCondition;
             Test(expected, compiled);
         }
@@ -58,7 +58,7 @@ namespace DelegateDecompiler.Tests
         [Test]
         public void StargProcessor_ShouldHandleStringParameterModification()
         {
-            Expression<Func<string, string>> expected = text => text + " modified";
+            Expression<Func<string, string>> expected = text => text == null ? text : text + " modified";
             Func<string, string> compiled = TestClass.ModifyStringParameter;
             Test(expected, compiled);
         }
