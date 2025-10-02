@@ -10,10 +10,10 @@ namespace DelegateDecompiler.Processors;
 
 internal class StargProcessor : IProcessor
 {
-    static readonly Dictionary<OpCode, Func<ProcessorState, int>> Operations = new()
+    static readonly Dictionary<OpCode, Func<Instruction, int>> Operations = new()
     {
-        { OpCodes.Starg_S, GetParameterIndex },
-        { OpCodes.Starg, GetParameterIndex },
+        { OpCodes.Starg_S, FromOperand },
+        { OpCodes.Starg, FromOperand },
     };
 
     public bool Process(ProcessorState state)
@@ -21,7 +21,7 @@ internal class StargProcessor : IProcessor
         if (!Operations.TryGetValue(state.Instruction.OpCode, out var value))
             return false;
 
-        StArg(state, value(state));
+        StArg(state, value(state.Instruction));
         return true;
     }
 
@@ -32,10 +32,10 @@ internal class StargProcessor : IProcessor
         arg.Expression = expression.Type == arg.Type ? expression : Expression.Convert(expression, arg.Type);
     }
 
-    static int GetParameterIndex(ProcessorState state)
+    static int FromOperand(Instruction instruction)
     {
-        var operand = (ParameterInfo)state.Instruction.Operand;
-        var arg = state.Args.Single(x => ((ParameterExpression)x.Expression).Name == operand.Name);
-        return state.Args.IndexOf(arg);
+        var operand = (ParameterInfo)instruction.Operand;
+        // For Starg operations, we need to find the parameter by its position or name
+        return operand.Position;
     }
 }

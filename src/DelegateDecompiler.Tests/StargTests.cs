@@ -9,14 +9,12 @@ namespace DelegateDecompiler.Tests
     {
         public class TestClass
         {
-            [Computed]
             public static int ModifyParameter(int value)
             {
                 value = value + 1;
                 return value;
             }
 
-            [Computed]  
             public static int ModifyParameterWithCondition(int value)
             {
                 if (value > 0)
@@ -26,7 +24,6 @@ namespace DelegateDecompiler.Tests
                 return value;
             }
 
-            [Computed]
             public static string ModifyStringParameter(string text)
             {
                 if (text != null)
@@ -41,13 +38,13 @@ namespace DelegateDecompiler.Tests
             var method = typeof(TestClass).GetMethod(nameof(TestClass.ModifyParameter));
             var decompiled = method.Decompile();
             
-            // Just verify the method can be decompiled without errors
+            // Verify the method can be decompiled without errors
             Assert.That(decompiled, Is.Not.Null);
             Assert.That(decompiled.Body, Is.Not.Null);
             
-            // The exact structure may vary, but it should represent the parameter modification
-            Console.WriteLine($"Decompiled: {decompiled}");
-            Console.WriteLine($"Body: {decompiled.Body}");
+            // Should represent parameter modification operation
+            var bodyString = decompiled.Body.ToString();
+            Console.WriteLine($"Decompiled body: {bodyString}");
         }
 
         [Test]
@@ -56,12 +53,12 @@ namespace DelegateDecompiler.Tests
             var method = typeof(TestClass).GetMethod(nameof(TestClass.ModifyParameterWithCondition));
             var decompiled = method.Decompile();
             
-            // Just verify the method can be decompiled without errors
+            // Verify the method can be decompiled without errors
             Assert.That(decompiled, Is.Not.Null);
             Assert.That(decompiled.Body, Is.Not.Null);
             
-            Console.WriteLine($"Decompiled: {decompiled}");
-            Console.WriteLine($"Body: {decompiled.Body}");
+            var bodyString = decompiled.Body.ToString();
+            Console.WriteLine($"Decompiled body: {bodyString}");
         }
 
         [Test]
@@ -70,12 +67,12 @@ namespace DelegateDecompiler.Tests
             var method = typeof(TestClass).GetMethod(nameof(TestClass.ModifyStringParameter));
             var decompiled = method.Decompile();
             
-            // Just verify the method can be decompiled without errors
+            // Verify the method can be decompiled without errors
             Assert.That(decompiled, Is.Not.Null);
             Assert.That(decompiled.Body, Is.Not.Null);
             
-            Console.WriteLine($"Decompiled: {decompiled}");
-            Console.WriteLine($"Body: {decompiled.Body}");
+            var bodyString = decompiled.Body.ToString();
+            Console.WriteLine($"Decompiled body: {bodyString}");
         }
     }
 }
