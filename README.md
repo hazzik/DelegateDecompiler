@@ -92,9 +92,9 @@ and would probably throw `StackOverflowException` similarly to loops.
 
 ### Pattern matching with `is ... or ...`
 
-It is not always possible to decompile `is ... or ...` pattern matching due to compiler optimizations introduced in .NET 8+. When the compiler optimizes certain enum pattern matches (like consecutive enum values) to use less-than comparisons, DelegateDecompiler cannot distinguish between genuine less-than operations and optimized pattern matching.
+`is ... or ...` pattern matching cannot always be decompiled due to compiler optimizations. The compiler may optimize enum patterns to use comparison operators, making it impossible to distinguish between genuine comparisons and optimized patterns.
 
-For example, the pattern `x is SomeEnum.Value1 or SomeEnum.Value2` might be compiled to `(int)x <= 1`, making it impossible to reconstruct the original pattern match intent.
+For example, `x is SomeEnum.Value1 or SomeEnum.Value2` might compile to `(int)x <= 1`.
 
 ## Using with EntityFramework and other ORMs
 
