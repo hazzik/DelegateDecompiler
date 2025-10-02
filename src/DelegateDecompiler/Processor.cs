@@ -53,7 +53,8 @@ namespace DelegateDecompiler
             new StlocProcessor(),
             new ConstantProcessor(),
             new StackProcessor(),
-            new ObjectProcessor()
+            new ObjectProcessor(),
+            new FieldProcessor()
         };
 
         Processor()
@@ -80,62 +81,6 @@ namespace DelegateDecompiler
                     if (state.Instruction.OpCode == OpCodes.Nop || state.Instruction.OpCode == OpCodes.Break)
                     {
                         //do nothing;
-                    }
-                    else if (state.Instruction.OpCode == OpCodes.Ldtoken)
-                    {
-                        var runtimeHandle = GetRuntimeHandle(state.Instruction.Operand);
-                        state.Stack.Push(Expression.Constant(runtimeHandle));
-                    }
-                    else if (state.Instruction.OpCode == OpCodes.Stelem ||
-                             state.Instruction.OpCode == OpCodes.Stelem_I ||
-                             state.Instruction.OpCode == OpCodes.Stelem_I1 ||
-                             state.Instruction.OpCode == OpCodes.Stelem_I2 ||
-                             state.Instruction.OpCode == OpCodes.Stelem_I4 ||
-                             state.Instruction.OpCode == OpCodes.Stelem_I8 ||
-                             state.Instruction.OpCode == OpCodes.Stelem_R4 ||
-                             state.Instruction.OpCode == OpCodes.Stelem_R8 ||
-                             state.Instruction.OpCode == OpCodes.Stelem_Ref)
-                    {
-                        StElem(state);
-                    }
-                    else if (state.Instruction.OpCode == OpCodes.Ldfld || state.Instruction.OpCode == OpCodes.Ldflda)
-                    {
-                        LdFld(state, state.Stack.Pop());
-                    }
-                    else if (state.Instruction.OpCode == OpCodes.Ldsfld)
-                    {
-                        LdFld(state, null);
-                    }
-                    else if (state.Instruction.OpCode == OpCodes.Stsfld)
-                    {
-                        var value = state.Stack.Pop();
-                        var field = (FieldInfo)state.Instruction.Operand;
-                        if (IsCachedAnonymousMethodDelegate(field))
-                        {
-                            state.Delegates[Tuple.Create(default(Address), field)] = value;
-                        }
-                        else
-                        {
-                            state.Stack.Push(Expression.Assign(Expression.Field(null, field), value));
-                        }
-                    }
-                    else if (state.Instruction.OpCode == OpCodes.Stfld)
-                    {
-                        var value = state.Stack.Pop();
-                        var instance = state.Stack.Pop();
-                        var field = (FieldInfo)state.Instruction.Operand;
-                        if (IsCachedAnonymousMethodDelegate(field))
-                        {
-                            state.Delegates[Tuple.Create(instance, field)] = value;
-                        }
-                        else
-                        {
-                            var expression = BuildAssignment(instance.Expression, field, value, out var push);
-                            if (push)
-                                state.Stack.Push(expression);
-                            else
-                                instance.Expression = expression;
-                        }
                     }
                     else if (state.Instruction.OpCode == OpCodes.Br_S || state.Instruction.OpCode == OpCodes.Br)
                     {

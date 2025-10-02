@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
+using System.Reflection;
 using System.Reflection.Emit;
 using Mono.Reflection;
 
@@ -27,6 +28,7 @@ internal class ConstantProcessor : IProcessor
         { OpCodes.Ldc_R4, FromOperand },
         { OpCodes.Ldc_R8, FromOperand },
         { OpCodes.Ldstr, FromOperand },
+        { OpCodes.Ldtoken, GetRuntimeHandle },
     };
 
     public bool Process(ProcessorState state)
@@ -39,4 +41,12 @@ internal class ConstantProcessor : IProcessor
     }
 
     static object FromOperand(Instruction i) => i.Operand;
+    
+    static object GetRuntimeHandle(Instruction i) => i.Operand switch
+    {
+        FieldInfo field => field.FieldHandle,
+        MethodBase method => method.MethodHandle,
+        Type type => type.TypeHandle,
+        _ => null
+    };
 }
