@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Reflection.Emit;
@@ -6,46 +7,32 @@ namespace DelegateDecompiler.Processors;
 
 internal class LdlocProcessor : IProcessor
 {
-    static readonly HashSet<OpCode> LdLocOpcodes = new()
+    static readonly Dictionary<OpCode, Func<ProcessorState, int>> Operations = new()
     {
-        OpCodes.Ldloc_0,
-        OpCodes.Ldloc_1,
-        OpCodes.Ldloc_2,
-        OpCodes.Ldloc_3,
-        OpCodes.Ldloc,
-        OpCodes.Ldloc_S,
-        OpCodes.Ldloca,
-        OpCodes.Ldloca_S
+        { OpCodes.Ldloc_0, _ => 0 },
+        { OpCodes.Ldloc_1, _ => 1 },
+        { OpCodes.Ldloc_2, _ => 2 },
+        { OpCodes.Ldloc_3, _ => 3 },
+        { OpCodes.Ldloc, state => ((LocalVariableInfo)state.Instruction.Operand).LocalIndex },
+        { OpCodes.Ldloc_S, state => ((LocalVariableInfo)state.Instruction.Operand).LocalIndex },
+        { OpCodes.Ldloca, state => ((LocalVariableInfo)state.Instruction.Operand).LocalIndex },
+        { OpCodes.Ldloca_S, state => ((LocalVariableInfo)state.Instruction.Operand).LocalIndex }
     };
 
     public bool Process(ProcessorState state)
     {
-        if (LdLocOpcodes.Contains(state.Instruction.OpCode))
+        if (Operations.TryGetValue(state.Instruction.OpCode, out var getIndex))
         {
-            if (state.Instruction.OpCode == OpCodes.Ldloc_0)
-            {
-                Processor.LdLoc(state, 0);
-            }
-            else if (state.Instruction.OpCode == OpCodes.Ldloc_1)
-            {
-                Processor.LdLoc(state, 1);
-            }
-            else if (state.Instruction.OpCode == OpCodes.Ldloc_2)
-            {
-                Processor.LdLoc(state, 2);
-            }
-            else if (state.Instruction.OpCode == OpCodes.Ldloc_3)
-            {
-                Processor.LdLoc(state, 3);
-            }
-            else // Ldloc, Ldloc_S, Ldloca, Ldloca_S
-            {
-                var operand = (LocalVariableInfo)state.Instruction.Operand;
-                Processor.LdLoc(state, operand.LocalIndex);
-            }
+            LdLoc(state, getIndex(state));
             return true;
         }
 
         return false;
+    }
+
+    static void LdLoc(ProcessorState state, int index)
+    {
+        var local = state.Locals[index];
+        state.Stack.Push(local.Address);
     }
 }

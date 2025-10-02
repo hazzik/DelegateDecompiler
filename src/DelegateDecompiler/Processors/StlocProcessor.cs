@@ -31,7 +31,7 @@ internal class StlocProcessor : IProcessor
     static void StLoc(ProcessorState state, int index)
     {
         var info = state.Locals[index];
-        var expression = Processor.AdjustType(state.Stack.Pop(), info.Type);
+        var expression = AdjustType(state.Stack.Pop(), info.Type);
         info.Address = expression.Type == info.Type ? expression : Expression.Convert(expression, info.Type);
     }
 
@@ -39,5 +39,16 @@ internal class StlocProcessor : IProcessor
     {
         var operand = (LocalVariableInfo)i.Operand;
         return operand.LocalIndex;
+    }
+
+    static Expression AdjustType(Expression expression, Type type)
+    {
+        if (expression.Type == type)
+            return expression;
+
+        if (type.IsAssignableFrom(expression.Type))
+            return expression;
+
+        return Expression.Convert(expression, type);
     }
 }

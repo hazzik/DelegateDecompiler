@@ -43,7 +43,7 @@ namespace DelegateDecompiler
 
         static readonly IProcessor[] processors = {
             new ConvertProcessor(),
-            new BinaryExpressionProcessor(), 
+            new BinaryExpressionProcessor(),
             new UnaryProcessor(),
             new ComparisonProcessor(),
             new LdargProcessor(),
@@ -54,7 +54,9 @@ namespace DelegateDecompiler
             new ConstantProcessor(),
             new StackProcessor(),
             new ObjectProcessor(),
-            new FieldProcessor()
+            new LdfldProcessor(),
+            new StfldProcessor(),
+            new StelemProcessor()
         };
 
         Processor()
@@ -860,21 +862,9 @@ namespace DelegateDecompiler
             return arguments;
         }
 
-        internal static void LdLoc(ProcessorState state, int index)
-        {
-            state.Stack.Push(state.Locals[index].Address);
-        }
-
-        internal static void StLoc(ProcessorState state, int index)
-        {
-            var info = state.Locals[index];
-            var expression = AdjustType(state.Stack.Pop(), info.Type);
-            info.Address = expression.Type == info.Type ? expression : Expression.Convert(expression, info.Type);
-        }
-
-        internal static void LdArg(ProcessorState state, int index)
-        {
-            state.Stack.Push(state.Args[index]);
-        }
+        // Helper methods moved to respective processors:
+        // - LdLoc moved to LdlocProcessor
+        // - StLoc moved to StlocProcessor  
+        // - LdArg moved to LdargProcessor
     }
 }
