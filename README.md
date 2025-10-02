@@ -90,6 +90,12 @@ return this.Items.Sum(i => i.TotalPrice);
 Recursion and self-referencing of computed properties cannot be represented as an Expression tree, 
 and would probably throw `StackOverflowException` similarly to loops.
 
+### Pattern matching with `is ... or ...`
+
+It is not always possible to decompile `is ... or ...` pattern matching due to compiler optimizations introduced in .NET 8+. When the compiler optimizes certain enum pattern matches (like consecutive enum values) to use less-than comparisons, DelegateDecompiler cannot distinguish between genuine less-than operations and optimized pattern matching.
+
+For example, the pattern `x is SomeEnum.Value1 or SomeEnum.Value2` might be compiled to `(int)x <= 1`, making it impossible to reconstruct the original pattern match intent.
+
 ## Using with EntityFramework and other ORMs
 
 If you are using ORM specific features, like EF's `Include`, `AsNoTracking` or NH's `Fetch` then `Decompile` method should be called after all ORM specific methods, otherwise it may not work. Ideally use `Decompile` extension method just before materialization methods such as `ToList`, `ToArray`, `First`, `FirstOrDefault`, `Count`, `Any`, and etc.
