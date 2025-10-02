@@ -6,7 +6,7 @@ using System.Reflection.Emit;
 
 namespace DelegateDecompiler.Processors;
 
-internal class LoadProcessor : IProcessor
+internal class LdargProcessor : IProcessor
 {
     static readonly HashSet<OpCode> LdArgOpcodes = new()
     {
@@ -20,25 +20,8 @@ internal class LoadProcessor : IProcessor
         OpCodes.Ldarga_S
     };
 
-    static readonly HashSet<OpCode> LdElemOpcodes = new()
-    {
-        OpCodes.Ldelem,
-        OpCodes.Ldelem_I,
-        OpCodes.Ldelem_I1,
-        OpCodes.Ldelem_I2,
-        OpCodes.Ldelem_I4,
-        OpCodes.Ldelem_I8,
-        OpCodes.Ldelem_U1,
-        OpCodes.Ldelem_U2,
-        OpCodes.Ldelem_U4,
-        OpCodes.Ldelem_R4,
-        OpCodes.Ldelem_R8,
-        OpCodes.Ldelem_Ref
-    };
-
     public bool Process(ProcessorState state)
     {
-        // Handle Ldarg operations
         if (LdArgOpcodes.Contains(state.Instruction.OpCode))
         {
             if (state.Instruction.OpCode == OpCodes.Ldarg_0)
@@ -62,23 +45,6 @@ internal class LoadProcessor : IProcessor
                 var operand = (ParameterInfo)state.Instruction.Operand;
                 state.Stack.Push(state.Args.Single(x => ((ParameterExpression)x.Expression).Name == operand.Name));
             }
-            return true;
-        }
-
-        // Handle Ldelem operations
-        if (LdElemOpcodes.Contains(state.Instruction.OpCode))
-        {
-            var index = state.Stack.Pop();
-            var array = state.Stack.Pop();
-            state.Stack.Push(Expression.ArrayIndex(array, index));
-            return true;
-        }
-
-        // Handle Ldlen operation
-        if (state.Instruction.OpCode == OpCodes.Ldlen)
-        {
-            var array = state.Stack.Pop();
-            state.Stack.Push(Expression.ArrayLength(array));
             return true;
         }
 
