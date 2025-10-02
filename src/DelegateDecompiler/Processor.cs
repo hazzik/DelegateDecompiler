@@ -44,8 +44,8 @@ namespace DelegateDecompiler
         static readonly IProcessor[] processors = {
             new ConvertProcessor(),
             new BinaryExpressionProcessor(),
-            new UnaryProcessor(),
-            new ComparisonProcessor(),
+            new UnaryExpressionProcessor(),
+            new CgtUnProcessor(),
             new LdargProcessor(),
             new LdelemProcessor(),
             new LdlenProcessor(),

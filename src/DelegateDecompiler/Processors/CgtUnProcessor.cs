@@ -3,7 +3,7 @@ using System.Reflection.Emit;
 
 namespace DelegateDecompiler.Processors;
 
-internal class ComparisonProcessor : IProcessor
+internal class CgtUnProcessor : IProcessor
 {
     public bool Process(ProcessorState state)
     {

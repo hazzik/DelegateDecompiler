@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -9,33 +8,26 @@ namespace DelegateDecompiler.Processors;
 
 internal class LdfldProcessor : IProcessor
 {
-    static readonly HashSet<OpCode> LdfldOpcodes = new()
-    {
-        OpCodes.Ldfld,
-        OpCodes.Ldflda,
-        OpCodes.Ldsfld
-    };
-
     public bool Process(ProcessorState state)
     {
-        if (!LdfldOpcodes.Contains(state.Instruction.OpCode))
-            return false;
-
         var field = (FieldInfo)state.Instruction.Operand;
-            
+        
         if (state.Instruction.OpCode == OpCodes.Ldsfld)
         {
             // Static field
             state.Stack.Push(Expression.Field(null, field));
+            return true;
         }
-        else
+
+        if (state.Instruction.OpCode == OpCodes.Ldfld || state.Instruction.OpCode == OpCodes.Ldflda)
         {
             // Instance field
             var instance = state.Stack.Pop();
             LdFld(state, instance);
+            return true;
         }
-        return true;
 
+        return false;
     }
 
     static void LdFld(ProcessorState state, Address instance)

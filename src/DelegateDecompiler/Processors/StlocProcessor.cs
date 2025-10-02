@@ -9,7 +9,7 @@ namespace DelegateDecompiler.Processors;
 
 internal class StlocProcessor : IProcessor
 {
-    static readonly Dictionary<OpCode, Func<Instruction, int>> StLocOpcodes = new()
+    static readonly Dictionary<OpCode, Func<Instruction, int>> Operations = new()
     {
         { OpCodes.Stloc_0, _ => 0 },
         { OpCodes.Stloc_1, _ => 1 },
@@ -21,7 +21,7 @@ internal class StlocProcessor : IProcessor
 
     public bool Process(ProcessorState state)
     {
-        if (!StLocOpcodes.TryGetValue(state.Instruction.OpCode, out var value))
+        if (!Operations.TryGetValue(state.Instruction.OpCode, out var value))
             return false;
 
         StLoc(state, value(state.Instruction));

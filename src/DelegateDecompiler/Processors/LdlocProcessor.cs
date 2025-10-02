@@ -14,16 +14,11 @@ internal class LdlocProcessor : IProcessor
         { OpCodes.Ldloc_1, _ => 1 },
         { OpCodes.Ldloc_2, _ => 2 },
         { OpCodes.Ldloc_3, _ => 3 },
-        { OpCodes.Ldloc, LocalIndex },
-        { OpCodes.Ldloc_S, LocalIndex },
-        { OpCodes.Ldloca, LocalIndex },
-        { OpCodes.Ldloca_S, LocalIndex }
+        { OpCodes.Ldloc, FromOperand },
+        { OpCodes.Ldloc_S, FromOperand },
+        { OpCodes.Ldloca, FromOperand },
+        { OpCodes.Ldloca_S, FromOperand }
     };
-
-    static int LocalIndex(Instruction i)
-    {
-        return ((LocalVariableInfo)i.Operand).LocalIndex;
-    }
 
     public bool Process(ProcessorState state)
     {
@@ -34,5 +29,10 @@ internal class LdlocProcessor : IProcessor
         var local = state.Locals[index];
         state.Stack.Push(local.Address);
         return true;
+    }
+
+    static int FromOperand(Instruction i)
+    {
+        return ((LocalVariableInfo)i.Operand).LocalIndex;
     }
 }

@@ -7,7 +7,7 @@ namespace DelegateDecompiler.Processors;
 
 internal class ConvertProcessor : IProcessor
 {
-    static readonly Dictionary<OpCode, Type> Types = new()
+    static readonly Dictionary<OpCode, Type> ConvertTypes = new()
     {
         { OpCodes.Conv_I, typeof(int) },
         { OpCodes.Conv_I1, typeof(sbyte) },
@@ -21,7 +21,7 @@ internal class ConvertProcessor : IProcessor
         { OpCodes.Conv_U8, typeof(ulong) },
     };
 
-    static readonly Dictionary<OpCode, Type> CheckedTypes = new()
+    static readonly Dictionary<OpCode, Type> ConvertCheckedTypes = new()
     {
         { OpCodes.Conv_Ovf_I, typeof(int) },
         { OpCodes.Conv_Ovf_I_Un, typeof(int) },
@@ -50,21 +50,20 @@ internal class ConvertProcessor : IProcessor
 
     public bool Process(ProcessorState state)
     {
-        if (Types.TryGetValue(state.Instruction.OpCode, out var type))
+        if (ConvertTypes.TryGetValue(state.Instruction.OpCode, out var type))
         {
             var val = state.Stack.Pop();
             state.Stack.Push(Expression.Convert(val, type));
             return true;
         }
 
-        if (CheckedTypes.TryGetValue(state.Instruction.OpCode, out type))
+        if (ConvertCheckedTypes.TryGetValue(state.Instruction.OpCode, out type))
         {
             var val = state.Stack.Pop();
             state.Stack.Push(Expression.ConvertChecked(val, type));
             return true;
         }
 
-        // Handle Castclass operation
         if (state.Instruction.OpCode == OpCodes.Castclass)
         {
             var val = state.Stack.Pop();

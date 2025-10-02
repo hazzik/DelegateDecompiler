@@ -6,7 +6,7 @@ namespace DelegateDecompiler.Processors;
 
 internal class BinaryExpressionProcessor : IProcessor
 {
-    static readonly Dictionary<OpCode, ExpressionType> Operations = new Dictionary<OpCode, ExpressionType>
+    static readonly Dictionary<OpCode, ExpressionType> Operations = new()
     {
         // Arithmetic operations
         {OpCodes.Add, ExpressionType.Add},

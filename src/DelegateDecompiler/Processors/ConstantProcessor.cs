@@ -9,7 +9,7 @@ namespace DelegateDecompiler.Processors;
 
 internal class ConstantProcessor : IProcessor
 {
-    static readonly Dictionary<OpCode, Func<Instruction, object>> SimpleIntegerValues = new()
+    static readonly Dictionary<OpCode, Func<Instruction, object>> Operations = new()
     {
         { OpCodes.Ldnull, _ => null },
         { OpCodes.Ldc_I4_0, _ => 0 },
@@ -33,7 +33,7 @@ internal class ConstantProcessor : IProcessor
 
     public bool Process(ProcessorState state)
     {
-        if (!SimpleIntegerValues.TryGetValue(state.Instruction.OpCode, out var value))
+        if (!Operations.TryGetValue(state.Instruction.OpCode, out var value))
             return false;
 
         state.Stack.Push(Expression.Constant(value(state.Instruction)));

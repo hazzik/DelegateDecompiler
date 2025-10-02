@@ -4,7 +4,7 @@ using System.Reflection.Emit;
 
 namespace DelegateDecompiler.Processors;
 
-internal class UnaryProcessor : IProcessor
+internal class UnaryExpressionProcessor : IProcessor
 {
     static readonly Dictionary<OpCode, ExpressionType> Operations = new()
     {
