@@ -489,17 +489,7 @@ namespace DelegateDecompiler
                     else
                     {
                         // Try to process with the pluggable processors
-                        bool processed = false;
-                        foreach (var processor in processors)
-                        {
-                            if (processor.Process(state))
-                            {
-                                processed = true;
-                                break;
-                            }
-                        }
-
-                        if (!processed)
+                        if (!processors.Any(processor => processor.Process(state)))
                         {
                             Debug.WriteLine("Unhandled!!!");
                         }
