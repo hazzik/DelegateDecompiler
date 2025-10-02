@@ -1,50 +1,43 @@
+using System;
 using System.Collections.Generic;
+using System.Linq.Expressions;
 using System.Reflection;
 using System.Reflection.Emit;
+using Mono.Reflection;
 
 namespace DelegateDecompiler.Processors;
 
 internal class StoreProcessor : IProcessor
 {
-    static readonly HashSet<OpCode> StLocOpcodes = new HashSet<OpCode>
+    static readonly Dictionary<OpCode, Func<Instruction, int>> StLocOpcodes = new()
     {
-        OpCodes.Stloc_0,
-        OpCodes.Stloc_1,
-        OpCodes.Stloc_2,
-        OpCodes.Stloc_3,
-        OpCodes.Stloc_S,
-        OpCodes.Stloc
+        { OpCodes.Stloc_0, _ => 0 },
+        { OpCodes.Stloc_1, _ => 1 },
+        { OpCodes.Stloc_2, _ => 2 },
+        { OpCodes.Stloc_3, _ => 3 },
+        { OpCodes.Stloc_S, FromOperand },
+        { OpCodes.Stloc, FromOperand },
     };
 
     public bool Process(ProcessorState state)
     {
-        // Handle Stloc operations
-        if (StLocOpcodes.Contains(state.Instruction.OpCode))
-        {
-            if (state.Instruction.OpCode == OpCodes.Stloc_0)
-            {
-                Processor.StLoc(state, 0);
-            }
-            else if (state.Instruction.OpCode == OpCodes.Stloc_1)
-            {
-                Processor.StLoc(state, 1);
-            }
-            else if (state.Instruction.OpCode == OpCodes.Stloc_2)
-            {
-                Processor.StLoc(state, 2);
-            }
-            else if (state.Instruction.OpCode == OpCodes.Stloc_3)
-            {
-                Processor.StLoc(state, 3);
-            }
-            else // Stloc_S, Stloc
-            {
-                var operand = (LocalVariableInfo)state.Instruction.Operand;
-                Processor.StLoc(state, operand.LocalIndex);
-            }
-            return true;
-        }
+        if (!StLocOpcodes.TryGetValue(state.Instruction.OpCode, out var value))
+            return false;
 
-        return false;
+        StLoc(state, value(state.Instruction));
+        return true;
+    }
+
+    static void StLoc(ProcessorState state, int index)
+    {
+        var info = state.Locals[index];
+        var expression = Processor.AdjustType(state.Stack.Pop(), info.Type);
+        info.Address = expression.Type == info.Type ? expression : Expression.Convert(expression, info.Type);
+    }
+
+    static int FromOperand(Instruction i)
+    {
+        var operand = (LocalVariableInfo)i.Operand;
+        return operand.LocalIndex;
     }
 }

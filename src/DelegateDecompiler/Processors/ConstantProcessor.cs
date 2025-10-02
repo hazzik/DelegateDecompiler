@@ -10,6 +10,7 @@ internal class ConstantProcessor : IProcessor
 {
     static readonly Dictionary<OpCode, Func<Instruction, object>> SimpleIntegerValues = new()
     {
+        { OpCodes.Ldnull, _ => null },
         { OpCodes.Ldc_I4_0, _ => 0 },
         { OpCodes.Ldc_I4_1, _ => 1 },
         { OpCodes.Ldc_I4_2, _ => 2 },
@@ -21,12 +22,11 @@ internal class ConstantProcessor : IProcessor
         { OpCodes.Ldc_I4_8, _ => 8 },
         { OpCodes.Ldc_I4_M1, _ => -1 },
         { OpCodes.Ldc_I4_S, i => (int)(sbyte)i.Operand },
-        { OpCodes.Ldc_I4, i => i.Operand },
-        { OpCodes.Ldc_I8, i => i.Operand },
-        { OpCodes.Ldc_R4, i => i.Operand },
-        { OpCodes.Ldc_R8, i => i.Operand },
-        { OpCodes.Ldstr, i => i.Operand },
-        { OpCodes.Ldnull, i => null },
+        { OpCodes.Ldc_I4, FromOperand },
+        { OpCodes.Ldc_I8, FromOperand },
+        { OpCodes.Ldc_R4, FromOperand },
+        { OpCodes.Ldc_R8, FromOperand },
+        { OpCodes.Ldstr, FromOperand },
     };
 
     public bool Process(ProcessorState state)
@@ -37,4 +37,6 @@ internal class ConstantProcessor : IProcessor
         state.Stack.Push(Expression.Constant(value(state.Instruction)));
         return true;
     }
+
+    static object FromOperand(Instruction i) => i.Operand;
 }
