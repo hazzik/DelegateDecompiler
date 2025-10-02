@@ -6,29 +6,19 @@ namespace DelegateDecompiler.Processors;
 
 internal class UnaryProcessor : IProcessor
 {
-    static readonly HashSet<OpCode> NegationOpcodes = new HashSet<OpCode>
+    static readonly Dictionary<OpCode, ExpressionType> Operations = new Dictionary<OpCode, ExpressionType>
     {
-        OpCodes.Neg
-    };
-
-    static readonly HashSet<OpCode> NotOpcodes = new HashSet<OpCode>
-    {
-        OpCodes.Not
+        {OpCodes.Neg, ExpressionType.Negate},
+        {OpCodes.Not, ExpressionType.Not}
     };
 
     public bool Process(ProcessorState state)
     {
-        if (NegationOpcodes.Contains(state.Instruction.OpCode))
+        ExpressionType operation;
+        if (Operations.TryGetValue(state.Instruction.OpCode, out operation))
         {
             var val = state.Stack.Pop();
-            state.Stack.Push(Expression.Negate(val));
-            return true;
-        }
-
-        if (NotOpcodes.Contains(state.Instruction.OpCode))
-        {
-            var val = state.Stack.Pop();
-            state.Stack.Push(Processor.MakeUnaryExpression(val, ExpressionType.Not));
+            state.Stack.Push(Processor.MakeUnaryExpression(val, operation));
             return true;
         }
 
