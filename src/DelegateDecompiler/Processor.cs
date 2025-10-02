@@ -486,13 +486,9 @@ namespace DelegateDecompiler
                     {
                         states.Pop();
                     }
-                    else
+                    else if (!processors.Any(processor => processor.Process(state)))
                     {
-                        // Try to process with the pluggable processors
-                        if (!processors.Any(processor => processor.Process(state)))
-                        {
-                            Debug.WriteLine("Unhandled!!!");
-                        }
+                        Debug.WriteLine("Unhandled!!!");
                     }
 
                     state.Instruction = state.Instruction.Next;
