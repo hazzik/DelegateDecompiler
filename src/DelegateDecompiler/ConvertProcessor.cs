@@ -19,9 +19,6 @@ namespace DelegateDecompiler
             {OpCodes.Conv_U2, typeof(ushort)},
             {OpCodes.Conv_U4, typeof(uint)},
             {OpCodes.Conv_U8, typeof(ulong)},
-            {OpCodes.Conv_R4, typeof(float)},
-            {OpCodes.Conv_R_Un, typeof(float)},
-            {OpCodes.Conv_R8, typeof(double)},
         };
 
         static readonly Dictionary<OpCode, Type> CheckedTypes = new Dictionary<OpCode, Type>
@@ -46,6 +43,9 @@ namespace DelegateDecompiler
             {OpCodes.Conv_Ovf_U4_Un, typeof(uint)},
             {OpCodes.Conv_Ovf_U8, typeof(ulong)},
             {OpCodes.Conv_Ovf_U8_Un, typeof(ulong)},
+            {OpCodes.Conv_R4, typeof(float)},
+            {OpCodes.Conv_R_Un, typeof(float)},
+            {OpCodes.Conv_R8, typeof(double)},
         };
 
         public bool Process(ProcessorState state)
