@@ -44,7 +44,9 @@ namespace DelegateDecompiler
             new ConvertProcessor(),
             new ArithmeticProcessor(), 
             new BitwiseProcessor(),
-            new UnaryProcessor()
+            new UnaryProcessor(),
+            new ComparisonProcessor(),
+            new LoadStoreProcessor()
         };
 
         Processor()
@@ -76,71 +78,6 @@ namespace DelegateDecompiler
                     {
                         var runtimeHandle = GetRuntimeHandle(state.Instruction.Operand);
                         state.Stack.Push(Expression.Constant(runtimeHandle));
-                    }
-                    else if (state.Instruction.OpCode == OpCodes.Ldarg_0)
-                    {
-                        LdArg(state, 0);
-                    }
-                    else if (state.Instruction.OpCode == OpCodes.Ldarg_1)
-                    {
-                        LdArg(state, 1);
-                    }
-                    else if (state.Instruction.OpCode == OpCodes.Ldarg_2)
-                    {
-                        LdArg(state, 2);
-                    }
-                    else if (state.Instruction.OpCode == OpCodes.Ldarg_3)
-                    {
-                        LdArg(state, 3);
-                    }
-                    else if (state.Instruction.OpCode == OpCodes.Ldarg_S || state.Instruction.OpCode == OpCodes.Ldarg || state.Instruction.OpCode == OpCodes.Ldarga || state.Instruction.OpCode == OpCodes.Ldarga_S)
-                    {
-                        var operand = (ParameterInfo)state.Instruction.Operand;
-                        state.Stack.Push(state.Args.Single(x => ((ParameterExpression)x.Expression).Name == operand.Name));
-                    }
-                    else if (state.Instruction.OpCode == OpCodes.Ldlen)
-                    {
-                        var array = state.Stack.Pop();
-                        state.Stack.Push(Expression.ArrayLength(array));
-                    }
-                    else if (state.Instruction.OpCode == OpCodes.Ldelem ||
-                             state.Instruction.OpCode == OpCodes.Ldelem_I ||
-                             state.Instruction.OpCode == OpCodes.Ldelem_I1 ||
-                             state.Instruction.OpCode == OpCodes.Ldelem_I2 ||
-                             state.Instruction.OpCode == OpCodes.Ldelem_I4 ||
-                             state.Instruction.OpCode == OpCodes.Ldelem_I8 ||
-                             state.Instruction.OpCode == OpCodes.Ldelem_U1 ||
-                             state.Instruction.OpCode == OpCodes.Ldelem_U2 ||
-                             state.Instruction.OpCode == OpCodes.Ldelem_U4 ||
-                             state.Instruction.OpCode == OpCodes.Ldelem_R4 ||
-                             state.Instruction.OpCode == OpCodes.Ldelem_R8 ||
-                             state.Instruction.OpCode == OpCodes.Ldelem_Ref)
-                    {
-                        var index = state.Stack.Pop();
-                        var array = state.Stack.Pop();
-                        state.Stack.Push(Expression.ArrayIndex(array, index));
-                    }
-                    else if (state.Instruction.OpCode == OpCodes.Stloc_0)
-                    {
-                        StLoc(state, 0);
-                    }
-                    else if (state.Instruction.OpCode == OpCodes.Stloc_1)
-                    {
-                        StLoc(state, 1);
-                    }
-                    else if (state.Instruction.OpCode == OpCodes.Stloc_2)
-                    {
-                        StLoc(state, 2);
-                    }
-                    else if (state.Instruction.OpCode == OpCodes.Stloc_3)
-                    {
-                        StLoc(state, 3);
-                    }
-                    else if (state.Instruction.OpCode == OpCodes.Stloc_S ||
-                             state.Instruction.OpCode == OpCodes.Stloc)
-                    {
-                        var operand = (LocalVariableInfo)state.Instruction.Operand;
-                        StLoc(state, operand.LocalIndex);
                     }
                     else if (state.Instruction.OpCode == OpCodes.Stelem ||
                              state.Instruction.OpCode == OpCodes.Stelem_I ||
@@ -430,43 +367,6 @@ namespace DelegateDecompiler
                         {
                             throw new NotSupportedException();
                         }
-                    }
-                    else if (state.Instruction.OpCode == OpCodes.Ceq)
-                    {
-                        var val1 = state.Stack.Pop();
-                        var val2 = state.Stack.Pop();
-
-                        state.Stack.Push(MakeBinaryExpression(val2, val1, ExpressionType.Equal));
-                    }
-                    else if (state.Instruction.OpCode == OpCodes.Cgt)
-                    {
-                        var val1 = state.Stack.Pop();
-                        var val2 = state.Stack.Pop();
-
-                        state.Stack.Push(MakeBinaryExpression(val2, val1, ExpressionType.GreaterThan));
-                    }
-                    else if (state.Instruction.OpCode == OpCodes.Cgt_Un)
-                    {
-                        var val1 = state.Stack.Pop();
-                        var val2 = state.Stack.Pop();
-
-                        var constantExpression = val1.Expression as ConstantExpression;
-                        if (constantExpression != null && (constantExpression.Value as int? == 0 || constantExpression.Value == null))
-                        {
-                            //Special case.
-                            state.Stack.Push(MakeBinaryExpression(val2, val1, ExpressionType.NotEqual));
-                        }
-                        else
-                        {
-                            state.Stack.Push(MakeBinaryExpression(val2, val1, ExpressionType.GreaterThan));
-                        }
-                    }
-                    else if (state.Instruction.OpCode == OpCodes.Clt || state.Instruction.OpCode == OpCodes.Clt_Un)
-                    {
-                        var val1 = state.Stack.Pop();
-                        var val2 = state.Stack.Pop();
-
-                        state.Stack.Push(MakeBinaryExpression(val2, val1, ExpressionType.LessThan));
                     }
                     else if (state.Instruction.OpCode == OpCodes.Isinst)
                     {
@@ -1157,14 +1057,14 @@ namespace DelegateDecompiler
             state.Stack.Push(state.Locals[index].Address);
         }
 
-        static void StLoc(ProcessorState state, int index)
+        internal static void StLoc(ProcessorState state, int index)
         {
             var info = state.Locals[index];
             var expression = AdjustType(state.Stack.Pop(), info.Type);
             info.Address = expression.Type == info.Type ? expression : Expression.Convert(expression, info.Type);
         }
 
-        static void LdArg(ProcessorState state, int index)
+        internal static void LdArg(ProcessorState state, int index)
         {
             state.Stack.Push(state.Args[index]);
         }

@@ -48,5 +48,21 @@ namespace DelegateDecompiler.Tests
             Func<byte, int> compiled = x => (int)x;
             Test(expected, compiled);
         }
+
+        [Test]
+        public void ProcessorChain_ShouldHandleComparison_Equal()
+        {
+            Expression<Func<int, int, bool>> expected = (x, y) => x == y;
+            Func<int, int, bool> compiled = (x, y) => x == y;
+            Test(expected, compiled);
+        }
+
+        [Test]
+        public void ProcessorChain_ShouldHandleComparison_GreaterThan()
+        {
+            Expression<Func<int, int, bool>> expected = (x, y) => x > y;
+            Func<int, int, bool> compiled = (x, y) => x > y;
+            Test(expected, compiled);
+        }
     }
 }
