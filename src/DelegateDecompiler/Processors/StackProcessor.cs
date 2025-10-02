@@ -16,10 +16,6 @@ internal class StackProcessor : IProcessor
             case OpCodes.Pop:
                 state.Stack.Pop();
                 return true;
-            case OpCodes.Castclass:
-                var val1 = state.Stack.Pop();
-                state.Stack.Push(Expression.Convert(val1, (Type)state.Instruction.Operand));
-                return true;
             default:
                 return false;
         }

@@ -65,6 +65,14 @@ internal class ConvertProcessor : IProcessor
             return true;
         }
 
+        // Handle Castclass operation
+        if (state.Instruction.OpCode == OpCodes.Castclass)
+        {
+            var val = state.Stack.Pop();
+            state.Stack.Push(Expression.Convert(val, (Type)state.Instruction.Operand));
+            return true;
+        }
+
         return false;
     }
 }
