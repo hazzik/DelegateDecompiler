@@ -47,6 +47,7 @@ namespace DelegateDecompiler
             new UnaryExpressionProcessor(),
             new CgtUnProcessor(),
             new LdargProcessor(),
+            new StargProcessor(),
             new LdelemProcessor(),
             new LdlenProcessor(),
             new LdlocProcessor(),
