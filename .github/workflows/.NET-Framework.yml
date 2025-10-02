@@ -1,0 +1,81 @@
+name: .NET Framework Tests
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  dotnet-framework:
+    name: Tests
+    runs-on: windows-latest
+    defaults:
+      run:
+        shell: pwsh
+    env:
+      DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+      DOTNET_CLI_TELEMETRY_OPTOUT: true
+
+    steps:
+      - name: Install NUnit Console
+        run: choco install nunit-console-runner --version=3.17.0 -y
+
+      - name: Install LocalDB
+        run: choco install sqllocaldb -y --no-progress
+
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # need for GitVersion to work properly
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: global.json
+
+      - name: Add MSBuild to PATH
+        uses: microsoft/setup-msbuild@v2
+
+      - name: Patch App.config for LocalDB
+        run: |
+          $cfg = 'src/DelegateDecompiler.EntityFramework.Tests/App.config'
+          [xml]$xml = Get-Content $cfg
+          $cs = $xml.configuration.connectionStrings.add | Where-Object name -eq 'DelegateDecompilerEfTestDb'
+          $cs.connectionString = 'Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=DelegateDecompilerEfTestDb;MultipleActiveResultSets=True;Integrated Security=True;TrustServerCertificate=True'
+          $xml.Save($cfg)
+
+      - name: Restore
+        run: dotnet restore
+
+      - name: Build
+        run: dotnet build --no-restore -c Release DelegateDecompiler.sln
+
+      - name: Locate NUnit Console
+        run: |
+          $exe = Get-ChildItem -Path "$Env:ChocolateyInstall\lib" -Recurse -Filter nunit3-console.exe | Select-Object -First 1
+          if (-not $exe) { Write-Error 'nunit3-console.exe not found after installation.'; exit 1 }
+          Write-Host "Found NUnit console at $($exe.FullName)"
+          "NUNIT_CONSOLE=$($exe.FullName)" | Out-File -FilePath $Env:GITHUB_ENV -Append
+
+      - name: Test
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $dlls = @(
+            'src/DelegateDecompiler.Tests/bin/Release/net40/DelegateDecompiler.Tests.dll',
+            'src/DelegateDecompiler.Tests.VB/bin/Release/net40/DelegateDecompiler.Tests.VB.dll',
+            'src/DelegateDecompiler.Tests/bin/Release/net45/DelegateDecompiler.Tests.dll',
+            'src/DelegateDecompiler.Tests.VB/bin/Release/net45/DelegateDecompiler.Tests.VB.dll',
+            'src/DelegateDecompiler.EntityFramework.Tests/bin/Release/net45/DelegateDecompiler.EntityFramework.Tests.dll'
+          )
+          if (-not $Env:NUNIT_CONSOLE) { Write-Error 'NUNIT_CONSOLE env var not set.'; exit 1 }
+          $resultArg = '--result=DelegateDecompiler.framework.tests.xml'
+          & $Env:NUNIT_CONSOLE @dlls $resultArg
+        shell: pwsh
+
+      - name: Upload NUnit results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: nunit-framework
+          path: DelegateDecompiler.framework.tests.xml
