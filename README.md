@@ -92,7 +92,7 @@ and would probably throw `StackOverflowException` similarly to loops.
 
 ### Pattern matching with `is ... or ...`
 
-`is ... or ...` pattern matching cannot always be decompiled due to compiler optimizations. The compiler may optimize enum patterns to use comparison operators, making it impossible to distinguish between genuine comparisons and optimized patterns.
+`is ... or ...` pattern matching cannot always be decompiled due to compiler optimizations. The compiler may optimize patterns to use comparison operators, making it impossible to distinguish between genuine comparisons and optimized patterns.
 
 For example:
 ```csharp
@@ -102,7 +102,7 @@ enum TestEnum { Foo, Bar, Baz }
 x is TestEnum.Foo or TestEnum.Bar
 
 // Might compile to:
-(int)x <= 1
+(uint)x <= 1
 ```
 
 ## Using with EntityFramework and other ORMs
