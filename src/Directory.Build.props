@@ -13,7 +13,7 @@
     <PackageReadmeFile>README.md</PackageReadmeFile>
 
     <SignAssembly>true</SignAssembly>
-    <AssemblyOriginatorKeyFile>$(MSBuildThisFileDirectory)/DelegateDecompiler.snk</AssemblyOriginatorKeyFile>
+    <AssemblyOriginatorKeyFile>$(MSBuildThisFileDirectory)../DelegateDecompiler.snk</AssemblyOriginatorKeyFile>
 
     <FileVersion>$(Version)</FileVersion>
 
