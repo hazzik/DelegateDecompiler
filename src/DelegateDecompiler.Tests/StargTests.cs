@@ -35,63 +35,25 @@ namespace DelegateDecompiler.Tests
         [Test]
         public void StargProcessor_ShouldHandleSimpleParameterModification()
         {
-            var method = typeof(TestClass).GetMethod(nameof(TestClass.ModifyParameter));
-            var decompiled = method.Decompile();
-            
-            // Verify the method can be decompiled without errors
-            Assert.That(decompiled, Is.Not.Null);
-            Assert.That(decompiled.Body, Is.Not.Null);
-            
-            // Assert on the decompiled expression structure
-            Assert.That(decompiled.Parameters.Count, Is.EqualTo(1));
-            Assert.That(decompiled.Parameters[0].Name, Is.EqualTo("value"));
-            Assert.That(decompiled.Parameters[0].Type, Is.EqualTo(typeof(int)));
-            
-            // Currently, the StargProcessor implementation just discards the stored value
-            // so the body should just return the parameter unchanged
-            // This assertion validates the current behavior - TODO: enhance when semantics are fully implemented
-            Assert.That(decompiled.Body.ToString(), Is.EqualTo("value"));
-            Assert.That(decompiled.Body, Is.InstanceOf<ParameterExpression>());
+            Expression<Func<int, int>> expected = value => value + 1;
+            Func<int, int> compiled = TestClass.ModifyParameter;
+            Test(expected, compiled);
         }
 
         [Test]
         public void StargProcessor_ShouldHandleConditionalParameterModification()
         {
-            var method = typeof(TestClass).GetMethod(nameof(TestClass.ModifyParameterWithCondition));
-            var decompiled = method.Decompile();
-            
-            // Verify the method can be decompiled without errors
-            Assert.That(decompiled, Is.Not.Null);
-            Assert.That(decompiled.Body, Is.Not.Null);
-            
-            // Assert on the decompiled expression structure
-            Assert.That(decompiled.Parameters.Count, Is.EqualTo(1));
-            Assert.That(decompiled.Parameters[0].Name, Is.EqualTo("value"));
-            Assert.That(decompiled.Parameters[0].Type, Is.EqualTo(typeof(int)));
-            
-            // Currently returns parameter unchanged due to incomplete Starg semantics
-            Assert.That(decompiled.Body.ToString(), Is.EqualTo("value"));
-            Assert.That(decompiled.Body, Is.InstanceOf<ParameterExpression>());
+            Expression<Func<int, int>> expected = value => value > 0 ? value * 2 : -value;
+            Func<int, int> compiled = TestClass.ModifyParameterWithCondition;
+            Test(expected, compiled);
         }
 
         [Test]
         public void StargProcessor_ShouldHandleStringParameterModification()
         {
-            var method = typeof(TestClass).GetMethod(nameof(TestClass.ModifyStringParameter));
-            var decompiled = method.Decompile();
-            
-            // Verify the method can be decompiled without errors
-            Assert.That(decompiled, Is.Not.Null);
-            Assert.That(decompiled.Body, Is.Not.Null);
-            
-            // Assert on the decompiled expression structure
-            Assert.That(decompiled.Parameters.Count, Is.EqualTo(1));
-            Assert.That(decompiled.Parameters[0].Name, Is.EqualTo("text"));
-            Assert.That(decompiled.Parameters[0].Type, Is.EqualTo(typeof(string)));
-            
-            // Currently returns parameter unchanged due to incomplete Starg semantics
-            Assert.That(decompiled.Body.ToString(), Is.EqualTo("text"));
-            Assert.That(decompiled.Body, Is.InstanceOf<ParameterExpression>());
+            Expression<Func<string, string>> expected = text => text != null ? text + " modified" : null;
+            Func<string, string> compiled = TestClass.ModifyStringParameter;
+            Test(expected, compiled);
         }
     }
 }

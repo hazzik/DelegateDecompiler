@@ -30,9 +30,10 @@ internal class StargProcessor : IProcessor
         var arg = state.Args[index];
         var expression = Processor.AdjustType(state.Stack.Pop(), arg.Type);
         
-        // Instead of modifying the parameter directly, we need to handle this differently
-        // For now, let's not modify the argument at all and just pop the value from stack
-        // This avoids the crash but doesn't implement the full semantics yet
+        // When a parameter is modified (Starg), we need to handle it differently than locals
+        // since parameters in expression trees are immutable. We update the argument's address
+        // to point to the modified value, allowing subsequent loads to get the new value.
+        arg.Expression = expression.Type == arg.Type ? expression : Expression.Convert(expression, arg.Type);
     }
 
     static int FromOperand(Instruction instruction)
