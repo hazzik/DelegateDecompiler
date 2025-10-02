@@ -861,10 +861,5 @@ namespace DelegateDecompiler
             }
             return arguments;
         }
-
-        // Helper methods moved to respective processors:
-        // - LdLoc moved to LdlocProcessor
-        // - StLoc moved to StlocProcessor  
-        // - LdArg moved to LdargProcessor
     }
 }
