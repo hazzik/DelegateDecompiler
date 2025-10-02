@@ -14,9 +14,11 @@ DelegateDecompiler is a .NET library that decompiles delegates and method bodies
 ## Build & Test
 
 ```bash
-# Build the solution
+# Restore packages
 dotnet restore
-dotnet build --no-restore -c Release DelegateDecompiler.sln
+
+# Build the solution (disable GitVersion and signing for CI environments)
+dotnet build --no-restore -c Release -p:DisableGitVersionTask=true -p:SignAssembly=false
 
 # Run tests (requires building first)
 .\test.cmd
