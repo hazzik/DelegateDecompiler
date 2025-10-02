@@ -8,7 +8,7 @@ namespace DelegateDecompiler.Processors;
 
 internal class LoadProcessor : IProcessor
 {
-    static readonly HashSet<OpCode> LdArgOpcodes = new HashSet<OpCode>
+    static readonly HashSet<OpCode> LdArgOpcodes = new()
     {
         OpCodes.Ldarg_0,
         OpCodes.Ldarg_1,
@@ -20,7 +20,7 @@ internal class LoadProcessor : IProcessor
         OpCodes.Ldarga_S
     };
 
-    static readonly HashSet<OpCode> LdElemOpcodes = new HashSet<OpCode>
+    static readonly HashSet<OpCode> LdElemOpcodes = new()
     {
         OpCodes.Ldelem,
         OpCodes.Ldelem_I,

@@ -6,22 +6,19 @@ namespace DelegateDecompiler.Processors;
 
 internal class UnaryProcessor : IProcessor
 {
-    static readonly Dictionary<OpCode, ExpressionType> Operations = new Dictionary<OpCode, ExpressionType>
+    static readonly Dictionary<OpCode, ExpressionType> Operations = new()
     {
-        {OpCodes.Neg, ExpressionType.Negate},
-        {OpCodes.Not, ExpressionType.Not}
+        { OpCodes.Neg, ExpressionType.Negate },
+        { OpCodes.Not, ExpressionType.Not }
     };
 
     public bool Process(ProcessorState state)
     {
-        ExpressionType operation;
-        if (Operations.TryGetValue(state.Instruction.OpCode, out operation))
-        {
-            var val = state.Stack.Pop();
-            state.Stack.Push(Processor.MakeUnaryExpression(val, operation));
-            return true;
-        }
+        if (!Operations.TryGetValue(state.Instruction.OpCode, out var operation))
+            return false;
 
-        return false;
+        var val = state.Stack.Pop();
+        state.Stack.Push(Processor.MakeUnaryExpression(val, operation));
+        return true;
     }
 }

@@ -42,15 +42,12 @@ internal class BinaryExpressionProcessor : IProcessor
 
     public bool Process(ProcessorState state)
     {
-        ExpressionType operation;
-        if (Operations.TryGetValue(state.Instruction.OpCode, out operation))
-        {
-            var val1 = state.Stack.Pop();
-            var val2 = state.Stack.Pop();
-            state.Stack.Push(Processor.MakeBinaryExpression(val2, val1, operation));
-            return true;
-        }
+        if (!Operations.TryGetValue(state.Instruction.OpCode, out var operation))
+            return false;
 
-        return false;
+        var val1 = state.Stack.Pop();
+        var val2 = state.Stack.Pop();
+        state.Stack.Push(Processor.MakeBinaryExpression(val2, val1, operation));
+        return true;
     }
 }
