@@ -34,7 +34,6 @@ internal class LdargProcessor : IProcessor
     static int GetParameterIndex(ProcessorState state)
     {
         var operand = (ParameterInfo)state.Instruction.Operand;
-        var arg = state.Args.Single(x => ((ParameterExpression)x.Expression).Name == operand.Name);
-        return state.Args.IndexOf(arg);
+        return state.IsStatic ? operand.Position : operand.Position + 1;
     }
 }

@@ -29,18 +29,12 @@ internal class StargProcessor : IProcessor
     {
         var arg = state.Args[index];
         var expression = Processor.AdjustType(state.Stack.Pop(), arg.Type);
-        
-        // When a parameter is modified (Starg), we need to handle it differently than locals
-        // since parameters in expression trees are immutable. We update the argument's address
-        // to point to the modified value, allowing subsequent loads to get the new value.
         arg.Expression = expression.Type == arg.Type ? expression : Expression.Convert(expression, arg.Type);
     }
 
     static int GetParameterIndex(ProcessorState state)
     {
         var operand = (ParameterInfo)state.Instruction.Operand;
-        
-        // For instance methods, parameters are offset by 1 due to the "this" parameter
-        return !state.IsStatic ? operand.Position + 1 : operand.Position;
+        return state.IsStatic ? operand.Position : operand.Position + 1;
     }
 }

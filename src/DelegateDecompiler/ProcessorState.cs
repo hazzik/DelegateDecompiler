@@ -31,7 +31,6 @@ namespace DelegateDecompiler
             var addressMap = new Dictionary<Address, Address>();
             var buffer = Stack.Select(address => address.Clone(addressMap)).Reverse();
             
-            // Clone the Args array properly
             var clonedArgs = new Address[Args.Count];
             for (var i = 0; i < Args.Count; i++)
             {
@@ -59,7 +58,6 @@ namespace DelegateDecompiler
                 Locals[i].Address = Address.Merge(test, leftLocal.Address, rightLocal.Address, addressMap);
             }
             
-            // Merge arguments (parameters) - this is needed for Starg opcode support
             for (var i = 0; i < leftState.Args.Count; i++)
             {
                 var leftArg = leftState.Args[i];
