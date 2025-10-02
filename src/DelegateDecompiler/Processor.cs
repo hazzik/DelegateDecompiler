@@ -624,26 +624,6 @@ namespace DelegateDecompiler
             return expressions;
         }
 
-        internal static void LdC(ProcessorState state, int i)
-        {
-            state.Stack.Push(Expression.Constant(i));
-        }
-
-        internal static void LdC(ProcessorState state, long i)
-        {
-            state.Stack.Push(Expression.Constant(i));
-        }
-
-        internal static void LdC(ProcessorState state, float i)
-        {
-            state.Stack.Push(Expression.Constant(i));
-        }
-
-        internal static void LdC(ProcessorState state, double i)
-        {
-            state.Stack.Push(Expression.Constant(i));
-        }
-
         static void Call(ProcessorState state, MethodInfo m)
         {
             var mArgs = GetArguments(state, m, out var addresses);
