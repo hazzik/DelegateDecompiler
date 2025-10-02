@@ -1,4 +1,4 @@
-name: .NET Framework Tests
+name: Windows / .NET Framework Tests
 
 on:
   push:
@@ -8,7 +8,6 @@ on:
 
 jobs:
   dotnet-framework:
-    name: Tests
     runs-on: windows-latest
     defaults:
       run:
