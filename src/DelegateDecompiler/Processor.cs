@@ -49,7 +49,8 @@ namespace DelegateDecompiler
             new LoadProcessor(),
             new StoreProcessor(),
             new ConstantProcessor(),
-            new StackProcessor()
+            new StackProcessor(),
+            new ObjectProcessor()
         };
 
         Processor()
@@ -239,25 +240,6 @@ namespace DelegateDecompiler
                         state.Instruction = ConditionalBranch(state, val => MakeBinaryExpression(val, val1, ExpressionType.NotEqual));
                         continue;
                     }
-                    else if (state.Instruction.OpCode == OpCodes.Initobj)
-                    {
-                        var address = state.Stack.Pop();
-                        var type = (Type)state.Instruction.Operand;
-                        address.Expression = ExpressionHelper.Default(type);
-                    }
-                    else if (state.Instruction.OpCode == OpCodes.Newarr)
-                    {
-                        var operand = (Type)state.Instruction.Operand;
-                        var expression = state.Stack.Pop();
-                        if (expression.Expression is ConstantExpression size && (int)size.Value == 0) // optimization
-                            state.Stack.Push(Expression.NewArrayInit(operand));
-                        else
-                            state.Stack.Push(Expression.NewArrayBounds(operand, expression));
-                    }
-                    else if (state.Instruction.OpCode == OpCodes.Box)
-                    {
-                        state.Stack.Push(Box(state.Stack.Pop(), (Type)state.Instruction.Operand));
-                    }
                     else if (state.Instruction.OpCode == OpCodes.Newobj)
                     {
                         var constructor = (ConstructorInfo)state.Instruction.Operand;
@@ -415,7 +397,7 @@ namespace DelegateDecompiler
             return Expression.MakeUnary(expressionType, operand, operand.Type);
         }
 
-        static Expression Box(Expression expression, Type type)
+        internal static Expression Box(Expression expression, Type type)
         {
             if (expression.Type == type)
                 return expression;
