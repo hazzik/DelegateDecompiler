@@ -16,13 +16,15 @@ namespace DelegateDecompiler
 
         public static LambdaExpression Decompile(MethodInfo method, Type declaringType)
         {
-            var args = method.GetParameters()
-                .Select(p => (Address)Expression.Parameter(p.ParameterType, p.Name))
+            var parameters = method.GetParameters()
+                .Select(p => Expression.Parameter(p.ParameterType, p.Name))
                 .ToList();
 
             var methodType = declaringType ?? method.DeclaringType;
-            if (!method.IsStatic)
-                args.Insert(0, Expression.Parameter(methodType, "this"));
+            if (!method.IsStatic) 
+                parameters.Insert(0, Expression.Parameter(methodType, "this"));
+
+            var args = parameters.ConvertAll(x => (Address)x);
 
             var expression = method.IsVirtual && !method.IsFinal
                 ? DecompileOverridable(methodType, method, args)
@@ -30,7 +32,7 @@ namespace DelegateDecompiler
 
             var optimizedExpression = expression.Optimize();
 
-            return Expression.Lambda(optimizedExpression, args.Select(x => (ParameterExpression)x.Expression));
+            return Expression.Lambda(optimizedExpression, parameters);
         }
 
         static Expression DecompileConcrete(MethodInfo method, IList<Address> args)
@@ -42,7 +44,7 @@ namespace DelegateDecompiler
             var locals = addresses.ToArray();
 
             var instructions = method.GetInstructions();
-            var expression = Processor.Process(locals, args, instructions.First(), method.ReturnType);
+            var expression = Processor.Process(method.IsStatic, locals, args, instructions.First(), method.ReturnType);
             var localParameters = locals
                 .Select(l => l.Address.Expression)
                 .OfType<ParameterExpression>()

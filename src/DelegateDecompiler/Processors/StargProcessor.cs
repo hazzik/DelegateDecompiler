@@ -4,21 +4,16 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Reflection.Emit;
+using Mono.Reflection;
 
 namespace DelegateDecompiler.Processors;
 
-internal class LdargProcessor : IProcessor
+internal class StargProcessor : IProcessor
 {
     static readonly Dictionary<OpCode, Func<ProcessorState, int>> Operations = new()
     {
-        { OpCodes.Ldarg_0, _ => 0 },
-        { OpCodes.Ldarg_1, _ => 1 },
-        { OpCodes.Ldarg_2, _ => 2 },
-        { OpCodes.Ldarg_3, _ => 3 },
-        { OpCodes.Ldarg_S, GetParameterIndex },
-        { OpCodes.Ldarg, GetParameterIndex },
-        { OpCodes.Ldarga, GetParameterIndex },
-        { OpCodes.Ldarga_S, GetParameterIndex }
+        { OpCodes.Starg_S, GetParameterIndex },
+        { OpCodes.Starg, GetParameterIndex },
     };
 
     public bool Process(ProcessorState state)
@@ -26,9 +21,15 @@ internal class LdargProcessor : IProcessor
         if (!Operations.TryGetValue(state.Instruction.OpCode, out var value))
             return false;
 
-        var index = value(state);
-        state.Stack.Push(state.Args[index]);
+        StArg(state, value(state));
         return true;
+    }
+
+    static void StArg(ProcessorState state, int index)
+    {
+        var arg = state.Args[index];
+        var expression = Processor.AdjustType(state.Stack.Pop(), arg.Type);
+        arg.Expression = expression.Type == arg.Type ? expression : Expression.Convert(expression, arg.Type);
     }
 
     static int GetParameterIndex(ProcessorState state)
