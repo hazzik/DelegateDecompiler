@@ -35,47 +35,54 @@ internal class FieldProcessor : IProcessor
             return true;
         }
 
-        switch (state.Instruction.OpCode)
+        if (state.Instruction.OpCode == OpCodes.Ldfld || state.Instruction.OpCode == OpCodes.Ldflda)
         {
-            case OpCodes.Ldfld:
-            case OpCodes.Ldflda:
-                LdFld(state, state.Stack.Pop());
-                return true;
-            case OpCodes.Ldsfld:
-                LdFld(state, null);
-                return true;
-            case OpCodes.Stfld:
-                var value = state.Stack.Pop();
-                var instance = state.Stack.Pop();
-                var field = (FieldInfo)state.Instruction.Operand;
-                if (IsCachedAnonymousMethodDelegate(field))
-                {
-                    state.Delegates[Tuple.Create(instance, field)] = value;
-                }
-                else
-                {
-                    var expression = BuildAssignment(instance.Expression, field, value, out var push);
-                    if (push)
-                        state.Stack.Push(expression);
-                    else
-                        instance.Expression = expression;
-                }
-                return true;
-            case OpCodes.Stsfld:
-                var sfValue = state.Stack.Pop();
-                var sfField = (FieldInfo)state.Instruction.Operand;
-                if (IsCachedAnonymousMethodDelegate(sfField))
-                {
-                    state.Delegates[Tuple.Create(default(Address), sfField)] = sfValue;
-                }
-                else
-                {
-                    state.Stack.Push(Expression.Assign(Expression.Field(null, sfField), sfValue));
-                }
-                return true;
-            default:
-                return false;
+            LdFld(state, state.Stack.Pop());
+            return true;
         }
+        
+        if (state.Instruction.OpCode == OpCodes.Ldsfld)
+        {
+            LdFld(state, null);
+            return true;
+        }
+        
+        if (state.Instruction.OpCode == OpCodes.Stfld)
+        {
+            var value = state.Stack.Pop();
+            var instance = state.Stack.Pop();
+            var field = (FieldInfo)state.Instruction.Operand;
+            if (IsCachedAnonymousMethodDelegate(field))
+            {
+                state.Delegates[Tuple.Create(instance, field)] = value;
+            }
+            else
+            {
+                var expression = BuildAssignment(instance.Expression, field, value, out var push);
+                if (push)
+                    state.Stack.Push(expression);
+                else
+                    instance.Expression = expression;
+            }
+            return true;
+        }
+        
+        if (state.Instruction.OpCode == OpCodes.Stsfld)
+        {
+            var sfValue = state.Stack.Pop();
+            var sfField = (FieldInfo)state.Instruction.Operand;
+            if (IsCachedAnonymousMethodDelegate(sfField))
+            {
+                state.Delegates[Tuple.Create(default(Address), sfField)] = sfValue;
+            }
+            else
+            {
+                state.Stack.Push(Expression.Assign(Expression.Field(null, sfField), sfValue));
+            }
+            return true;
+        }
+
+        return false;
     }
 
     static void StElem(ProcessorState state)
