@@ -7,7 +7,7 @@ using System.Reflection.Emit;
 
 namespace DelegateDecompiler
 {
-    internal class LoadStoreProcessor : IProcessor
+    internal class LoadProcessor : IProcessor
     {
         static readonly HashSet<OpCode> LdArgOpcodes = new HashSet<OpCode>
         {
@@ -19,16 +19,6 @@ namespace DelegateDecompiler
             OpCodes.Ldarg,
             OpCodes.Ldarga,
             OpCodes.Ldarga_S
-        };
-
-        static readonly HashSet<OpCode> StLocOpcodes = new HashSet<OpCode>
-        {
-            OpCodes.Stloc_0,
-            OpCodes.Stloc_1,
-            OpCodes.Stloc_2,
-            OpCodes.Stloc_3,
-            OpCodes.Stloc_S,
-            OpCodes.Stloc
         };
 
         static readonly HashSet<OpCode> LdElemOpcodes = new HashSet<OpCode>
@@ -72,33 +62,6 @@ namespace DelegateDecompiler
                 {
                     var operand = (ParameterInfo)state.Instruction.Operand;
                     state.Stack.Push(state.Args.Single(x => ((ParameterExpression)x.Expression).Name == operand.Name));
-                }
-                return true;
-            }
-
-            // Handle Stloc operations
-            if (StLocOpcodes.Contains(state.Instruction.OpCode))
-            {
-                if (state.Instruction.OpCode == OpCodes.Stloc_0)
-                {
-                    Processor.StLoc(state, 0);
-                }
-                else if (state.Instruction.OpCode == OpCodes.Stloc_1)
-                {
-                    Processor.StLoc(state, 1);
-                }
-                else if (state.Instruction.OpCode == OpCodes.Stloc_2)
-                {
-                    Processor.StLoc(state, 2);
-                }
-                else if (state.Instruction.OpCode == OpCodes.Stloc_3)
-                {
-                    Processor.StLoc(state, 3);
-                }
-                else // Stloc_S, Stloc
-                {
-                    var operand = (LocalVariableInfo)state.Instruction.Operand;
-                    Processor.StLoc(state, operand.LocalIndex);
                 }
                 return true;
             }
