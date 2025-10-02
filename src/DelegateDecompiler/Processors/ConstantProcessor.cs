@@ -44,31 +44,48 @@ internal class ConstantProcessor : IProcessor
         }
 
         // Handle other constant load operations
-        switch (state.Instruction.OpCode)
+        if (state.Instruction.OpCode == OpCodes.Ldc_I4_S)
         {
-            case OpCodes.Ldc_I4_S:
-                Processor.LdC(state, (sbyte)state.Instruction.Operand);
-                return true;
-            case OpCodes.Ldc_I4:
-                Processor.LdC(state, (int)state.Instruction.Operand);
-                return true;
-            case OpCodes.Ldc_I8:
-                Processor.LdC(state, (long)state.Instruction.Operand);
-                return true;
-            case OpCodes.Ldc_R4:
-                Processor.LdC(state, (float)state.Instruction.Operand);
-                return true;
-            case OpCodes.Ldc_R8:
-                Processor.LdC(state, (double)state.Instruction.Operand);
-                return true;
-            case OpCodes.Ldstr:
-                state.Stack.Push(Expression.Constant((string)state.Instruction.Operand));
-                return true;
-            case OpCodes.Ldnull:
-                state.Stack.Push(Expression.Constant(null));
-                return true;
-            default:
-                return false;
+            Processor.LdC(state, (sbyte)state.Instruction.Operand);
+            return true;
         }
+
+        if (state.Instruction.OpCode == OpCodes.Ldc_I4)
+        {
+            Processor.LdC(state, (int)state.Instruction.Operand);
+            return true;
+        }
+
+        if (state.Instruction.OpCode == OpCodes.Ldc_I8)
+        {
+            Processor.LdC(state, (long)state.Instruction.Operand);
+            return true;
+        }
+
+        if (state.Instruction.OpCode == OpCodes.Ldc_R4)
+        {
+            Processor.LdC(state, (float)state.Instruction.Operand);
+            return true;
+        }
+
+        if (state.Instruction.OpCode == OpCodes.Ldc_R8)
+        {
+            Processor.LdC(state, (double)state.Instruction.Operand);
+            return true;
+        }
+
+        if (state.Instruction.OpCode == OpCodes.Ldstr)
+        {
+            state.Stack.Push(Expression.Constant((string)state.Instruction.Operand));
+            return true;
+        }
+
+        if (state.Instruction.OpCode == OpCodes.Ldnull)
+        {
+            state.Stack.Push(Expression.Constant(null));
+            return true;
+        }
+
+        return false;
     }
 }
