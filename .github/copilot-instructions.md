@@ -24,6 +24,14 @@ dotnet build --no-restore -c Release -p:DisableGitVersionTask=true -p:SignAssemb
 .\test.cmd
 ```
 
+**Note for CI/Linux environments:** The project targets .NET Framework 4.0/4.5 which are not available on Linux. In CI environments, you can build specific .NET Standard targets:
+
+```bash
+# Build core library for .NET Standard 2.0
+cd src/DelegateDecompiler
+dotnet build --no-restore -c Release -p:DisableGitVersionTask=true -p:SignAssembly=false --framework netstandard2.0
+```
+
 ## Project Structure
 
 ```
