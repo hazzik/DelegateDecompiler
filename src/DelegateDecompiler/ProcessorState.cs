@@ -13,7 +13,8 @@ namespace DelegateDecompiler
         IList<Address> args,
         Instruction instruction,
         Instruction last = null,
-        IDictionary<Tuple<Address, FieldInfo>, Address> delegates = null)
+        IDictionary<Tuple<Address, FieldInfo>, Address> delegates = null,
+        bool isInstance = false)
     {
         public IDictionary<Tuple<Address, FieldInfo>, Address> Delegates { get; } = delegates ?? new Dictionary<Tuple<Address, FieldInfo>, Address>();
         public Stack<Address> Stack { get; } = stack;
@@ -21,6 +22,7 @@ namespace DelegateDecompiler
         public IList<Address> Args { get; } = args;
         public Instruction Last { get; } = last;
         public Action RunNext { get; set; }
+        public bool IsInstance { get; } = isInstance;
 
         public Instruction Instruction { get; set; } = instruction;
 
@@ -36,7 +38,7 @@ namespace DelegateDecompiler
                 clonedArgs[i] = Args[i].Clone(addressMap);
             }
             
-            var state = new ProcessorState(new Stack<Address>(buffer), new VariableInfo[Locals.Length], clonedArgs, instruction, last, Delegates);
+            var state = new ProcessorState(new Stack<Address>(buffer), new VariableInfo[Locals.Length], clonedArgs, instruction, last, Delegates, IsInstance);
             for (var i = 0; i < Locals.Length; i++)
             {
                 state.Locals[i] = new VariableInfo(Locals[i].Type)

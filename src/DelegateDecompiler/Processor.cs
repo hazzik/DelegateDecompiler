@@ -24,10 +24,10 @@ namespace DelegateDecompiler
         static readonly ConcurrentDictionary<MethodInfo, LambdaExpression> AnonymousDelegatesCache =
             new ConcurrentDictionary<MethodInfo, LambdaExpression>();
 
-        public static Expression Process(VariableInfo[] locals, IList<Address> args, Instruction instruction, Type returnType)
+        public static Expression Process(VariableInfo[] locals, IList<Address> args, Instruction instruction, Type returnType, bool isInstance = false)
         {
             Processor processor = new Processor();
-            processor.states.Push(new ProcessorState(new Stack<Address>(), locals, args, instruction));
+            processor.states.Push(new ProcessorState(new Stack<Address>(), locals, args, instruction, isInstance: isInstance));
 
             var ex = AdjustType(processor.Process(), returnType);
 

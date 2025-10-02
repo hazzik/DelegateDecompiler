@@ -40,12 +40,7 @@ internal class StargProcessor : IProcessor
     {
         var operand = (ParameterInfo)state.Instruction.Operand;
         
-        // Determine if this is an instance method by checking if the first argument is "this"
-        bool isInstanceMethod = state.Args.Count > 0 && 
-                               state.Args[0].Expression is ParameterExpression firstParam && 
-                               firstParam.Name == "this";
-        
         // For instance methods, parameters are offset by 1 due to the "this" parameter
-        return isInstanceMethod ? operand.Position + 1 : operand.Position;
+        return state.IsInstance ? operand.Position + 1 : operand.Position;
     }
 }
