@@ -1,4 +1,4 @@
-name: .NET Tests / Linux
+name: Linux / .NET Tests
 
 on:
   push:
@@ -9,7 +9,6 @@ on:
 
 jobs:
   dotnet-linux:
-    name: Tests
     runs-on: ubuntu-latest
     defaults:
       run:
