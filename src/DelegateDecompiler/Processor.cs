@@ -58,7 +58,9 @@ namespace DelegateDecompiler
             new LdfldProcessor(),
             new StfldProcessor(),
             new StsfldProcessor(),
-            new StelemProcessor()
+            new StelemProcessor(),
+            // This should be last one
+            new UnsupportedOpcodeProcessor()
         };
 
         Processor()
@@ -220,7 +222,9 @@ namespace DelegateDecompiler
                     }
                     else if (!processors.Any(processor => processor.Process(state)))
                     {
-                        Debug.WriteLine("Unhandled!!!");
+                        // This should never happen since UnsupportedOpcodeProcessor is the last processor
+                        // and it always processes (by throwing an exception)
+                        throw new InvalidOperationException("No processor handled the instruction, including the fallback processor.");
                     }
 
                     state.Instruction = state.Instruction.Next;
