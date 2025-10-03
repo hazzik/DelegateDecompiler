@@ -59,6 +59,7 @@ namespace DelegateDecompiler
             new StfldProcessor(),
             new StsfldProcessor(),
             new StelemProcessor(),
+            // This should be last one
             new UnsupportedOpcodeProcessor()
         };
 
