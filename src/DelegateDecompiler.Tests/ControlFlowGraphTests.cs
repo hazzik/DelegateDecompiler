@@ -60,7 +60,7 @@ namespace DelegateDecompiler.Tests
                 }
             };
 
-            var lambdaExpression = method.Decompile();
+            // var lambdaExpression = method.Decompile();
 
             var cfg = method.Method.BuildControlFlowGraph();
             var hasExceptionEdge = cfg.Blocks.Any(b => b.Successors.Any(e => e.IsException));
