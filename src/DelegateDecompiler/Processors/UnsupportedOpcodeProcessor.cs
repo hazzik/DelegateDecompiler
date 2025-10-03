@@ -9,7 +9,7 @@ internal class UnsupportedOpcodeProcessor : IProcessor
     {
         // This processor handles all opcodes that are not supported by other processors
         // by throwing a descriptive NotSupportedException
-        var opCode = state?.Instruction?.OpCode ?? OpCodes.Nop; // Default for testing
+        var opCode = state.Instruction.OpCode;
         
         throw new NotSupportedException($"The IL opcode '{opCode}' is not supported by DelegateDecompiler. " +
                                       $"This opcode cannot be decompiled into an expression tree. " +
