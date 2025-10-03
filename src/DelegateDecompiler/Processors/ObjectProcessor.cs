@@ -33,24 +33,6 @@ internal class ObjectProcessor : IProcessor
             return true;
         }
 
-        if (state.Instruction.OpCode == OpCodes.Unbox)
-        {
-            var expression = state.Stack.Pop();
-            var type = (Type)state.Instruction.Operand;
-            // Unbox returns a pointer to the value, but in expression trees we represent this as a conversion
-            state.Stack.Push(Expression.Convert(expression, type));
-            return true;
-        }
-
-        if (state.Instruction.OpCode == OpCodes.Unbox_Any)
-        {
-            var expression = state.Stack.Pop();
-            var type = (Type)state.Instruction.Operand;
-            // Unbox_Any converts boxed value types to their unboxed form or leaves reference types unchanged
-            state.Stack.Push(Expression.Convert(expression, type));
-            return true;
-        }
-
         return false;
     }
 }
