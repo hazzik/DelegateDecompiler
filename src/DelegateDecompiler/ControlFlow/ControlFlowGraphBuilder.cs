@@ -18,7 +18,7 @@ namespace DelegateDecompiler.ControlFlow
             var body = method.GetMethodBody();
             if (body == null) throw new InvalidOperationException("Method has no body");
 
-            var instructions = method.GetInstructions().ToList();
+            var instructions = method.GetInstructions();
             if (instructions.Count == 0)
             {
                 var emptyEntry = new Block(0, null) { IsEntry = true, IsExit = true };
