@@ -102,9 +102,9 @@ namespace DelegateDecompiler.Tests
                 try
                 {
                     var parameters = ctor.GetParameters();
-                    if (parameters.Length == 3) // offset, opcode, operand
+                    if (parameters.Length == 2) // offset, opcode
                     {
-                        instruction = (Mono.Reflection.Instruction)ctor.Invoke(new object[] { 0, OpCodes.Cpobj, null });
+                        instruction = (Mono.Reflection.Instruction)ctor.Invoke(new object[] { 0, OpCodes.Cpobj });
                         break;
                     }
                 }
@@ -122,8 +122,8 @@ namespace DelegateDecompiler.Tests
             }
             else
             {
-                // If we can't create the instruction, just test that the processor requires a valid state
-                Assert.Throws<NullReferenceException>(() => processor.Process(null));
+                // If we can't create the instruction, just test that the processor throws NotSupportedException for null
+                Assert.Throws<NotSupportedException>(() => processor.Process(null));
             }
         }
     }
