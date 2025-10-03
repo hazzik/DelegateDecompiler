@@ -92,8 +92,7 @@ namespace DelegateDecompiler.Tests
             }
             else
             {
-                // If we can't create the instruction, just test that the processor throws NotSupportedException for null
-                Assert.Throws<NotSupportedException>(() => processor.Process(null));
+                Assert.Fail("Could not create instruction for testing UnsupportedOpcodeProcessor");
             }
         }
     }
