@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Reflection.Emit;
+using Mono.Reflection;
 
 namespace DelegateDecompiler.Processors;
 
@@ -12,9 +13,9 @@ internal class UnaryExpressionProcessor : IProcessor
         { OpCodes.Not, ExpressionType.Not }
     };
 
-    public bool Process(ProcessorState state)
+    public bool Process(ProcessorState state, Instruction instruction)
     {
-        if (!Operations.TryGetValue(state.Instruction.OpCode, out var operation))
+        if (!Operations.TryGetValue(instruction.OpCode, out var operation))
             return false;
 
         var val = state.Stack.Pop();

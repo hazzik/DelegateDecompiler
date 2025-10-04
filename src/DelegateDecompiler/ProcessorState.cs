@@ -3,30 +3,31 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using DelegateDecompiler.ControlFlow;
 using Mono.Reflection;
 
 namespace DelegateDecompiler
 {
     class ProcessorState(
+        Block block,
         bool isStatic,
         Stack<Address> stack,
         VariableInfo[] locals,
         IList<Address> args,
         Instruction instruction,
-        Instruction last = null,
         IDictionary<Tuple<Address, FieldInfo>, Address> delegates = null)
     {
         public IDictionary<Tuple<Address, FieldInfo>, Address> Delegates { get; } = delegates ?? new Dictionary<Tuple<Address, FieldInfo>, Address>();
+        public Block Block { get; } = block;
         public Stack<Address> Stack { get; } = stack;
         public VariableInfo[] Locals { get; } = locals;
         public IList<Address> Args { get; } = args;
-        public Instruction Last { get; } = last;
         public Action RunNext { get; set; }
         public bool IsStatic { get; } = isStatic;
 
         public Instruction Instruction { get; set; } = instruction;
 
-        public ProcessorState Clone(Instruction instruction, Instruction last = null)
+        public ProcessorState Clone(Instruction instruction, Block block)
         {
             var addressMap = new Dictionary<Address, Address>();
             var buffer = Stack.Select(address => address.Clone(addressMap)).Reverse();
@@ -37,7 +38,7 @@ namespace DelegateDecompiler
                 clonedArgs[i] = Args[i].Clone(addressMap);
             }
             
-            var state = new ProcessorState(IsStatic, new Stack<Address>(buffer), new VariableInfo[Locals.Length], clonedArgs, instruction, last, Delegates);
+            var state = new ProcessorState(block, IsStatic, new Stack<Address>(buffer), new VariableInfo[Locals.Length], clonedArgs, instruction, Delegates);
             for (var i = 0; i < Locals.Length; i++)
             {
                 state.Locals[i] = new VariableInfo(Locals[i].Type)
