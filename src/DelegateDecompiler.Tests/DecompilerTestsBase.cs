@@ -20,12 +20,13 @@ namespace DelegateDecompiler.Tests
             //Double cast required as we can not convert T to Delegate directly
             var decompiled = ((Delegate)((object)compiled)).Decompile();
 
+            Assert.That(DebugView(decompiled.Body), Is.EqualTo(DebugView(expected.Body)));
+         
             var x = expected.Body.ToString();
             Console.WriteLine(x);
             var y = decompiled.Body.ToString();
             Console.WriteLine(y);
             Assert.That(y, Is.EqualTo(x));
-            Assert.That(DebugView(decompiled.Body), Is.EqualTo(DebugView(expected.Body)));
         }
 
         protected static void Test<T>(Expression<T> expected, MethodInfo compiled)
