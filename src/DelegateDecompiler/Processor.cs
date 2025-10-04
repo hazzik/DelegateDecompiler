@@ -85,47 +85,66 @@ namespace DelegateDecompiler
 
         void ProcessBlock(Block block, ProcessorState state)
         {
-            // Process all non-branching instructions in the block
             for (var index = 0; index < block.Instructions.Count; index++)
             {
                 var instruction = block.Instructions[index];
                 index += ProcessInstruction(instruction, state);
             }
 
-            // Handle block exit based on successor edges
             ProcessBlockExit(block, state);
         }
 
-        Expression ProcessBlockExit(Block block, ProcessorState state)
+        void ProcessUntilBlock(Block startBlock, Block endBlock, ProcessorState state)
         {
-            if (block.Successors.Count == 0)
+            Console.WriteLine($"DEBUG: ProcessUntilBlock - Start: {startBlock?.First}, End: {endBlock?.First}, Stack count: {state.Stack.Count}");
+
+            if (startBlock == endBlock)
+                return;
+
+            var current = startBlock;
+            
+            // Process blocks until we reach the end block (but don't process the end block itself)
+            while (current != null && current != endBlock)
             {
-                // End of method - don't use Final() here, let main Process method handle it
-                if (state.Stack.Count > 0)
+                // Process all instructions in the current block
+                for (var index = 0; index < current.Instructions.Count; index++)
                 {
-                    return state.Stack.Peek();
+                    var instruction = current.Instructions[index];
+                    index += ProcessInstruction(instruction, state);
                 }
-                return Expression.Default(typeof(void));
-            }
-            else if (block.Successors.Count == 1)
-            {
-                var edge = block.Successors[0];
-                if (edge.Kind == EdgeKind.FallThrough || edge.Kind == EdgeKind.UnconditionalBranch)
+
+                // Move to next block
+                if (current.Successors.Count == 1)
                 {
-                    // Simple flow to next block
-                     ProcessBlock(edge.To, state);
-                     return null;
+                    current = current.Successors[0].To;
+                }
+                else if (current.Successors.Count == 2)
+                {
+                    ProcessConditionalBranch(current, state, endBlock);
+                    break; 
                 }
                 else
                 {
-                    return null;
+                    // No successors or complex branching
+                    break;
                 }
             }
-            else
+        }
+
+        void ProcessBlockExit(Block block, ProcessorState state)
+        {
+            switch (block.Successors.Count)
             {
-                // Conditional branch - should have exactly 2 successors
-                ProcessConditionalBranch(block, state);
-                return null;
+                case 0:
+                    break;
+                case 1:
+                    ProcessBlock(block.Successors[0].To, state);
+                    break;
+                case 2:
+                    ProcessConditionalBranch(block, state);
+                    break;
+                default:
+                    throw new NotSupportedException();
             }
         }
 
@@ -155,12 +174,10 @@ namespace DelegateDecompiler
                 i.OpCode == OpCodes.Bne_Un || i.OpCode == OpCodes.Bne_Un_S);
 
             if (branchingInstruction == null)
-            {
                 throw new InvalidOperationException("No branching instruction found in conditional block");
-            }
 
             // Create the test condition based on the branching instruction
-            Expression test = CreateTestCondition(branchingInstruction, state);
+            var test = CreateTestCondition(branchingInstruction, state);
 
             // Clone state for both branches
             var trueState = state.Clone(trueEdge.To.First, trueEdge.To);
@@ -245,61 +262,6 @@ namespace DelegateDecompiler
 
             Console.WriteLine($"DEBUG: FindConvergencePoint for {block?.First} found: {common?.First}");
             return common;
-        }
-
-        void ProcessUntilBlock(Block startBlock, Block endBlock, ProcessorState state)
-        {
-            Console.WriteLine($"DEBUG: ProcessUntilBlock - Start: {startBlock?.First}, End: {endBlock?.First}, Stack count: {state.Stack.Count}");
-            
-            if (startBlock == endBlock)
-            {
-                Console.WriteLine($"DEBUG: Start == End, returning stack value without processing the convergence block");
-                // Don't process the convergence block - just return what's currently on the stack
-                if (state.Stack.Count == 0)
-                {
-                    Console.WriteLine($"DEBUG: Empty stack at convergence point, returning void");
-                    Expression.Default(typeof(void));
-                    return;
-                }
-                // Don't use Final() here - just peek at the top of stack without consuming it
-                var result = state.Stack.Peek();
-                Console.WriteLine($"DEBUG: Convergence point result: {result} (Type: {result.Type})");
-                return;
-            }
-
-            var currentBlock = startBlock;
-            
-            // Process blocks until we reach the end block (but don't process the end block itself)
-            while (currentBlock != null && currentBlock != endBlock)
-            {
-                // Process all instructions in the current block
-                for (var index = 0; index < currentBlock.Instructions.Count; index++)
-                {
-                    var instruction = currentBlock.Instructions[index];
-                    index += ProcessInstruction(instruction, state);
-                }
-
-                // Move to next block
-                if (currentBlock.Successors.Count == 1)
-                {
-                    currentBlock = currentBlock.Successors[0].To;
-                }
-                else if (currentBlock.Successors.Count == 2)
-                {
-                    // Hit another conditional branch before reaching end block
-                    Console.WriteLine($"DEBUG: ProcessUntilBlock found conditional branch in block {currentBlock?.First}");
-                    // Process the conditional branch, passing the endBlock to prevent processing shared convergence blocks
-                    ProcessConditionalBranch(currentBlock, state, endBlock);
-                    // After conditional processing, continue to the end block
-                    // The conditional should have left us at or moved us toward the convergence
-                    break; // Exit the loop, conditional processing handles the rest
-                }
-                else
-                {
-                    // No successors or complex branching
-                    break;
-                }
-            }
         }
 
         Expression CreateTestCondition(Instruction branchingInstruction, ProcessorState state)
