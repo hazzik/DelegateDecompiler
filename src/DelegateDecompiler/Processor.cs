@@ -30,7 +30,7 @@ namespace DelegateDecompiler
             Processor processor = new Processor();
             var initialState = new ProcessorState(cfg.Entry, isStatic, new Stack<Address>(), locals, args, cfg.Entry.Instructions.FirstOrDefault());
             
-            var ex = processor.ProcessBlock(cfg.Entry, initialState);
+            processor.ProcessBlock(cfg.Entry, initialState);
             
             // Use Final() ONLY here - once per method body
             var finalResult = initialState.Final();
@@ -70,24 +70,17 @@ namespace DelegateDecompiler
         {
         }
 
-        Expression ProcessBlock(Block block, ProcessorState state)
+        void ProcessBlock(Block block, ProcessorState state)
         {
             // Process all non-branching instructions in the block
-            foreach (var instruction in block.Instructions)
+            for (var index = 0; index < block.Instructions.Count; index++)
             {
-                if (!ProcessInstruction(instruction, state))
-                {
-                    // Early return instruction encountered - don't use Final()
-                    if (state.Stack.Count > 0)
-                    {
-                        return state.Stack.Peek();
-                    }
-                    return Expression.Default(typeof(void));
-                }
+                var instruction = block.Instructions[index];
+                index += ProcessInstruction(instruction, state);
             }
 
             // Handle block exit based on successor edges
-            return ProcessBlockExit(block, state);
+            ProcessBlockExit(block, state);
         }
 
         Expression ProcessBlockExit(Block block, ProcessorState state)
@@ -107,26 +100,23 @@ namespace DelegateDecompiler
                 if (edge.Kind == EdgeKind.FallThrough || edge.Kind == EdgeKind.UnconditionalBranch)
                 {
                     // Simple flow to next block
-                    return ProcessBlock(edge.To, state);
+                     ProcessBlock(edge.To, state);
+                     return null;
                 }
                 else
                 {
-                    // This shouldn't happen in well-formed CFG - don't use Final()
-                    if (state.Stack.Count > 0)
-                    {
-                        return state.Stack.Peek();
-                    }
-                    return Expression.Default(typeof(void));
+                    return null;
                 }
             }
             else
             {
                 // Conditional branch - should have exactly 2 successors
-                return ProcessConditionalBranch(block, state);
+                 ProcessConditionalBranch(block, state);
+                 return null;
             }
         }
 
-        Expression ProcessConditionalBranch(Block block, ProcessorState state)
+        void ProcessConditionalBranch(Block block, ProcessorState state)
         {
             var trueEdge = block.Successors.FirstOrDefault(e => e.Kind == EdgeKind.ConditionalTrue);
             var falseEdge = block.Successors.FirstOrDefault(e => e.Kind == EdgeKind.ConditionalFalse);
@@ -182,12 +172,8 @@ namespace DelegateDecompiler
                 // If we have a convergence point, continue processing from there
                 if (!convergencePoint.IsExit)
                 {
-                    return ProcessBlock(convergencePoint, state);
+                    ProcessBlock(convergencePoint, state);
                 }
-                
-                // If convergence point is exit, the merged result is on the stack
-                // Don't use Final() - let caller handle it
-                return Expression.Default(typeof(void));
             }
             else
             {
@@ -197,9 +183,6 @@ namespace DelegateDecompiler
 
                 // Always merge states after processing branches
                 state.Merge(test, trueState, falseState);
-                
-                // Don't use Final() - let caller handle the merged result
-                return Expression.Default(typeof(void));
             }
         }
 
@@ -245,7 +228,7 @@ namespace DelegateDecompiler
             return common;
         }
 
-        Expression ProcessUntilBlock(Block startBlock, Block endBlock, ProcessorState state)
+        void ProcessUntilBlock(Block startBlock, Block endBlock, ProcessorState state)
         {
             Console.WriteLine($"DEBUG: ProcessUntilBlock - Start: {startBlock?.First}, End: {endBlock?.First}, Stack count: {state.Stack.Count}");
             
@@ -256,12 +239,13 @@ namespace DelegateDecompiler
                 if (state.Stack.Count == 0)
                 {
                     Console.WriteLine($"DEBUG: Empty stack at convergence point, returning void");
-                    return Expression.Default(typeof(void));
+                    Expression.Default(typeof(void));
+                    return;
                 }
                 // Don't use Final() here - just peek at the top of stack without consuming it
                 var result = state.Stack.Peek();
                 Console.WriteLine($"DEBUG: Convergence point result: {result} (Type: {result.Type})");
-                return result;
+                return;
             }
 
             var currentBlock = startBlock;
@@ -270,17 +254,10 @@ namespace DelegateDecompiler
             while (currentBlock != null && currentBlock != endBlock)
             {
                 // Process all instructions in the current block
-                foreach (var instruction in currentBlock.Instructions)
+                for (var index = 0; index < currentBlock.Instructions.Count; index++)
                 {
-                    if (!ProcessInstruction(instruction, state))
-                    {
-                        // Early return instruction encountered - don't use Final()
-                        if (state.Stack.Count > 0)
-                        {
-                            return state.Stack.Peek();
-                        }
-                        return Expression.Default(typeof(void));
-                    }
+                    var instruction = currentBlock.Instructions[index];
+                    index += ProcessInstruction(instruction, state);
                 }
 
                 // Move to next block
@@ -294,12 +271,7 @@ namespace DelegateDecompiler
                     Console.WriteLine($"DEBUG: ProcessUntilBlock found conditional branch in block {currentBlock?.First}");
                     // Process the conditional branch directly and return the result
                     ProcessBlockExit(currentBlock, state);
-                    // The result should now be on the stack
-                    if (state.Stack.Count > 0)
-                    {
-                        return state.Stack.Peek();
-                    }
-                    return Expression.Default(typeof(void));
+                    return;
                 }
                 else
                 {
@@ -307,13 +279,6 @@ namespace DelegateDecompiler
                     break;
                 }
             }
-
-            // Return what's on the stack without consuming it - state.Merge() will handle this
-            if (state.Stack.Count == 0)
-            {
-                return Expression.Default(typeof(void));
-            }
-            return state.Stack.Peek();
         }
 
         Expression CreateTestCondition(Instruction branchingInstruction, ProcessorState state)
@@ -327,11 +292,13 @@ namespace DelegateDecompiler
             else if (branchingInstruction.OpCode == OpCodes.Brtrue || branchingInstruction.OpCode == OpCodes.Brtrue_S)
             {
                 var address = state.Stack.Peek();
-                var memberExpression = address.Expression as MemberExpression;
-                if (memberExpression != null && IsCachedAnonymousMethodDelegate(memberExpression.Member as FieldInfo))
+                if (address.Expression is MemberExpression memberExpression && 
+                    IsCachedAnonymousMethodDelegate(memberExpression.Member as FieldInfo))
                 {
                     state.Stack.Pop();
-                    return Expression.Constant(true); // Always true for cached delegates
+                    // Always false for cached delegates
+                    // if (this.<delegate> != null) { this.<delegate> } else { this.<delegate> = <build> }
+                    return Expression.Constant(false);
                 }
                 else
                 {
@@ -385,38 +352,41 @@ namespace DelegateDecompiler
             }
         }
 
-        bool ProcessInstruction(Instruction instruction, ProcessorState state)
+        static int ProcessInstruction(Instruction instruction, ProcessorState state)
         {
             Debug.WriteLine(instruction);
 
             if (instruction.OpCode == OpCodes.Nop || instruction.OpCode == OpCodes.Break)
             {
                 // Do nothing
-                return true;
             }
-            else if (instruction.OpCode == OpCodes.Br_S || instruction.OpCode == OpCodes.Br ||
-                     instruction.OpCode == OpCodes.Brfalse || instruction.OpCode == OpCodes.Brfalse_S ||
-                     instruction.OpCode == OpCodes.Brtrue || instruction.OpCode == OpCodes.Brtrue_S ||
-                     instruction.OpCode == OpCodes.Bgt || instruction.OpCode == OpCodes.Bgt_S ||
-                     instruction.OpCode == OpCodes.Bgt_Un || instruction.OpCode == OpCodes.Bgt_Un_S ||
-                     instruction.OpCode == OpCodes.Bge || instruction.OpCode == OpCodes.Bge_S ||
-                     instruction.OpCode == OpCodes.Bge_Un || instruction.OpCode == OpCodes.Bge_Un_S ||
-                     instruction.OpCode == OpCodes.Blt || instruction.OpCode == OpCodes.Blt_S ||
-                     instruction.OpCode == OpCodes.Blt_Un || instruction.OpCode == OpCodes.Blt_Un_S ||
-                     instruction.OpCode == OpCodes.Ble || instruction.OpCode == OpCodes.Ble_S ||
-                     instruction.OpCode == OpCodes.Ble_Un || instruction.OpCode == OpCodes.Ble_Un_S ||
-                     instruction.OpCode == OpCodes.Beq || instruction.OpCode == OpCodes.Beq_S ||
-                     instruction.OpCode == OpCodes.Bne_Un || instruction.OpCode == OpCodes.Bne_Un_S)
+
+           else  if (instruction.OpCode == OpCodes.Br_S || instruction.OpCode == OpCodes.Br ||
+                instruction.OpCode == OpCodes.Brfalse || instruction.OpCode == OpCodes.Brfalse_S ||
+                instruction.OpCode == OpCodes.Brtrue || instruction.OpCode == OpCodes.Brtrue_S ||
+                instruction.OpCode == OpCodes.Bgt || instruction.OpCode == OpCodes.Bgt_S ||
+                instruction.OpCode == OpCodes.Bgt_Un || instruction.OpCode == OpCodes.Bgt_Un_S ||
+                instruction.OpCode == OpCodes.Bge || instruction.OpCode == OpCodes.Bge_S ||
+                instruction.OpCode == OpCodes.Bge_Un || instruction.OpCode == OpCodes.Bge_Un_S ||
+                instruction.OpCode == OpCodes.Blt || instruction.OpCode == OpCodes.Blt_S ||
+                instruction.OpCode == OpCodes.Blt_Un || instruction.OpCode == OpCodes.Blt_Un_S ||
+                instruction.OpCode == OpCodes.Ble || instruction.OpCode == OpCodes.Ble_S ||
+                instruction.OpCode == OpCodes.Ble_Un || instruction.OpCode == OpCodes.Ble_Un_S ||
+                instruction.OpCode == OpCodes.Beq || instruction.OpCode == OpCodes.Beq_S ||
+                instruction.OpCode == OpCodes.Bne_Un || instruction.OpCode == OpCodes.Bne_Un_S)
             {
                 // These are handled at block level, ignore during instruction processing
-                return true;
             }
-            else if (instruction.OpCode == OpCodes.Ldftn)
+
+           else if (instruction.OpCode == OpCodes.Ldftn)
             {
                 var method = (MethodInfo)instruction.Operand;
-                state.Stack.Push(DecompileLambdaExpression(method, () => state.Stack.Pop()));
+                var expression = DecompileLambdaExpression(method, () => state.Stack.Pop());
+                state.Stack.Push(expression);
+                return 1;
             }
-            else if (instruction.OpCode == OpCodes.Newobj)
+
+         else   if (instruction.OpCode == OpCodes.Newobj)
             {
                 var constructor = (ConstructorInfo)instruction.Operand;
                 var arguments = GetArguments(state, constructor);
@@ -429,7 +399,8 @@ namespace DelegateDecompiler
                     state.Stack.Push(Expression.New(constructor, arguments));
                 }
             }
-            else if (instruction.OpCode == OpCodes.Call || instruction.OpCode == OpCodes.Callvirt)
+
+else            if (instruction.OpCode == OpCodes.Call || instruction.OpCode == OpCodes.Callvirt)
             {
                 var method = instruction.Operand as MethodInfo;
                 var constructor = instruction.Operand as ConstructorInfo;
@@ -447,8 +418,9 @@ namespace DelegateDecompiler
                 {
                     throw new NotSupportedException();
                 }
+
             }
-            else if (instruction.OpCode == OpCodes.Isinst)
+            else  if (instruction.OpCode == OpCodes.Isinst)
             {
                 var val = state.Stack.Pop();
                 if (instruction.Next != null && instruction.Next.OpCode == OpCodes.Ldnull &&
@@ -456,17 +428,14 @@ namespace DelegateDecompiler
                 {
                     state.Stack.Push(Expression.TypeIs(val, (Type)instruction.Operand));
                     // Skip the next two instructions as they're part of this pattern
-                    return true;
+                    return 2;
                 }
-                else
-                {
-                    state.Stack.Push(Expression.TypeAs(val, (Type)instruction.Operand));
-                }
-            }
+
+                state.Stack.Push(Expression.TypeAs(val, (Type)instruction.Operand));
+            } 
             else if (instruction.OpCode == OpCodes.Ret)
             {
                 // Return instruction - signal early return
-                return false;
             }
             else if (!processors.Any(processor => processor.Process(state, instruction)))
             {
@@ -474,7 +443,7 @@ namespace DelegateDecompiler
                 throw new InvalidOperationException("No processor handled the instruction, including the fallback processor.");
             }
 
-            return true; // Continue processing
+            return 0; 
         }
 
         static LambdaExpression DecompileLambdaExpression(MethodInfo method, Func<Expression> @this)
