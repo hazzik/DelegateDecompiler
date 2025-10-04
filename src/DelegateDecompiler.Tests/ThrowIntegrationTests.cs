@@ -21,5 +21,24 @@ namespace DelegateDecompiler.Tests
             
             Test(compiled, expectedExpression);
         }
+
+        [Test]
+        public void ConditionalThrowInTernaryOperator()
+        {
+            Func<int, string> compiled = x => x > 0 ? "positive" : throw new ArgumentException("negative");
+            
+            // Create expected expression programmatically for conditional with throw
+            var parameter = Expression.Parameter(typeof(int), "x");
+            var positiveConstant = Expression.Constant("positive");
+            var constructor = typeof(ArgumentException).GetConstructor(new[] { typeof(string) });
+            var messageConstant = Expression.Constant("negative");
+            var newExpression = Expression.New(constructor, messageConstant);
+            var throwExpression = Expression.Throw(newExpression, typeof(string));
+            var condition = Expression.GreaterThan(parameter, Expression.Constant(0));
+            var conditionalExpression = Expression.Condition(condition, positiveConstant, throwExpression);
+            var expectedExpression = Expression.Lambda<Func<int, string>>(conditionalExpression, parameter);
+            
+            Test(compiled, expectedExpression);
+        }
     }
 }
