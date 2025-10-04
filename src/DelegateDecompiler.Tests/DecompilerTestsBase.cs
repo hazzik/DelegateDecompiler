@@ -16,9 +16,9 @@ namespace DelegateDecompiler.Tests
         }
         
         
-        protected static Expression<T> Test<T>(MethodInfo method, params Expression<T>[] expected)
+        protected static LambdaExpression Test<T>(MethodInfo method, params Expression<T>[] expected)
         {
-            var decompiled = (Expression<T>)method.Decompile();
+            var decompiled = method.Decompile();
 
             var decompiledBody = decompiled.Body.ToString();
             Console.WriteLine(decompiledBody);
@@ -32,7 +32,7 @@ namespace DelegateDecompiler.Tests
             return decompiled;
         }
 
-        protected static Expression<T> Test<T>(T compiled, params Expression<T>[] expected)
+        protected static LambdaExpression Test<T>(T compiled, params Expression<T>[] expected)
         {
             var decompiled = TestNoDebugView(compiled, expected);
 
@@ -41,7 +41,7 @@ namespace DelegateDecompiler.Tests
             return decompiled;
         }
 
-        protected static Expression<T> TestNoDebugView<T>(T compiled, params Expression<T>[] expected)
+        protected static LambdaExpression TestNoDebugView<T>(T compiled, params Expression<T>[] expected)
         {
             //Double cast required as we can not convert T to Delegate directly
             var decompiled = ((Delegate)((object)compiled)).Decompile();
@@ -52,7 +52,7 @@ namespace DelegateDecompiler.Tests
             var expectedBodies = Array.ConvertAll(expected, object (e) => e.Body.ToString());
             Array.ForEach(expectedBodies, Console.WriteLine);
             Assert.That(decompiledBody, Is.AnyOf(expectedBodies));
-            return (Expression<T>)decompiled;
+            return decompiled;
         }
 
         protected static void AssertAreEqual(Expression actual, Expression expected, bool compareDebugView = true)
