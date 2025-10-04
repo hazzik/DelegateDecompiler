@@ -122,26 +122,9 @@ namespace DelegateDecompiler
             if (trueEdge == null || falseEdge == null)
                 throw new InvalidOperationException("Conditional branch must have both true and false edges");
 
-            // Find the branching instruction in this block to determine the test condition
-            var branchingInstruction = block.Instructions.LastOrDefault(i => 
-                i.OpCode == OpCodes.Brfalse || i.OpCode == OpCodes.Brfalse_S ||
-                i.OpCode == OpCodes.Brtrue || i.OpCode == OpCodes.Brtrue_S ||
-                i.OpCode == OpCodes.Bgt || i.OpCode == OpCodes.Bgt_S ||
-                i.OpCode == OpCodes.Bgt_Un || i.OpCode == OpCodes.Bgt_Un_S ||
-                i.OpCode == OpCodes.Bge || i.OpCode == OpCodes.Bge_S ||
-                i.OpCode == OpCodes.Bge_Un || i.OpCode == OpCodes.Bge_Un_S ||
-                i.OpCode == OpCodes.Blt || i.OpCode == OpCodes.Blt_S ||
-                i.OpCode == OpCodes.Blt_Un || i.OpCode == OpCodes.Blt_Un_S ||
-                i.OpCode == OpCodes.Ble || i.OpCode == OpCodes.Ble_S ||
-                i.OpCode == OpCodes.Ble_Un || i.OpCode == OpCodes.Ble_Un_S ||
-                i.OpCode == OpCodes.Beq || i.OpCode == OpCodes.Beq_S ||
-                i.OpCode == OpCodes.Bne_Un || i.OpCode == OpCodes.Bne_Un_S);
-
-            if (branchingInstruction == null)
-                throw new InvalidOperationException("No branching instruction found in conditional block");
-
-            // Create the test condition based on the branching instruction
-            var test = CreateTestCondition(branchingInstruction, state);
+            // The condition should already be on the stack from instruction processing
+            var test = state.Stack.Pop();
+            Console.WriteLine($"DEBUG: Conditional branch test condition: {test}");
 
             // Clone state for both branches
             var trueState = state.Clone(trueEdge.To.First, trueEdge.To);
@@ -210,77 +193,6 @@ namespace DelegateDecompiler
             return common;
         }
 
-        Expression CreateTestCondition(Instruction branchingInstruction, ProcessorState state)
-        {
-            // Handle different branching instructions
-            if (branchingInstruction.OpCode == OpCodes.Brfalse || branchingInstruction.OpCode == OpCodes.Brfalse_S)
-            {
-                var val = state.Stack.Pop();
-                return Expression.Equal(val, ExpressionHelper.Default(val.Type));
-            }
-            else if (branchingInstruction.OpCode == OpCodes.Brtrue || branchingInstruction.OpCode == OpCodes.Brtrue_S)
-            {
-                var address = state.Stack.Peek();
-                if (address.Expression is MemberExpression memberExpression && 
-                    IsCachedAnonymousMethodDelegate(memberExpression.Member as FieldInfo))
-                {
-                    state.Stack.Pop();
-                    // Always false for cached delegates
-                    // if (this.<delegate> != null) { this.<delegate> } else { this.<delegate> = <build> }
-                    return Expression.Constant(false);
-                }
-                else
-                {
-                    var val = state.Stack.Pop();
-                    return val.Type == typeof(bool) ? val : Expression.NotEqual(val, ExpressionHelper.Default(val.Type));
-                }
-            }
-            else if (branchingInstruction.OpCode == OpCodes.Bgt || branchingInstruction.OpCode == OpCodes.Bgt_S ||
-                     branchingInstruction.OpCode == OpCodes.Bgt_Un || branchingInstruction.OpCode == OpCodes.Bgt_Un_S)
-            {
-                var val2 = state.Stack.Pop();
-                var val1 = state.Stack.Pop();
-                return MakeBinaryExpression(val1, val2, ExpressionType.GreaterThan);
-            }
-            else if (branchingInstruction.OpCode == OpCodes.Bge || branchingInstruction.OpCode == OpCodes.Bge_S ||
-                     branchingInstruction.OpCode == OpCodes.Bge_Un || branchingInstruction.OpCode == OpCodes.Bge_Un_S)
-            {
-                var val2 = state.Stack.Pop();
-                var val1 = state.Stack.Pop();
-                return MakeBinaryExpression(val1, val2, ExpressionType.GreaterThanOrEqual);
-            }
-            else if (branchingInstruction.OpCode == OpCodes.Blt || branchingInstruction.OpCode == OpCodes.Blt_S ||
-                     branchingInstruction.OpCode == OpCodes.Blt_Un || branchingInstruction.OpCode == OpCodes.Blt_Un_S)
-            {
-                var val2 = state.Stack.Pop();
-                var val1 = state.Stack.Pop();
-                return MakeBinaryExpression(val1, val2, ExpressionType.LessThan);
-            }
-            else if (branchingInstruction.OpCode == OpCodes.Ble || branchingInstruction.OpCode == OpCodes.Ble_S ||
-                     branchingInstruction.OpCode == OpCodes.Ble_Un || branchingInstruction.OpCode == OpCodes.Ble_Un_S)
-            {
-                var val2 = state.Stack.Pop();
-                var val1 = state.Stack.Pop();
-                return MakeBinaryExpression(val1, val2, ExpressionType.LessThanOrEqual);
-            }
-            else if (branchingInstruction.OpCode == OpCodes.Beq || branchingInstruction.OpCode == OpCodes.Beq_S)
-            {
-                var val2 = state.Stack.Pop();
-                var val1 = state.Stack.Pop();
-                return MakeBinaryExpression(val1, val2, ExpressionType.Equal);
-            }
-            else if (branchingInstruction.OpCode == OpCodes.Bne_Un || branchingInstruction.OpCode == OpCodes.Bne_Un_S)
-            {
-                var val2 = state.Stack.Pop();
-                var val1 = state.Stack.Pop();
-                return MakeBinaryExpression(val1, val2, ExpressionType.NotEqual);
-            }
-            else
-            {
-                throw new NotSupportedException($"Unsupported branching instruction: {branchingInstruction.OpCode}");
-            }
-        }
-
         static int ProcessInstruction(ProcessorState state, Instruction instruction)
         {
             Debug.WriteLine(instruction);
@@ -289,33 +201,89 @@ namespace DelegateDecompiler
             {
                 // Do nothing
             }
-
-           else  if (instruction.OpCode == OpCodes.Br_S || instruction.OpCode == OpCodes.Br ||
-                instruction.OpCode == OpCodes.Brfalse || instruction.OpCode == OpCodes.Brfalse_S ||
-                instruction.OpCode == OpCodes.Brtrue || instruction.OpCode == OpCodes.Brtrue_S ||
-                instruction.OpCode == OpCodes.Bgt || instruction.OpCode == OpCodes.Bgt_S ||
-                instruction.OpCode == OpCodes.Bgt_Un || instruction.OpCode == OpCodes.Bgt_Un_S ||
-                instruction.OpCode == OpCodes.Bge || instruction.OpCode == OpCodes.Bge_S ||
-                instruction.OpCode == OpCodes.Bge_Un || instruction.OpCode == OpCodes.Bge_Un_S ||
-                instruction.OpCode == OpCodes.Blt || instruction.OpCode == OpCodes.Blt_S ||
-                instruction.OpCode == OpCodes.Blt_Un || instruction.OpCode == OpCodes.Blt_Un_S ||
-                instruction.OpCode == OpCodes.Ble || instruction.OpCode == OpCodes.Ble_S ||
-                instruction.OpCode == OpCodes.Ble_Un || instruction.OpCode == OpCodes.Ble_Un_S ||
-                instruction.OpCode == OpCodes.Beq || instruction.OpCode == OpCodes.Beq_S ||
-                instruction.OpCode == OpCodes.Bne_Un || instruction.OpCode == OpCodes.Bne_Un_S)
+            else if (instruction.OpCode.FlowControl == FlowControl.Branch)
             {
                 // These are handled at block level, ignore during instruction processing
             }
-
-           else if (instruction.OpCode == OpCodes.Ldftn)
+            else if (instruction.OpCode == OpCodes.Brfalse || instruction.OpCode == OpCodes.Brfalse_S)
+            {
+                var val = state.Stack.Pop();
+                var condition = Expression.Equal(val, ExpressionHelper.Default(val.Type));
+                state.Stack.Push(condition);
+            }
+            else if (instruction.OpCode == OpCodes.Brtrue || instruction.OpCode == OpCodes.Brtrue_S)
+            {
+                var address = state.Stack.Peek();
+                if (address.Expression is MemberExpression memberExpression && 
+                    IsCachedAnonymousMethodDelegate(memberExpression.Member as FieldInfo))
+                {
+                    state.Stack.Pop();
+                    // Always false for cached delegates
+                    // if (this.<delegate> != null) { this.<delegate> } else { this.<delegate> = <build> }
+                    var condition = Expression.Constant(false);
+                    state.Stack.Push(condition);
+                }
+                else
+                {
+                    var val = state.Stack.Pop();
+                    var condition = val.Type == typeof(bool) ? val : Expression.NotEqual(val, ExpressionHelper.Default(val.Type));
+                    state.Stack.Push(condition);
+                }
+            }
+            else if (instruction.OpCode == OpCodes.Bgt || instruction.OpCode == OpCodes.Bgt_S ||
+                     instruction.OpCode == OpCodes.Bgt_Un || instruction.OpCode == OpCodes.Bgt_Un_S)
+            {
+                var val2 = state.Stack.Pop();
+                var val1 = state.Stack.Pop();
+                var condition = MakeBinaryExpression(val1, val2, ExpressionType.GreaterThan);
+                state.Stack.Push(condition);
+            }
+            else if (instruction.OpCode == OpCodes.Bge || instruction.OpCode == OpCodes.Bge_S ||
+                     instruction.OpCode == OpCodes.Bge_Un || instruction.OpCode == OpCodes.Bge_Un_S)
+            {
+                var val2 = state.Stack.Pop();
+                var val1 = state.Stack.Pop();
+                var condition = MakeBinaryExpression(val1, val2, ExpressionType.GreaterThanOrEqual);
+                state.Stack.Push(condition);
+            }
+            else if (instruction.OpCode == OpCodes.Blt || instruction.OpCode == OpCodes.Blt_S ||
+                     instruction.OpCode == OpCodes.Blt_Un || instruction.OpCode == OpCodes.Blt_Un_S)
+            {
+                var val2 = state.Stack.Pop();
+                var val1 = state.Stack.Pop();
+                var condition = MakeBinaryExpression(val1, val2, ExpressionType.LessThan);
+                state.Stack.Push(condition);
+            }
+            else if (instruction.OpCode == OpCodes.Ble || instruction.OpCode == OpCodes.Ble_S ||
+                     instruction.OpCode == OpCodes.Ble_Un || instruction.OpCode == OpCodes.Ble_Un_S)
+            {
+                var val2 = state.Stack.Pop();
+                var val1 = state.Stack.Pop();
+                var condition = MakeBinaryExpression(val1, val2, ExpressionType.LessThanOrEqual);
+                state.Stack.Push(condition);
+            }
+            else if (instruction.OpCode == OpCodes.Beq || instruction.OpCode == OpCodes.Beq_S)
+            {
+                var val2 = state.Stack.Pop();
+                var val1 = state.Stack.Pop();
+                var condition = MakeBinaryExpression(val1, val2, ExpressionType.Equal);
+                state.Stack.Push(condition);
+            }
+            else if (instruction.OpCode == OpCodes.Bne_Un || instruction.OpCode == OpCodes.Bne_Un_S)
+            {
+                var val2 = state.Stack.Pop();
+                var val1 = state.Stack.Pop();
+                var condition = MakeBinaryExpression(val1, val2, ExpressionType.NotEqual);
+                state.Stack.Push(condition);
+            }
+            else if (instruction.OpCode == OpCodes.Ldftn)
             {
                 var method = (MethodInfo)instruction.Operand;
                 var expression = DecompileLambdaExpression(method, () => state.Stack.Pop());
                 state.Stack.Push(expression);
                 return 1;
             }
-
-         else   if (instruction.OpCode == OpCodes.Newobj)
+            else if (instruction.OpCode == OpCodes.Newobj)
             {
                 var constructor = (ConstructorInfo)instruction.Operand;
                 var arguments = GetArguments(state, constructor);
@@ -329,7 +297,7 @@ namespace DelegateDecompiler
                 }
             }
 
-else            if (instruction.OpCode == OpCodes.Call || instruction.OpCode == OpCodes.Callvirt)
+            else if (instruction.OpCode == OpCodes.Call || instruction.OpCode == OpCodes.Callvirt)
             {
                 var method = instruction.Operand as MethodInfo;
                 var constructor = instruction.Operand as ConstructorInfo;
@@ -349,7 +317,7 @@ else            if (instruction.OpCode == OpCodes.Call || instruction.OpCode == 
                 }
 
             }
-            else  if (instruction.OpCode == OpCodes.Isinst)
+            else if (instruction.OpCode == OpCodes.Isinst)
             {
                 var val = state.Stack.Pop();
                 if (instruction.Next != null && instruction.Next.OpCode == OpCodes.Ldnull &&
@@ -361,7 +329,7 @@ else            if (instruction.OpCode == OpCodes.Call || instruction.OpCode == 
                 }
 
                 state.Stack.Push(Expression.TypeAs(val, (Type)instruction.Operand));
-            } 
+            }
             else if (instruction.OpCode == OpCodes.Ret)
             {
                 // Return instruction - signal early return
@@ -372,7 +340,7 @@ else            if (instruction.OpCode == OpCodes.Call || instruction.OpCode == 
                 throw new InvalidOperationException("No processor handled the instruction, including the fallback processor.");
             }
 
-            return 0; 
+            return 0;
         }
 
         static LambdaExpression DecompileLambdaExpression(MethodInfo method, Func<Expression> @this)
