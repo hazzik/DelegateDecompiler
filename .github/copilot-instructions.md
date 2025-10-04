@@ -18,15 +18,15 @@ DelegateDecompiler is a .NET library that decompiles delegates and method bodies
 dotnet restore -p:DisableGitVersionTask=true
 
 # Build the solution
-dotnet build -c Release -p:DisableGitVersionTask=true
+dotnet build-p:DisableGitVersionTask=true
 
 # Run tests
-dotnet test -p:DisableGitVersionTask=true -c Release -f net8.0 src/DelegateDecompiler.Tests
-dotnet test -p:DisableGitVersionTask=true -c Release -f net8.0 src/DelegateDecompiler.Tests.VB
-dotnet test -p:DisableGitVersionTask=true -c Release -f net8.0 src/DelegateDecompiler.EntityFramework.Tests
-dotnet test -p:DisableGitVersionTask=true -c Release -f net8.0 src/DelegateDecompiler.EntityFrameworkCore6.Tests
-dotnet test -p:DisableGitVersionTask=true -c Release -f net8.0 src/DelegateDecompiler.EntityFrameworkCore8.Tests
-dotnet test -p:DisableGitVersionTask=true -c Release -f net9.0 src/DelegateDecompiler.EntityFrameworkCore9.Tests
+dotnet test -p:DisableGitVersionTask=true-f net8.0 src/DelegateDecompiler.Tests
+dotnet test -p:DisableGitVersionTask=true-f net8.0 src/DelegateDecompiler.Tests.VB
+dotnet test -p:DisableGitVersionTask=true-f net8.0 src/DelegateDecompiler.EntityFramework.Tests
+dotnet test -p:DisableGitVersionTask=true-f net8.0 src/DelegateDecompiler.EntityFrameworkCore6.Tests
+dotnet test -p:DisableGitVersionTask=true-f net8.0 src/DelegateDecompiler.EntityFrameworkCore8.Tests
+dotnet test -p:DisableGitVersionTask=true-f net9.0 src/DelegateDecompiler.EntityFrameworkCore9.Tests
 ```
 
 **Development Guidelines:**
