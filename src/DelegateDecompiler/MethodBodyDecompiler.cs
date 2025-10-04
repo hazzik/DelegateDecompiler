@@ -45,6 +45,7 @@ namespace DelegateDecompiler
             var locals = addresses.ToArray();
 
             var cfg = method.BuildControlFlowGraph();
+                cfg.Dump(Console.Out);
             var expression = Processor.Process(cfg, method.IsStatic, locals, args, method.ReturnType);
             var localParameters = locals
                 .Select(l => l.Address.Expression)

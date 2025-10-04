@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.IO;
 using System.Reflection;
 
 namespace DelegateDecompiler.ControlFlow
@@ -20,6 +21,24 @@ namespace DelegateDecompiler.ControlFlow
             Blocks = blocks;
             Entry = entry;
             Exit = exit;
+        }
+
+        public void Dump(TextWriter writer)
+        {
+            writer.WriteLine($"CFG: {Method.DeclaringType?.FullName}.{Method.Name}");
+            foreach (var b in Blocks)
+            {
+                var flags = (b.IsEntry ? " [Entry]" : "") + (b.IsExit ? " [Exit]" : "");
+                writer.WriteLine($"Block {b.Id}{flags}");
+                foreach (var i in b.Instructions)
+                {
+                    writer.WriteLine($"  {i}");
+                }
+                foreach (var s in b.Successors)
+                {
+                    writer.WriteLine($"    -> {s.Kind} B{s.To.Id}");
+                }
+            }
         }
     }
 }
