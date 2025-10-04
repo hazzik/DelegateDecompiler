@@ -25,7 +25,7 @@ namespace DelegateDecompiler
         public Action RunNext { get; set; }
         public bool IsStatic { get; } = isStatic;
 
-        public Instruction Instruction { get; set; } = instruction;
+        public Instruction CurrentInstruction { get; set; } = instruction;
 
         public ProcessorState Clone(Instruction instruction, Block block)
         {

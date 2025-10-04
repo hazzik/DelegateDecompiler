@@ -113,14 +113,14 @@ namespace DelegateDecompiler
                 {
                     var block = state.Block.Successors.First(x => x.Kind == EdgeKind.UnconditionalBranch).To;
                     states.Push(state.Clone(block.First, block));
-                    state.Instruction = (Instruction)instruction.Operand;
+                    state.CurrentInstruction = (Instruction)instruction.Operand;
                     state.RunNext = () => { };
                     return false;
                 }
                 else if (instruction.OpCode == OpCodes.Brfalse ||
                          instruction.OpCode == OpCodes.Brfalse_S)
                 {
-                    state.Instruction = ConditionalBranch(state, instruction, val => Expression.Equal(val, ExpressionHelper.Default(val.Type)));
+                    state.CurrentInstruction = ConditionalBranch(state, instruction, val => Expression.Equal(val, ExpressionHelper.Default(val.Type)));
                     return false;
                 }
                 else if (instruction.OpCode == OpCodes.Brtrue ||
@@ -135,7 +135,7 @@ namespace DelegateDecompiler
                     }
                     else
                     {
-                        state.Instruction = ConditionalBranch(state, instruction, val => val.Type == typeof(bool)
+                        state.CurrentInstruction = ConditionalBranch(state, instruction, val => val.Type == typeof(bool)
                             ? val
                             : Expression.NotEqual(val, ExpressionHelper.Default(val.Type)));
                         return false;
@@ -145,7 +145,7 @@ namespace DelegateDecompiler
                 {
                     var method = (MethodInfo)instruction.Operand;
                     state.Stack.Push(DecompileLambdaExpression(method, () => state.Stack.Pop()));
-                    state.Instruction = instruction.Next;
+                    state.CurrentInstruction = instruction.Next;
                 }
                 else if (instruction.OpCode == OpCodes.Bgt ||
                          instruction.OpCode == OpCodes.Bgt_S ||
@@ -153,7 +153,7 @@ namespace DelegateDecompiler
                          instruction.OpCode == OpCodes.Bgt_Un_S)
                 {
                     var val1 = state.Stack.Pop();
-                    state.Instruction = ConditionalBranch(state, instruction, val => MakeBinaryExpression(val, val1, ExpressionType.GreaterThan));
+                    state.CurrentInstruction = ConditionalBranch(state, instruction, val => MakeBinaryExpression(val, val1, ExpressionType.GreaterThan));
                     return false;
                 }
                 else if (instruction.OpCode == OpCodes.Bge ||
@@ -162,7 +162,7 @@ namespace DelegateDecompiler
                          instruction.OpCode == OpCodes.Bge_Un_S)
                 {
                     var val1 = state.Stack.Pop();
-                    state.Instruction = ConditionalBranch(state, instruction, val => MakeBinaryExpression(val, val1, ExpressionType.GreaterThanOrEqual));
+                    state.CurrentInstruction = ConditionalBranch(state, instruction, val => MakeBinaryExpression(val, val1, ExpressionType.GreaterThanOrEqual));
                     return false;
                 }
                 else if (instruction.OpCode == OpCodes.Blt ||
@@ -171,7 +171,7 @@ namespace DelegateDecompiler
                          instruction.OpCode == OpCodes.Blt_Un_S)
                 {
                     var val1 = state.Stack.Pop();
-                    state.Instruction = ConditionalBranch(state, instruction, val => MakeBinaryExpression(val, val1, ExpressionType.LessThan));
+                    state.CurrentInstruction = ConditionalBranch(state, instruction, val => MakeBinaryExpression(val, val1, ExpressionType.LessThan));
                     return false;
                 }
                 else if (instruction.OpCode == OpCodes.Ble ||
@@ -180,21 +180,21 @@ namespace DelegateDecompiler
                          instruction.OpCode == OpCodes.Ble_Un_S)
                 {
                     var val1 = state.Stack.Pop();
-                    state.Instruction = ConditionalBranch(state, instruction, val => MakeBinaryExpression(val, val1, ExpressionType.LessThanOrEqual));
+                    state.CurrentInstruction = ConditionalBranch(state, instruction, val => MakeBinaryExpression(val, val1, ExpressionType.LessThanOrEqual));
                     return false;
                 }
                 else if (instruction.OpCode == OpCodes.Beq ||
                          instruction.OpCode == OpCodes.Beq_S)
                 {
                     var val1 = state.Stack.Pop();
-                    state.Instruction = ConditionalBranch(state, instruction, val => MakeBinaryExpression(val, val1, ExpressionType.Equal));
+                    state.CurrentInstruction = ConditionalBranch(state, instruction, val => MakeBinaryExpression(val, val1, ExpressionType.Equal));
                     return false;
                 }
                 else if (instruction.OpCode == OpCodes.Bne_Un ||
                          instruction.OpCode == OpCodes.Bne_Un_S)
                 {
                     var val1 = state.Stack.Pop();
-                    state.Instruction = ConditionalBranch(state, instruction, val => MakeBinaryExpression(val, val1, ExpressionType.NotEqual));
+                    state.CurrentInstruction = ConditionalBranch(state, instruction, val => MakeBinaryExpression(val, val1, ExpressionType.NotEqual));
                     return false;
                 }
                 else if (instruction.OpCode == OpCodes.Newobj)
@@ -236,7 +236,7 @@ namespace DelegateDecompiler
                         instruction.Next.Next != null && instruction.Next.Next.OpCode == OpCodes.Cgt_Un)
                     {
                         state.Stack.Push(Expression.TypeIs(val, (Type)instruction.Operand));
-                        state.Instruction = instruction.Next.Next;
+                        state.CurrentInstruction = instruction.Next.Next;
                     }
                     else
                     {
@@ -358,13 +358,12 @@ namespace DelegateDecompiler
             var val1 = state.Stack.Pop();
             var test = condition(val1);
 
-            var left = (Instruction)instruction.Operand;
-            var right = instruction.Next;
-
             var common = GetJointPoint(instruction);
 
-            var rightState = state.Clone(right, state.Block.Successors.First(b => b.Kind == EdgeKind.ConditionalFalse).To);
-            var leftState = state.Clone(left, state.Block.Successors.First(b => b.Kind == EdgeKind.ConditionalTrue).To);
+            var rightBlock = state.Block.Successors.First(b => b.Kind == EdgeKind.ConditionalFalse).To;
+            var rightState = state.Clone(rightBlock.First, rightBlock);
+            var leftBlock = state.Block.Successors.First(b => b.Kind == EdgeKind.ConditionalTrue).To;
+            var leftState = state.Clone(leftBlock.First, leftBlock);
             states.Push(rightState);
             states.Push(leftState);
 
