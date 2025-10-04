@@ -68,23 +68,9 @@ namespace DelegateDecompiler
             var buffer = new List<Address>();
             while (leftState.Stack.Count > 0 || rightState.Stack.Count > 0)
             {
-                Address rightExpression = rightState.Stack.Count > 0 ? rightState.Stack.Pop() : null;
-                Address leftExpression = leftState.Stack.Count > 0 ? leftState.Stack.Pop() : null;
-                
-                if (leftExpression != null && rightExpression != null)
-                {
-                    buffer.Add(Address.Merge(test, leftExpression, rightExpression, addressMap));
-                }
-                else if (leftExpression != null)
-                {
-                    // Right side threw, use left side with conditional
-                    buffer.Add(leftExpression);
-                }
-                else if (rightExpression != null)
-                {
-                    // Left side threw, use right side with conditional
-                    buffer.Add(rightExpression);
-                }
+                var rightExpression = rightState.Stack.Pop();
+                var leftExpression = leftState.Stack.Pop();
+                buffer.Add(Address.Merge(test, leftExpression, rightExpression, addressMap));
             }
             Stack.Clear();
             foreach (var address in Enumerable.Reverse(buffer))
