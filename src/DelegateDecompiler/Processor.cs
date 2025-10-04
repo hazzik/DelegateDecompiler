@@ -31,14 +31,17 @@ namespace DelegateDecompiler
             var initialState = new ProcessorState(cfg.Entry, isStatic, new Stack<Address>(), locals, args, cfg.Entry.Instructions.FirstOrDefault());
             
             var ex = processor.ProcessBlock(cfg.Entry, initialState);
-            ex = AdjustType(ex, returnType);
+            
+            // Use Final() ONLY here - once per method body
+            var finalResult = initialState.Final();
+            finalResult = AdjustType(finalResult, returnType);
 
-            if (!returnType.IsAssignableFrom(ex.Type) && returnType != typeof(void))
+            if (!returnType.IsAssignableFrom(finalResult.Type) && returnType != typeof(void))
             {
-                return Expression.Convert(ex, returnType);
+                return Expression.Convert(finalResult, returnType);
             }
 
-            return ex;
+            return finalResult;
         }
 
         static readonly IProcessor[] processors = {
@@ -74,8 +77,12 @@ namespace DelegateDecompiler
             {
                 if (!ProcessInstruction(instruction, state))
                 {
-                    // Early return instruction encountered
-                    return state.Final();
+                    // Early return instruction encountered - don't use Final()
+                    if (state.Stack.Count > 0)
+                    {
+                        return state.Stack.Peek();
+                    }
+                    return Expression.Default(typeof(void));
                 }
             }
 
@@ -87,8 +94,12 @@ namespace DelegateDecompiler
         {
             if (block.Successors.Count == 0)
             {
-                // End of method
-                return state.Final();
+                // End of method - don't use Final() here, let main Process method handle it
+                if (state.Stack.Count > 0)
+                {
+                    return state.Stack.Peek();
+                }
+                return Expression.Default(typeof(void));
             }
             else if (block.Successors.Count == 1)
             {
@@ -100,8 +111,12 @@ namespace DelegateDecompiler
                 }
                 else
                 {
-                    // This shouldn't happen in well-formed CFG
-                    return state.Final();
+                    // This shouldn't happen in well-formed CFG - don't use Final()
+                    if (state.Stack.Count > 0)
+                    {
+                        return state.Stack.Peek();
+                    }
+                    return Expression.Default(typeof(void));
                 }
             }
             else
@@ -148,8 +163,7 @@ namespace DelegateDecompiler
             var trueState = state.Clone(trueEdge.To.First, trueEdge.To);
             var falseState = state.Clone(falseEdge.To.First, falseEdge.To);
 
-            // Check if both branches converge to the same block
-            var convergencePoint = FindConvergencePoint(trueEdge.To, falseEdge.To);
+            var convergencePoint = FindConvergencePoint(block);
             
             Console.WriteLine($"DEBUG: Conditional branch - TrueBlock: {trueEdge.To?.First}, FalseBlock: {falseEdge.To?.First}, ConvergencePoint: {convergencePoint?.First}");
             
@@ -159,251 +173,76 @@ namespace DelegateDecompiler
                 Console.WriteLine($"DEBUG: Processing until convergence - FalseBlock: {falseEdge.To?.First} to {convergencePoint?.First}");
                 
                 // Both branches converge - process them until convergence
-                var trueResult = ProcessUntilBlock(trueEdge.To, convergencePoint, trueState);
-                var falseResult = ProcessUntilBlock(falseEdge.To, convergencePoint, falseState);
+                ProcessUntilBlock(trueEdge.To, convergencePoint, trueState);
+                ProcessUntilBlock(falseEdge.To, convergencePoint, falseState);
                 
-                Console.WriteLine($"DEBUG: Results - True: {trueResult} (Type: {trueResult.Type}), False: {falseResult} (Type: {falseResult.Type})");
+                // Use state.Merge() to create the conditional and push it onto the stack
+                state.Merge(test, trueState, falseState);
                 
-                // Create conditional expression and continue from convergence point
-                Expression conditionalExpr;
-                if (trueResult.Type == typeof(void) && falseResult.Type == typeof(void))
-                {
-                    conditionalExpr = Expression.IfThenElse(test, trueResult, falseResult);
-                }
-                else if (trueResult.Type == typeof(void) || falseResult.Type == typeof(void))
-                {
-                    // One branch is void - this can happen in certain IL patterns
-                    // For now, treat this as creating a conditional statement rather than expression
-                    if (trueResult.Type == typeof(void) && falseResult.Type != typeof(void))
-                    {
-                        // True branch is void, false branch has value
-                        // This might be a pattern where we conditionally compute a value
-                        conditionalExpr = Expression.Condition(test, 
-                            Expression.Block(trueResult, Expression.Default(falseResult.Type)), 
-                            falseResult);
-                    }
-                    else if (falseResult.Type == typeof(void) && trueResult.Type != typeof(void))
-                    {
-                        // False branch is void, true branch has value  
-                        conditionalExpr = Expression.Condition(test, 
-                            trueResult,
-                            Expression.Block(falseResult, Expression.Default(trueResult.Type)));
-                    }
-                    else
-                    {
-                        // Both void - this shouldn't happen but handle it
-                        conditionalExpr = Expression.IfThenElse(test, trueResult, falseResult);
-                    }
-                }
-                else
-                {
-                    // Both branches return values - try to make them compatible
-                    var adjustedTrueResult = AdjustType(trueResult, falseResult.Type);
-                    var adjustedFalseResult = AdjustType(falseResult, trueResult.Type);
-                    
-                    // Use the adjusted versions if they're compatible
-                    if (adjustedTrueResult.Type == falseResult.Type)
-                    {
-                        trueResult = adjustedTrueResult;
-                    }
-                    else if (adjustedFalseResult.Type == trueResult.Type)
-                    {
-                        falseResult = adjustedFalseResult;
-                    }
-                    else
-                    {
-                        // Types are still incompatible, try to find a common type
-                        var commonType = GetCommonType(trueResult.Type, falseResult.Type);
-                        trueResult = AdjustType(trueResult, commonType);
-                        falseResult = AdjustType(falseResult, commonType);
-                    }
-                    
-                    conditionalExpr = Expression.Condition(test, trueResult, falseResult);
-                }
-                
-                // If we have a convergence point and it's not the exit, continue processing from there
+                // If we have a convergence point, continue processing from there
                 if (!convergencePoint.IsExit)
                 {
-                    // Merge states at convergence point and continue
-                    state.Merge(test, trueState, falseState);
-                    var remainingResult = ProcessBlock(convergencePoint, state);
-                    
-                    // If the convergence block produces a result, use it; otherwise use the conditional
-                    if (remainingResult.Type != typeof(void))
-                    {
-                        return remainingResult;
-                    }
-                    
-                    // If both are void, create a block
-                    if (conditionalExpr.Type == typeof(void))
-                    {
-                        return Expression.Block(conditionalExpr, remainingResult);
-                    }
+                    return ProcessBlock(convergencePoint, state);
                 }
                 
-                return conditionalExpr;
+                // If convergence point is exit, the merged result is on the stack
+                // Don't use Final() - let caller handle it
+                return Expression.Default(typeof(void));
             }
             else
             {
-                // No convergence - process branches independently
-                var trueResult = ProcessBlock(trueEdge.To, trueState);
-                var falseResult = ProcessBlock(falseEdge.To, falseState);
+                // No convergence - process branches independently and merge
+                ProcessBlock(trueEdge.To, trueState);
+                ProcessBlock(falseEdge.To, falseState);
 
                 // Always merge states after processing branches
                 state.Merge(test, trueState, falseState);
+                
+                // Don't use Final() - let caller handle the merged result
+                return Expression.Default(typeof(void));
+            }
+        }
 
-                // Create conditional expression
-                if (trueResult.Type == typeof(void) && falseResult.Type == typeof(void))
-                {
-                    return Expression.IfThenElse(test, trueResult, falseResult);
-                }
+        Stack<Block> FollowBlockGraph(Block block)
+        {
+            var blocks = new Stack<Block>();
+            var visited = new HashSet<Block>(); // Prevent infinite loops
+            
+            while (block != null && !visited.Contains(block))
+            {
+                blocks.Push(block);
+                visited.Add(block);
+                block = GetNextBlock(block);
+            }
+            return blocks;
+        }
+
+        Block GetNextBlock(Block block)
+        {
+            return block.Successors.Count switch
+            {
+                0 => null,// No successors (return/exit block)
+                1 => block.Successors[0].To, // Single successor (unconditional flow)
+                2 => FindConvergencePoint(block), // Conditional branch - find joint point of the two branches
+                _ => null
+            };
+        }
+
+        Block FindConvergencePoint(Block block)
+        {
+            var trueBlocks = FollowBlockGraph(block.Successors[0].To);
+            var falseBlocks = FollowBlockGraph(block.Successors[1].To);
+            
+            Block common = null;
+            foreach (var b in falseBlocks)
+            {
+                if (trueBlocks.Count > 0 && b == trueBlocks.Pop())
+                    common = b;
                 else
-                {
-                    // Both branches return values - try to make them compatible
-                    var adjustedTrueResult = AdjustType(trueResult, falseResult.Type);
-                    var adjustedFalseResult = AdjustType(falseResult, trueResult.Type);
-                    
-                    // Use the adjusted versions if they're compatible
-                    if (adjustedTrueResult.Type == falseResult.Type)
-                    {
-                        trueResult = adjustedTrueResult;
-                    }
-                    else if (adjustedFalseResult.Type == trueResult.Type)
-                    {
-                        falseResult = adjustedFalseResult;
-                    }
-                    
-                    return Expression.Condition(test, trueResult, falseResult);
-                }
-            }
-        }
-
-        Block FindConvergencePoint(Block trueBlock, Block falseBlock)
-        {
-            Console.WriteLine($"DEBUG: FindConvergencePoint - TrueBlock: {trueBlock?.First}, FalseBlock: {falseBlock?.First}");
-            
-            // Simple case: if both blocks are the same
-            if (trueBlock == falseBlock)
-            {
-                Console.WriteLine($"DEBUG: Blocks are the same: {trueBlock?.First}");
-                return trueBlock;
+                    break;
             }
 
-            // Simple case: if both blocks have only one successor and it's the same block
-            if (trueBlock.Successors.Count == 1 && falseBlock.Successors.Count == 1 &&
-                trueBlock.Successors[0].To == falseBlock.Successors[0].To)
-            {
-                Console.WriteLine($"DEBUG: Simple diamond pattern convergence: {trueBlock.Successors[0].To?.First}");
-                return trueBlock.Successors[0].To;
-            }
-
-            // More complex case: find the closest common successor
-            // Use distance-based BFS to find the nearest convergence point
-            var trueDistances = GetBlockDistances(trueBlock);
-            var falseDistances = GetBlockDistances(falseBlock);
-
-            Console.WriteLine($"DEBUG: True reachable blocks: {string.Join(", ", trueDistances.Keys.Select(b => b?.First?.ToString() ?? "null"))}");
-            Console.WriteLine($"DEBUG: False reachable blocks: {string.Join(", ", falseDistances.Keys.Select(b => b?.First?.ToString() ?? "null"))}");
-
-            // Find blocks reachable from both paths
-            var commonBlocks = trueDistances.Keys.Intersect(falseDistances.Keys).ToList();
-            
-            // Filter out blocks that are too close (likely part of one of the branches)
-            // We want blocks where both paths have had a chance to execute some logic
-            var validConvergenceBlocks = commonBlocks.Where(block => 
-            {
-                // Must be reachable from both branches
-                if (trueDistances[block] == 0 || falseDistances[block] == 0)
-                    return false;
-                
-                // Exclude blocks that have conditional branches (they're intermediate decision points)
-                if (block.Successors.Count == 2)
-                {
-                    Console.WriteLine($"DEBUG: Excluding convergence candidate {block?.First} - has conditional branch");
-                    return false;
-                }
-                
-                return true;
-            }).ToList();
-            
-            // If we have no candidates, fall back to allowing closer blocks
-            if (!validConvergenceBlocks.Any())
-            {
-                Console.WriteLine($"DEBUG: No distant convergence points found, allowing closer blocks");
-                validConvergenceBlocks = commonBlocks.Where(block => 
-                {
-                    // Must be reachable from both branches
-                    if (trueDistances[block] == 0 || falseDistances[block] == 0)
-                        return false;
-                    
-                    // Exclude blocks that have conditional branches (they're intermediate decision points)
-                    if (block.Successors.Count == 2)
-                        return false;
-                    
-                    return true;
-                }).ToList();
-            }
-            
-            if (validConvergenceBlocks.Any())
-            {
-                // Return the block with minimum combined distance
-                var convergence = validConvergenceBlocks
-                    .OrderBy(block => trueDistances[block] + falseDistances[block])
-                    .ThenBy(block => Math.Max(trueDistances[block], falseDistances[block]))
-                    .First();
-                    
-                Console.WriteLine($"DEBUG: Found convergence point: {convergence?.First} (true distance: {trueDistances[convergence]}, false distance: {falseDistances[convergence]})");
-                return convergence;
-            }
-            
-            // If no valid convergence blocks, fall back to original logic
-            if (commonBlocks.Any())
-            {
-                var convergence = commonBlocks
-                    .OrderBy(block => trueDistances[block] + falseDistances[block])
-                    .ThenBy(block => Math.Max(trueDistances[block], falseDistances[block]))
-                    .First();
-                    
-                Console.WriteLine($"DEBUG: Found fallback convergence point: {convergence?.First} (true distance: {trueDistances[convergence]}, false distance: {falseDistances[convergence]})");
-                return convergence;
-            }
-            
-            Console.WriteLine($"DEBUG: No convergence point found");
-            return null;
-        }
-
-        Dictionary<Block, int> GetBlockDistances(Block startBlock)
-        {
-            var distances = new Dictionary<Block, int>();
-            var queue = new Queue<BlockDistance>();
-            
-            queue.Enqueue(new BlockDistance { Block = startBlock, Distance = 0 });
-            
-            while (queue.Count > 0)
-            {
-                var current = queue.Dequeue();
-                
-                if (distances.ContainsKey(current.Block))
-                    continue;
-                    
-                distances[current.Block] = current.Distance;
-                
-                foreach (var successor in current.Block.Successors)
-                {
-                    if (!distances.ContainsKey(successor.To))
-                    {
-                        queue.Enqueue(new BlockDistance { Block = successor.To, Distance = current.Distance + 1 });
-                    }
-                }
-            }
-            
-            return distances;
-        }
-
-        class BlockDistance
-        {
-            public Block Block { get; set; }
-            public int Distance { get; set; }
+            return common;
         }
 
         Expression ProcessUntilBlock(Block startBlock, Block endBlock, ProcessorState state)
@@ -412,51 +251,69 @@ namespace DelegateDecompiler
             
             if (startBlock == endBlock)
             {
-                Console.WriteLine($"DEBUG: Start == End, returning stack value without processing block {startBlock?.First}");
-                // Don't process instructions - we're already at the convergence point
-                // Just return what's currently on the stack
+                Console.WriteLine($"DEBUG: Start == End, returning stack value without processing the convergence block");
+                // Don't process the convergence block - just return what's currently on the stack
                 if (state.Stack.Count == 0)
                 {
                     Console.WriteLine($"DEBUG: Empty stack at convergence point, returning void");
                     return Expression.Default(typeof(void));
                 }
-                var result = state.Stack.Peek(); // Don't pop - let the caller handle it
+                // Don't use Final() here - just peek at the top of stack without consuming it
+                var result = state.Stack.Peek();
                 Console.WriteLine($"DEBUG: Convergence point result: {result} (Type: {result.Type})");
                 return result;
             }
 
-            // Process all non-branching instructions in the start block
-            foreach (var instruction in startBlock.Instructions)
+            var currentBlock = startBlock;
+            
+            // Process blocks until we reach the end block (but don't process the end block itself)
+            while (currentBlock != null && currentBlock != endBlock)
             {
-                if (!ProcessInstruction(instruction, state))
+                // Process all instructions in the current block
+                foreach (var instruction in currentBlock.Instructions)
                 {
-                    // Early return instruction encountered
-                    return state.Final();
+                    if (!ProcessInstruction(instruction, state))
+                    {
+                        // Early return instruction encountered - don't use Final()
+                        if (state.Stack.Count > 0)
+                        {
+                            return state.Stack.Peek();
+                        }
+                        return Expression.Default(typeof(void));
+                    }
+                }
+
+                // Move to next block
+                if (currentBlock.Successors.Count == 1)
+                {
+                    currentBlock = currentBlock.Successors[0].To;
+                }
+                else if (currentBlock.Successors.Count == 2)
+                {
+                    // Hit another conditional branch before reaching end block
+                    Console.WriteLine($"DEBUG: ProcessUntilBlock found conditional branch in block {currentBlock?.First}");
+                    // Process the conditional branch directly and return the result
+                    ProcessBlockExit(currentBlock, state);
+                    // The result should now be on the stack
+                    if (state.Stack.Count > 0)
+                    {
+                        return state.Stack.Peek();
+                    }
+                    return Expression.Default(typeof(void));
+                }
+                else
+                {
+                    // No successors or complex branching
+                    break;
                 }
             }
 
-            // If we reach the end block through a simple path, return what's on stack
-            if (startBlock.Successors.Count == 1 && startBlock.Successors[0].To == endBlock)
+            // Return what's on the stack without consuming it - state.Merge() will handle this
+            if (state.Stack.Count == 0)
             {
-                return state.Final();
+                return Expression.Default(typeof(void));
             }
-
-            // Follow the path to the end block
-            if (startBlock.Successors.Count == 1)
-            {
-                return ProcessUntilBlock(startBlock.Successors[0].To, endBlock, state);
-            }
-
-            // If there are multiple successors, this is a conditional branch
-            if (startBlock.Successors.Count == 2)
-            {
-                Console.WriteLine($"DEBUG: ProcessUntilBlock found conditional branch in block {startBlock?.First}");
-                // This block has a conditional branch - handle it recursively
-                return ProcessBlockExit(startBlock, state);
-            }
-
-            // If there are multiple successors but not 2, we can't handle this case yet
-            return state.Final();
+            return state.Stack.Peek();
         }
 
         Expression CreateTestCondition(Instruction branchingInstruction, ProcessorState state)
