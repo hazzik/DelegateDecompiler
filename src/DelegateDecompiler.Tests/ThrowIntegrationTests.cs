@@ -12,10 +12,14 @@ namespace DelegateDecompiler.Tests
         {
             Action compiled = () => throw new ArgumentException("test");
             
-            var decompiled = compiled.Decompile();
-            Assert.That(decompiled, Is.Not.Null);
-            Assert.That(decompiled.Body, Is.Not.Null);
-            Assert.That(decompiled.Body.NodeType, Is.EqualTo(ExpressionType.Throw));
+            // Create expected expression programmatically to match what decompiler produces
+            var constructor = typeof(ArgumentException).GetConstructor(new[] { typeof(string) });
+            var messageConstant = Expression.Constant("test");
+            var newExpression = Expression.New(constructor, messageConstant);
+            var throwExpression = Expression.Throw(newExpression);
+            var expectedExpression = Expression.Lambda<Action>(throwExpression);
+            
+            Test(compiled, expectedExpression);
         }
     }
 }
