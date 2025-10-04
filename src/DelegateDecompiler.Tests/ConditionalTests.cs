@@ -12,7 +12,7 @@ namespace DelegateDecompiler.Tests
         {
             Expression<Func<Employee, bool>> expected = e => e.FirstName != null && e.FirstName.Contains("Test");
             Func<Employee, bool> compiled = e => e.FirstName != null && e.FirstName.Contains("Test");
-            Test(expected, compiled);
+            Test(compiled, expected);
         }
 
         [Test]
@@ -20,7 +20,7 @@ namespace DelegateDecompiler.Tests
         {
             Expression<Func<Employee, string>> expected = e => e.FirstName != null ? e.FirstName : e.LastName;
             Func<Employee, string> compiled = e => e.FirstName != null ? e.FirstName : e.LastName;
-            Test(expected, compiled);
+            Test(compiled, expected);
         }
 
         [Test]
@@ -28,7 +28,7 @@ namespace DelegateDecompiler.Tests
         {
             Expression<Func<Employee, string>> expected = e => e.FirstName == null ? e.LastName : e.FirstName;
             Func<Employee, string> compiled = e => e.FirstName == null ? e.LastName : e.FirstName;
-            Test(expected, compiled);
+            Test(compiled, expected);
         }
 
         [Test]
@@ -36,7 +36,7 @@ namespace DelegateDecompiler.Tests
         {
             Expression<Func<Employee, string>> expected = e => e.FirstName ?? e.LastName;
             Func<Employee, string> compiled = e => e.FirstName ?? e.LastName;
-            Test(expected, compiled);
+            Test(compiled, expected);
         }
 
         [Test]
@@ -44,7 +44,7 @@ namespace DelegateDecompiler.Tests
         {
             Expression<Func<Employee, bool>> expected = e => e.FirstName == null || e.FirstName.Contains("Test");
             Func<Employee, bool> compiled = e => e.FirstName == null || e.FirstName.Contains("Test");
-            Test(expected, compiled);
+            Test(compiled, expected);
         }
 
         [Test]
@@ -52,7 +52,7 @@ namespace DelegateDecompiler.Tests
         {
             Expression<Func<Employee, bool>> expected = e => (e.FirstName ?? string.Empty).Contains("Test");
             Func<Employee, bool> compiled = e => (e.FirstName ?? string.Empty).Contains("Test");
-            Test(expected, compiled);
+            Test(compiled, expected);
         }
 
         [Test]
@@ -60,7 +60,7 @@ namespace DelegateDecompiler.Tests
         {
             Expression<Func<Employee, int, bool>> expected = (e, p) => e.From <= p && p < e.To;
             Func<Employee, int, bool> compiled = (e, p) => e.From <= p && p < e.To;
-            Test(expected, compiled);
+            Test(compiled, expected);
         }
 
         [Test]
@@ -68,7 +68,7 @@ namespace DelegateDecompiler.Tests
         {
             Expression<Func<Employee, int, bool>> expected = (e, p) => e.From < p && p < e.To;
             Func<Employee, int, bool> compiled = (e, p) => e.From < p && p < e.To;
-            Test(expected, compiled);
+            Test(compiled, expected);
         }
 
         [Test]
@@ -76,7 +76,7 @@ namespace DelegateDecompiler.Tests
         {
             Expression<Func<Employee, int, bool>> expected = (e, p) => e.From >= p && p < e.To;
             Func<Employee, int, bool> compiled = (e, p) => e.From >= p && p < e.To;
-            Test(expected, compiled);
+            Test(compiled, expected);
         }
 
         [Test]
@@ -84,7 +84,7 @@ namespace DelegateDecompiler.Tests
         {
             Expression<Func<Employee, int, bool>> expected = (e, p) => e.From > p && p < e.To;
             Func<Employee, int, bool> compiled = (e, p) => e.From > p && p < e.To;
-            Test(expected, compiled);
+            Test(compiled, expected);
         }
 
         [Test]
@@ -92,7 +92,7 @@ namespace DelegateDecompiler.Tests
         {
             Expression<Func<Employee, int, bool>> expected = (e, p) => e.From == p && p < e.To;
             Func<Employee, int, bool> compiled = (e, p) => e.From == p && p < e.To;
-            Test(expected, compiled);
+            Test(compiled, expected);
         }
 
         [Test]
@@ -100,7 +100,7 @@ namespace DelegateDecompiler.Tests
         {
             Expression<Func<Employee, int, bool>> expected = (e, p) => e.From != p && p < e.To;
             Func<Employee, int, bool> compiled = (e, p) => e.From != p && p < e.To;
-            Test(expected, compiled);
+            Test(compiled, expected);
         }
 
 
@@ -109,7 +109,7 @@ namespace DelegateDecompiler.Tests
         {
             Expression<Func<Employee, int, bool>> expected = (e, p) => e.From <= p || p < e.To;
             Func<Employee, int, bool> compiled = (e, p) => e.From <= p || p < e.To;
-            Test(expected, compiled);
+            Test(compiled, expected);
         }
 
         [Test]
@@ -117,7 +117,7 @@ namespace DelegateDecompiler.Tests
         {
             Expression<Func<Employee, int, bool>> expected = (e, p) => e.From < p || p < e.To;
             Func<Employee, int, bool> compiled = (e, p) => e.From < p || p < e.To;
-            Test(expected, compiled);
+            Test(compiled, expected);
         }
 
         [Test]
@@ -125,7 +125,7 @@ namespace DelegateDecompiler.Tests
         {
             Expression<Func<Employee, int, bool>> expected = (e, p) => e.From >= p || p < e.To;
             Func<Employee, int, bool> compiled = (e, p) => e.From >= p || p < e.To;
-            Test(expected, compiled);
+            Test(compiled, expected);
         }
 
         [Test]
@@ -133,7 +133,7 @@ namespace DelegateDecompiler.Tests
         {
             Expression<Func<Employee, int, bool>> expected = (e, p) => e.From > p || p < e.To;
             Func<Employee, int, bool> compiled = (e, p) => e.From > p || p < e.To;
-            Test(expected, compiled);
+            Test(compiled, expected);
         }
 
         [Test]
@@ -141,7 +141,7 @@ namespace DelegateDecompiler.Tests
         {
             Expression<Func<Employee, int, bool>> expected = (e, p) => e.From == p || p < e.To;
             Func<Employee, int, bool> compiled = (e, p) => e.From == p || p < e.To;
-            Test(expected, compiled);
+            Test(compiled, expected);
         }
 
         [Test]
@@ -149,7 +149,7 @@ namespace DelegateDecompiler.Tests
         {
             Expression<Func<Employee, int, bool>> expected = (e, p) => e.From != p || p < e.To;
             Func<Employee, int, bool> compiled = (e, p) => e.From != p || p < e.To;
-            Test(expected, compiled);
+            Test(compiled, expected);
         }
 
         [Test]
@@ -157,7 +157,7 @@ namespace DelegateDecompiler.Tests
         {
             Expression<Func<int?, bool>> expected = e => (e ?? 100) == 100;
             Func<int?, bool> compiled = e => (e ?? 100) == 100;
-            Test(expected, compiled);
+            Test(compiled, expected);
         }
 
         [Test]
@@ -165,7 +165,7 @@ namespace DelegateDecompiler.Tests
         {
             Expression<Func<Employee, bool>> expected = e => e.FirstName != null && (e.FirstName.Contains("Test") && !e.IsBlocked);
             Func<Employee, bool> compiled = e => e.FirstName != null && e.FirstName.Contains("Test") && !e.IsBlocked;
-            Test(expected, compiled);
+            Test(compiled, expected);
         }
 
         [Test, Ignore("Need optimization for Boolean")]
@@ -173,7 +173,7 @@ namespace DelegateDecompiler.Tests
         {
             Expression<Func<Employee, string, bool>> expected = (u, term) => (u.FirstName != null && (u.FirstName.Contains(term) || term.Contains(u.FirstName))) && !u.IsBlocked;
             Func<Employee, string, bool> compiled = (u, term) => (u.FirstName != null && (u.FirstName.Contains(term) || term.Contains(u.FirstName))) && !u.IsBlocked;
-            Test(expected, compiled);
+            Test(compiled, expected);
         }
 
         [Test]
@@ -187,7 +187,7 @@ namespace DelegateDecompiler.Tests
                     result = a;
                 return result;
             };
-            Test(expected, compiled);
+            Test(compiled, expected);
         }
 
         [Test]
@@ -201,7 +201,7 @@ namespace DelegateDecompiler.Tests
                 else
                     return b;
             };
-            Test(expected, compiled);
+            Test(compiled, expected);
         }
 
         [Test]
@@ -209,26 +209,19 @@ namespace DelegateDecompiler.Tests
         {
             Expression<Func<int, bool>> expected = x => (x <= 3 ? (x <= 3 ? 2 : 3) : 1) == 1;
             Func<int, bool> compiled = x => (x <= 3 ? (x <= 3 ? 2 : 3) : 1) == 1;
-            Test(expected, compiled);
+            Test(compiled, expected);
         }
 
         [Test]
         public void Issue183Get()
         {
-            Test<Func<string, bool?>>(
-                x => x == "Yes" ? true : x == "No" ? (bool?)false : null,
-                x => x == "Yes" ? true : x == "No" ? (bool?)false : null
-            );
+            Test<Func<string, bool?>>(x => x == "Yes" ? true : x == "No" ? (bool?)false : null, x => x == "Yes" ? true : x == "No" ? (bool?)false : null);
         }
 
         [Test]
         public void Issue183Set()
         {
-            Test<Func<bool?, string>>(
-                x => x.HasValue && x.Value ? "Yes" : x.HasValue ? "No" : null,
-                x => x.HasValue ? x.Value ? "Yes" : x.HasValue ? "No" : null : x.HasValue ? "No" : null,
-                x => x.HasValue && x.Value ? "Yes" : x.HasValue ? "No" : null
-            );
+            Test<Func<bool?, string>>(x => x.HasValue && x.Value ? "Yes" : x.HasValue ? "No" : null, x => x.HasValue && x.Value ? "Yes" : x.HasValue ? "No" : null, x => x.HasValue ? x.Value ? "Yes" : x.HasValue ? "No" : null : x.HasValue ? "No" : null);
         }
 
         [Test]
@@ -249,7 +242,7 @@ namespace DelegateDecompiler.Tests
                 }
                 return a + b + c + d;
             };
-            Test(expected, compiled);
+            Test(compiled, expected);
         }
     }
 }

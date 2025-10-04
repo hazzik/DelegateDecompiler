@@ -17,7 +17,7 @@ namespace DelegateDecompiler.Tests
             });
             var actual = comments.AsQueryable().Select(c => ToCommentDto(c)).Decompile();
 
-            AssertAreEqual(expected.Expression, actual.Expression);
+            AssertAreEqual(actual.Expression, expected.Expression);
         }
 
         [Decompile]

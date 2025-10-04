@@ -161,7 +161,7 @@ namespace DelegateDecompiler.Tests
                 : @this is B ? "B"
                 : null;
 
-            Test(e, typeof(A).GetMethod(nameof(A.M1)));
+            Test(typeof(A).GetMethod(nameof(A.M1)), e);
         }
 
         [Test]
@@ -177,7 +177,7 @@ namespace DelegateDecompiler.Tests
                 : null;
             // ReSharper restore MergeCastWithTypeCheck
 
-            Test(e, typeof(A).GetMethod(nameof(A.M2)));
+            Test(typeof(A).GetMethod(nameof(A.M2)), e);
         }
 
         [Test]
@@ -191,7 +191,7 @@ namespace DelegateDecompiler.Tests
                 : @this is B ? "B"
                 : "A";
 
-            Test(e, typeof(A).GetMethod(nameof(A.M3)));
+            Test(typeof(A).GetMethod(nameof(A.M3)), e);
         }
 
         [Test]
@@ -199,7 +199,7 @@ namespace DelegateDecompiler.Tests
         {
             Expression<Func<A, string>> e = @this => "A";
 
-            Test(e, typeof(A).GetMethod(nameof(A.M4)));
+            Test(typeof(A).GetMethod(nameof(A.M4)), e);
         }
 
         [Test]
@@ -213,7 +213,7 @@ namespace DelegateDecompiler.Tests
                 : @this is B ? "B is child of " + "A".ToString()
                 : "A";
 
-            Test(e, typeof(A).GetMethod(nameof(A.M6)));
+            Test(typeof(A).GetMethod(nameof(A.M6)), e);
         }
 
         [Test]
@@ -229,7 +229,7 @@ namespace DelegateDecompiler.Tests
 
             var property = typeof(A).GetProperty(nameof(A.M7));
             Assert.NotNull(property);
-            Test(e, property.GetGetMethod());
+            Test(property.GetGetMethod(), e);
         }
 
         [Test]
@@ -240,7 +240,7 @@ namespace DelegateDecompiler.Tests
                 : @this is A ? "A"
                 : null;
 
-            Test(e, typeof(IA).GetMethod(nameof(IA.M)));
+            Test(typeof(IA).GetMethod(nameof(IA.M)), e);
         }
 
         [Test]
@@ -260,7 +260,7 @@ namespace DelegateDecompiler.Tests
                 : @this is A ? "A"
                 : null;
 
-            Test(e, typeof(IA).GetMethod(nameof(IA.M5)));
+            Test(typeof(IA).GetMethod(nameof(IA.M5)), e);
         }
 
         [Test]
@@ -270,7 +270,7 @@ namespace DelegateDecompiler.Tests
                 "E is child of " + ("C is child of " + "A".ToString()).ToString()
                 ;
 
-            Test(e, typeof(E).GetMethod(nameof(E.M6)));
+            Test(typeof(E).GetMethod(nameof(E.M6)), e);
         }
 
         [Test]
@@ -282,7 +282,7 @@ namespace DelegateDecompiler.Tests
                 : @this is D ? "D is child of " + ("C is child of " + "A".ToString()).ToString()
                 : "C is child of " + "A".ToString();
 
-            Test(e, typeof(C<int>).GetMethod(nameof(C<int>.M6)));
+            Test(typeof(C<int>).GetMethod(nameof(C<int>.M6)), e);
         }
     }
 }
