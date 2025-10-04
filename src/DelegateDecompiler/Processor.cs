@@ -30,7 +30,7 @@ namespace DelegateDecompiler
             Processor processor = new Processor();
             var initialState = new ProcessorState(cfg.Entry, isStatic, new Stack<Address>(), locals, args, cfg.Entry.Instructions.FirstOrDefault());
             
-            processor.ProcessBlock(cfg.Entry, initialState);
+            processor.ProcessBlock(initialState, cfg.Entry);
             
             // Add debug output for stack before Final()
             Console.WriteLine($"DEBUG: Before Final() - Stack contents:");
@@ -83,80 +83,44 @@ namespace DelegateDecompiler
         {
         }
 
-        void ProcessBlock(Block block, ProcessorState state)
+        void ProcessBlock(ProcessorState state, Block block, Block endBlock = null)
         {
+            if (block == null || block == endBlock)
+                return;
+
             for (var index = 0; index < block.Instructions.Count; index++)
             {
                 var instruction = block.Instructions[index];
-                index += ProcessInstruction(instruction, state);
+                index += ProcessInstruction(state, instruction);
             }
 
-            ProcessBlockExit(block, state);
+            ProcessNextBlock(state, block, endBlock);
         }
 
-        void ProcessUntilBlock(Block startBlock, Block endBlock, ProcessorState state)
-        {
-            Console.WriteLine($"DEBUG: ProcessUntilBlock - Start: {startBlock?.First}, End: {endBlock?.First}, Stack count: {state.Stack.Count}");
-
-            if (startBlock == endBlock)
-                return;
-
-            var current = startBlock;
-            
-            // Process blocks until we reach the end block (but don't process the end block itself)
-            while (current != null && current != endBlock)
-            {
-                // Process all instructions in the current block
-                for (var index = 0; index < current.Instructions.Count; index++)
-                {
-                    var instruction = current.Instructions[index];
-                    index += ProcessInstruction(instruction, state);
-                }
-
-                // Move to next block
-                if (current.Successors.Count == 1)
-                {
-                    current = current.Successors[0].To;
-                }
-                else if (current.Successors.Count == 2)
-                {
-                    ProcessConditionalBranch(current, state, endBlock);
-                    break; 
-                }
-                else
-                {
-                    // No successors or complex branching
-                    break;
-                }
-            }
-        }
-
-        void ProcessBlockExit(Block block, ProcessorState state)
+        void ProcessNextBlock(ProcessorState state, Block block, Block endBlock)
         {
             switch (block.Successors.Count)
             {
                 case 0:
                     break;
                 case 1:
-                    ProcessBlock(block.Successors[0].To, state);
+                    ProcessBlock(state, block.Successors[0].To, endBlock);
                     break;
                 case 2:
-                    ProcessConditionalBranch(block, state);
+                    ProcessConditionalBranch(block, state, endBlock);
                     break;
                 default:
-                    throw new NotSupportedException();
+                    throw new NotSupportedException("Switch statement is not supported");
             }
         }
 
-        void ProcessConditionalBranch(Block block, ProcessorState state, Block endBlock = null)
+        void ProcessConditionalBranch(Block block, ProcessorState state, Block endBlock)
         {
             var trueEdge = block.Successors.FirstOrDefault(e => e.Kind == EdgeKind.ConditionalTrue);
             var falseEdge = block.Successors.FirstOrDefault(e => e.Kind == EdgeKind.ConditionalFalse);
 
             if (trueEdge == null || falseEdge == null)
-            {
                 throw new InvalidOperationException("Conditional branch must have both true and false edges");
-            }
 
             // Find the branching instruction in this block to determine the test condition
             var branchingInstruction = block.Instructions.LastOrDefault(i => 
@@ -194,22 +158,13 @@ namespace DelegateDecompiler
             Console.WriteLine($"DEBUG: Processing until convergence - FalseBlock: {falseEdge.To?.First} to {convergencePoint?.First}");
             
             // Both branches converge - process them until convergence (but not including convergence block)
-            ProcessUntilBlock(trueEdge.To, convergencePoint, trueState);
-            ProcessUntilBlock(falseEdge.To, convergencePoint, falseState);
+            ProcessBlock(trueState, trueEdge.To, convergencePoint);
+            ProcessBlock(falseState, falseEdge.To, convergencePoint);
             
             // Use state.Merge() to create the conditional and push it onto the stack
             state.Merge(test, trueState, falseState);
-            
-            // Process the convergence block only if it's not the endBlock of a parent scope
-            if (convergencePoint != endBlock)
-            {
-                Console.WriteLine($"DEBUG: Processing convergence block: {convergencePoint.First}");
-                ProcessBlock(convergencePoint, state);
-            }
-            else
-            {
-                Console.WriteLine($"DEBUG: Skipping convergence block processing (belongs to parent scope)");
-            }
+
+            ProcessBlock(state, convergencePoint, endBlock);
         }
 
         Stack<Block> FollowBlockGraph(Block block)
@@ -326,7 +281,7 @@ namespace DelegateDecompiler
             }
         }
 
-        static int ProcessInstruction(Instruction instruction, ProcessorState state)
+        static int ProcessInstruction(ProcessorState state, Instruction instruction)
         {
             Debug.WriteLine(instruction);
 
@@ -515,8 +470,6 @@ else            if (instruction.OpCode == OpCodes.Call || instruction.OpCode == 
             return expression;
         }
 
-
-
         internal static Expression AdjustType(Expression expression, Type type)
         {
             if (expression.Type == type)
@@ -603,8 +556,6 @@ else            if (instruction.OpCode == OpCodes.Call || instruction.OpCode == 
 
             return expression;
         }
-
-       
 
         static void Call(ProcessorState state, MethodInfo m)
         {
