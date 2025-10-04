@@ -201,12 +201,12 @@ namespace DelegateDecompiler
             state.Merge(test, trueState, falseState);
             
             // Process the convergence block only if it's not the endBlock of a parent scope
-            if (!convergencePoint.IsExit && convergencePoint != endBlock)
+            if (convergencePoint != endBlock)
             {
                 Console.WriteLine($"DEBUG: Processing convergence block: {convergencePoint.First}");
                 ProcessBlock(convergencePoint, state);
             }
-            else if (convergencePoint == endBlock)
+            else
             {
                 Console.WriteLine($"DEBUG: Skipping convergence block processing (belongs to parent scope)");
             }
