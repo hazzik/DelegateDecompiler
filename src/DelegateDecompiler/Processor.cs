@@ -187,37 +187,28 @@ namespace DelegateDecompiler
             
             Console.WriteLine($"DEBUG: Conditional branch - TrueBlock: {trueEdge.To?.First}, FalseBlock: {falseEdge.To?.First}, ConvergencePoint: {convergencePoint?.First}");
             
-            if (convergencePoint != null)
+            if (convergencePoint == null)
+                throw new InvalidOperationException($"No convergence point found for conditional branch at {block.First}. This indicates malformed IL or a bug in the convergence detection algorithm.");
+                
+            Console.WriteLine($"DEBUG: Processing until convergence - TrueBlock: {trueEdge.To?.First} to {convergencePoint?.First}");
+            Console.WriteLine($"DEBUG: Processing until convergence - FalseBlock: {falseEdge.To?.First} to {convergencePoint?.First}");
+            
+            // Both branches converge - process them until convergence (but not including convergence block)
+            ProcessUntilBlock(trueEdge.To, convergencePoint, trueState);
+            ProcessUntilBlock(falseEdge.To, convergencePoint, falseState);
+            
+            // Use state.Merge() to create the conditional and push it onto the stack
+            state.Merge(test, trueState, falseState);
+            
+            // Process the convergence block only if it's not the endBlock of a parent scope
+            if (!convergencePoint.IsExit && convergencePoint != endBlock)
             {
-                Console.WriteLine($"DEBUG: Processing until convergence - TrueBlock: {trueEdge.To?.First} to {convergencePoint?.First}");
-                Console.WriteLine($"DEBUG: Processing until convergence - FalseBlock: {falseEdge.To?.First} to {convergencePoint?.First}");
-                
-                // Both branches converge - process them until convergence (but not including convergence block)
-                ProcessUntilBlock(trueEdge.To, convergencePoint, trueState);
-                ProcessUntilBlock(falseEdge.To, convergencePoint, falseState);
-                
-                // Use state.Merge() to create the conditional and push it onto the stack
-                state.Merge(test, trueState, falseState);
-                
-                // Process the convergence block only if it's not the endBlock of a parent scope
-                if (!convergencePoint.IsExit && convergencePoint != endBlock)
-                {
-                    Console.WriteLine($"DEBUG: Processing convergence block: {convergencePoint.First}");
-                    ProcessBlock(convergencePoint, state);
-                }
-                else if (convergencePoint == endBlock)
-                {
-                    Console.WriteLine($"DEBUG: Skipping convergence block processing (belongs to parent scope)");
-                }
+                Console.WriteLine($"DEBUG: Processing convergence block: {convergencePoint.First}");
+                ProcessBlock(convergencePoint, state);
             }
-            else
+            else if (convergencePoint == endBlock)
             {
-                // No convergence - process branches independently and merge
-                ProcessBlock(trueEdge.To, trueState);
-                ProcessBlock(falseEdge.To, falseState);
-
-                // Always merge states after processing branches
-                state.Merge(test, trueState, falseState);
+                Console.WriteLine($"DEBUG: Skipping convergence block processing (belongs to parent scope)");
             }
         }
 
