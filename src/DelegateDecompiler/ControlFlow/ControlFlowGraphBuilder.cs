@@ -155,6 +155,10 @@ namespace DelegateDecompiler.ControlFlow
                     if (from.Last.Next != null && blockMap.TryGetValue(from.Last.Next, out var dBlock))
                         Connect(from, dBlock, EdgeKind.Switch);
                     break;
+                default:
+                    if (from.Last.Next != null && blockMap.TryGetValue(from.Last.Next, out var nextBlock))
+                        Connect(from, nextBlock, EdgeKind.FallThrough);
+                    break;
             }
         }
 
