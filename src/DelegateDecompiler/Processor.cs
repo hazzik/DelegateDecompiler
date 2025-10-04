@@ -112,7 +112,7 @@ namespace DelegateDecompiler
                 else if (instruction.OpCode == OpCodes.Br_S || instruction.OpCode == OpCodes.Br)
                 {
                     state.CurrentInstruction = (Instruction)instruction.Operand;
-                    return false;
+                    return true;
                 }
                 else if (instruction.OpCode == OpCodes.Brfalse ||
                          instruction.OpCode == OpCodes.Brfalse_S)
