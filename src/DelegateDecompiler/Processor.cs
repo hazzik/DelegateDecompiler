@@ -176,8 +176,8 @@ namespace DelegateDecompiler
                 Console.WriteLine($"DEBUG: Processing until convergence - FalseBlock: {falseEdge.To?.First} to {convergencePoint?.First}");
                 
                 // Both branches converge - process them until convergence (but not including convergence block)
-                ProcessUntilBlock(trueEdge.To, convergencePoint, trueState, convergencePoint);
-                ProcessUntilBlock(falseEdge.To, convergencePoint, falseState, convergencePoint);
+                ProcessUntilBlock(trueEdge.To, convergencePoint, trueState);
+                ProcessUntilBlock(falseEdge.To, convergencePoint, falseState);
                 
                 // Use state.Merge() to create the conditional and push it onto the stack
                 state.Merge(test, trueState, falseState);
@@ -247,7 +247,7 @@ namespace DelegateDecompiler
             return common;
         }
 
-        void ProcessUntilBlock(Block startBlock, Block endBlock, ProcessorState state, Block parentEndBlock = null)
+        void ProcessUntilBlock(Block startBlock, Block endBlock, ProcessorState state)
         {
             Console.WriteLine($"DEBUG: ProcessUntilBlock - Start: {startBlock?.First}, End: {endBlock?.First}, Stack count: {state.Stack.Count}");
             
@@ -288,8 +288,8 @@ namespace DelegateDecompiler
                 {
                     // Hit another conditional branch before reaching end block
                     Console.WriteLine($"DEBUG: ProcessUntilBlock found conditional branch in block {currentBlock?.First}");
-                    // Process the conditional branch, passing the parent endBlock to prevent processing shared convergence blocks
-                    ProcessConditionalBranch(currentBlock, state, parentEndBlock);
+                    // Process the conditional branch, passing the endBlock to prevent processing shared convergence blocks
+                    ProcessConditionalBranch(currentBlock, state, endBlock);
                     // After conditional processing, continue to the end block
                     // The conditional should have left us at or moved us toward the convergence
                     break; // Exit the loop, conditional processing handles the rest
