@@ -21,6 +21,7 @@ dotnet restore
 dotnet build --no-restore -c Release -p:DisableGitVersionTask=true
 
 # Run tests
+# If using --no-build, ensure the project is already built
 dotnet test --no-build -c Release -f net8.0 src/DelegateDecompiler.Tests
 dotnet test --no-build -c Release -f net8.0 src/DelegateDecompiler.Tests.VB
 dotnet test --no-build -c Release -f net8.0 src/DelegateDecompiler.EntityFramework.Tests
