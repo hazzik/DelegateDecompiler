@@ -36,7 +36,7 @@ namespace DelegateDecompiler.Tests
             var expected = query.Select(x => x.Collection.LastOrDefault()).Select(x => x.A);
             var actual = query.Select(x => x.Last).Select(x => x.A).Decompile();
 
-            AssertAreEqual(expected.Expression, actual.Expression);
+            AssertAreEqual(actual.Expression, expected.Expression);
 
             Assert.That(actual.ToList(), Is.EqualTo(new[] { "2", "5", "8" }));
         }

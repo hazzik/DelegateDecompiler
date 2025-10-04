@@ -14,7 +14,7 @@ namespace DelegateDecompiler.Tests
         {
             Expression<Func<int, int, int>> expected = (x, y) => x + y;
             Func<int, int, int> compiled = (x, y) => x + y;
-            Test(expected, compiled);
+            Test(compiled, expected);
         }
 
         [Test] 
@@ -22,7 +22,7 @@ namespace DelegateDecompiler.Tests
         {
             Expression<Func<int, int, int>> expected = (x, y) => x * y;
             Func<int, int, int> compiled = (x, y) => x * y;
-            Test(expected, compiled);
+            Test(compiled, expected);
         }
 
         [Test]
@@ -30,7 +30,7 @@ namespace DelegateDecompiler.Tests
         {
             Expression<Func<int, int, int>> expected = (x, y) => x ^ y;
             Func<int, int, int> compiled = (x, y) => x ^ y;
-            Test(expected, compiled);
+            Test(compiled, expected);
         }
 
         [Test]
@@ -38,7 +38,7 @@ namespace DelegateDecompiler.Tests
         {
             Expression<Func<int, int>> expected = x => -x;
             Func<int, int> compiled = x => -x;
-            Test(expected, compiled);
+            Test(compiled, expected);
         }
 
         [Test]
@@ -46,7 +46,7 @@ namespace DelegateDecompiler.Tests
         {
             Expression<Func<byte, int>> expected = x => (int)x;
             Func<byte, int> compiled = x => (int)x;
-            Test(expected, compiled);
+            Test(compiled, expected);
         }
 
         [Test]
@@ -54,7 +54,7 @@ namespace DelegateDecompiler.Tests
         {
             Expression<Func<int, int, bool>> expected = (x, y) => x == y;
             Func<int, int, bool> compiled = (x, y) => x == y;
-            Test(expected, compiled);
+            Test(compiled, expected);
         }
 
         [Test]
@@ -62,7 +62,7 @@ namespace DelegateDecompiler.Tests
         {
             Expression<Func<int, int, bool>> expected = (x, y) => x > y;
             Func<int, int, bool> compiled = (x, y) => x > y;
-            Test(expected, compiled);
+            Test(compiled, expected);
         }
     }
 }
