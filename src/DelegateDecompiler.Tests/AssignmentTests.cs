@@ -1,16 +1,19 @@
-﻿using System.Linq.Expressions;
+﻿using System;
+using System.Linq.Expressions;
 using NUnit.Framework;
 
 namespace DelegateDecompiler.Tests
 {
     [TestFixture]
-    public class AssignmentTests
+    public class AssignmentTests : DecompilerTestsBase
     {
         public class TestClass
         {
             private static int staticField;
             private int myField;
             private int MyProperty { get; set; }
+            public string MyStringProperty { get; set; } = "";
+            public DateTime StartDate { get; set; }
 
             public void SetStaticField(int value)
             {
@@ -74,6 +77,35 @@ namespace DelegateDecompiler.Tests
             Assert.That(block.Expressions[0].ToString(), Is.EqualTo("(TestClass.staticField = value)"));
             Assert.That(block.Expressions[1].ToString(), Is.EqualTo("(this.myField = value)"));
             Assert.That(block.Expressions[2].ToString(), Is.EqualTo("(this.MyProperty = value)"));
+        }
+
+        [Test]
+        public void ShouldDecompilePropertyAssignmentExpression()
+        {
+            // Manually construct the expected assignment expression
+            var parameter = Expression.Parameter(typeof(TestClass), "v");
+            var property = Expression.Property(parameter, nameof(TestClass.MyStringProperty));
+            var value = Expression.Constant("test value", typeof(string));
+            var assignment = Expression.Assign(property, value);
+            var expected = Expression.Lambda<Func<TestClass, string>>(assignment, parameter);
+            
+            Func<TestClass, string> compiled = v => v.MyStringProperty = "test value";
+            Test(expected, compiled);
+        }
+
+        [Test]
+        public void ShouldDecompileComplexAssignmentExpression()
+        {
+            // Manually construct the expected assignment expression
+            var parameter = Expression.Parameter(typeof(TestClass), "v");
+            var property = Expression.Property(parameter, nameof(TestClass.StartDate));
+            var newDateTime = Expression.New(typeof(DateTime).GetConstructor(new[] { typeof(int), typeof(int), typeof(int) }), 
+                Expression.Constant(2023), Expression.Constant(1), Expression.Constant(1));
+            var assignment = Expression.Assign(property, newDateTime);
+            var expected = Expression.Lambda<Func<TestClass, DateTime>>(assignment, parameter);
+            
+            Func<TestClass, DateTime> compiled = v => v.StartDate = new DateTime(2023, 1, 1);
+            Test(expected, compiled);
         }
     }
 }
