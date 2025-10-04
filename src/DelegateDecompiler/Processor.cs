@@ -32,15 +32,28 @@ namespace DelegateDecompiler
             
             processor.ProcessBlock(cfg.Entry, initialState);
             
+            // Add debug output for stack before Final()
+            Console.WriteLine($"DEBUG: Before Final() - Stack contents:");
+            for (int i = 0; i < initialState.Stack.Count; i++)
+            {
+                Console.WriteLine($"  Stack[{i}]: {initialState.Stack.ElementAt(i)} (type: {initialState.Stack.ElementAt(i).Type})");
+            }
+            
             // Use Final() ONLY here - once per method body
             var finalResult = initialState.Final();
+            Console.WriteLine($"DEBUG: Raw Final() result: {finalResult}");
+            Console.WriteLine($"DEBUG: Raw Final() type: {finalResult.Type}");
+            
             finalResult = AdjustType(finalResult, returnType);
+            Console.WriteLine($"DEBUG: After AdjustType: {finalResult}");
 
             if (!returnType.IsAssignableFrom(finalResult.Type) && returnType != typeof(void))
             {
+                Console.WriteLine($"DEBUG: Converting to return type {returnType}");
                 return Expression.Convert(finalResult, returnType);
             }
 
+            Console.WriteLine($"DEBUG: Final expression: {finalResult}");
             return finalResult;
         }
 
@@ -111,12 +124,12 @@ namespace DelegateDecompiler
             else
             {
                 // Conditional branch - should have exactly 2 successors
-                 ProcessConditionalBranch(block, state);
-                 return null;
+                ProcessConditionalBranch(block, state);
+                return null;
             }
         }
 
-        void ProcessConditionalBranch(Block block, ProcessorState state)
+        void ProcessConditionalBranch(Block block, ProcessorState state, Block endBlock = null)
         {
             var trueEdge = block.Successors.FirstOrDefault(e => e.Kind == EdgeKind.ConditionalTrue);
             var falseEdge = block.Successors.FirstOrDefault(e => e.Kind == EdgeKind.ConditionalFalse);
@@ -162,17 +175,22 @@ namespace DelegateDecompiler
                 Console.WriteLine($"DEBUG: Processing until convergence - TrueBlock: {trueEdge.To?.First} to {convergencePoint?.First}");
                 Console.WriteLine($"DEBUG: Processing until convergence - FalseBlock: {falseEdge.To?.First} to {convergencePoint?.First}");
                 
-                // Both branches converge - process them until convergence
-                ProcessUntilBlock(trueEdge.To, convergencePoint, trueState);
-                ProcessUntilBlock(falseEdge.To, convergencePoint, falseState);
+                // Both branches converge - process them until convergence (but not including convergence block)
+                ProcessUntilBlock(trueEdge.To, convergencePoint, trueState, convergencePoint);
+                ProcessUntilBlock(falseEdge.To, convergencePoint, falseState, convergencePoint);
                 
                 // Use state.Merge() to create the conditional and push it onto the stack
                 state.Merge(test, trueState, falseState);
                 
-                // If we have a convergence point, continue processing from there
-                if (!convergencePoint.IsExit)
+                // Process the convergence block only if it's not the endBlock of a parent scope
+                if (!convergencePoint.IsExit && convergencePoint != endBlock)
                 {
+                    Console.WriteLine($"DEBUG: Processing convergence block: {convergencePoint.First}");
                     ProcessBlock(convergencePoint, state);
+                }
+                else if (convergencePoint == endBlock)
+                {
+                    Console.WriteLine($"DEBUG: Skipping convergence block processing (belongs to parent scope)");
                 }
             }
             else
@@ -225,10 +243,11 @@ namespace DelegateDecompiler
                     break;
             }
 
+            Console.WriteLine($"DEBUG: FindConvergencePoint for {block?.First} found: {common?.First}");
             return common;
         }
 
-        void ProcessUntilBlock(Block startBlock, Block endBlock, ProcessorState state)
+        void ProcessUntilBlock(Block startBlock, Block endBlock, ProcessorState state, Block parentEndBlock = null)
         {
             Console.WriteLine($"DEBUG: ProcessUntilBlock - Start: {startBlock?.First}, End: {endBlock?.First}, Stack count: {state.Stack.Count}");
             
@@ -269,9 +288,11 @@ namespace DelegateDecompiler
                 {
                     // Hit another conditional branch before reaching end block
                     Console.WriteLine($"DEBUG: ProcessUntilBlock found conditional branch in block {currentBlock?.First}");
-                    // Process the conditional branch directly and return the result
-                    ProcessBlockExit(currentBlock, state);
-                    return;
+                    // Process the conditional branch, passing the parent endBlock to prevent processing shared convergence blocks
+                    ProcessConditionalBranch(currentBlock, state, parentEndBlock);
+                    // After conditional processing, continue to the end block
+                    // The conditional should have left us at or moved us toward the convergence
+                    break; // Exit the loop, conditional processing handles the rest
                 }
                 else
                 {

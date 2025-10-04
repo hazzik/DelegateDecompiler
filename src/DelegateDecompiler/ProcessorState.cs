@@ -51,6 +51,10 @@ namespace DelegateDecompiler
 
         public void Merge(Expression test, ProcessorState leftState, ProcessorState rightState)
         {
+            Console.WriteLine($"DEBUG: Merge called with test: {test}");
+            Console.WriteLine($"DEBUG: LeftState stack count: {leftState.Stack.Count}");
+            Console.WriteLine($"DEBUG: RightState stack count: {rightState.Stack.Count}");
+            
             var addressMap = new Dictionary<Tuple<Address, Address>, Address>();
             for (var i = 0; i < leftState.Locals.Length; i++)
             {
@@ -71,7 +75,10 @@ namespace DelegateDecompiler
             {
                 var rightExpression = rightState.Stack.Pop();
                 var leftExpression = leftState.Stack.Pop();
-                buffer.Add(Address.Merge(test, leftExpression, rightExpression, addressMap));
+                Console.WriteLine($"DEBUG: Merging stack - Left: {leftExpression} (type: {leftExpression.Type}), Right: {rightExpression} (type: {rightExpression.Type})");
+                var merged = Address.Merge(test, leftExpression, rightExpression, addressMap);
+                Console.WriteLine($"DEBUG: Merged result: {merged} (type: {merged.Type})");
+                buffer.Add(merged);
             }
             Stack.Clear();
             foreach (var address in Enumerable.Reverse(buffer))
@@ -82,19 +89,32 @@ namespace DelegateDecompiler
 
         public Expression Final()
         {
+            Console.WriteLine($"DEBUG: Final() called with Stack.Count: {Stack.Count}");
+            
             if (Stack.Count == 0)
+            {
+                Console.WriteLine($"DEBUG: Final() returning Empty()");
                 return Expression.Empty();
+            }
 
             if (Stack.Count == 1)
-                return Stack.Pop();
+            {
+                var result = Stack.Pop();
+                Console.WriteLine($"DEBUG: Final() returning single expression: {result}");
+                Console.WriteLine($"DEBUG: Final() single expression type: {result.Type}");
+                return result;
+            }
 
             var expressions = new Expression[Stack.Count];
             for (var i = expressions.Length - 1; i >= 0; i--)
             {
                 expressions[i] = Stack.Pop();
+                Console.WriteLine($"DEBUG: Final() expression[{i}]: {expressions[i]}");
             }
 
-            return Expression.Block(expressions);
+            var block = Expression.Block(expressions);
+            Console.WriteLine($"DEBUG: Final() returning block: {block}");
+            return block;
         }
     }
 }

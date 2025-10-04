@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Reflection.Emit;
@@ -46,9 +47,16 @@ internal class BinaryExpressionProcessor : IProcessor
         if (!Operations.TryGetValue(instruction.OpCode, out var operation))
             return false;
 
+        Console.WriteLine($"DEBUG: BinaryExpressionProcessor processing {instruction.OpCode}");
         var val1 = state.Stack.Pop();
         var val2 = state.Stack.Pop();
-        state.Stack.Push(Processor.MakeBinaryExpression(val2, val1, operation));
+        Console.WriteLine($"DEBUG: val1: {val1} (type: {val1.Type})");
+        Console.WriteLine($"DEBUG: val2: {val2} (type: {val2.Type})");
+        
+        var result = Processor.MakeBinaryExpression(val2, val1, operation);
+        Console.WriteLine($"DEBUG: Binary result: {result} (type: {result.Type})");
+        
+        state.Stack.Push(result);
         return true;
     }
 }
