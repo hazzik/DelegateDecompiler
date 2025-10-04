@@ -12,7 +12,7 @@ namespace DelegateDecompiler.Tests
         {
             Expression<Func<int[]>> expected = () => new int[] { };
             Func<int[]> compiled = () => new int[] { };
-            Test(expected, compiled);
+            Test(compiled, expected);
         }
 
         [Test]
@@ -21,7 +21,7 @@ namespace DelegateDecompiler.Tests
             Expression<Func<int[]>> expected1 = () => new int[0];
             Expression<Func<int[]>> expected2 = () => new int[] { };
             Func<int[]> compiled = () => new int[0];
-            Test(expected1, expected2, compiled);
+            Test(compiled, expected1, expected2);
         }
 
         [Test]
@@ -29,7 +29,7 @@ namespace DelegateDecompiler.Tests
         {
             Expression<Func<int, int[]>> expected = x => new int[x];
             Func<int, int[]> compiled = x => new int[x];
-            Test(expected, compiled);
+            Test(compiled, expected);
         }
 
         [Test]
@@ -37,7 +37,7 @@ namespace DelegateDecompiler.Tests
         {
             Expression<Func<int[]>> expected = () => new int[1];
             Func<int[]> compiled = () => new int[1];
-            Test(expected, compiled);
+            Test(compiled, expected);
         }
 
         [Test]
@@ -45,7 +45,7 @@ namespace DelegateDecompiler.Tests
         {
             Expression<Func<int[]>> expected = () => new int[10];
             Func<int[]> compiled = () => new int[10];
-            Test(expected, compiled);
+            Test(compiled, expected);
         }
 
         [Test]
@@ -53,7 +53,7 @@ namespace DelegateDecompiler.Tests
         {
             Expression<Func<int[]>> expected = () => new[] { 1 };
             Func<int[]> compiled = () => new[] { 1 };
-            Test(expected, compiled);
+            Test(compiled, expected);
         }
 
         [Test]
@@ -61,7 +61,7 @@ namespace DelegateDecompiler.Tests
         {
             Expression<Func<int[]>> expected = () => new[] { 1, 2 };
             Func<int[]> compiled = () => new[] { 1, 2 };
-            Test(expected, compiled);
+            Test(compiled, expected);
         }
 
         [Test]
@@ -69,7 +69,7 @@ namespace DelegateDecompiler.Tests
         {
             Expression<Func<int[]>> expected = () => new[] { 1, 2, 3 };
             Func<int[]> compiled = () => new[] { 1, 2, 3 };
-            Test(expected, compiled);
+            Test(compiled, expected);
         }
 
         [Test]
@@ -77,7 +77,7 @@ namespace DelegateDecompiler.Tests
         {
             Expression<Func<int, int[]>> expected = x => new[] { x, 2 };
             Func<int, int[]> compiled = x => new[] { x, 2 };
-            Test(expected, compiled);
+            Test(compiled, expected);
         }
 
         [Test]
@@ -85,7 +85,7 @@ namespace DelegateDecompiler.Tests
         {
             Expression<Func<int, int[]>> expected = x => new[] { x, 2, 3, 4 };
             Func<int, int[]> compiled = x => new[] { x, 2, 3, 4 };
-            Test(expected, compiled);
+            Test(compiled, expected);
         }
 
         [Test]
@@ -93,7 +93,7 @@ namespace DelegateDecompiler.Tests
         {
             Expression<Func<int, int[]>> expected = x => new[] { 1, 2, 3, 4, x };
             Func<int, int[]> compiled = x => new[] { 1, 2, 3, 4, x };
-            Test(expected, compiled);
+            Test(compiled, expected);
         }
 
         [Test]
@@ -101,7 +101,7 @@ namespace DelegateDecompiler.Tests
         {
             Expression<Func<TestClass, TestClass[]>> expected = x => new[] { new TestClass(), x };
             Func<TestClass, TestClass[]> compiled = x => new[] { new TestClass(), x };
-            Test(expected, compiled);
+            Test(compiled, expected);
         }
     }
 }

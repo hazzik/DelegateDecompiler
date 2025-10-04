@@ -12,7 +12,7 @@ namespace DelegateDecompiler.Tests
         {
             Expression<Func<string, string, string, string, string>> expected = (w, x, y, z) => w + " " + x + " " + y + " " + z;
             Func<string, string, string, string, string> compiled = (w, x, y, z) => w + " " + x + " " + y + " " + z;
-            Test(expected, compiled);
+            Test(compiled, expected);
         }
 
         [Test]
@@ -20,7 +20,7 @@ namespace DelegateDecompiler.Tests
         {
             Expression<Func<string, string, string, string, string, string>> expected = (u, w, x, y, z) => u + " " + w + " " + x + " " + y + " " + z;
             Func<string, string, string, string, string, string> compiled = (u, w, x, y, z) => u + " " + w + " " + x + " " + y + " " + z;
-            Test(expected, compiled);
+            Test(compiled, expected);
         }
 
         [Test]
@@ -28,7 +28,7 @@ namespace DelegateDecompiler.Tests
         {
             Expression<Func<object, string>> expected = x => string.Concat(x);
             Func<object, string> compiled = x => string.Concat(x);
-            Test(expected, compiled);
+            Test(compiled, expected);
         }
 
         [Test]
@@ -36,7 +36,7 @@ namespace DelegateDecompiler.Tests
         {
             Expression<Func<string, string>> expected = x => string.Concat(x);
             Func<string, string> compiled = x => string.Concat(x);
-            Test(expected, compiled);
+            Test(compiled, expected);
         }
 
         [Test]
@@ -45,7 +45,7 @@ namespace DelegateDecompiler.Tests
             Expression<Func<int, string, int, string>> expected1 = (x, y, z) => x + y + z;
             Expression<Func<int, string, int, string>> expected2 = (x, y, z) => x.ToString() + y + z.ToString();
             Func<int, string, int, string> compiled = (x, y, z) => x + y + z;
-            Test(expected1, expected2, compiled);
+            Test(compiled, expected1, expected2);
         }
 
         [Test]
@@ -54,7 +54,7 @@ namespace DelegateDecompiler.Tests
             Expression<Func<int, string, double, string>> expected1 = (x, y, z) => x + y + z;
             Expression<Func<int, string, double, string>> expected2 = (x, y, z) => x.ToString() + y + z.ToString();
             Func<int, string, double, string> compiled = (x, y, z) => x + y + z;
-            Test(expected1, expected2, compiled);
+            Test(compiled, expected1, expected2);
         }
     }
 }
