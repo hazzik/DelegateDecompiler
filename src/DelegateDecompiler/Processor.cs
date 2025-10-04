@@ -111,10 +111,7 @@ namespace DelegateDecompiler
                 }
                 else if (instruction.OpCode == OpCodes.Br_S || instruction.OpCode == OpCodes.Br)
                 {
-                    var block = state.Block.Successors.First(x => x.Kind == EdgeKind.UnconditionalBranch).To;
-                    states.Push(state.Clone(block.First, block));
                     state.CurrentInstruction = (Instruction)instruction.Operand;
-                    state.RunNext = () => { };
                     return false;
                 }
                 else if (instruction.OpCode == OpCodes.Brfalse ||
