@@ -9,29 +9,21 @@ namespace DelegateDecompiler.Processors;
 
 internal class StelemProcessor : IProcessor
 {
-    static readonly HashSet<OpCode> Operations = new()
+    public static void Register(Dictionary<OpCode, IProcessor> processors)
     {
-        OpCodes.Stelem,
-        OpCodes.Stelem_I,
-        OpCodes.Stelem_I1,
-        OpCodes.Stelem_I2,
-        OpCodes.Stelem_I4,
-        OpCodes.Stelem_I8,
-        OpCodes.Stelem_R4,
-        OpCodes.Stelem_R8,
-        OpCodes.Stelem_Ref
-    };
-
-    public bool Process(ProcessorState state, Instruction instruction)
-    {
-        if (!Operations.Contains(instruction.OpCode))
-            return false;
-
-        StElem(state);
-        return true;
+        var processor = new StelemProcessor();
+        processors.Add(OpCodes.Stelem, processor);
+        processors.Add(OpCodes.Stelem_I, processor);
+        processors.Add(OpCodes.Stelem_I1, processor);
+        processors.Add(OpCodes.Stelem_I2, processor);
+        processors.Add(OpCodes.Stelem_I4, processor);
+        processors.Add(OpCodes.Stelem_I8, processor);
+        processors.Add(OpCodes.Stelem_R4, processor);
+        processors.Add(OpCodes.Stelem_R8, processor);
+        processors.Add(OpCodes.Stelem_Ref, processor);
     }
-
-    static void StElem(ProcessorState state)
+    
+    public void Process(ProcessorState state, Instruction instruction)
     {
         var value = state.Stack.Pop();
         var index = state.Stack.Pop();

@@ -5,21 +5,17 @@ using Mono.Reflection;
 
 namespace DelegateDecompiler.Processors;
 
-internal class UnaryExpressionProcessor : IProcessor
+internal class UnaryExpressionProcessor(ExpressionType expressionType) : IProcessor
 {
-    static readonly Dictionary<OpCode, ExpressionType> Operations = new()
+    public static void Register(Dictionary<OpCode, IProcessor> processors)
     {
-        { OpCodes.Neg, ExpressionType.Negate },
-        { OpCodes.Not, ExpressionType.Not }
-    };
+        processors.Add(OpCodes.Neg, new UnaryExpressionProcessor(ExpressionType.Negate));
+        processors.Add(OpCodes.Not, new UnaryExpressionProcessor(ExpressionType.Not));
+    }
 
-    public bool Process(ProcessorState state, Instruction instruction)
+    public void Process(ProcessorState state, Instruction instruction)
     {
-        if (!Operations.TryGetValue(instruction.OpCode, out var operation))
-            return false;
-
         var val = state.Stack.Pop();
-        state.Stack.Push(Processor.MakeUnaryExpression(val, operation));
-        return true;
+        state.Stack.Push(Processor.MakeUnaryExpression(val, expressionType));
     }
 }

@@ -4,6 +4,6 @@ namespace DelegateDecompiler
 {
     internal interface IProcessor
     {
-        bool Process(ProcessorState state, Instruction instruction);
+        void Process(ProcessorState state, Instruction instruction);
     }
 }
