@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection.Emit;
+using Mono.Reflection;
 
 namespace DelegateDecompiler.Processors;
 
@@ -21,9 +22,9 @@ internal class StelemProcessor : IProcessor
         OpCodes.Stelem_Ref
     };
 
-    public bool Process(ProcessorState state)
+    public bool Process(ProcessorState state, Instruction instruction)
     {
-        if (!Operations.Contains(state.Instruction.OpCode))
+        if (!Operations.Contains(instruction.OpCode))
             return false;
 
         StElem(state);

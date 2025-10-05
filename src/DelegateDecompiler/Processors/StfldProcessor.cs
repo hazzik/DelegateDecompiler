@@ -1,19 +1,20 @@
 using System;
 using System.Reflection;
 using System.Reflection.Emit;
+using Mono.Reflection;
 
 namespace DelegateDecompiler.Processors;
 
 internal class StfldProcessor : IProcessor
 {
-    public bool Process(ProcessorState state)
+    public bool Process(ProcessorState state, Instruction instruction)
     {
-        if (state.Instruction.OpCode != OpCodes.Stfld)
+        if (instruction.OpCode != OpCodes.Stfld)
             return false;
 
         var value = state.Stack.Pop();
         var instance = state.Stack.Pop();
-        var field = (FieldInfo)state.Instruction.Operand;
+        var field = (FieldInfo)instruction.Operand;
         if (Processor.IsCachedAnonymousMethodDelegate(field))
         {
             state.Delegates[Tuple.Create(instance, field)] = value;

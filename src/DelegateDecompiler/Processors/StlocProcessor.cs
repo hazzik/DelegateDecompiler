@@ -19,12 +19,12 @@ internal class StlocProcessor : IProcessor
         { OpCodes.Stloc, FromOperand },
     };
 
-    public bool Process(ProcessorState state)
+    public bool Process(ProcessorState state, Instruction instruction)
     {
-        if (!Operations.TryGetValue(state.Instruction.OpCode, out var value))
+        if (!Operations.TryGetValue(instruction.OpCode, out var value))
             return false;
 
-        StLoc(state, value(state.Instruction));
+        StLoc(state, value(instruction));
         return true;
     }
 
