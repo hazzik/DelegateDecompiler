@@ -49,7 +49,8 @@ namespace DelegateDecompiler
             BinaryExpressionProcessor.Register(processors);
             BoxProcessor.Register(processors);
             CgtUnProcessor.Register(processors);
-            ConstantProcessor.Register(processors);
+            ConstantValueProcessor.Register(processors);
+            ConstantOperandProcessor.Register(processors);
             ConvertCheckedProcessor.Register(processors);
             ConvertProcessor.Register(processors);
             ConvertTypeProcessor.Register(processors);
@@ -57,11 +58,13 @@ namespace DelegateDecompiler
             InitObjProcessor.Register(processors);
             LdargConstantProcessor.Register(processors);
             LdargParameterProcessor.Register(processors);
+            LdcI4SProcessor.Register(processors);
             LdelemProcessor.Register(processors);
             LdfldProcessor.Register(processors);
             LdlenProcessor.Register(processors);
             LdlocConstantProcessor.Register(processors);
             LdlocVariableProcessor.Register(processors);
+            LdtokenProcessor.Register(processors);
             NewArrProcessor.Register(processors);
             PopProcessor.Register(processors);
             StargProcessor.Register(processors);
