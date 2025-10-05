@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Reflection.Emit;
+using Mono.Reflection;
 
 namespace DelegateDecompiler.Processors;
 
@@ -48,42 +49,42 @@ internal class ConvertProcessor : IProcessor
         { OpCodes.Conv_R8, typeof(double) },
     };
 
-    public bool Process(ProcessorState state)
+    public bool Process(ProcessorState state, Instruction instruction)
     {
-        if (ConvertTypes.TryGetValue(state.Instruction.OpCode, out var type))
+        if (ConvertTypes.TryGetValue(instruction.OpCode, out var type))
         {
             var val = state.Stack.Pop();
             state.Stack.Push(Expression.Convert(val, type));
             return true;
         }
 
-        if (ConvertCheckedTypes.TryGetValue(state.Instruction.OpCode, out type))
+        if (ConvertCheckedTypes.TryGetValue(instruction.OpCode, out type))
         {
             var val = state.Stack.Pop();
             state.Stack.Push(Expression.ConvertChecked(val, type));
             return true;
         }
 
-        if (state.Instruction.OpCode == OpCodes.Castclass)
+        if (instruction.OpCode == OpCodes.Castclass)
         {
             var val = state.Stack.Pop();
-            state.Stack.Push(Expression.Convert(val, (Type)state.Instruction.Operand));
+            state.Stack.Push(Expression.Convert(val, (Type)instruction.Operand));
             return true;
         }
 
-        if (state.Instruction.OpCode == OpCodes.Unbox)
+        if (instruction.OpCode == OpCodes.Unbox)
         {
             var expression = state.Stack.Pop();
-            var targetType = (Type)state.Instruction.Operand;
+            var targetType = (Type)instruction.Operand;
             // Unbox returns a pointer to the value, but in expression trees we represent this as a conversion
             state.Stack.Push(Expression.Convert(expression, targetType));
             return true;
         }
 
-        if (state.Instruction.OpCode == OpCodes.Unbox_Any)
+        if (instruction.OpCode == OpCodes.Unbox_Any)
         {
             var expression = state.Stack.Pop();
-            var targetType = (Type)state.Instruction.Operand;
+            var targetType = (Type)instruction.Operand;
             // Unbox_Any converts boxed value types to their unboxed form or leaves reference types unchanged
             state.Stack.Push(Expression.Convert(expression, targetType));
             return true;

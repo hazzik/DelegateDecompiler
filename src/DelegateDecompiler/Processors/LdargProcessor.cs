@@ -1,39 +1,38 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
 using System.Reflection;
 using System.Reflection.Emit;
+using Mono.Reflection;
 
 namespace DelegateDecompiler.Processors;
 
 internal class LdargProcessor : IProcessor
 {
-    static readonly Dictionary<OpCode, Func<ProcessorState, int>> Operations = new()
+    static readonly Dictionary<OpCode, Func<ProcessorState, Instruction, int>> Operations = new()
     {
-        { OpCodes.Ldarg_0, _ => 0 },
-        { OpCodes.Ldarg_1, _ => 1 },
-        { OpCodes.Ldarg_2, _ => 2 },
-        { OpCodes.Ldarg_3, _ => 3 },
+        { OpCodes.Ldarg_0, (_, _) => 0 },
+        { OpCodes.Ldarg_1, (_, _) => 1 },
+        { OpCodes.Ldarg_2, (_, _) => 2 },
+        { OpCodes.Ldarg_3, (_, _) => 3 },
         { OpCodes.Ldarg_S, GetParameterIndex },
         { OpCodes.Ldarg, GetParameterIndex },
         { OpCodes.Ldarga, GetParameterIndex },
         { OpCodes.Ldarga_S, GetParameterIndex }
     };
 
-    public bool Process(ProcessorState state)
+    public bool Process(ProcessorState state, Instruction instruction)
     {
-        if (!Operations.TryGetValue(state.Instruction.OpCode, out var value))
+        if (!Operations.TryGetValue(instruction.OpCode, out var value))
             return false;
 
-        var index = value(state);
+        var index = value(state, instruction);
         state.Stack.Push(state.Args[index]);
         return true;
     }
 
-    static int GetParameterIndex(ProcessorState state)
+    static int GetParameterIndex(ProcessorState state, Instruction instruction)
     {
-        var operand = (ParameterInfo)state.Instruction.Operand;
+        var operand = (ParameterInfo)instruction.Operand;
         return state.IsStatic ? operand.Position : operand.Position + 1;
     }
 }

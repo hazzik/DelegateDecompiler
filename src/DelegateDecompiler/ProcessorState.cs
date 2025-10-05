@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
-using Mono.Reflection;
 
 namespace DelegateDecompiler
 {
@@ -12,32 +11,24 @@ namespace DelegateDecompiler
         Stack<Address> stack,
         VariableInfo[] locals,
         IList<Address> args,
-        Instruction instruction,
-        Instruction last = null,
         IDictionary<Tuple<Address, FieldInfo>, Address> delegates = null)
     {
         public IDictionary<Tuple<Address, FieldInfo>, Address> Delegates { get; } = delegates ?? new Dictionary<Tuple<Address, FieldInfo>, Address>();
         public Stack<Address> Stack { get; } = stack;
         public VariableInfo[] Locals { get; } = locals;
         public IList<Address> Args { get; } = args;
-        public Instruction Last { get; } = last;
-        public Action RunNext { get; set; }
         public bool IsStatic { get; } = isStatic;
 
-        public Instruction Instruction { get; set; } = instruction;
-
-        public ProcessorState Clone(Instruction instruction, Instruction last = null)
+        public ProcessorState Clone()
         {
             var addressMap = new Dictionary<Address, Address>();
             var buffer = Stack.Select(address => address.Clone(addressMap)).Reverse();
             
             var clonedArgs = new Address[Args.Count];
-            for (var i = 0; i < Args.Count; i++)
-            {
+            for (var i = 0; i < Args.Count; i++) 
                 clonedArgs[i] = Args[i].Clone(addressMap);
-            }
             
-            var state = new ProcessorState(IsStatic, new Stack<Address>(buffer), new VariableInfo[Locals.Length], clonedArgs, instruction, last, Delegates);
+            var state = new ProcessorState(IsStatic, new Stack<Address>(buffer), new VariableInfo[Locals.Length], clonedArgs, Delegates);
             for (var i = 0; i < Locals.Length; i++)
             {
                 state.Locals[i] = new VariableInfo(Locals[i].Type)
@@ -70,7 +61,8 @@ namespace DelegateDecompiler
             {
                 var rightExpression = rightState.Stack.Pop();
                 var leftExpression = leftState.Stack.Pop();
-                buffer.Add(Address.Merge(test, leftExpression, rightExpression, addressMap));
+                var merged = Address.Merge(test, leftExpression, rightExpression, addressMap);
+                buffer.Add(merged);
             }
             Stack.Clear();
             foreach (var address in Enumerable.Reverse(buffer))
@@ -88,10 +80,8 @@ namespace DelegateDecompiler
                 return Stack.Pop();
 
             var expressions = new Expression[Stack.Count];
-            for (var i = expressions.Length - 1; i >= 0; i--)
-            {
+            for (var i = expressions.Length - 1; i >= 0; i--) 
                 expressions[i] = Stack.Pop();
-            }
 
             return Expression.Block(expressions);
         }

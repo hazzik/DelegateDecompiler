@@ -1,24 +1,25 @@
 using System;
 using System.Linq.Expressions;
 using System.Reflection.Emit;
+using Mono.Reflection;
 
 namespace DelegateDecompiler.Processors;
 
 internal class ObjectProcessor : IProcessor
 {
-    public bool Process(ProcessorState state)
+    public bool Process(ProcessorState state, Instruction instruction)
     {
-        if (state.Instruction.OpCode == OpCodes.Initobj)
+        if (instruction.OpCode == OpCodes.Initobj)
         {
             var address = state.Stack.Pop();
-            var type = (Type)state.Instruction.Operand;
+            var type = (Type)instruction.Operand;
             address.Expression = ExpressionHelper.Default(type);
             return true;
         }
 
-        if (state.Instruction.OpCode == OpCodes.Newarr)
+        if (instruction.OpCode == OpCodes.Newarr)
         {
-            var operand = (Type)state.Instruction.Operand;
+            var operand = (Type)instruction.Operand;
             var expression = state.Stack.Pop();
             if (expression.Expression is ConstantExpression size && (int)size.Value == 0) // optimization
                 state.Stack.Push(Expression.NewArrayInit(operand));
@@ -27,9 +28,9 @@ internal class ObjectProcessor : IProcessor
             return true;
         }
 
-        if (state.Instruction.OpCode == OpCodes.Box)
+        if (instruction.OpCode == OpCodes.Box)
         {
-            state.Stack.Push(Processor.Box(state.Stack.Pop(), (Type)state.Instruction.Operand));
+            state.Stack.Push(Processor.Box(state.Stack.Pop(), (Type)instruction.Operand));
             return true;
         }
 

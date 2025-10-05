@@ -1,14 +1,15 @@
 using System.Linq.Expressions;
 using System.Reflection.Emit;
+using Mono.Reflection;
 
 namespace DelegateDecompiler.Processors;
 
 internal class CgtUnProcessor : IProcessor
 {
-    public bool Process(ProcessorState state)
+    public bool Process(ProcessorState state, Instruction instruction)
     {
         // Special handling for Cgt_Un which has special logic for null/zero comparison
-        if (state.Instruction.OpCode != OpCodes.Cgt_Un)
+        if (instruction.OpCode != OpCodes.Cgt_Un)
             return false;
 
         var val1 = state.Stack.Pop();

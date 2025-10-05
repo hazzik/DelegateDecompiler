@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Reflection.Emit;
+using Mono.Reflection;
 
 namespace DelegateDecompiler.Processors;
 
@@ -22,9 +23,9 @@ internal class LdelemProcessor : IProcessor
         OpCodes.Ldelem_Ref
     };
 
-    public bool Process(ProcessorState state)
+    public bool Process(ProcessorState state, Instruction instruction)
     {
-        if (!Operations.Contains(state.Instruction.OpCode))
+        if (!Operations.Contains(instruction.OpCode))
             return false;
 
         var index = state.Stack.Pop();

@@ -31,12 +31,12 @@ internal class ConstantProcessor : IProcessor
         { OpCodes.Ldtoken, GetRuntimeHandle },
     };
 
-    public bool Process(ProcessorState state)
+    public bool Process(ProcessorState state, Instruction instruction)
     {
-        if (!Operations.TryGetValue(state.Instruction.OpCode, out var value))
+        if (!Operations.TryGetValue(instruction.OpCode, out var value))
             return false;
 
-        state.Stack.Push(Expression.Constant(value(state.Instruction)));
+        state.Stack.Push(Expression.Constant(value(instruction)));
         return true;
     }
 

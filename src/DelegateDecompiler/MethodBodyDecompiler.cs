@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using DelegateDecompiler.ControlFlow;
 using Mono.Reflection;
 
 namespace DelegateDecompiler
@@ -43,8 +44,8 @@ namespace DelegateDecompiler
                 addresses[i] = new VariableInfo(body.LocalVariables[i].LocalType);
             var locals = addresses.ToArray();
 
-            var instructions = method.GetInstructions();
-            var expression = Processor.Process(method.IsStatic, locals, args, instructions.First(), method.ReturnType);
+            var cfg = method.BuildControlFlowGraph();
+            var expression = Processor.Process(cfg, locals, args, method.ReturnType);
             var localParameters = locals
                 .Select(l => l.Address.Expression)
                 .OfType<ParameterExpression>()
