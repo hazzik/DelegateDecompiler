@@ -27,37 +27,24 @@ namespace DelegateDecompiler
 
         public static Expression Process(ControlFlowGraph cfg, bool isStatic, VariableInfo[] locals, IList<Address> args, Type returnType)
         {
-            Processor processor = new Processor();
+            var processor = new Processor();
             var initialState = new ProcessorState(cfg.Entry, isStatic, new Stack<Address>(), locals, args, cfg.Entry.Instructions.FirstOrDefault());
             
             processor.ProcessBlock(initialState, cfg.Entry);
             
-            // Add debug output for stack before Final()
-            Console.WriteLine($"DEBUG: Before Final() - Stack contents:");
-            for (int i = 0; i < initialState.Stack.Count; i++)
-            {
-                Console.WriteLine($"  Stack[{i}]: {initialState.Stack.ElementAt(i)} (type: {initialState.Stack.ElementAt(i).Type})");
-            }
-            
-            // Use Final() ONLY here - once per method body
             var finalResult = initialState.Final();
-            Console.WriteLine($"DEBUG: Raw Final() result: {finalResult}");
-            Console.WriteLine($"DEBUG: Raw Final() type: {finalResult.Type}");
-            
             finalResult = AdjustType(finalResult, returnType);
-            Console.WriteLine($"DEBUG: After AdjustType: {finalResult}");
 
             if (!returnType.IsAssignableFrom(finalResult.Type) && returnType != typeof(void))
             {
-                Console.WriteLine($"DEBUG: Converting to return type {returnType}");
                 return Expression.Convert(finalResult, returnType);
             }
 
-            Console.WriteLine($"DEBUG: Final expression: {finalResult}");
             return finalResult;
         }
 
-        static readonly IProcessor[] processors = {
+        static readonly IProcessor[] Processors =
+        {
             new ConvertProcessor(),
             new BinaryExpressionProcessor(),
             new UnaryExpressionProcessor(),
@@ -122,29 +109,19 @@ namespace DelegateDecompiler
             if (trueEdge == null || falseEdge == null)
                 throw new InvalidOperationException("Conditional branch must have both true and false edges");
 
-            // The condition should already be on the stack from instruction processing
             var test = state.Stack.Pop();
-            Console.WriteLine($"DEBUG: Conditional branch test condition: {test}");
 
             // Clone state for both branches
             var trueState = state.Clone(trueEdge.To.First, trueEdge.To);
             var falseState = state.Clone(falseEdge.To.First, falseEdge.To);
 
             var convergencePoint = FindConvergencePoint(block);
-            
-            Console.WriteLine($"DEBUG: Conditional branch - TrueBlock: {trueEdge.To?.First}, FalseBlock: {falseEdge.To?.First}, ConvergencePoint: {convergencePoint?.First}");
-            
             if (convergencePoint == null)
                 throw new InvalidOperationException($"No convergence point found for conditional branch at {block.First}. This indicates malformed IL or a bug in the convergence detection algorithm.");
                 
-            Console.WriteLine($"DEBUG: Processing until convergence - TrueBlock: {trueEdge.To?.First} to {convergencePoint?.First}");
-            Console.WriteLine($"DEBUG: Processing until convergence - FalseBlock: {falseEdge.To?.First} to {convergencePoint?.First}");
-            
-            // Both branches converge - process them until convergence (but not including convergence block)
             ProcessBlock(trueState, trueEdge.To, convergencePoint);
             ProcessBlock(falseState, falseEdge.To, convergencePoint);
             
-            // Use state.Merge() to create the conditional and push it onto the stack
             state.Merge(test, trueState, falseState);
 
             ProcessBlock(state, convergencePoint, endBlock);
@@ -189,7 +166,6 @@ namespace DelegateDecompiler
                     break;
             }
 
-            Console.WriteLine($"DEBUG: FindConvergencePoint for {block?.First} found: {common?.First}");
             return common;
         }
 
@@ -334,7 +310,7 @@ namespace DelegateDecompiler
             {
                 // Return instruction - signal early return
             }
-            else if (!processors.Any(processor => processor.Process(state, instruction)))
+            else if (!Processors.Any(processor => processor.Process(state, instruction)))
             {
                 // This should never happen since UnsupportedOpcodeProcessor is the last processor
                 throw new InvalidOperationException("No processor handled the instruction, including the fallback processor.");
