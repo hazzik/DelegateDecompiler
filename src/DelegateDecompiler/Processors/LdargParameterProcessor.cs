@@ -1,26 +1,25 @@
-using System;
 using System.Collections.Generic;
-using System.Linq.Expressions;
 using System.Reflection;
 using System.Reflection.Emit;
 using Mono.Reflection;
 
 namespace DelegateDecompiler.Processors;
 
-internal class StargProcessor : IProcessor
+internal class LdargParameterProcessor : IProcessor
 {
     public static void Register(Dictionary<OpCode, IProcessor> processors)
     {
-        processors.Add(OpCodes.Starg_S, new StargProcessor());
-        processors.Add(OpCodes.Starg, new StargProcessor());
+        var processor = new LdargParameterProcessor();
+        processors.Add(OpCodes.Ldarg_S, processor);
+        processors.Add(OpCodes.Ldarg, processor);
+        processors.Add(OpCodes.Ldarga, processor);
+        processors.Add(OpCodes.Ldarga_S, processor);
     }
 
     public void Process(ProcessorState state, Instruction instruction)
     {
         var index = GetParameterIndex(state, instruction);
-        var arg = state.Args[index];
-        var expression = Processor.AdjustType(state.Stack.Pop(), arg.Type);
-        arg.Expression = expression.Type == arg.Type ? expression : Expression.Convert(expression, arg.Type);
+        state.Stack.Push(state.Args[index]);
     }
 
     static int GetParameterIndex(ProcessorState state, Instruction instruction)

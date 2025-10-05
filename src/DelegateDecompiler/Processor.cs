@@ -41,28 +41,40 @@ namespace DelegateDecompiler
             return ex;
         }
 
-        static readonly IProcessor[] Processors =
+        static readonly Dictionary<OpCode, IProcessor> processors;
+
+        static Processor()
         {
-            new ConvertProcessor(),
-            new BinaryExpressionProcessor(),
-            new UnaryExpressionProcessor(),
-            new CgtUnProcessor(),
-            new LdargProcessor(),
-            new StargProcessor(),
-            new LdelemProcessor(),
-            new LdlenProcessor(),
-            new LdlocProcessor(),
-            new StlocProcessor(),
-            new ConstantProcessor(),
-            new StackProcessor(),
-            new ObjectProcessor(),
-            new LdfldProcessor(),
-            new StfldProcessor(),
-            new StsfldProcessor(),
-            new StelemProcessor(),
-            // This should be last one
-            new UnsupportedOpcodeProcessor()
-        };
+            processors = new Dictionary<OpCode, IProcessor>();
+            BinaryExpressionProcessor.Register(processors);
+            BoxProcessor.Register(processors);
+            CgtUnProcessor.Register(processors);
+            ConstantValueProcessor.Register(processors);
+            ConstantOperandProcessor.Register(processors);
+            ConvertCheckedProcessor.Register(processors);
+            ConvertProcessor.Register(processors);
+            ConvertTypeProcessor.Register(processors);
+            DupProcessor.Register(processors);
+            InitObjProcessor.Register(processors);
+            LdargConstantProcessor.Register(processors);
+            LdargParameterProcessor.Register(processors);
+            LdcI4SProcessor.Register(processors);
+            LdelemProcessor.Register(processors);
+            LdfldProcessor.Register(processors);
+            LdlenProcessor.Register(processors);
+            LdlocConstantProcessor.Register(processors);
+            LdlocVariableProcessor.Register(processors);
+            LdtokenProcessor.Register(processors);
+            NewArrProcessor.Register(processors);
+            PopProcessor.Register(processors);
+            StargProcessor.Register(processors);
+            StelemProcessor.Register(processors);
+            StfldProcessor.Register(processors);
+            StlocConstantProcessor.Register(processors);
+            StlocVariableProcessor.Register(processors);
+            StsfldProcessor.Register(processors);
+            UnaryExpressionProcessor.Register(processors);
+        }
 
         Processor()
         {
@@ -276,10 +288,16 @@ namespace DelegateDecompiler
             {
                 // Return instruction - signal early return
             }
-            else if (!Processors.Any(processor => processor.Process(state, instruction)))
+            else if (processors.TryGetValue(instruction.OpCode, out var processor))
             {
-                // This should never happen since UnsupportedOpcodeProcessor is the last processor
-                throw new InvalidOperationException("No processor handled the instruction, including the fallback processor.");
+                processor.Process(state, instruction);
+            }
+            else
+            {
+                throw new NotSupportedException(
+                    $"The IL opcode '{instruction.OpCode}' is not supported by DelegateDecompiler. " +
+                    $"This opcode cannot be decompiled into an expression tree. " +
+                    $"Consider simplifying the method or using a different approach.");
             }
 
             return 0;

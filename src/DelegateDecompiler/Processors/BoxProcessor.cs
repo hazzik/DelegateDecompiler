@@ -1,20 +1,19 @@
+using System;
 using System.Collections.Generic;
-using System.Linq.Expressions;
 using System.Reflection.Emit;
 using Mono.Reflection;
 
 namespace DelegateDecompiler.Processors;
 
-internal class LdlenProcessor : IProcessor
+internal class BoxProcessor : IProcessor
 {
     public static void Register(Dictionary<OpCode, IProcessor> processors)
     {
-        processors.Add(OpCodes.Ldlen, new LdlenProcessor());
+        processors.Add(OpCodes.Box, new BoxProcessor());
     }
-
+    
     public void Process(ProcessorState state, Instruction instruction)
     {
-        var array = state.Stack.Pop();
-        state.Stack.Push(Expression.ArrayLength(array));
+        state.Stack.Push(Processor.Box(state.Stack.Pop(), (Type)instruction.Operand));
     }
 }

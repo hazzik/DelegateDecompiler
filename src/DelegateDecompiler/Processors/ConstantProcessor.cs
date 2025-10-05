@@ -1,52 +1,25 @@
-using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
-using System.Reflection;
 using System.Reflection.Emit;
 using Mono.Reflection;
 
 namespace DelegateDecompiler.Processors;
 
-internal class ConstantProcessor : IProcessor
+internal class ConstantOperandProcessor : IProcessor
 {
-    static readonly Dictionary<OpCode, Func<Instruction, object>> Operations = new()
+    public static void Register(Dictionary<OpCode, IProcessor> processors)
     {
-        { OpCodes.Ldnull, _ => null },
-        { OpCodes.Ldc_I4_0, _ => 0 },
-        { OpCodes.Ldc_I4_1, _ => 1 },
-        { OpCodes.Ldc_I4_2, _ => 2 },
-        { OpCodes.Ldc_I4_3, _ => 3 },
-        { OpCodes.Ldc_I4_4, _ => 4 },
-        { OpCodes.Ldc_I4_5, _ => 5 },
-        { OpCodes.Ldc_I4_6, _ => 6 },
-        { OpCodes.Ldc_I4_7, _ => 7 },
-        { OpCodes.Ldc_I4_8, _ => 8 },
-        { OpCodes.Ldc_I4_M1, _ => -1 },
-        { OpCodes.Ldc_I4_S, i => (int)(sbyte)i.Operand },
-        { OpCodes.Ldc_I4, FromOperand },
-        { OpCodes.Ldc_I8, FromOperand },
-        { OpCodes.Ldc_R4, FromOperand },
-        { OpCodes.Ldc_R8, FromOperand },
-        { OpCodes.Ldstr, FromOperand },
-        { OpCodes.Ldtoken, GetRuntimeHandle },
-    };
-
-    public bool Process(ProcessorState state, Instruction instruction)
-    {
-        if (!Operations.TryGetValue(instruction.OpCode, out var value))
-            return false;
-
-        state.Stack.Push(Expression.Constant(value(instruction)));
-        return true;
+        var processor = new ConstantOperandProcessor();
+        processors.Add(OpCodes.Ldc_I4, processor);
+        processors.Add(OpCodes.Ldc_I8, processor);
+        processors.Add(OpCodes.Ldc_R4, processor);
+        processors.Add(OpCodes.Ldc_R8, processor);
+        processors.Add(OpCodes.Ldstr, processor);
     }
 
-    static object FromOperand(Instruction i) => i.Operand;
-    
-    static object GetRuntimeHandle(Instruction i) => i.Operand switch
+    public void Process(ProcessorState state, Instruction instruction)
     {
-        FieldInfo field => field.FieldHandle,
-        MethodBase method => method.MethodHandle,
-        Type type => type.TypeHandle,
-        _ => null
-    };
+        var value = instruction.Operand;
+        state.Stack.Push(Expression.Constant(value));
+    }
 }

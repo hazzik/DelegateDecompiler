@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Reflection.Emit;
@@ -6,51 +5,47 @@ using Mono.Reflection;
 
 namespace DelegateDecompiler.Processors;
 
-internal class BinaryExpressionProcessor : IProcessor
+internal class BinaryExpressionProcessor(ExpressionType expressionType) : IProcessor
 {
-    static readonly Dictionary<OpCode, ExpressionType> Operations = new()
+    public static void Register(Dictionary<OpCode, IProcessor> processors)
     {
         // Arithmetic operations
-        {OpCodes.Add, ExpressionType.Add},
-        {OpCodes.Sub, ExpressionType.Subtract},
-        {OpCodes.Mul, ExpressionType.Multiply},
-        {OpCodes.Div, ExpressionType.Divide},
-        {OpCodes.Div_Un, ExpressionType.Divide},
-        {OpCodes.Rem, ExpressionType.Modulo},
-        {OpCodes.Rem_Un, ExpressionType.Modulo},
-            
+        processors.Add(OpCodes.Add, new BinaryExpressionProcessor(ExpressionType.Add));
+        processors.Add(OpCodes.Sub, new BinaryExpressionProcessor(ExpressionType.Subtract));
+        processors.Add(OpCodes.Mul, new BinaryExpressionProcessor(ExpressionType.Multiply));
+        processors.Add(OpCodes.Div, new BinaryExpressionProcessor(ExpressionType.Divide));
+        processors.Add(OpCodes.Div_Un, new BinaryExpressionProcessor(ExpressionType.Divide));
+        processors.Add(OpCodes.Rem, new BinaryExpressionProcessor(ExpressionType.Modulo));
+        processors.Add(OpCodes.Rem_Un, new BinaryExpressionProcessor(ExpressionType.Modulo));
+
         // Checked arithmetic operations
-        {OpCodes.Add_Ovf, ExpressionType.AddChecked},
-        {OpCodes.Add_Ovf_Un, ExpressionType.AddChecked},
-        {OpCodes.Sub_Ovf, ExpressionType.SubtractChecked},
-        {OpCodes.Sub_Ovf_Un, ExpressionType.SubtractChecked},
-        {OpCodes.Mul_Ovf, ExpressionType.MultiplyChecked},
-        {OpCodes.Mul_Ovf_Un, ExpressionType.MultiplyChecked},
-            
+        processors.Add(OpCodes.Add_Ovf, new BinaryExpressionProcessor(ExpressionType.AddChecked));
+        processors.Add(OpCodes.Add_Ovf_Un, new BinaryExpressionProcessor(ExpressionType.AddChecked));
+        processors.Add(OpCodes.Sub_Ovf, new BinaryExpressionProcessor(ExpressionType.SubtractChecked));
+        processors.Add(OpCodes.Sub_Ovf_Un, new BinaryExpressionProcessor(ExpressionType.SubtractChecked));
+        processors.Add(OpCodes.Mul_Ovf, new BinaryExpressionProcessor(ExpressionType.MultiplyChecked));
+        processors.Add(OpCodes.Mul_Ovf_Un, new BinaryExpressionProcessor(ExpressionType.MultiplyChecked));
+
         // Bitwise operations
-        {OpCodes.And, ExpressionType.And},
-        {OpCodes.Or, ExpressionType.Or},
-        {OpCodes.Xor, ExpressionType.ExclusiveOr},
-        {OpCodes.Shl, ExpressionType.LeftShift},
-        {OpCodes.Shr, ExpressionType.RightShift},
-        {OpCodes.Shr_Un, ExpressionType.RightShift},
-            
+        processors.Add(OpCodes.And, new BinaryExpressionProcessor(ExpressionType.And));
+        processors.Add(OpCodes.Or, new BinaryExpressionProcessor(ExpressionType.Or));
+        processors.Add(OpCodes.Xor, new BinaryExpressionProcessor(ExpressionType.ExclusiveOr));
+        processors.Add(OpCodes.Shl, new BinaryExpressionProcessor(ExpressionType.LeftShift));
+        processors.Add(OpCodes.Shr, new BinaryExpressionProcessor(ExpressionType.RightShift));
+        processors.Add(OpCodes.Shr_Un, new BinaryExpressionProcessor(ExpressionType.RightShift));
+
         // Simple comparison operations
-        {OpCodes.Ceq, ExpressionType.Equal},
-        {OpCodes.Cgt, ExpressionType.GreaterThan},
-        {OpCodes.Clt, ExpressionType.LessThan},
-        {OpCodes.Clt_Un, ExpressionType.LessThan},
-    };
+        processors.Add(OpCodes.Ceq, new BinaryExpressionProcessor(ExpressionType.Equal));
+        processors.Add(OpCodes.Cgt, new BinaryExpressionProcessor(ExpressionType.GreaterThan));
+        processors.Add(OpCodes.Clt, new BinaryExpressionProcessor(ExpressionType.LessThan));
+        processors.Add(OpCodes.Clt_Un, new BinaryExpressionProcessor(ExpressionType.LessThan));
+    }
 
-    public bool Process(ProcessorState state, Instruction instruction)
+    public void Process(ProcessorState state, Instruction instruction)
     {
-        if (!Operations.TryGetValue(instruction.OpCode, out var operation))
-            return false;
-
         var val1 = state.Stack.Pop();
         var val2 = state.Stack.Pop();
         
-        state.Stack.Push(Processor.MakeBinaryExpression(val2, val1, operation));
-        return true;
+        state.Stack.Push(Processor.MakeBinaryExpression(val2, val1, expressionType));
     }
 }

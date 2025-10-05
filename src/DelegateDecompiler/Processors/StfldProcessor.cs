@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Reflection;
 using System.Reflection.Emit;
 using Mono.Reflection;
@@ -7,11 +8,13 @@ namespace DelegateDecompiler.Processors;
 
 internal class StfldProcessor : IProcessor
 {
-    public bool Process(ProcessorState state, Instruction instruction)
+    public static void Register(Dictionary<OpCode, IProcessor> processors)
     {
-        if (instruction.OpCode != OpCodes.Stfld)
-            return false;
+        processors.Add(OpCodes.Stfld, new StfldProcessor());
+    }
 
+    public void Process(ProcessorState state, Instruction instruction)
+    {
         var value = state.Stack.Pop();
         var instance = state.Stack.Pop();
         var field = (FieldInfo)instruction.Operand;
@@ -27,7 +30,5 @@ internal class StfldProcessor : IProcessor
             else
                 instance.Expression = expression;
         }
-
-        return true;
     }
 }

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Reflection.Emit;
@@ -8,11 +9,13 @@ namespace DelegateDecompiler.Processors
 {
     internal class StsfldProcessor : IProcessor
     {
-        public bool Process(ProcessorState state, Instruction instruction)
+        public static void Register(Dictionary<OpCode, IProcessor> processors)
         {
-            if (instruction.OpCode != OpCodes.Stsfld)
-                return false;
+            processors.Add(OpCodes.Stsfld, new StsfldProcessor());
+        }
 
+        public void Process(ProcessorState state, Instruction instruction)
+        {
             var value = state.Stack.Pop();
             var field = (FieldInfo)instruction.Operand;
             if (Processor.IsCachedAnonymousMethodDelegate(field))
@@ -23,8 +26,6 @@ namespace DelegateDecompiler.Processors
             {
                 state.Stack.Push(Expression.Assign(Expression.Field(null, field), value));
             }
-
-            return true;
         }
     }
 }

@@ -1,5 +1,5 @@
 using System;
-using System.Linq;
+using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Reflection.Emit;
@@ -7,28 +7,30 @@ using Mono.Reflection;
 
 namespace DelegateDecompiler.Processors;
 
-internal class LdfldProcessor : IProcessor
+internal class LdfldProcessor(bool isStatic) : IProcessor
 {
-    public bool Process(ProcessorState state, Instruction instruction)
+    public static void Register(Dictionary<OpCode, IProcessor> processors)
+    {
+        processors.Add(OpCodes.Ldsfld, new LdfldProcessor(true));
+        processors.Add(OpCodes.Ldfld, new LdfldProcessor(false));
+        processors.Add(OpCodes.Ldflda, new LdfldProcessor(false));
+    }
+
+    public void Process(ProcessorState state, Instruction instruction)
     {
         var field = (FieldInfo)instruction.Operand;
         
-        if (instruction.OpCode == OpCodes.Ldsfld)
+        if (isStatic)
         {
             // Static field
             state.Stack.Push(Expression.Field(null, field));
-            return true;
         }
-
-        if (instruction.OpCode == OpCodes.Ldfld || instruction.OpCode == OpCodes.Ldflda)
+        else
         {
             // Instance field
             var instance = state.Stack.Pop();
             LdFld(state, instruction, instance);
-            return true;
         }
-
-        return false;
     }
 
     static void LdFld(ProcessorState state, Instruction instruction, Address instance)
