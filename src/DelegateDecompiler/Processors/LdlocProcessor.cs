@@ -20,12 +20,12 @@ internal class LdlocProcessor : IProcessor
         { OpCodes.Ldloca_S, FromOperand }
     };
 
-    public bool Process(ProcessorState state)
+    public bool Process(ProcessorState state, Instruction instruction)
     {
-        if (!Operations.TryGetValue(state.Instruction.OpCode, out var value))
+        if (!Operations.TryGetValue(instruction.OpCode, out var value))
             return false;
 
-        var index = value(state.Instruction);
+        var index = value(instruction);
         var local = state.Locals[index];
         state.Stack.Push(local.Address);
         return true;

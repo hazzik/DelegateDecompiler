@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
+using DelegateDecompiler.ControlFlow;
 using DelegateDecompiler.Processors;
 using NUnit.Framework;
 using Mono.Reflection;
@@ -20,13 +21,14 @@ namespace DelegateDecompiler.Tests
         {
             Func<int, int> test = x => x;
 
-            var instruction = test.Method.GetInstructions().First();
-
-            var state = new ProcessorState(true, new Stack<Address>(), new VariableInfo[0], new List<Address>(), instruction);
+            var cfg = test.Method.BuildControlFlowGraph();
+            var instructionEntry = cfg.Entry;
+            var instruction = instructionEntry.Instructions.First();
+            var state = new ProcessorState(true, new Stack<Address>(), new VariableInfo[0], new List<Address>());
 
             var processor = new UnsupportedOpcodeProcessor();
-            
-            var exception = Assert.Throws<NotSupportedException>(() => processor.Process(state));
+
+            var exception = Assert.Throws<NotSupportedException>(() => processor.Process(state, instruction));
             Assert.That(exception.Message, Does.Contain(instruction.OpCode.ToString()));
         }
 
@@ -34,11 +36,11 @@ namespace DelegateDecompiler.Tests
         public void UnsupportedOpcodeProcessor_AlwaysThrows()
         {
             var instruction = CreateInstruction(0, OpCodes.Cpobj);
-            var state = new ProcessorState(true, new Stack<Address>(), new VariableInfo[0], new List<Address>(), instruction);
+            var state = new ProcessorState(true, new Stack<Address>(), new VariableInfo[0], new List<Address>());
 
             var processor = new UnsupportedOpcodeProcessor();
 
-            var exception = Assert.Throws<NotSupportedException>(() => processor.Process(state));
+            var exception = Assert.Throws<NotSupportedException>(() => processor.Process(state, instruction));
             Assert.That(exception.Message, Does.Contain("cpobj"));
         }
 
