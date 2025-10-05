@@ -28,7 +28,7 @@ namespace DelegateDecompiler.Tests
                 (e.FirstName != null ? e.FirstName :
                 (e.FirstName != null ? e.FirstName :
                 (e.FirstName != null ? e.FirstName : e.LastName))))));
-            Test(expected, compiled);
+            Test(compiled, expected);
         }
 
         [Test]
@@ -50,7 +50,7 @@ namespace DelegateDecompiler.Tests
                     (e.FirstName != null ? e.FirstName :
                     (e.FirstName != null ? e.FirstName :
                     (e.FirstName != null ? e.FirstName : e.LastName))))));
-                Test(expected, compiled);
+                Test(compiled, expected);
             }, Int32.MaxValue);
             thread.Start();
             thread.Join();
@@ -75,7 +75,7 @@ namespace DelegateDecompiler.Tests
                     (e.FirstName != null ? e.FirstName :
                     (e.FirstName != null ? e.FirstName :
                     (e.FirstName != null ? e.FirstName : e.LastName))))));
-                Test(expected, compiled);
+                Test(compiled, expected);
             }, 128);
             thread.Start();
             thread.Join();

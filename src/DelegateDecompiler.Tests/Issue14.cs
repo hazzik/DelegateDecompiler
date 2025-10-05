@@ -34,7 +34,7 @@ namespace DelegateDecompiler.Tests
         {
             Expression<Func<MyClass, bool>> expected = x => x.Mode == MyClass.ValidityMode.None || (x.Mode == MyClass.ValidityMode.UntilSpecificDateTime ? x.ValidUntil > DateTime.Now.AddMinutes(5) : x.StartTime.AddMinutes(x.ValidForXMinutes) > DateTime.Now.AddMinutes(5));
             Func<MyClass, bool> compiled = x => x.Mode == MyClass.ValidityMode.None || (x.Mode == MyClass.ValidityMode.UntilSpecificDateTime ? x.ValidUntil > DateTime.Now.AddMinutes(5) : x.StartTime.AddMinutes(x.ValidForXMinutes) > DateTime.Now.AddMinutes(5));
-            Test(expected, compiled);
+            Test(compiled, expected);
         }
     }
 }

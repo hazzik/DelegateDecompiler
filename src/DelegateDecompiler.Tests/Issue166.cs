@@ -16,7 +16,7 @@ namespace DelegateDecompiler.Tests
                 HasUserPurchasedTheCourse = c.User.Purchases.Any(p => p.Items.Any(i => i.CourseId == c.CourseId)),
             });
             var actual = comments.AsQueryable().Select(c => ToCommentDto(c)).Decompile();
-            AssertAreEqual(expected.Expression, actual.Expression);
+            AssertAreEqual(actual.Expression, expected.Expression);
         }
 
         [Decompile]

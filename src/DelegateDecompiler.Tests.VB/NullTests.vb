@@ -9,7 +9,7 @@ Public Class NullTests
     Public Sub NotNull()
         Dim expected As Expression(Of Func(Of Object, Boolean)) = Function(x As Object) x IsNot Nothing
         Dim compiled As Func(Of Object, Boolean) = Function(x As Object) x IsNot Nothing
-        Test(expected, compiled)
+        Test(compiled, expected)
     End Sub
 
 End Class

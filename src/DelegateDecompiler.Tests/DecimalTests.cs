@@ -12,7 +12,7 @@ namespace DelegateDecompiler.Tests
         {
             Expression<Func<decimal, decimal, bool>> expected = (x, y) => x == y;
             Func<decimal, decimal, bool> compiled = (x, y) => x == y;
-            Test(expected, compiled);
+            Test(compiled, expected);
         }
 
         [Test]
@@ -20,7 +20,7 @@ namespace DelegateDecompiler.Tests
         {
             Expression<Func<decimal, decimal, bool>> expected = (x, y) => x > y;
             Func<decimal, decimal, bool> compiled = (x, y) => x > y;
-            Test(expected, compiled);
+            Test(compiled, expected);
         }
 
         [Test]
@@ -28,7 +28,7 @@ namespace DelegateDecompiler.Tests
         {
             Expression<Func<decimal, decimal, decimal>> expected = (x, y) => x > y ? x : y;
             Func<decimal, decimal, decimal> compiled = (x, y) => x > y ? x : y;
-            Test(expected, compiled);
+            Test(compiled, expected);
         }
 
         [Test]
@@ -36,7 +36,7 @@ namespace DelegateDecompiler.Tests
         {
             Expression<Func<decimal, decimal, bool>> expected = (x, y) => x >= y;
             Func<decimal, decimal, bool> compiled = (x, y) => x >= y;
-            Test(expected, compiled);
+            Test(compiled, expected);
         }
 
         [Test]
@@ -44,7 +44,7 @@ namespace DelegateDecompiler.Tests
         {
             Expression<Func<decimal, decimal, decimal>> expected = (x, y) => x >= y ? x : y;
             Func<decimal, decimal, decimal> compiled = (x, y) => x >= y ? x : y;
-            Test(expected, compiled);
+            Test(compiled, expected);
         }
 
         [Test]
@@ -52,7 +52,7 @@ namespace DelegateDecompiler.Tests
         {
             Expression<Func<decimal, decimal, bool>> expected = (x, y) => x < y;
             Func<decimal, decimal, bool> compiled = (x, y) => x < y;
-            Test(expected, compiled);
+            Test(compiled, expected);
         }
 
         [Test]
@@ -60,7 +60,7 @@ namespace DelegateDecompiler.Tests
         {
             Expression<Func<decimal, decimal, decimal>> expected = (x, y) => x < y ? x : y;
             Func<decimal, decimal, decimal> compiled = (x, y) => x < y ? x : y;
-            Test(expected, compiled);
+            Test(compiled, expected);
         }
 
         [Test]
@@ -68,7 +68,7 @@ namespace DelegateDecompiler.Tests
         {
             Expression<Func<decimal, decimal, bool>> expected = (x, y) => x <= y;
             Func<decimal, decimal, bool> compiled = (x, y) => x <= y;
-            Test(expected, compiled);
+            Test(compiled, expected);
         }
 
         [Test]
@@ -76,7 +76,7 @@ namespace DelegateDecompiler.Tests
         {
             Expression<Func<decimal, decimal, decimal>> expected = (x, y) => x <= y ? x : y;
             Func<decimal, decimal, decimal> compiled = (x, y) => x <= y ? x : y;
-            Test(expected, compiled);
+            Test(compiled, expected);
         }
 
         [Test]
@@ -84,7 +84,7 @@ namespace DelegateDecompiler.Tests
         {
             Expression<Func<decimal, decimal, decimal>> expected = (x, y) => x != y ? x : y;
             Func<decimal, decimal, decimal> compiled = (x, y) => x != y ? x : y;
-            Test(expected, compiled);
+            Test(compiled, expected);
         }
 
         [Test]
@@ -92,7 +92,7 @@ namespace DelegateDecompiler.Tests
         {
             Expression<Func<decimal, decimal, decimal>> expected = (x, y) => x == y ? x : y;
             Func<decimal, decimal, decimal> compiled = (x, y) => x == y ? x : y;
-            Test(expected, compiled);
+            Test(compiled, expected);
         }
 
         [Test]
@@ -100,7 +100,7 @@ namespace DelegateDecompiler.Tests
         {
             Expression<Func<decimal, decimal, decimal>> expected = (x, y) => x * y;
             Func<decimal, decimal, decimal> compiled = (x, y) => x * y;
-            Test(expected, compiled);
+            Test(compiled, expected);
         }
 
         [Test]
@@ -108,7 +108,7 @@ namespace DelegateDecompiler.Tests
         {
             Expression<Func<decimal, int, decimal>> expected = (x, y) => x * y;
             Func<decimal, int, decimal> compiled = (x, y) => x * y;
-            Test(expected, compiled);
+            Test(compiled, expected);
         }
 
         [Test]
@@ -116,7 +116,7 @@ namespace DelegateDecompiler.Tests
         {
             Expression<Func<decimal, decimal, decimal>> expected = (x, y) => x / y;
             Func<decimal, decimal, decimal> compiled = (x, y) => x / y;
-            Test(expected, compiled);
+            Test(compiled, expected);
         }
 
         [Test]
@@ -125,7 +125,7 @@ namespace DelegateDecompiler.Tests
             Expression<Func<decimal>> expected1 = () => (decimal)1.21;
             Expression<Func<decimal>> expected2 = () => new decimal(121, 0, 0, false, 2);
             Func<decimal> compiled = () => (decimal)1.21;
-            Test(expected1, expected2, compiled);
+            Test(compiled, expected1, expected2);
         }
 
         [Test]
@@ -134,7 +134,7 @@ namespace DelegateDecompiler.Tests
             Expression<Func<decimal>> expected1 = () => 1.21M;
             Expression<Func<decimal>> expected2 = () => new decimal(121, 0, 0, false, 2);
             Func<decimal> compiled = () => 1.21M;
-            Test(expected1, expected2, compiled);
+            Test(compiled, expected1, expected2);
         }
     }
 }

@@ -20,7 +20,7 @@ namespace DelegateDecompiler.Tests
         {
             Expression<Func<object, int>> expected = o => ((Point)o).X;
             Func<object, int> compiled = o => ((Point)o).X;
-            Test(expected, compiled);
+            Test(compiled, expected);
         }
 
         [Test]
@@ -28,7 +28,7 @@ namespace DelegateDecompiler.Tests
         {
             Expression<Func<object, int>> expected = o => ((Point)o).X + ((Point)o).Y;
             Func<object, int> compiled = o => ((Point)o).Sum;
-            Test(expected, compiled);
+            Test(compiled, expected);
         }
 
         [Test]
@@ -36,7 +36,7 @@ namespace DelegateDecompiler.Tests
         {
             Expression<Func<int, int>> expected = value => value.GetHashCode();
             Func<int, int> compiled = value => value.GetHashCode();
-            Test(expected, compiled);
+            Test(compiled, expected);
         }
 
         [Test]
@@ -44,7 +44,7 @@ namespace DelegateDecompiler.Tests
         {
             Expression<Func<object, int?>> expected = o => (int?)o;
             Func<object, int?> compiled = o => (int?)o;
-            Test(expected, compiled);
+            Test(compiled, expected);
         }
 
         [Test]
@@ -52,7 +52,7 @@ namespace DelegateDecompiler.Tests
         {
             Expression<Func<object, DayOfWeek>> expected = o => (DayOfWeek)o;
             Func<object, DayOfWeek> compiled = o => (DayOfWeek)o;
-            Test(expected, compiled);
+            Test(compiled, expected);
         }
 
         [Test]
@@ -64,7 +64,7 @@ namespace DelegateDecompiler.Tests
             
             Expression<Func<object, int>> expected = o => ((Point)o).X;
             Func<object, int> compiled = o => ((Point)o).X;
-            Test(expected, compiled);
+            Test(compiled, expected);
             
             // Verify it actually works
             Assert.That(compiled(boxedPoint), Is.EqualTo(5));
@@ -77,7 +77,7 @@ namespace DelegateDecompiler.Tests
             // when T is a struct
             Expression<Func<DateTime, int>> expected = value => value.GetHashCode();
             Func<DateTime, int> compiled = value => value.GetHashCode();
-            Test(expected, compiled);
+            Test(compiled, expected);
         }
     }
 }

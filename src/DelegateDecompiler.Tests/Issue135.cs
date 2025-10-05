@@ -53,7 +53,7 @@ namespace DelegateDecompiler.Tests
             Func<Blog, bool> actual = b =>
                 (b.HasBar || b.HasBaz) && b.Posts.Any(x => x.IsActive);
 
-            Test(expected1, expected2, actual, false);
+            TestNoDebugView(actual, expected1, expected2);
         }
 
         [Test]
@@ -70,7 +70,7 @@ namespace DelegateDecompiler.Tests
             Func<Blog, bool> actual = b =>
                 b.HasBar && b.Posts.Any(x => x.IsActive) || b.HasBaz && b.Posts.Any(x => x.IsActive);
 
-            Test(expected1, expected2, actual, false);
+            TestNoDebugView(actual, expected1, expected2);
         }
 
         [Test]
@@ -82,7 +82,7 @@ namespace DelegateDecompiler.Tests
             Func<Blog, bool> actual = b =>
                 b.Posts.Any(x => x.IsActive) && (b.HasBar || b.HasBaz);
 
-            Test(expected, actual);
+            Test(actual, expected);
         }
 
         [Test, Ignore("Not fixed yet.")]
@@ -100,7 +100,7 @@ namespace DelegateDecompiler.Tests
                 where b.HasFoo
                 select b).Decompile();
 
-            AssertAreEqual(expected.Expression, actual.Expression, compareDebugView: false);
+            AssertAreEqual(actual.Expression, expected.Expression, compareDebugView: false);
         }
 
         [Test, Ignore("Not fixed yet.")]
@@ -118,7 +118,7 @@ namespace DelegateDecompiler.Tests
                 where b.HasFoo2
                 select b).Decompile();
 
-            AssertAreEqual(expected.Expression, actual.Expression, compareDebugView: false);
+            AssertAreEqual(actual.Expression, expected.Expression, compareDebugView: false);
         }
 
         [Test]
@@ -136,7 +136,7 @@ namespace DelegateDecompiler.Tests
                 where b.HasFoo3
                 select b).Decompile();
 
-            AssertAreEqual(expected.Expression, actual.Expression, compareDebugView: false);
+            AssertAreEqual(actual.Expression, expected.Expression, compareDebugView: false);
         }
     }
 }
