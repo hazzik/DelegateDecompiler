@@ -46,31 +46,31 @@ namespace DelegateDecompiler
         static Processor()
         {
             processors = new Dictionary<OpCode, IProcessor>();
-            ConvertProcessor.Register(processors);
-            ConvertCheckedProcessor.Register(processors);
             BinaryExpressionProcessor.Register(processors);
-            UnaryExpressionProcessor.Register(processors);
+            BoxProcessor.Register(processors);
             CgtUnProcessor.Register(processors);
+            ConstantProcessor.Register(processors);
+            ConvertCheckedProcessor.Register(processors);
+            ConvertProcessor.Register(processors);
+            ConvertTypeProcessor.Register(processors);
+            DupProcessor.Register(processors);
+            InitObjProcessor.Register(processors);
             LdargConstantProcessor.Register(processors);
             LdargParameterProcessor.Register(processors);
+            LdelemProcessor.Register(processors);
+            LdfldProcessor.Register(processors);
+            LdlenProcessor.Register(processors);
             LdlocConstantProcessor.Register(processors);
             LdlocVariableProcessor.Register(processors);
+            NewArrProcessor.Register(processors);
+            PopProcessor.Register(processors);
+            StargProcessor.Register(processors);
+            StelemProcessor.Register(processors);
+            StfldProcessor.Register(processors);
             StlocConstantProcessor.Register(processors);
             StlocVariableProcessor.Register(processors);
-            StargProcessor.Register(processors);
-            LdfldProcessor.Register(processors);
-            StfldProcessor.Register(processors);
             StsfldProcessor.Register(processors);
-            LdlenProcessor.Register(processors);
-            ConstantProcessor.Register(processors);
-            DupProcessor.Register(processors);
-            PopProcessor.Register(processors);
-            LdelemProcessor.Register(processors);
-            InitObjProcessor.Register(processors);
-            NewArrProcessor.Register(processors);
-            BoxProcessor.Register(processors);
-            ConvertTypeProcessor.Register(processors);
-            StelemProcessor.Register(processors);
+            UnaryExpressionProcessor.Register(processors);
         }
 
         Processor()
