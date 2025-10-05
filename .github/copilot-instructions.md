@@ -18,19 +18,21 @@ DelegateDecompiler is a .NET library that decompiles delegates and method bodies
 dotnet restore
 
 # Build the solution
-dotnet build --no-restore -c Release -p:DisableGitVersionTask=true
+dotnet build -c Debug
 
 # Run tests
-dotnet test --no-build -c Release -f net8.0 src/DelegateDecompiler.Tests
-dotnet test --no-build -c Release -f net8.0 src/DelegateDecompiler.Tests.VB
-dotnet test --no-build -c Release -f net8.0 src/DelegateDecompiler.EntityFramework.Tests
-dotnet test --no-build -c Release -f net8.0 src/DelegateDecompiler.EntityFrameworkCore6.Tests
-dotnet test --no-build -c Release -f net8.0 src/DelegateDecompiler.EntityFrameworkCore8.Tests
-dotnet test --no-build -c Release -f net9.0 src/DelegateDecompiler.EntityFrameworkCore9.Tests
+dotnet test -c Debug -f net8.0 src/DelegateDecompiler.Tests
+dotnet test -c Debug -f net8.0 src/DelegateDecompiler.Tests.VB
+dotnet test -c Debug -f net8.0 src/DelegateDecompiler.EntityFramework.Tests
+dotnet test -c Debug -f net8.0 src/DelegateDecompiler.EntityFrameworkCore6.Tests
+dotnet test -c Debug -f net8.0 src/DelegateDecompiler.EntityFrameworkCore8.Tests
+dotnet test -c Debug -f net9.0 src/DelegateDecompiler.EntityFrameworkCore9.Tests
 ```
 
+Use `-p:DisableGitVersionTask=true` flag to avoid build issues if GitVersion is not set up.
+
 **Development Guidelines:**
-- Use test-first approach when adding new features or fixing bugs
+- Must use test-first approach when adding new features or fixing bugs
 - Ensure core unit tests pass: `src/DelegateDecompiler.Tests` and `src/DelegateDecompiler.Tests.VB` should have no failures
 - Run unit tests frequently during development to catch regressions early
 
