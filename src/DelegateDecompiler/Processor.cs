@@ -28,7 +28,7 @@ namespace DelegateDecompiler
         public static Expression Process(ControlFlowGraph cfg, bool isStatic, VariableInfo[] locals, IList<Address> args, Type returnType)
         {
             var processor = new Processor();
-            var initialState = new ProcessorState(cfg.Entry, isStatic, new Stack<Address>(), locals, args, cfg.Entry.Instructions.FirstOrDefault());
+            var initialState = new ProcessorState(isStatic, new Stack<Address>(), locals, args);
             
             processor.ProcessBlock(initialState, cfg.Entry);
             
@@ -36,9 +36,7 @@ namespace DelegateDecompiler
             finalResult = AdjustType(finalResult, returnType);
 
             if (!returnType.IsAssignableFrom(finalResult.Type) && returnType != typeof(void))
-            {
                 return Expression.Convert(finalResult, returnType);
-            }
 
             return finalResult;
         }
@@ -112,8 +110,8 @@ namespace DelegateDecompiler
             var test = state.Stack.Pop();
 
             // Clone state for both branches
-            var trueState = state.Clone(trueEdge.To.First, trueEdge.To);
-            var falseState = state.Clone(falseEdge.To.First, falseEdge.To);
+            var trueState = state.Clone();
+            var falseState = state.Clone();
 
             var convergencePoint = FindConvergencePoint(block);
             if (convergencePoint == null)

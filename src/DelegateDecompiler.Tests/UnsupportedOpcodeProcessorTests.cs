@@ -24,7 +24,7 @@ namespace DelegateDecompiler.Tests
             var cfg = test.Method.BuildControlFlowGraph();
             var instructionEntry = cfg.Entry;
             var instruction = instructionEntry.Instructions.First();
-            var state = new ProcessorState(instructionEntry, true, new Stack<Address>(), new VariableInfo[0], new List<Address>(), instruction);
+            var state = new ProcessorState(true, new Stack<Address>(), new VariableInfo[0], new List<Address>());
 
             var processor = new UnsupportedOpcodeProcessor();
 
@@ -36,7 +36,7 @@ namespace DelegateDecompiler.Tests
         public void UnsupportedOpcodeProcessor_AlwaysThrows()
         {
             var instruction = CreateInstruction(0, OpCodes.Cpobj);
-            var state = new ProcessorState(new Block(0, instruction),true, new Stack<Address>(), new VariableInfo[0], new List<Address>(), instruction);
+            var state = new ProcessorState(true, new Stack<Address>(), new VariableInfo[0], new List<Address>());
 
             var processor = new UnsupportedOpcodeProcessor();
 
