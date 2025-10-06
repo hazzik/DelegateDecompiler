@@ -99,12 +99,13 @@ namespace DelegateDecompiler
 
         void ProcessNextBlock(ProcessorState state, Block block, Block endBlock)
         {
-            switch (block.Successors.Count)
+            var successors = block.Successors.Where(b => !b.IsException).ToList();
+            switch (successors.Count)
             {
                 case 0:
                     break;
                 case 1:
-                    ProcessBlock(state, block.Successors[0].To, endBlock);
+                    ProcessBlock(state, successors[0].To, endBlock);
                     break;
                 case 2:
                     ProcessConditionalBranch(block, state, endBlock);

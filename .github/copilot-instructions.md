@@ -32,9 +32,23 @@ dotnet test -c Debug -f net9.0 src/DelegateDecompiler.EntityFrameworkCore9.Tests
 Use `-p:DisableGitVersionTask=true` flag to avoid build issues if GitVersion is not set up.
 
 **Development Guidelines:**
-- Must use test-first approach when adding new features or fixing bugs
-- Ensure core unit tests pass: `src/DelegateDecompiler.Tests` and `src/DelegateDecompiler.Tests.VB` should have no failures
-- Run unit tests frequently during development to catch regressions early
+
+**Test-First Development (MANDATORY):**
+- **ALWAYS START FROM TESTS** - Write test cases that define expected behavior BEFORE implementing
+- **TESTS ARE THE SOURCE OF TRUTH** - Never change tests to match broken code
+- If tests fail: fix implementation, not tests
+- Tests define the API contract and expected behavior
+
+**Required Workflow:**
+1. Write/examine tests to understand what needs to be built
+2. Run tests to see current failures
+3. Implement code to make tests pass
+4. NEVER modify tests to match implementation bugs
+
+**Core Requirements:**
+- All tests in `src/DelegateDecompiler.Tests` and `src/DelegateDecompiler.Tests.VB` must pass
+- Run tests frequently during development
+- Use `-p:DisableGitVersionTask=true` if GitVersion issues occur
 
 ## Project Structure
 
