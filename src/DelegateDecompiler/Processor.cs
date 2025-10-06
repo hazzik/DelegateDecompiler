@@ -57,6 +57,7 @@ namespace DelegateDecompiler
             ConvertTypeProcessor.Register(processors);
             DupProcessor.Register(processors);
             InitObjProcessor.Register(processors);
+            IsinstProcessor.Register(processors);
             LdargConstantProcessor.Register(processors);
             LdargParameterProcessor.Register(processors);
             LdcI4SProcessor.Register(processors);
@@ -145,6 +146,7 @@ namespace DelegateDecompiler
 
             if (instruction.OpCode == OpCodes.Nop || 
                 instruction.OpCode == OpCodes.Break ||
+                instruction.OpCode == OpCodes.Ret ||
                 instruction.OpCode.FlowControl == FlowControl.Branch)
             {
                 // Do nothing
@@ -155,23 +157,6 @@ namespace DelegateDecompiler
                 var expression = DecompileLambdaExpression(method, () => state.Stack.Pop());
                 state.Stack.Push(expression);
                 return 1;
-            }
-            else if (instruction.OpCode == OpCodes.Isinst)
-            {
-                var val = state.Stack.Pop();
-                if (instruction.Next != null && instruction.Next.OpCode == OpCodes.Ldnull &&
-                    instruction.Next.Next != null && instruction.Next.Next.OpCode == OpCodes.Cgt_Un)
-                {
-                    state.Stack.Push(Expression.TypeIs(val, (Type)instruction.Operand));
-                    // Skip the next two instructions as they're part of this pattern
-                    return 2;
-                }
-
-                state.Stack.Push(Expression.TypeAs(val, (Type)instruction.Operand));
-            }
-            else if (instruction.OpCode == OpCodes.Ret)
-            {
-                // Return instruction - signal early return
             }
             else if (processors.TryGetValue(instruction.OpCode, out var processor))
             {
