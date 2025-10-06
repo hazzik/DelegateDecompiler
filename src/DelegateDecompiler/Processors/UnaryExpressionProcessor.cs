@@ -16,6 +16,13 @@ internal class UnaryExpressionProcessor(ExpressionType expressionType) : IProces
     public void Process(ProcessorState state, Instruction instruction)
     {
         var val = state.Stack.Pop();
-        state.Stack.Push(Processor.MakeUnaryExpression(val, expressionType));
+        state.Stack.Push(MakeUnaryExpression(val, expressionType));
+    }
+
+    static UnaryExpression MakeUnaryExpression(Expression operand, ExpressionType expressionType)
+    {
+        operand = Processor.ConvertEnumExpressionToUnderlyingType(operand);
+
+        return Expression.MakeUnary(expressionType, operand, operand.Type);
     }
 }
