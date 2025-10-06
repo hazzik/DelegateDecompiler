@@ -1,10 +1,11 @@
 using System;
 using System.Linq.Expressions;
+using DelegateDecompiler.ControlFlow;
 using NUnit.Framework;
 
 namespace DelegateDecompiler.Tests
 {
-    [TestFixture, Ignore("Not supported yet")]
+    [TestFixture, Explicit]
     public class TryCatchTests : DecompilerTestsBase
     {
         [Test]
@@ -22,14 +23,39 @@ namespace DelegateDecompiler.Tests
                 }
             };
 
-            var x = Expression.Parameter(typeof(int), "x");
+            var p = Expression.Parameter(typeof(int), "x");
             var expected = Expression.Lambda<Func<int, int>>(
                 Expression.TryCatch(
-                    Expression.Multiply(x, Expression.Constant(2)),
+                    Expression.Multiply(p, Expression.Constant(2)),
                     Expression.Catch(typeof(ArgumentException), Expression.Constant(-1))
-                ), x);
+                ), p);
 
-            Test(compiled, expected);
+            Test(compiled, expected, x => x * 2);
+        }
+        
+        [Test]
+        public void TryCatchWithCondition()
+        {
+            Func<int, int> compiled = x =>
+            {
+                try
+                {
+                    return x > 0 ? x * 2 : x / 2;
+                }
+                catch (ArgumentException)
+                {
+                    return -1;
+                }
+            };
+
+            var p = Expression.Parameter(typeof(int), "x");
+            var expected = Expression.Lambda<Func<int, int>>(
+                Expression.TryCatch(
+                    Expression.Multiply(p, Expression.Constant(2)),
+                    Expression.Catch(typeof(ArgumentException), Expression.Constant(-1))
+                ), p);
+
+            Test(compiled, expected, x => x > 0 ? x * 2 : x / 2);
         }
 
         [Test]
@@ -47,14 +73,14 @@ namespace DelegateDecompiler.Tests
                 }
             };
 
-            var x = Expression.Parameter(typeof(int), "x");
+            var p = Expression.Parameter(typeof(int), "x");
             var expected = Expression.Lambda<Func<int, int>>(
                 Expression.TryCatch(
-                    Expression.Multiply(x, Expression.Constant(2)),
+                    Expression.Multiply(p, Expression.Constant(2)),
                     Expression.Catch(typeof(FormatException), Expression.Constant(0))
-                ), x);
+                ), p);
 
-            Test(compiled, expected);
+            Test(compiled, expected, x => x * 2);
         }
 
         [Test]
@@ -75,20 +101,20 @@ namespace DelegateDecompiler.Tests
                     Console.WriteLine("Processing");
                 }
             };
-
-            var param = Expression.Parameter(typeof(int), "x");
+            
+            var p = Expression.Parameter(typeof(int), "x");
             var expected = Expression.Lambda<Func<int, int>>(
                 Expression.TryCatchFinally(
-                    Expression.Multiply(param, Expression.Constant(2)),
+                    Expression.Multiply(p, Expression.Constant(2)),
                     Expression.Block(
                         Expression.Call(typeof(Console).GetMethod("WriteLine", new[] { typeof(string) })!,
                             Expression.Constant("Processing"))
                     ),
                     Expression.Catch(typeof(ArgumentException), Expression.Constant(-1))
                 ),
-                param);
+                p);
 
-            Test(compiled, expected);
+            Test(compiled, expected, x => x * 2);
         }
 
         [Test]
@@ -119,7 +145,7 @@ namespace DelegateDecompiler.Tests
                 ),
                 param);
 
-            Test(compiled, expected);
+            Test(compiled, expected, x => x * 2);
         }
 
         [Test]
@@ -137,18 +163,18 @@ namespace DelegateDecompiler.Tests
                 }
             };
 
-            var s = Expression.Parameter(typeof(string), "s");
+            var p = Expression.Parameter(typeof(string), "s");
             var ex = Expression.Parameter(typeof(ArgumentNullException), "ex");
             var expected = Expression.Lambda<Func<string, string>>(
                 Expression.TryCatch(
-                    Expression.Call(s, typeof(string).GetMethod("ToUpper", Type.EmptyTypes)!),
+                    Expression.Call(p, typeof(string).GetMethod("ToUpper", Type.EmptyTypes)!),
                     Expression.Catch(
                         ex,
                         Expression.Property(ex, nameof(Exception.Message))
                     )
-                ), s);
+                ), p);
 
-            Test(compiled, expected);
+            Test(compiled, expected, s => s.ToUpper());
         }
     }
 }
