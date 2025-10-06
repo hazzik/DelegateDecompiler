@@ -225,9 +225,7 @@ namespace DelegateDecompiler
         static LambdaExpression DecompileLambdaExpression(MethodInfo method, Func<Expression> @this)
         {
             if (method.IsStatic)
-            {
                 return AnonymousDelegatesCache.GetOrAdd(method, m => m.Decompile());
-            }
 
             //Should always call.
             var expression = @this();
@@ -284,32 +282,7 @@ namespace DelegateDecompiler
             return Expression.MakeBinary(expressionType, left, right);
         }
 
-        internal static UnaryExpression MakeUnaryExpression(Expression operand, ExpressionType expressionType)
-        {
-            operand = ConvertEnumExpressionToUnderlyingType(operand);
-
-            return Expression.MakeUnary(expressionType, operand, operand.Type);
-        }
-
-        internal static Expression Box(Expression expression, Type type)
-        {
-            if (expression.Type == type)
-                return expression;
-
-            var constantExpression = expression as ConstantExpression;
-            if (constantExpression != null)
-            {
-                if (type.IsEnum)
-                    return Expression.Constant(Enum.ToObject(type, constantExpression.Value));
-            }
-
-            if (expression.Type.IsEnum)
-                return Expression.Convert(expression, type);
-
-            return expression;
-        }
-
-        static Expression ConvertEnumExpressionToUnderlyingType(Expression expression)
+        internal static Expression ConvertEnumExpressionToUnderlyingType(Expression expression)
         {
             if (expression.Type.IsEnum)
                 return Expression.Convert(expression, expression.Type.GetEnumUnderlyingType());
