@@ -129,7 +129,7 @@ namespace DelegateDecompiler
             var trueState = state.Clone();
             var falseState = state.Clone();
 
-            var joint = FindJointPoint(block);
+            var joint = FindJointPoint(block.Successors.Where(b => !b.IsException).ToList());
             if (joint == null)
                 throw new InvalidOperationException($"No convergence point found for conditional branch at {block.First}. This indicates malformed IL or a bug in the convergence detection algorithm.");
                 
@@ -401,10 +401,10 @@ namespace DelegateDecompiler
             return blocks;
         }
 
-        Block FindJointPoint(Block block)
+        Block FindJointPoint(List<BlockEdge> successors)
         {
-            var trueBlocks = FollowGraph(block.Successors[0].To);
-            var falseBlocks = FollowGraph(block.Successors[1].To);
+            var trueBlocks = FollowGraph(successors[0].To);
+            var falseBlocks = FollowGraph(successors[1].To);
             
             Block common = null;
             foreach (var b in falseBlocks)
@@ -420,11 +420,12 @@ namespace DelegateDecompiler
        
         Block GetNextBlock(Block block)
         {
-            return block.Successors.Count switch
+            var successors = block.Successors.Where(b => !b.IsException).ToList();
+            return successors.Count switch
             {
                 0 => null,// No successors (return/exit block)
-                1 => block.Successors[0].To, // Single successor (unconditional flow)
-                2 => FindJointPoint(block), // Conditional branch - find joint point of the two branches
+                1 => successors[0].To, // Single successor (unconditional flow)
+                2 => FindJointPoint(block.Successors.Where(b => !b.IsException).ToList()), // Conditional branch - find joint point of the two branches
                 _ => null
             };
         }
