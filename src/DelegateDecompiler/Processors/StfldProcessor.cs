@@ -10,7 +10,7 @@ internal class StfldProcessor : IProcessor
 {
     public static void Register(Dictionary<OpCode, IProcessor> processors)
     {
-        processors.Add(OpCodes.Stfld, new StfldProcessor());
+        processors.Register(new StfldProcessor(), OpCodes.Stfld);
     }
 
     public void Process(ProcessorState state, Instruction instruction)

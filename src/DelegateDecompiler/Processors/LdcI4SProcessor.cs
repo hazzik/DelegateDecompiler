@@ -9,7 +9,7 @@ namespace DelegateDecompiler.Processors
     {
         public static void Register(Dictionary<OpCode, IProcessor> processors)
         {
-            processors.Add(OpCodes.Ldc_I4_S, new LdcI4SProcessor());
+            processors.Register(new LdcI4SProcessor(), OpCodes.Ldc_I4_S);
         }
 
         public void Process(ProcessorState state, Instruction instruction)

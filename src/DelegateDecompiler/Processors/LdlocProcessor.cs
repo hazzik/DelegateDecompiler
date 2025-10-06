@@ -11,10 +11,10 @@ internal class LdlocConstantProcessor(int index) : IProcessor
 {
     public static void Register(Dictionary<OpCode, IProcessor> processors)
     {
-        processors.Add(OpCodes.Ldloc_0, new LdlocConstantProcessor(0));
-        processors.Add(OpCodes.Ldloc_1, new LdlocConstantProcessor(1));
-        processors.Add(OpCodes.Ldloc_2, new LdlocConstantProcessor(2));
-        processors.Add(OpCodes.Ldloc_3, new LdlocConstantProcessor(3));
+        processors.Register(new LdlocConstantProcessor(0), OpCodes.Ldloc_0);
+        processors.Register(new LdlocConstantProcessor(1), OpCodes.Ldloc_1);
+        processors.Register(new LdlocConstantProcessor(2), OpCodes.Ldloc_2);
+        processors.Register(new LdlocConstantProcessor(3), OpCodes.Ldloc_3);
     }
 
     public void Process(ProcessorState state, Instruction instruction)
@@ -30,10 +30,7 @@ internal class LdlocVariableProcessor : IProcessor
     public static void Register(Dictionary<OpCode, IProcessor> processors)
     {
         var processor = new LdlocVariableProcessor();
-        processors.Add(OpCodes.Ldloc, processor);
-        processors.Add(OpCodes.Ldloc_S, processor);
-        processors.Add(OpCodes.Ldloca, processor);
-        processors.Add(OpCodes.Ldloca_S, processor);
+        processors.Register(processor, OpCodes.Ldloc, OpCodes.Ldloc_S, OpCodes.Ldloca, OpCodes.Ldloca_S);
     }
 
     public void Process(ProcessorState state, Instruction instruction)

@@ -11,10 +11,9 @@ internal class BrtrueProcessor : IProcessor
 {
     public static void Register(Dictionary<OpCode, IProcessor> processors)
     {
-        processors.Add(OpCodes.Brtrue, new BrtrueProcessor());
-        processors.Add(OpCodes.Brtrue_S, new BrtrueProcessor());
+        processors.Register(new BrtrueProcessor(), OpCodes.Brtrue, OpCodes.Brtrue_S);
     }
-    
+
     public void Process(ProcessorState state, Instruction instruction)
     {
         var address = state.Stack.Peek();

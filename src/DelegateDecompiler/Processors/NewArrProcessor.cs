@@ -10,9 +10,9 @@ namespace DelegateDecompiler.Processors
     {
         public static void Register(Dictionary<OpCode, IProcessor> processors)
         {
-            processors.Add(OpCodes.Newarr, new NewArrProcessor());
+            processors.Register(new NewArrProcessor(), OpCodes.Newarr);
         }
-    
+
         public void Process(ProcessorState state, Instruction instruction)
         {
             var operand = (Type)instruction.Operand;

@@ -9,12 +9,13 @@ internal class ConstantOperandProcessor : IProcessor
 {
     public static void Register(Dictionary<OpCode, IProcessor> processors)
     {
-        var processor = new ConstantOperandProcessor();
-        processors.Add(OpCodes.Ldc_I4, processor);
-        processors.Add(OpCodes.Ldc_I8, processor);
-        processors.Add(OpCodes.Ldc_R4, processor);
-        processors.Add(OpCodes.Ldc_R8, processor);
-        processors.Add(OpCodes.Ldstr, processor);
+        processors.Register(new ConstantOperandProcessor(),
+            OpCodes.Ldc_I4,
+            OpCodes.Ldc_I8,
+            OpCodes.Ldc_R4,
+            OpCodes.Ldc_R8,
+            OpCodes.Ldstr
+        );
     }
 
     public void Process(ProcessorState state, Instruction instruction)

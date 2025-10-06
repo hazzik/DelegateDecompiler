@@ -10,16 +10,14 @@ internal class ConvertProcessor(Type targetType) : IProcessor
 {
     public static void Register(Dictionary<OpCode, IProcessor> processors)
     {
-        processors.Add(OpCodes.Conv_I, new ConvertProcessor(typeof(int)));
-        processors.Add(OpCodes.Conv_I1, new ConvertProcessor(typeof(sbyte)));
-        processors.Add(OpCodes.Conv_I2, new ConvertProcessor(typeof(short)));
-        processors.Add(OpCodes.Conv_I4, new ConvertProcessor(typeof(int)));
-        processors.Add(OpCodes.Conv_I8, new ConvertProcessor(typeof(long)));
-        processors.Add(OpCodes.Conv_U, new ConvertProcessor(typeof(uint)));
-        processors.Add(OpCodes.Conv_U1, new ConvertProcessor(typeof(byte)));
-        processors.Add(OpCodes.Conv_U2, new ConvertProcessor(typeof(ushort)));
-        processors.Add(OpCodes.Conv_U4, new ConvertProcessor(typeof(uint)));
-        processors.Add(OpCodes.Conv_U8, new ConvertProcessor(typeof(ulong)));
+        processors.Register(new ConvertProcessor(typeof(int)), OpCodes.Conv_I, OpCodes.Conv_I4);
+        processors.Register(new ConvertProcessor(typeof(sbyte)), OpCodes.Conv_I1);
+        processors.Register(new ConvertProcessor(typeof(short)), OpCodes.Conv_I2);
+        processors.Register(new ConvertProcessor(typeof(long)), OpCodes.Conv_I8);
+        processors.Register(new ConvertProcessor(typeof(uint)), OpCodes.Conv_U, OpCodes.Conv_U4);
+        processors.Register(new ConvertProcessor(typeof(byte)), OpCodes.Conv_U1);
+        processors.Register(new ConvertProcessor(typeof(ushort)), OpCodes.Conv_U2);
+        processors.Register(new ConvertProcessor(typeof(ulong)), OpCodes.Conv_U8);
     }
     
     public void Process(ProcessorState state, Instruction instruction)

@@ -8,9 +8,9 @@ internal class PopProcessor : IProcessor
 {
     public static void Register(Dictionary<OpCode, IProcessor> processors)
     {
-        processors.Add(OpCodes.Pop, new PopProcessor());
+        processors.Register(new PopProcessor(), OpCodes.Pop);
     }
-    
+
     public void Process(ProcessorState state, Instruction instruction)
     {
         state.Stack.Pop();

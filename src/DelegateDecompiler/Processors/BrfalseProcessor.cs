@@ -9,10 +9,9 @@ internal class BrfalseProcessor : IProcessor
 {
     public static void Register(Dictionary<OpCode, IProcessor> processors)
     {
-        processors.Add(OpCodes.Brfalse, new BrfalseProcessor());
-        processors.Add(OpCodes.Brfalse_S, new BrfalseProcessor());
+        processors.Register(new BrfalseProcessor(), OpCodes.Brfalse, OpCodes.Brfalse_S);
     }
-    
+
     public void Process(ProcessorState state, Instruction instruction)
     {
         var val = state.Stack.Pop();

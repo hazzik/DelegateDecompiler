@@ -8,7 +8,7 @@ namespace DelegateDecompiler.Processors
     {
         public static void Register(Dictionary<OpCode, IProcessor> processors)
         {
-            processors.Add(OpCodes.Dup, new DupProcessor());
+            processors.Register(new DupProcessor(), OpCodes.Dup);
         }
 
         public void Process(ProcessorState state, Instruction instruction)

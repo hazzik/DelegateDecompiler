@@ -9,7 +9,7 @@ internal class LdlenProcessor : IProcessor
 {
     public static void Register(Dictionary<OpCode, IProcessor> processors)
     {
-        processors.Add(OpCodes.Ldlen, new LdlenProcessor());
+        processors.Register(new LdlenProcessor(), OpCodes.Ldlen);
     }
 
     public void Process(ProcessorState state, Instruction instruction)

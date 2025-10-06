@@ -11,7 +11,7 @@ namespace DelegateDecompiler.Processors
     {
         public static void Register(Dictionary<OpCode, IProcessor> processors)
         {
-            processors.Add(OpCodes.Stsfld, new StsfldProcessor());
+            processors.Register(new StsfldProcessor(), OpCodes.Stsfld);
         }
 
         public void Process(ProcessorState state, Instruction instruction)
