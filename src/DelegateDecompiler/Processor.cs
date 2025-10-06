@@ -67,6 +67,7 @@ namespace DelegateDecompiler
             LdlocVariableProcessor.Register(processors);
             LdtokenProcessor.Register(processors);
             NewArrProcessor.Register(processors);
+            NewobjProcessor.Register(processors);
             PopProcessor.Register(processors);
             StargProcessor.Register(processors);
             StelemProcessor.Register(processors);
@@ -155,20 +156,6 @@ namespace DelegateDecompiler
                 state.Stack.Push(expression);
                 return 1;
             }
-            else if (instruction.OpCode == OpCodes.Newobj)
-            {
-                var constructor = (ConstructorInfo)instruction.Operand;
-                var arguments = GetArguments(state, constructor);
-                if (constructor.DeclaringType.IsNullableType() && constructor.GetParameters().Length == 1)
-                {
-                    state.Stack.Push(Expression.Convert(arguments[0], constructor.DeclaringType));
-                }
-                else
-                {
-                    state.Stack.Push(Expression.New(constructor, arguments));
-                }
-            }
-
             else if (instruction.OpCode == OpCodes.Isinst)
             {
                 var val = state.Stack.Pop();
