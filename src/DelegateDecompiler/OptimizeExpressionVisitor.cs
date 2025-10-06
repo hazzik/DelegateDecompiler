@@ -314,7 +314,6 @@ namespace DelegateDecompiler
             var left = Visit(node.Left);
             var right = Visit(node.Right);
             
-            // Optimize TypeAs comparisons with null to TypeIs
             if (TryOptimizeTypeAsComparison(node.NodeType, left, right, out var typeIsExpression))
             {
                 return typeIsExpression;
