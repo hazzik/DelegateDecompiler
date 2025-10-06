@@ -9,7 +9,7 @@ internal class CgtUnProcessor : IProcessor
 {
     public static void Register(Dictionary<OpCode, IProcessor> processors)
     {
-        processors.Add(OpCodes.Cgt_Un, new CgtUnProcessor());
+        processors.Register(new CgtUnProcessor(), OpCodes.Cgt_Un);
     }
 
     public void Process(ProcessorState state, Instruction instruction)

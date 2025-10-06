@@ -9,9 +9,9 @@ internal class BoxProcessor : IProcessor
 {
     public static void Register(Dictionary<OpCode, IProcessor> processors)
     {
-        processors.Add(OpCodes.Box, new BoxProcessor());
+        processors.Register(new BoxProcessor(), OpCodes.Box);
     }
-    
+
     public void Process(ProcessorState state, Instruction instruction)
     {
         state.Stack.Push(Processor.Box(state.Stack.Pop(), (Type)instruction.Operand));

@@ -11,8 +11,7 @@ internal class StargProcessor : IProcessor
 {
     public static void Register(Dictionary<OpCode, IProcessor> processors)
     {
-        processors.Add(OpCodes.Starg_S, new StargProcessor());
-        processors.Add(OpCodes.Starg, new StargProcessor());
+        processors.Register(new StargProcessor(), OpCodes.Starg_S, OpCodes.Starg);
     }
 
     public void Process(ProcessorState state, Instruction instruction)

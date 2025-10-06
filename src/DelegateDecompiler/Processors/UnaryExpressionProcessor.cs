@@ -9,8 +9,8 @@ internal class UnaryExpressionProcessor(ExpressionType expressionType) : IProces
 {
     public static void Register(Dictionary<OpCode, IProcessor> processors)
     {
-        processors.Add(OpCodes.Neg, new UnaryExpressionProcessor(ExpressionType.Negate));
-        processors.Add(OpCodes.Not, new UnaryExpressionProcessor(ExpressionType.Not));
+        processors.Register(new UnaryExpressionProcessor(ExpressionType.Negate), OpCodes.Neg);
+        processors.Register(new UnaryExpressionProcessor(ExpressionType.Not), OpCodes.Not);
     }
 
     public void Process(ProcessorState state, Instruction instruction)

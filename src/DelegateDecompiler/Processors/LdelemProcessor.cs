@@ -9,19 +9,20 @@ internal class LdelemProcessor : IProcessor
 {
     public static void Register(Dictionary<OpCode, IProcessor> processors)
     {
-        var processor = new LdelemProcessor();
-        processors.Add(OpCodes.Ldelem, processor);
-        processors.Add(OpCodes.Ldelem_I, processor);
-        processors.Add(OpCodes.Ldelem_I1, processor);
-        processors.Add(OpCodes.Ldelem_I2, processor);
-        processors.Add(OpCodes.Ldelem_I4, processor);
-        processors.Add(OpCodes.Ldelem_I8, processor);
-        processors.Add(OpCodes.Ldelem_U1, processor);
-        processors.Add(OpCodes.Ldelem_U2, processor);
-        processors.Add(OpCodes.Ldelem_U4, processor);
-        processors.Add(OpCodes.Ldelem_R4, processor);
-        processors.Add(OpCodes.Ldelem_R8, processor);
-        processors.Add(OpCodes.Ldelem_Ref, processor);
+        processors.Register(new LdelemProcessor(),
+            OpCodes.Ldelem,
+            OpCodes.Ldelem_I,
+            OpCodes.Ldelem_I1,
+            OpCodes.Ldelem_I2,
+            OpCodes.Ldelem_I4,
+            OpCodes.Ldelem_I8,
+            OpCodes.Ldelem_U1,
+            OpCodes.Ldelem_U2,
+            OpCodes.Ldelem_U4,
+            OpCodes.Ldelem_R4,
+            OpCodes.Ldelem_R8,
+            OpCodes.Ldelem_Ref
+        );
     }
 
     public void Process(ProcessorState state, Instruction instruction)

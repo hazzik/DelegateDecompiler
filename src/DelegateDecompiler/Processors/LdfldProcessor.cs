@@ -11,9 +11,8 @@ internal class LdfldProcessor(bool isStatic) : IProcessor
 {
     public static void Register(Dictionary<OpCode, IProcessor> processors)
     {
-        processors.Add(OpCodes.Ldsfld, new LdfldProcessor(true));
-        processors.Add(OpCodes.Ldfld, new LdfldProcessor(false));
-        processors.Add(OpCodes.Ldflda, new LdfldProcessor(false));
+        processors.Register(new LdfldProcessor(true), OpCodes.Ldsfld);
+        processors.Register(new LdfldProcessor(false), OpCodes.Ldfld, OpCodes.Ldflda);
     }
 
     public void Process(ProcessorState state, Instruction instruction)

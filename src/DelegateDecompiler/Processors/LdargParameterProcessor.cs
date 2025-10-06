@@ -9,11 +9,8 @@ internal class LdargParameterProcessor : IProcessor
 {
     public static void Register(Dictionary<OpCode, IProcessor> processors)
     {
-        var processor = new LdargParameterProcessor();
-        processors.Add(OpCodes.Ldarg_S, processor);
-        processors.Add(OpCodes.Ldarg, processor);
-        processors.Add(OpCodes.Ldarga, processor);
-        processors.Add(OpCodes.Ldarga_S, processor);
+        processors.Register(new LdargParameterProcessor(),
+            OpCodes.Ldarg_S, OpCodes.Ldarg, OpCodes.Ldarga, OpCodes.Ldarga_S);
     }
 
     public void Process(ProcessorState state, Instruction instruction)

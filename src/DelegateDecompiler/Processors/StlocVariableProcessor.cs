@@ -10,9 +10,7 @@ internal class StlocVariableProcessor : IProcessor
 {
     public static void Register(Dictionary<OpCode, IProcessor> processors)
     {
-        var processor = new StlocVariableProcessor();
-        processors.Add(OpCodes.Stloc_S, processor);
-        processors.Add(OpCodes.Stloc, processor);
+        processors.Register(new StlocVariableProcessor(), OpCodes.Stloc_S, OpCodes.Stloc);
     }
 
     public void Process(ProcessorState state, Instruction instruction)

@@ -8,10 +8,10 @@ namespace DelegateDecompiler.Processors
     {
         public static void Register(Dictionary<OpCode, IProcessor> processors)
         {
-            processors.Add(OpCodes.Ldarg_0, new LdargConstantProcessor(0));
-            processors.Add(OpCodes.Ldarg_1, new LdargConstantProcessor(1));
-            processors.Add(OpCodes.Ldarg_2, new LdargConstantProcessor(2));
-            processors.Add(OpCodes.Ldarg_3, new LdargConstantProcessor(3));
+            processors.Register(new LdargConstantProcessor(0), OpCodes.Ldarg_0);
+            processors.Register(new LdargConstantProcessor(1), OpCodes.Ldarg_1);
+            processors.Register(new LdargConstantProcessor(2), OpCodes.Ldarg_2);
+            processors.Register(new LdargConstantProcessor(3), OpCodes.Ldarg_3);
         }
 
         public void Process(ProcessorState state, Instruction instruction)

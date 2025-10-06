@@ -9,10 +9,10 @@ namespace DelegateDecompiler.Processors
     {
         public static void Register(Dictionary<OpCode, IProcessor> processors)
         {
-            processors.Add(OpCodes.Stloc_0, new StlocConstantProcessor(0));
-            processors.Add(OpCodes.Stloc_1, new StlocConstantProcessor(1));
-            processors.Add(OpCodes.Stloc_2, new StlocConstantProcessor(2));
-            processors.Add(OpCodes.Stloc_3, new StlocConstantProcessor(3));
+            processors.Register(new StlocConstantProcessor(0), OpCodes.Stloc_0);
+            processors.Register(new StlocConstantProcessor(1), OpCodes.Stloc_1);
+            processors.Register(new StlocConstantProcessor(2), OpCodes.Stloc_2);
+            processors.Register(new StlocConstantProcessor(3), OpCodes.Stloc_3);
         }
 
         public void Process(ProcessorState state, Instruction instruction)

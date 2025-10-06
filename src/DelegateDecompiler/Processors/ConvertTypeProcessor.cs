@@ -10,10 +10,7 @@ namespace DelegateDecompiler.Processors
     {
         public static void Register(Dictionary<OpCode, IProcessor> processors)
         {
-            var processor = new ConvertTypeProcessor();
-            processors.Add(OpCodes.Castclass, processor);
-            processors.Add(OpCodes.Unbox, processor);
-            processors.Add(OpCodes.Unbox_Any, processor);
+            processors.Register(new ConvertTypeProcessor(), OpCodes.Castclass, OpCodes.Unbox, OpCodes.Unbox_Any);
         }
     
         public void Process(ProcessorState state, Instruction instruction)

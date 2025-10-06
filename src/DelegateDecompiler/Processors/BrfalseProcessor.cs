@@ -5,16 +5,17 @@ using Mono.Reflection;
 
 namespace DelegateDecompiler.Processors;
 
-internal class LdlenProcessor : IProcessor
+internal class BrfalseProcessor : IProcessor
 {
     public static void Register(Dictionary<OpCode, IProcessor> processors)
     {
-        processors.Register(new LdlenProcessor(), OpCodes.Ldlen);
+        processors.Register(new BrfalseProcessor(), OpCodes.Brfalse, OpCodes.Brfalse_S);
     }
 
     public void Process(ProcessorState state, Instruction instruction)
     {
-        var array = state.Stack.Pop();
-        state.Stack.Push(Expression.ArrayLength(array));
+        var val = state.Stack.Pop();
+        var condition = Expression.Equal(val, ExpressionHelper.Default(val.Type));
+        state.Stack.Push(condition);
     }
 }
