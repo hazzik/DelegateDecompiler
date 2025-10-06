@@ -10,36 +10,38 @@ internal class BinaryExpressionProcessor(ExpressionType expressionType) : IProce
     public static void Register(Dictionary<OpCode, IProcessor> processors)
     {
         // Arithmetic operations
-        processors.Add(OpCodes.Add, new BinaryExpressionProcessor(ExpressionType.Add));
-        processors.Add(OpCodes.Sub, new BinaryExpressionProcessor(ExpressionType.Subtract));
-        processors.Add(OpCodes.Mul, new BinaryExpressionProcessor(ExpressionType.Multiply));
-        processors.Add(OpCodes.Div, new BinaryExpressionProcessor(ExpressionType.Divide));
-        processors.Add(OpCodes.Div_Un, new BinaryExpressionProcessor(ExpressionType.Divide));
-        processors.Add(OpCodes.Rem, new BinaryExpressionProcessor(ExpressionType.Modulo));
-        processors.Add(OpCodes.Rem_Un, new BinaryExpressionProcessor(ExpressionType.Modulo));
+        processors.Register(new BinaryExpressionProcessor(ExpressionType.Add), OpCodes.Add);
+        processors.Register(new BinaryExpressionProcessor(ExpressionType.Subtract), OpCodes.Sub);
+        processors.Register(new BinaryExpressionProcessor(ExpressionType.Multiply), OpCodes.Mul);
+        processors.Register(new BinaryExpressionProcessor(ExpressionType.Divide), OpCodes.Div, OpCodes.Div_Un);
+        processors.Register(new BinaryExpressionProcessor(ExpressionType.Modulo), OpCodes.Rem, OpCodes.Rem_Un);
 
         // Checked arithmetic operations
-        processors.Add(OpCodes.Add_Ovf, new BinaryExpressionProcessor(ExpressionType.AddChecked));
-        processors.Add(OpCodes.Add_Ovf_Un, new BinaryExpressionProcessor(ExpressionType.AddChecked));
-        processors.Add(OpCodes.Sub_Ovf, new BinaryExpressionProcessor(ExpressionType.SubtractChecked));
-        processors.Add(OpCodes.Sub_Ovf_Un, new BinaryExpressionProcessor(ExpressionType.SubtractChecked));
-        processors.Add(OpCodes.Mul_Ovf, new BinaryExpressionProcessor(ExpressionType.MultiplyChecked));
-        processors.Add(OpCodes.Mul_Ovf_Un, new BinaryExpressionProcessor(ExpressionType.MultiplyChecked));
+        processors.Register(new BinaryExpressionProcessor(ExpressionType.AddChecked), OpCodes.Add_Ovf, OpCodes.Add_Ovf_Un);
+        processors.Register(new BinaryExpressionProcessor(ExpressionType.SubtractChecked), OpCodes.Sub_Ovf, OpCodes.Sub_Ovf_Un);
+        processors.Register(new BinaryExpressionProcessor(ExpressionType.MultiplyChecked), OpCodes.Mul_Ovf, OpCodes.Mul_Ovf_Un);
 
         // Bitwise operations
-        processors.Add(OpCodes.And, new BinaryExpressionProcessor(ExpressionType.And));
-        processors.Add(OpCodes.Or, new BinaryExpressionProcessor(ExpressionType.Or));
-        processors.Add(OpCodes.Xor, new BinaryExpressionProcessor(ExpressionType.ExclusiveOr));
-        processors.Add(OpCodes.Shl, new BinaryExpressionProcessor(ExpressionType.LeftShift));
-        processors.Add(OpCodes.Shr, new BinaryExpressionProcessor(ExpressionType.RightShift));
-        processors.Add(OpCodes.Shr_Un, new BinaryExpressionProcessor(ExpressionType.RightShift));
+        processors.Register(new BinaryExpressionProcessor(ExpressionType.And), OpCodes.And);
+        processors.Register(new BinaryExpressionProcessor(ExpressionType.Or), OpCodes.Or);
+        processors.Register(new BinaryExpressionProcessor(ExpressionType.ExclusiveOr), OpCodes.Xor);
+        processors.Register(new BinaryExpressionProcessor(ExpressionType.LeftShift), OpCodes.Shl);
+        processors.Register(new BinaryExpressionProcessor(ExpressionType.RightShift), OpCodes.Shr, OpCodes.Shr_Un);
 
         // Simple comparison operations
-        processors.Add(OpCodes.Ceq, new BinaryExpressionProcessor(ExpressionType.Equal));
-        processors.Add(OpCodes.Cgt, new BinaryExpressionProcessor(ExpressionType.GreaterThan));
-        processors.Add(OpCodes.Clt, new BinaryExpressionProcessor(ExpressionType.LessThan));
-        processors.Add(OpCodes.Clt_Un, new BinaryExpressionProcessor(ExpressionType.LessThan));
+        processors.Register(new BinaryExpressionProcessor(ExpressionType.Equal), OpCodes.Ceq);
+        processors.Register(new BinaryExpressionProcessor(ExpressionType.GreaterThan), OpCodes.Cgt);
+        processors.Register(new BinaryExpressionProcessor(ExpressionType.LessThan), OpCodes.Clt, OpCodes.Clt_Un);
+
+        // Branch comparison operations (conditional branch instructions)
+        processors.Register(new BinaryExpressionProcessor(ExpressionType.Equal), OpCodes.Beq, OpCodes.Beq_S);
+        processors.Register(new BinaryExpressionProcessor(ExpressionType.GreaterThanOrEqual), OpCodes.Bge, OpCodes.Bge_S, OpCodes.Bge_Un, OpCodes.Bge_Un_S);
+        processors.Register(new BinaryExpressionProcessor(ExpressionType.GreaterThan), OpCodes.Bgt, OpCodes.Bgt_S, OpCodes.Bgt_Un, OpCodes.Bgt_Un_S);
+        processors.Register(new BinaryExpressionProcessor(ExpressionType.LessThanOrEqual), OpCodes.Ble, OpCodes.Ble_S, OpCodes.Ble_Un, OpCodes.Ble_Un_S);
+        processors.Register(new BinaryExpressionProcessor(ExpressionType.LessThan), OpCodes.Blt, OpCodes.Blt_S, OpCodes.Blt_Un, OpCodes.Blt_Un_S);
+        processors.Register(new BinaryExpressionProcessor(ExpressionType.NotEqual), OpCodes.Bne_Un, OpCodes.Bne_Un_S);
     }
+
 
     public void Process(ProcessorState state, Instruction instruction)
     {
