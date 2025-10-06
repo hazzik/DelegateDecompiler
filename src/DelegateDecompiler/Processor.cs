@@ -146,6 +146,7 @@ namespace DelegateDecompiler
 
             if (instruction.OpCode == OpCodes.Nop || 
                 instruction.OpCode == OpCodes.Break ||
+                instruction.OpCode == OpCodes.Ret ||
                 instruction.OpCode.FlowControl == FlowControl.Branch)
             {
                 // Do nothing
@@ -156,10 +157,6 @@ namespace DelegateDecompiler
                 var expression = DecompileLambdaExpression(method, () => state.Stack.Pop());
                 state.Stack.Push(expression);
                 return 1;
-            }
-            else if (instruction.OpCode == OpCodes.Ret)
-            {
-                // Return instruction - signal early return
             }
             else if (processors.TryGetValue(instruction.OpCode, out var processor))
             {
