@@ -40,10 +40,12 @@ Use `-p:DisableGitVersionTask=true` flag to avoid build issues if GitVersion is 
 - Tests define the API contract and expected behavior
 
 **Required Workflow:**
-1. Write/examine tests to understand what needs to be built
-2. Run tests to see current failures
-3. Implement code to make tests pass
-4. NEVER modify tests to match implementation bugs
+1. **Run tests first** - See exact state of the system
+2. **Add/modify tests** - Define expected behavior
+3. **Run tests after each change** - Verify impact immediately
+4. **Change one thing at a time** - Make small, isolated changes
+5. **Verify all tests pass** - Ensure no regressions at the end
+6. **NEVER modify tests to match implementation bugs** - Fix code, not tests
 
 **Core Requirements:**
 - All tests in `src/DelegateDecompiler.Tests` and `src/DelegateDecompiler.Tests.VB` must pass
