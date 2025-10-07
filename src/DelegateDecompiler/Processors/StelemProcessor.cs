@@ -3,34 +3,28 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection.Emit;
+using Mono.Reflection;
 
 namespace DelegateDecompiler.Processors;
 
 internal class StelemProcessor : IProcessor
 {
-    static readonly HashSet<OpCode> Operations = new()
+    public static void Register(Dictionary<OpCode, IProcessor> processors)
     {
-        OpCodes.Stelem,
-        OpCodes.Stelem_I,
-        OpCodes.Stelem_I1,
-        OpCodes.Stelem_I2,
-        OpCodes.Stelem_I4,
-        OpCodes.Stelem_I8,
-        OpCodes.Stelem_R4,
-        OpCodes.Stelem_R8,
-        OpCodes.Stelem_Ref
-    };
-
-    public bool Process(ProcessorState state)
-    {
-        if (!Operations.Contains(state.Instruction.OpCode))
-            return false;
-
-        StElem(state);
-        return true;
+        processors.Register(new StelemProcessor(),
+            OpCodes.Stelem,
+            OpCodes.Stelem_I,
+            OpCodes.Stelem_I1,
+            OpCodes.Stelem_I2,
+            OpCodes.Stelem_I4,
+            OpCodes.Stelem_I8,
+            OpCodes.Stelem_R4,
+            OpCodes.Stelem_R8,
+            OpCodes.Stelem_Ref
+        );
     }
 
-    static void StElem(ProcessorState state)
+    public void Process(ProcessorState state, Instruction instruction)
     {
         var value = state.Stack.Pop();
         var index = state.Stack.Pop();

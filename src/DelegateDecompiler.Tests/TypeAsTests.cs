@@ -15,7 +15,7 @@ namespace DelegateDecompiler.Tests
         {
             Expression<Func<Parent, Child>> expected = parent => parent as Child;
             Func<Parent, Child> compiled = parent => parent as Child;
-            Test(expected, compiled);
+            Test(compiled, expected);
         }
 
         [Test]
@@ -23,7 +23,7 @@ namespace DelegateDecompiler.Tests
         {
             Expression<Func<Parent, bool>> expected = parent => parent is Child;
             Func<Parent, bool> compiled = parent => parent is Child;
-            Test(expected, compiled);
+            Test(compiled, expected);
         }
 
         [Test]
@@ -31,7 +31,7 @@ namespace DelegateDecompiler.Tests
         {
             Expression<Func<Parent, bool>> expected = parent => !(parent is Child);
             Func<Parent, bool> compiled = parent => !(parent is Child);
-            Test(expected, compiled);
+            Test(compiled, expected);
         }
     }
 }

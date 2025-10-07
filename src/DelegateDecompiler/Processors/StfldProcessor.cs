@@ -1,19 +1,23 @@
 using System;
+using System.Collections.Generic;
 using System.Reflection;
 using System.Reflection.Emit;
+using Mono.Reflection;
 
 namespace DelegateDecompiler.Processors;
 
 internal class StfldProcessor : IProcessor
 {
-    public bool Process(ProcessorState state)
+    public static void Register(Dictionary<OpCode, IProcessor> processors)
     {
-        if (state.Instruction.OpCode != OpCodes.Stfld)
-            return false;
+        processors.Register(new StfldProcessor(), OpCodes.Stfld);
+    }
 
+    public void Process(ProcessorState state, Instruction instruction)
+    {
         var value = state.Stack.Pop();
         var instance = state.Stack.Pop();
-        var field = (FieldInfo)state.Instruction.Operand;
+        var field = (FieldInfo)instruction.Operand;
         if (Processor.IsCachedAnonymousMethodDelegate(field))
         {
             state.Delegates[Tuple.Create(instance, field)] = value;
@@ -26,7 +30,5 @@ internal class StfldProcessor : IProcessor
             else
                 instance.Expression = expression;
         }
-
-        return true;
     }
 }

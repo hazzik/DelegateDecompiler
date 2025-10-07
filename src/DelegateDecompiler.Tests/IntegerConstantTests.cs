@@ -12,7 +12,7 @@ namespace DelegateDecompiler.Tests
         {
             Expression<Func<string>> expected = () => Method(true);
             Func<string> compiled = () => Method(true);
-            Test(expected, compiled);
+            Test(compiled, expected);
         }
 
         [Test]
@@ -20,7 +20,7 @@ namespace DelegateDecompiler.Tests
         {
             Expression<Func<string>> expected = () => true.ToString();
             Func<string> compiled = () => true.ToString();
-            Test(expected, compiled);
+            Test(compiled, expected);
         }
 
         [Test]
@@ -28,7 +28,7 @@ namespace DelegateDecompiler.Tests
         {
             Expression<Func<bool, string>> expected = x => x.ToString();
             Func<bool, string> compiled = x => x.ToString();
-            Test(expected, compiled);
+            Test(compiled, expected);
         }
 
         public static string Method(bool arg)
@@ -41,7 +41,7 @@ namespace DelegateDecompiler.Tests
         {
             Expression<Func<string>> expected = () => Method((byte)1);
             Func<string> compiled = () => Method((byte)1);
-            Test(expected, compiled);
+            Test(compiled, expected);
         }
 
         [Test]
@@ -49,7 +49,7 @@ namespace DelegateDecompiler.Tests
         {
             Expression<Func<string>> expected = () => ((byte)1).ToString();
             Func<string> compiled = () => ((byte)1).ToString();
-            Test(expected, compiled);
+            Test(compiled, expected);
         }
 
         [Test]
@@ -57,7 +57,7 @@ namespace DelegateDecompiler.Tests
         {
             Expression<Func<byte, string>> expected = x => x.ToString();
             Func<byte, string> compiled = x => x.ToString();
-            Test(expected, compiled);
+            Test(compiled, expected);
         }
 
         public static string Method(byte arg)
@@ -70,7 +70,7 @@ namespace DelegateDecompiler.Tests
         {
             Expression<Func<string>> expected = () => Method((sbyte)1);
             Func<string> compiled = () => Method((sbyte)1);
-            Test(expected, compiled);
+            Test(compiled, expected);
         }
 
         [Test]
@@ -78,7 +78,7 @@ namespace DelegateDecompiler.Tests
         {
             Expression<Func<string>> expected = () => ((sbyte)1).ToString();
             Func<string> compiled = () => ((sbyte)1).ToString();
-            Test(expected, compiled);
+            Test(compiled, expected);
         }
 
         [Test]
@@ -86,7 +86,7 @@ namespace DelegateDecompiler.Tests
         {
             Expression<Func<sbyte, string>> expected = x => x.ToString();
             Func<sbyte, string> compiled = x => x.ToString();
-            Test(expected, compiled);
+            Test(compiled, expected);
         }
 
         public static string Method(sbyte arg)
@@ -99,7 +99,7 @@ namespace DelegateDecompiler.Tests
         {
             Expression<Func<string>> expected = () => Method((short)1);
             Func<string> compiled = () => Method((short)1);
-            Test(expected, compiled);
+            Test(compiled, expected);
         }
 
         [Test]
@@ -107,7 +107,7 @@ namespace DelegateDecompiler.Tests
         {
             Expression<Func<string>> expected = () => ((short)1).ToString();
             Func<string> compiled = () => ((short)1).ToString();
-            Test(expected, compiled);
+            Test(compiled, expected);
         }
 
         [Test]
@@ -115,7 +115,7 @@ namespace DelegateDecompiler.Tests
         {
             Expression<Func<short, string>> expected = x => x.ToString();
             Func<short, string> compiled = x => x.ToString();
-            Test(expected, compiled);
+            Test(compiled, expected);
         }
 
         public static string Method(short arg)
@@ -128,7 +128,7 @@ namespace DelegateDecompiler.Tests
         {
             Expression<Func<string>> expected = () => Method((ushort)1);
             Func<string> compiled = () => Method((ushort)1);
-            Test(expected, compiled);
+            Test(compiled, expected);
         }
 
         [Test]
@@ -136,7 +136,7 @@ namespace DelegateDecompiler.Tests
         {
             Expression<Func<string>> expected = () => ((ushort)1).ToString();
             Func<string> compiled = () => ((ushort)1).ToString();
-            Test(expected, compiled);
+            Test(compiled, expected);
         }
 
         [Test]
@@ -144,7 +144,7 @@ namespace DelegateDecompiler.Tests
         {
             Expression<Func<ushort, string>> expected = x => x.ToString();
             Func<ushort, string> compiled = x => x.ToString();
-            Test(expected, compiled);
+            Test(compiled, expected);
         }
 
         public static string Method(ushort arg)
@@ -157,7 +157,7 @@ namespace DelegateDecompiler.Tests
         {
             Expression<Func<string>> expected = () => Method((int)1);
             Func<string> compiled = () => Method((int)1);
-            Test(expected, compiled);
+            Test(compiled, expected);
         }
 
         [Test]
@@ -165,7 +165,7 @@ namespace DelegateDecompiler.Tests
         {
             Expression<Func<string>> expected = () => ((int)1).ToString();
             Func<string> compiled = () => ((int)1).ToString();
-            Test(expected, compiled);
+            Test(compiled, expected);
         }
 
         [Test]
@@ -173,7 +173,7 @@ namespace DelegateDecompiler.Tests
         {
             Expression<Func<int, string>> expected = x => x.ToString();
             Func<int, string> compiled = x => x.ToString();
-            Test(expected, compiled);
+            Test(compiled, expected);
         }
 
         public static string Method(int arg)
@@ -186,7 +186,7 @@ namespace DelegateDecompiler.Tests
         {
             Expression<Func<string>> expected = () => Method((uint)1);
             Func<string> compiled = () => Method((uint)1);
-            Test(expected, compiled);
+            Test(compiled, expected);
         }
 
         [Test]
@@ -194,7 +194,7 @@ namespace DelegateDecompiler.Tests
         {
             Expression<Func<string>> expected = () => ((uint)1).ToString();
             Func<string> compiled = () => ((uint)1).ToString();
-            Test(expected, compiled);
+            Test(compiled, expected);
         }
 
         [Test]
@@ -202,7 +202,7 @@ namespace DelegateDecompiler.Tests
         {
             Expression<Func<uint, string>> expected = x => x.ToString();
             Func<uint, string> compiled = x => x.ToString();
-            Test(expected, compiled);
+            Test(compiled, expected);
         }
 
         public static string Method(uint arg)
@@ -215,7 +215,7 @@ namespace DelegateDecompiler.Tests
         {
             Expression<Func<string>> expected = () => Method((long)1);
             Func<string> compiled = () => Method((long)1);
-            Test(expected, compiled);
+            Test(compiled, expected);
         }
 
         [Test, Ignore("Acceptable difference")]
@@ -223,7 +223,7 @@ namespace DelegateDecompiler.Tests
         {
             Expression<Func<string>> expected = () => ((long)1).ToString();
             Func<string> compiled = () => ((long)1).ToString();
-            Test(expected, compiled);
+            Test(compiled, expected);
         }
 
         [Test]
@@ -231,7 +231,7 @@ namespace DelegateDecompiler.Tests
         {
             Expression<Func<long, string>> expected = x => x.ToString();
             Func<long, string> compiled = x => x.ToString();
-            Test(expected, compiled);
+            Test(compiled, expected);
         }
 
         public static string Method(long arg)
@@ -244,7 +244,7 @@ namespace DelegateDecompiler.Tests
         {
             Expression<Func<string>> expected = () => Method((ulong)1);
             Func<string> compiled = () => Method((ulong)1);
-            Test(expected, compiled);
+            Test(compiled, expected);
         }
 
         [Test, Ignore("Not fixed yet")]
@@ -252,7 +252,7 @@ namespace DelegateDecompiler.Tests
         {
             Expression<Func<string>> expected = () => ((ulong)1).ToString();
             Func<string> compiled = () => ((ulong)1).ToString();
-            Test(expected, compiled);
+            Test(compiled, expected);
         }
 
         [Test]
@@ -260,7 +260,7 @@ namespace DelegateDecompiler.Tests
         {
             Expression<Func<ulong, string>> expected = x => x.ToString();
             Func<ulong, string> compiled = x => x.ToString();
-            Test(expected, compiled);
+            Test(compiled, expected);
         }
 
         public static string Method(ulong arg)
@@ -273,7 +273,7 @@ namespace DelegateDecompiler.Tests
         {
             Expression<Func<string>> expected = () => Method((float)1);
             Func<string> compiled = () => Method((float)1);
-            Test(expected, compiled);
+            Test(compiled, expected);
         }
 
         [Test]
@@ -281,7 +281,7 @@ namespace DelegateDecompiler.Tests
         {
             Expression<Func<string>> expected = () => ((float)1).ToString();
             Func<string> compiled = () => ((float)1).ToString();
-            Test(expected, compiled);
+            Test(compiled, expected);
         }
 
         [Test]
@@ -289,7 +289,7 @@ namespace DelegateDecompiler.Tests
         {
             Expression<Func<float, string>> expected = x => x.ToString();
             Func<float, string> compiled = x => x.ToString();
-            Test(expected, compiled);
+            Test(compiled, expected);
         }
 
         public static string Method(float arg)
@@ -302,7 +302,7 @@ namespace DelegateDecompiler.Tests
         {
             Expression<Func<string>> expected = () => Method((double)1);
             Func<string> compiled = () => Method((double)1);
-            Test(expected, compiled);
+            Test(compiled, expected);
         }
 
         [Test]
@@ -310,7 +310,7 @@ namespace DelegateDecompiler.Tests
         {
             Expression<Func<string>> expected = () => ((double)1).ToString();
             Func<string> compiled = () => ((double)1).ToString();
-            Test(expected, compiled);
+            Test(compiled, expected);
         }
 
         [Test]
@@ -318,7 +318,7 @@ namespace DelegateDecompiler.Tests
         {
             Expression<Func<double, string>> expected = x => x.ToString();
             Func<double, string> compiled = x => x.ToString();
-            Test(expected, compiled);
+            Test(compiled, expected);
         }
 
         public static string Method(double arg)
@@ -332,7 +332,7 @@ namespace DelegateDecompiler.Tests
             Expression<Func<string>> expected1 = () => Method((decimal)1);
             Expression<Func<string>> expected2 = () => Method(decimal.One);
             Func<string> compiled = () => Method((decimal)1);
-            Test(expected1, expected2, compiled);
+            Test(compiled, expected1, expected2);
         }
 
         [Test, Ignore("Compiler optimizes code")]
@@ -341,7 +341,7 @@ namespace DelegateDecompiler.Tests
             Expression<Func<string>> expected1 = () => ((decimal)1).ToString();
             Expression<Func<string>> expected2 = () => decimal.One.ToString();
             Func<string> compiled = () => ((decimal)1).ToString();
-            Test(expected1, expected2, compiled);
+            Test(compiled, expected1, expected2);
         }
 
         [Test]
@@ -349,7 +349,7 @@ namespace DelegateDecompiler.Tests
         {
             Expression<Func<decimal, string>> expected = x => x.ToString();
             Func<decimal, string> compiled = x => x.ToString();
-            Test(expected, compiled);
+            Test(compiled, expected);
         }
 
         [Test]
@@ -358,7 +358,7 @@ namespace DelegateDecompiler.Tests
             Expression<Func<string>> expected1 = () => Method((decimal)1.23);
             Expression<Func<string>> expected2 = () => Method(new decimal(123, 0, 0, false, 2));
             Func<string> compiled = () => Method((decimal)1.23);
-            Test(expected1, expected2, compiled);
+            Test(compiled, expected1, expected2);
         }
 
         [Test]
@@ -367,7 +367,7 @@ namespace DelegateDecompiler.Tests
             Expression<Func<string>> expected1 = () => ((decimal)1.23).ToString();
             Expression<Func<string>> expected2 = () => new decimal(123, 0, 0, false, 2).ToString();
             Func<string> compiled = () => ((decimal)1.23).ToString();
-            Test(expected1, expected2, compiled);
+            Test(compiled, expected1, expected2);
         }
 
         public static string Method(decimal arg)

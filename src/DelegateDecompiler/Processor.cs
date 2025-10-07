@@ -9,6 +9,7 @@ using System.Reflection;
 using System.Reflection.Emit;
 using Mono.Reflection;
 using System.Runtime.CompilerServices;
+using DelegateDecompiler.ControlFlow;
 using DelegateDecompiler.Processors;
 
 namespace DelegateDecompiler
@@ -17,229 +18,166 @@ namespace DelegateDecompiler
     {
         const string cachedAnonymousMethodDelegate = "CS$<>9__CachedAnonymousMethodDelegate";
         const string cachedAnonymousMethodDelegateRoslyn = "<>9__";
-
-        static readonly MethodInfo StringConcat = typeof(string).GetMethod("Concat", new[] { typeof(object), typeof(object) });
-
+        
         //TODO: Move to ProcessorState??
         static readonly ConcurrentDictionary<MethodInfo, LambdaExpression> AnonymousDelegatesCache =
             new ConcurrentDictionary<MethodInfo, LambdaExpression>();
 
-        public static Expression Process(bool isStatic, VariableInfo[] locals, IList<Address> args, Instruction instruction, Type returnType)
+        public static Expression Process(ControlFlowGraph cfg, VariableInfo[] locals, IList<Address> args, Type returnType)
         {
-            Processor processor = new Processor();
-            processor.states.Push(new ProcessorState(isStatic, new Stack<Address>(), locals, args, instruction));
-
-            var ex = AdjustType(processor.Process(), returnType);
+            var processor = new Processor();
+            var initialState = new ProcessorState(cfg.Method.IsStatic, new Stack<Address>(), locals, args);
+            
+            processor.ProcessBlock(initialState, cfg.Entry);
+            
+            var ex = initialState.Final();
+            ex = AdjustType(ex, returnType);
 
             if (!returnType.IsAssignableFrom(ex.Type) && returnType != typeof(void))
-            {
                 return Expression.Convert(ex, returnType);
-            }
 
             return ex;
         }
 
-        readonly Stack<ProcessorState> states = new Stack<ProcessorState>();
+        static readonly Dictionary<OpCode, IProcessor> processors;
 
-        static readonly IProcessor[] processors = {
-            new ConvertProcessor(),
-            new BinaryExpressionProcessor(),
-            new UnaryExpressionProcessor(),
-            new CgtUnProcessor(),
-            new LdargProcessor(),
-            new StargProcessor(),
-            new LdelemProcessor(),
-            new LdlenProcessor(),
-            new LdlocProcessor(),
-            new StlocProcessor(),
-            new ConstantProcessor(),
-            new StackProcessor(),
-            new ObjectProcessor(),
-            new LdfldProcessor(),
-            new StfldProcessor(),
-            new StsfldProcessor(),
-            new StelemProcessor()
-        };
+        static Processor()
+        {
+            processors = new Dictionary<OpCode, IProcessor>();
+            BrfalseProcessor.Register(processors);
+            BrtrueProcessor.Register(processors);
+            BinaryExpressionProcessor.Register(processors);
+            BoxProcessor.Register(processors);
+            CallProcessor.Register(processors);
+            CgtUnProcessor.Register(processors);
+            ConstantValueProcessor.Register(processors);
+            ConstantOperandProcessor.Register(processors);
+            ConvertCheckedProcessor.Register(processors);
+            ConvertProcessor.Register(processors);
+            ConvertTypeProcessor.Register(processors);
+            DupProcessor.Register(processors);
+            InitObjProcessor.Register(processors);
+            IsinstProcessor.Register(processors);
+            LdargConstantProcessor.Register(processors);
+            LdargParameterProcessor.Register(processors);
+            LdcI4SProcessor.Register(processors);
+            LdelemProcessor.Register(processors);
+            LdfldProcessor.Register(processors);
+            LdlenProcessor.Register(processors);
+            LdlocConstantProcessor.Register(processors);
+            LdlocVariableProcessor.Register(processors);
+            LdtokenProcessor.Register(processors);
+            NewArrProcessor.Register(processors);
+            NewobjProcessor.Register(processors);
+            PopProcessor.Register(processors);
+            StargProcessor.Register(processors);
+            StelemProcessor.Register(processors);
+            StfldProcessor.Register(processors);
+            StlocConstantProcessor.Register(processors);
+            StlocVariableProcessor.Register(processors);
+            StsfldProcessor.Register(processors);
+            UnaryExpressionProcessor.Register(processors);
+        }
 
         Processor()
         {
         }
 
-        Expression Process()
+        void ProcessBlock(ProcessorState state, Block block, Block endBlock = null)
         {
-            ProcessorState state = null;
-            while (states.Count > 0)
+            if (block == null || block == endBlock)
+                return;
+
+            for (var index = 0; index < block.Instructions.Count; index++)
             {
-                state = states.Peek();
-
-                if (state.RunNext != null)
-                {
-                    state.RunNext();
-                    state.RunNext = null;
-                }
-
-                if (state.Instruction != null && state.Instruction != state.Last)
-                {
-                    Debug.WriteLine(state.Instruction);
-
-                    if (state.Instruction.OpCode == OpCodes.Nop || state.Instruction.OpCode == OpCodes.Break)
-                    {
-                        //do nothing;
-                    }
-                    else if (state.Instruction.OpCode == OpCodes.Br_S || state.Instruction.OpCode == OpCodes.Br)
-                    {
-                        state.Instruction = (Instruction)state.Instruction.Operand;
-                        continue;
-                    }
-                    else if (state.Instruction.OpCode == OpCodes.Brfalse ||
-                             state.Instruction.OpCode == OpCodes.Brfalse_S)
-                    {
-                        state.Instruction = ConditionalBranch(state, val => Expression.Equal(val, ExpressionHelper.Default(val.Type)));
-                        continue;
-                    }
-                    else if (state.Instruction.OpCode == OpCodes.Brtrue ||
-                             state.Instruction.OpCode == OpCodes.Brtrue_S)
-                    {
-                        var address = state.Stack.Peek();
-                        var memberExpression = address.Expression as MemberExpression;
-                        if (memberExpression != null && IsCachedAnonymousMethodDelegate(memberExpression.Member as FieldInfo))
-                        {
-                            state.Stack.Pop();
-                        }
-                        else
-                        {
-                            state.Instruction = ConditionalBranch(state, val => val.Type == typeof(bool) ? val : Expression.NotEqual(val, ExpressionHelper.Default(val.Type)));
-                            continue;
-                        }
-                    }
-                    else if (state.Instruction.OpCode == OpCodes.Ldftn)
-                    {
-                        var method = (MethodInfo)state.Instruction.Operand;
-                        state.Stack.Push(DecompileLambdaExpression(method, () => state.Stack.Pop()));
-                        state.Instruction = state.Instruction.Next;
-                    }
-                    else if (state.Instruction.OpCode == OpCodes.Bgt ||
-                             state.Instruction.OpCode == OpCodes.Bgt_S ||
-                             state.Instruction.OpCode == OpCodes.Bgt_Un ||
-                             state.Instruction.OpCode == OpCodes.Bgt_Un_S)
-                    {
-                        var val1 = state.Stack.Pop();
-                        state.Instruction = ConditionalBranch(state, val => MakeBinaryExpression(val, val1, ExpressionType.GreaterThan));
-                        continue;
-                    }
-                    else if (state.Instruction.OpCode == OpCodes.Bge ||
-                             state.Instruction.OpCode == OpCodes.Bge_S ||
-                             state.Instruction.OpCode == OpCodes.Bge_Un ||
-                             state.Instruction.OpCode == OpCodes.Bge_Un_S)
-                    {
-                        var val1 = state.Stack.Pop();
-                        state.Instruction = ConditionalBranch(state, val => MakeBinaryExpression(val, val1, ExpressionType.GreaterThanOrEqual));
-                        continue;
-                    }
-                    else if (state.Instruction.OpCode == OpCodes.Blt ||
-                             state.Instruction.OpCode == OpCodes.Blt_S ||
-                             state.Instruction.OpCode == OpCodes.Blt_Un ||
-                             state.Instruction.OpCode == OpCodes.Blt_Un_S)
-                    {
-                        var val1 = state.Stack.Pop();
-                        state.Instruction = ConditionalBranch(state, val => MakeBinaryExpression(val, val1, ExpressionType.LessThan));
-                        continue;
-                    }
-                    else if (state.Instruction.OpCode == OpCodes.Ble ||
-                             state.Instruction.OpCode == OpCodes.Ble_S ||
-                             state.Instruction.OpCode == OpCodes.Ble_Un ||
-                             state.Instruction.OpCode == OpCodes.Ble_Un_S)
-                    {
-                        var val1 = state.Stack.Pop();
-                        state.Instruction = ConditionalBranch(state, val => MakeBinaryExpression(val, val1, ExpressionType.LessThanOrEqual));
-                        continue;
-                    }
-                    else if (state.Instruction.OpCode == OpCodes.Beq ||
-                             state.Instruction.OpCode == OpCodes.Beq_S)
-                    {
-                        var val1 = state.Stack.Pop();
-                        state.Instruction = ConditionalBranch(state, val => MakeBinaryExpression(val, val1, ExpressionType.Equal));
-                        continue;
-                    }
-                    else if (state.Instruction.OpCode == OpCodes.Bne_Un ||
-                             state.Instruction.OpCode == OpCodes.Bne_Un_S)
-                    {
-                        var val1 = state.Stack.Pop();
-                        state.Instruction = ConditionalBranch(state, val => MakeBinaryExpression(val, val1, ExpressionType.NotEqual));
-                        continue;
-                    }
-                    else if (state.Instruction.OpCode == OpCodes.Newobj)
-                    {
-                        var constructor = (ConstructorInfo)state.Instruction.Operand;
-                        var arguments = GetArguments(state, constructor);
-                        if (constructor.DeclaringType.IsNullableType() && constructor.GetParameters().Length == 1)
-                        {
-                            state.Stack.Push(Expression.Convert(arguments[0], constructor.DeclaringType));
-                        }
-                        else
-                        {
-                            state.Stack.Push(Expression.New(constructor, arguments));
-                        }
-                    }
-                    else if (state.Instruction.OpCode == OpCodes.Call || state.Instruction.OpCode == OpCodes.Callvirt)
-                    {
-                        var method = state.Instruction.Operand as MethodInfo;
-                        var constructor = state.Instruction.Operand as ConstructorInfo;
-                        if (method != null)
-                        {
-                            Call(state, method);
-                        }
-                        else if (constructor != null)
-                        {
-                            var address = Expression.New(constructor, GetArguments(state, constructor));
-                            var local = state.Stack.Pop();
-                            local.Expression = address;
-                        }
-                        else
-                        {
-                            throw new NotSupportedException();
-                        }
-                    }
-                    else if (state.Instruction.OpCode == OpCodes.Isinst)
-                    {
-                        var val = state.Stack.Pop();
-                        if (state.Instruction.Next != null && state.Instruction.Next.OpCode == OpCodes.Ldnull &&
-                            state.Instruction.Next.Next != null && state.Instruction.Next.Next.OpCode == OpCodes.Cgt_Un)
-                        {
-                            state.Stack.Push(Expression.TypeIs(val, (Type)state.Instruction.Operand));
-                            state.Instruction = state.Instruction.Next.Next;
-                        }
-                        else
-                        {
-                            state.Stack.Push(Expression.TypeAs(val, (Type)state.Instruction.Operand));
-                        }
-                    }
-                    else if (state.Instruction.OpCode == OpCodes.Ret)
-                    {
-                        states.Pop();
-                    }
-                    else if (!processors.Any(processor => processor.Process(state)))
-                    {
-                        Debug.WriteLine("Unhandled!!!");
-                    }
-
-                    state.Instruction = state.Instruction.Next;
-                }
-                else
-                {
-                    states.Pop();
-                }
+                var instruction = block.Instructions[index];
+                index += ProcessInstruction(state, instruction);
             }
 
-            return state == null ? Expression.Empty() : state.Final();
+            ProcessNextBlock(state, block, endBlock);
+        }
+
+        void ProcessNextBlock(ProcessorState state, Block block, Block endBlock)
+        {
+            var successors = block.Successors.Where(b => !b.IsException).ToList();
+            switch (successors.Count)
+            {
+                case 0:
+                    break;
+                case 1:
+                    ProcessBlock(state, successors[0].To, endBlock);
+                    break;
+                case 2:
+                    ProcessConditionalBranch(block, state, endBlock);
+                    break;
+                default:
+                    throw new NotSupportedException("Switch statement is not supported");
+            }
+        }
+
+        void ProcessConditionalBranch(Block block, ProcessorState state, Block endBlock)
+        {
+            var trueEdge = block.Successors.FirstOrDefault(e => e.Kind == EdgeKind.ConditionalTrue);
+            var falseEdge = block.Successors.FirstOrDefault(e => e.Kind == EdgeKind.ConditionalFalse);
+
+            if (trueEdge == null || falseEdge == null)
+                throw new InvalidOperationException("Conditional branch must have both true and false edges");
+
+            var test = state.Stack.Pop();
+
+            // Clone state for both branches
+            var trueState = state.Clone();
+            var falseState = state.Clone();
+
+            var joint = FindJointPoint(block.Successors.Where(b => !b.IsException).ToList());
+            if (joint == null)
+                throw new InvalidOperationException($"No convergence point found for conditional branch at {block.First}. This indicates malformed IL or a bug in the convergence detection algorithm.");
+                
+            ProcessBlock(trueState, trueEdge.To, joint);
+            ProcessBlock(falseState, falseEdge.To, joint);
+            
+            state.Merge(test, trueState, falseState);
+
+            ProcessBlock(state, joint, endBlock);
+        }
+
+        static int ProcessInstruction(ProcessorState state, Instruction instruction)
+        {
+            Debug.WriteLine(instruction);
+
+            if (instruction.OpCode == OpCodes.Nop || 
+                instruction.OpCode == OpCodes.Break ||
+                instruction.OpCode == OpCodes.Ret ||
+                instruction.OpCode.FlowControl == FlowControl.Branch)
+            {
+                // Do nothing
+            }
+            else if (instruction.OpCode == OpCodes.Ldftn)
+            {
+                var method = (MethodInfo)instruction.Operand;
+                var expression = DecompileLambdaExpression(method, () => state.Stack.Pop());
+                state.Stack.Push(expression);
+                return 1;
+            }
+            else if (processors.TryGetValue(instruction.OpCode, out var processor))
+            {
+                processor.Process(state, instruction);
+            }
+            else
+            {
+                throw new NotSupportedException(
+                    $"The IL opcode '{instruction.OpCode}' is not supported by DelegateDecompiler. " +
+                    $"This opcode cannot be decompiled into an expression tree. " +
+                    $"Consider simplifying the method or using a different approach.");
+            }
+
+            return 0;
         }
 
         static LambdaExpression DecompileLambdaExpression(MethodInfo method, Func<Expression> @this)
         {
             if (method.IsStatic)
-            {
                 return AnonymousDelegatesCache.GetOrAdd(method, m => m.Decompile());
-            }
 
             //Should always call.
             var expression = @this();
@@ -296,100 +234,12 @@ namespace DelegateDecompiler
             return Expression.MakeBinary(expressionType, left, right);
         }
 
-        internal static UnaryExpression MakeUnaryExpression(Expression operand, ExpressionType expressionType)
-        {
-            operand = ConvertEnumExpressionToUnderlyingType(operand);
-
-            return Expression.MakeUnary(expressionType, operand, operand.Type);
-        }
-
-        internal static Expression Box(Expression expression, Type type)
-        {
-            if (expression.Type == type)
-                return expression;
-
-            var constantExpression = expression as ConstantExpression;
-            if (constantExpression != null)
-            {
-                if (type.IsEnum)
-                    return Expression.Constant(Enum.ToObject(type, constantExpression.Value));
-            }
-
-            if (expression.Type.IsEnum)
-                return Expression.Convert(expression, type);
-
-            return expression;
-        }
-
-        static Expression ConvertEnumExpressionToUnderlyingType(Expression expression)
+        internal static Expression ConvertEnumExpressionToUnderlyingType(Expression expression)
         {
             if (expression.Type.IsEnum)
                 return Expression.Convert(expression, expression.Type.GetEnumUnderlyingType());
 
             return expression;
-        }
-
-        Instruction ConditionalBranch(ProcessorState state, Func<Expression, Expression> condition)
-        {
-            var val1 = state.Stack.Pop();
-            var test = condition(val1);
-
-            var left = (Instruction)state.Instruction.Operand;
-            var right = state.Instruction.Next;
-
-            var common = GetJointPoint(state.Instruction);
-
-            var rightState = state.Clone(right, common);
-            var leftState = state.Clone(left, common);
-            states.Push(rightState);
-            states.Push(leftState);
-
-            // Run this once the conditional branches have been processed
-            state.RunNext = () => state.Merge(test, leftState, rightState);
-
-            return common;
-        }
-
-        static Instruction GetJointPoint(Instruction instruction)
-        {
-            var leftInstructions = FollowGraph(instruction.Next);
-            var rightInstructions = FollowGraph((Instruction)instruction.Operand);
-
-            Instruction common = null;
-            foreach (var leftInstruction in leftInstructions)
-            {
-                if (rightInstructions.Count > 0 && leftInstruction == rightInstructions.Pop())
-                    common = leftInstruction;
-                else
-                    break;
-            }
-            return common;
-        }
-
-        static Stack<Instruction> FollowGraph(Instruction instruction)
-        {
-            var instructions = new Stack<Instruction>();
-            while (instruction != null)
-            {
-                instructions.Push(instruction);
-                instruction = GetNextInstruction(instruction);
-            }
-            return instructions;
-        }
-
-        static Instruction GetNextInstruction(Instruction instruction)
-        {
-            switch (instruction.OpCode.FlowControl)
-            {
-                case FlowControl.Return:
-                    return null;
-                case FlowControl.Branch:
-                    return (Instruction)instruction.Operand;
-                case FlowControl.Cond_Branch:
-                    return GetJointPoint(instruction);
-                default:
-                    return instruction.Next;
-            }
         }
 
         internal static Expression AdjustType(Expression expression, Type type)
@@ -479,18 +329,6 @@ namespace DelegateDecompiler
             return expression;
         }
 
-       
-
-        static void Call(ProcessorState state, MethodInfo m)
-        {
-            var mArgs = GetArguments(state, m, out var addresses);
-
-            var instance = m.IsStatic ? new Address() : state.Stack.Pop();
-            var result = BuildMethodCallExpression(m, instance, mArgs, addresses);
-            if (result.Type != typeof(void))
-                state.Stack.Push(result);
-        }
-
         internal static Expression BuildAssignment(Expression instance, MemberInfo member, Expression value, out bool push)
         {
             var adjustedValue = AdjustType(value, member.FieldOrPropertyType());
@@ -524,12 +362,12 @@ namespace DelegateDecompiler
             return Expression.Assign(Expression.MakeMemberAccess(instance, member), adjustedValue);
         }
 
-        static Expression[] GetArguments(ProcessorState state, MethodBase m)
+        internal static Expression[] GetArguments(ProcessorState state, MethodBase m)
         {
             return GetArguments(state, m, out _);
         }
 
-        static Expression[] GetArguments(ProcessorState state, MethodBase m, out Address[] addresses)
+        internal static Expression[] GetArguments(ProcessorState state, MethodBase m, out Address[] addresses)
         {
             var parameterInfos = m.GetParameters();
             addresses = new Address[parameterInfos.Length];
@@ -546,251 +384,50 @@ namespace DelegateDecompiler
             return args;
         }
 
-        static Expression BuildMethodCallExpression(MethodInfo m, Address instance, Expression[] arguments, Address[] addresses)
+
+       
+ 
+        Stack<Block> FollowGraph(Block block)
         {
-            if (m.Name == "Add" && instance.Expression != null && typeof(IEnumerable).IsAssignableFrom(instance.Type))
+            var blocks = new Stack<Block>();
+            var visited = new HashSet<Block>(); // Prevent infinite loops
+            
+            while (block != null && !visited.Contains(block))
             {
-                var newExpression = instance.Expression as NewExpression;
-                if (newExpression != null)
-                {
-                    var init = Expression.ListInit(newExpression, Expression.ElementInit(m, arguments));
-                    instance.Expression = init;
-                    return Expression.Empty();
-                }
-                var initExpression = instance.Expression as ListInitExpression;
-                if (initExpression != null)
-                {
-                    var initializers = initExpression.Initializers.ToList();
-                    initializers.Add(Expression.ElementInit(m, arguments));
-                    var init = Expression.ListInit(initExpression.NewExpression, initializers);
-                    instance.Expression = init;
-                    return Expression.Empty();
-                }
+                blocks.Push(block);
+                visited.Add(block);
+                block = GetNextBlock(block);
             }
-            if (m.IsSpecialName)
-            {
-                if (m.Name.StartsWith("get_") && arguments.Length == 0)
-                {
-                    return Expression.Property(instance, m);
-                }
-
-                if (m.Name.StartsWith("set_") && arguments.Length == 1)
-                {
-                    var value = arguments.Single();
-                    var property = Expression.Property(instance, m).Member;
-                    var expression = BuildAssignment(instance.Expression, property, value, out bool push);
-                    if (push)
-                    {
-                        return expression;
-                    }
-                    else
-                    {
-                        instance.Expression = expression;
-                        return Expression.Empty();
-                    }
-                }
-
-                if (m.Name.StartsWith("op_"))
-                {
-                    ExpressionType type;
-                    if (TryParseOperator(m, out type))
-                    {
-                        switch (arguments.Length)
-                        {
-                            case 1:
-                                return Expression.MakeUnary(type, arguments[0], arguments[0].Type);
-                            case 2:
-                                return Expression.MakeBinary(type, arguments[0], arguments[1]);
-                        }
-                    }
-                    else
-                    {
-                        switch (m.Name)
-                        {
-                            case "op_Increment":
-                                return Expression.Add(arguments[0], Expression.Constant(Convert.ChangeType(1, arguments[0].Type)));
-                            case "op_Decrement":
-                                return Expression.Subtract(arguments[0], Expression.Constant(Convert.ChangeType(1, arguments[0].Type)));
-                            case "op_Implicit":
-                                return Expression.Convert(arguments[0], m.ReturnType, m);
-                        }
-                    }
-                }
-            }
-            if (m.IsStatic && m.DeclaringType == typeof(decimal))
-            {
-                switch (m.Name)
-                {
-                    case "Add":
-                        return Expression.MakeBinary(ExpressionType.Add, arguments[0], arguments[1]);
-                    case "Subtract":
-                        return Expression.MakeBinary(ExpressionType.Subtract, arguments[0], arguments[1]);
-                    case "Multiply":
-                        return Expression.MakeBinary(ExpressionType.Multiply, arguments[0], arguments[1]);
-                    case "Divide":
-                        return Expression.MakeBinary(ExpressionType.Divide, arguments[0], arguments[1]);
-                }
-            }
-            if (m.Name == "Concat" && m.DeclaringType == typeof(string))
-            {
-                var expressions = GetExpressionsForStringConcat(arguments);
-                if (expressions.Count > 1)
-                {
-                    var expression = expressions[0];
-                    for (var i = 1; i < expressions.Count; i++)
-                    {
-                        expression = Expression.Add(expression, expressions[i], StringConcat);
-                    }
-                    return expression;
-                }
-            }
-
-            if (m.Name == "InitializeArray" && m.DeclaringType == typeof(RuntimeHelpers))
-            {
-                var arrayGetter = (Func<Array>)Expression.Lambda(arguments[0]).Compile();
-                var fieldGetter = (Func<RuntimeFieldHandle>)Expression.Lambda(arguments[1]).Compile();
-                var array = arrayGetter();
-                RuntimeHelpers.InitializeArray(array, fieldGetter());
-
-                IEnumerable<Expression> initializers = array.Cast<object>().Select(Expression.Constant);
-
-                addresses[0].Expression = Expression.NewArrayInit(arguments[0].Type.GetElementType(), initializers);
-                return Expression.Empty();
-            }
-
-            if (instance.Expression != null)
-                return Expression.Call(instance, m, arguments);
-
-            return Expression.Call(null, m, arguments);
+            return blocks;
         }
 
-        static bool TryParseOperator(MethodInfo m, out ExpressionType type)
+        Block FindJointPoint(List<BlockEdge> successors)
         {
-            switch (m.Name)
+            var trueBlocks = FollowGraph(successors[0].To);
+            var falseBlocks = FollowGraph(successors[1].To);
+            
+            Block common = null;
+            foreach (var b in falseBlocks)
             {
-                /* The complete set of binary operator function names used is as follows: 
-                 * op_Addition, op_Subtraction, op_Multiply, op_Division, op_Modulus, 
-                 * op_BitwiseAnd, op_BitwiseOr, op_ExclusiveOr, op_LeftShift, op_RightShift, 
-                 * op_Equality, op_Inequality, op_LessThan, op_LessThanOrEqual, op_GreaterThan, 
-                 * and op_GreaterThanOrEqual.
-                 */
-                case "op_Addition":
-                    type = ExpressionType.Add;
-                    return true;
-
-                case "op_Subtraction":
-                    type = ExpressionType.Subtract;
-                    return true;
-
-                case "op_Multiply":
-                    type = ExpressionType.Multiply;
-                    return true;
-
-                case "op_Division":
-                    type = ExpressionType.Divide;
-                    return true;
-
-                case "op_Modulus":
-                    type = ExpressionType.Modulo;
-                    return true;
-
-                case "op_BitwiseAnd":
-                    type = ExpressionType.And;
-                    return true;
-
-                case "op_BitwiseOr":
-                    type = ExpressionType.Or;
-                    return true;
-
-                case "op_ExclusiveOr":
-                    type = ExpressionType.ExclusiveOr;
-                    return true;
-
-                case "op_LeftShift":
-                    type = ExpressionType.LeftShift;
-                    return true;
-
-                case "op_RightShift":
-                    type = ExpressionType.RightShift;
-                    return true;
-
-                case "op_Equality":
-                    type = ExpressionType.Equal;
-                    return true;
-
-                case "op_Inequality":
-                    type = ExpressionType.NotEqual;
-                    return true;
-
-                case "op_LessThan":
-                    type = ExpressionType.LessThan;
-                    return true;
-
-                case "op_LessThanOrEqual":
-                    type = ExpressionType.LessThanOrEqual;
-                    return true;
-
-                case "op_GreaterThan":
-                    type = ExpressionType.GreaterThan;
-                    return true;
-
-                case "op_GreaterThanOrEqual":
-                    type = ExpressionType.GreaterThanOrEqual;
-                    return true;
-
-                /*
-                 * The complete set of unary operator function names used is as follows: 
-                 * op_UnaryPlus, op_UnaryNegation, op_LogicalNot, op_OnesComplement, op_Increment, op_Decrement, op_True, and op_False.
-                 */
-                case "op_UnaryPlus":
-                    type = ExpressionType.UnaryPlus;
-                    return true;
-
-                case "op_UnaryNegation":
-                    type = ExpressionType.Negate;
-                    return true;
-
-                case "op_LogicalNot":
-                    type = ExpressionType.Not;
-                    return true;
-
-                case "op_OnesComplement":
-                    type = ExpressionType.OnesComplement;
-                    return true;
-
-                case "op_Increment":
-                    type = default(ExpressionType);
-                    return false;
-
-                case "op_Decrement":
-                    type = default(ExpressionType);
-                    return false;
-
-                case "op_True":
-                    type = default(ExpressionType);
-                    return false;
-
-                case "op_False":
-                    type = default(ExpressionType);
-                    return false;
+                if (trueBlocks.Count > 0 && b == trueBlocks.Pop())
+                    common = b;
+                else
+                    break;
             }
-            return Enum.TryParse(m.Name.Substring(3), out type);
+
+            return common;
         }
-
-        static IList<Expression> GetExpressionsForStringConcat(Expression[] arguments)
+       
+        Block GetNextBlock(Block block)
         {
-            if (arguments.Length == 1)
+            var successors = block.Successors.Where(b => !b.IsException).ToList();
+            return successors.Count switch
             {
-                var array = arguments[0] as NewArrayExpression;
-                if (array != null)
-                {
-                    if (array.NodeType == ExpressionType.NewArrayInit)
-                    {
-                        return array.Expressions;
-                    }
-                }
-            }
-            return arguments;
+                0 => null,// No successors (return/exit block)
+                1 => successors[0].To, // Single successor (unconditional flow)
+                2 => FindJointPoint(block.Successors.Where(b => !b.IsException).ToList()), // Conditional branch - find joint point of the two branches
+                _ => null
+            };
         }
     }
 }

@@ -313,6 +313,12 @@ namespace DelegateDecompiler
         {
             var left = Visit(node.Left);
             var right = Visit(node.Right);
+            
+            if (TryOptimizeTypeAsComparison(node.NodeType, left, right, out var typeIsExpression))
+            {
+                return typeIsExpression;
+            }
+            
             if (node.Right is ConstantExpression rightConstant)
             {
                 if (rightConstant.Value as bool? == false)
@@ -534,6 +540,32 @@ namespace DelegateDecompiler
             {
                 hasParameters = true;
                 return base.VisitParameter(node);
+            }
+        }
+
+        static bool TryOptimizeTypeAsComparison(ExpressionType nodeType, Expression left, Expression right, out Expression result)
+        {
+            result = null;
+
+            // Pattern: (obj as Type) != null -> TypeIs(obj, Type)
+            // Pattern: (obj as Type) == null -> !TypeIs(obj, Type)
+            if (left.NodeType != ExpressionType.TypeAs || left is not UnaryExpression typeAs || !IsNullConstant(right))
+                return false;
+
+            switch (nodeType)
+            {
+                case ExpressionType.NotEqual:
+                {
+                    result = Expression.TypeIs(typeAs.Operand, typeAs.Type);
+                    return true;
+                }
+                case ExpressionType.Equal:
+                {
+                    result = Expression.Not(Expression.TypeIs(typeAs.Operand, typeAs.Type));
+                    return true;
+                }
+                default:
+                    return false;
             }
         }
 

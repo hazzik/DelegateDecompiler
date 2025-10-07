@@ -14,7 +14,7 @@ namespace DelegateDecompiler.Tests
             Expression<Func<bool, bool>> expected = b => b & false;
             Expression<Func<bool, bool>> expected2 = b => false;
             Func<bool, bool> compiled = b => b & false;
-            Test(expected, expected2, compiled);
+            Test(compiled, expected, expected2);
         }
 
         [Test]
@@ -23,7 +23,7 @@ namespace DelegateDecompiler.Tests
             Expression<Func<bool, bool>> expected = b => b & true;
             Expression<Func<bool, bool>> expected2 = b => b;
             Func<bool, bool> compiled = b => b & true;
-            Test(expected, expected2, compiled);
+            Test(compiled, expected, expected2);
         }
 
         [Test, Ignore("Not fixed yet.")]
@@ -31,7 +31,7 @@ namespace DelegateDecompiler.Tests
         {
             Expression<Func<Func<bool>, bool>> expected = b => b.Invoke() & false;
             Func<Func<bool>, bool> compiled = b => b.Invoke() & false;
-            Test(expected, compiled);
+            Test(compiled, expected);
         }
 
         [Test]
@@ -40,7 +40,7 @@ namespace DelegateDecompiler.Tests
             Expression<Func<Func<bool>, bool>> expected = b => b.Invoke() & true;
             Expression<Func<Func<bool>, bool>> expected2 = b => b.Invoke();
             Func<Func<bool>, bool> compiled = b => b.Invoke() & true;
-            Test(expected, expected2, compiled);
+            Test(compiled, expected, expected2);
         }
 
         [Test]
@@ -49,7 +49,7 @@ namespace DelegateDecompiler.Tests
             Expression<Func<bool, bool>> expected = b => false & b;
             Expression<Func<bool, bool>> expected2 = b => false;
             Func<bool, bool> compiled = b => false & b;
-            Test(expected, expected2, compiled);
+            Test(compiled, expected, expected2);
         }
 
         [Test]
@@ -58,7 +58,7 @@ namespace DelegateDecompiler.Tests
             Expression<Func<bool, bool>> expected = b => true & b;
             Expression<Func<bool, bool>> expected2 = b => b;
             Func<bool, bool> compiled = b => true & b;
-            Test(expected, expected2, compiled);
+            Test(compiled, expected, expected2);
         }
 
         [Test, Ignore("Not fixed yet.")]
@@ -66,7 +66,7 @@ namespace DelegateDecompiler.Tests
         {
             Expression<Func<Func<bool>, bool>> expected = b => false & b.Invoke();
             Func<Func<bool>, bool> compiled = b => false & b.Invoke();
-            Test(expected, compiled);
+            Test(compiled, expected);
         }
 
         [Test]
@@ -75,7 +75,7 @@ namespace DelegateDecompiler.Tests
             Expression<Func<Func<bool>, bool>> expected = b => true & b.Invoke();
             Expression<Func<Func<bool>, bool>> expected2 = b => b.Invoke();
             Func<Func<bool>, bool> compiled = b => true & b.Invoke();
-            Test(expected, expected2, compiled);
+            Test(compiled, expected, expected2);
         }
 
         [Test]
@@ -83,7 +83,7 @@ namespace DelegateDecompiler.Tests
         {
             Expression<Func<bool, bool, bool>> expected = (x, y) => x & y;
             Func<bool, bool, bool> compiled = (x, y) => x & y;
-            Test(expected, compiled);
+            Test(compiled, expected);
         }
 
         [Test]
@@ -91,7 +91,7 @@ namespace DelegateDecompiler.Tests
         {
             Expression<Func<Func<bool>, Func<bool>, bool>> expected = (x, y) => x.Invoke() & y.Invoke();
             Func<Func<bool>, Func<bool>, bool> compiled = (x, y) => x.Invoke() & y.Invoke();
-            Test(expected, compiled);
+            Test(compiled, expected);
         }
 
         [Test, Ignore("Needs optimization")]
@@ -100,7 +100,7 @@ namespace DelegateDecompiler.Tests
             Expression<Func<bool, bool>> expected = b => b && false;
             Expression<Func<bool, bool>> expected2 = b => false;
             Func<bool, bool> compiled = b => b && false;
-            Test(expected, expected2, compiled);
+            Test(compiled, expected, expected2);
         }
 
         [Test]
@@ -109,7 +109,7 @@ namespace DelegateDecompiler.Tests
             Expression<Func<bool, bool>> expected = b => b && true;
             Expression<Func<bool, bool>> expected2 = b => b;
             Func<bool, bool> compiled = b => b && true;
-            Test(expected, expected2, compiled);
+            Test(compiled, expected, expected2);
         }
 
         [Test, Ignore("Needs optimization")]
@@ -117,7 +117,7 @@ namespace DelegateDecompiler.Tests
         {
             Expression<Func<Func<bool>, bool>> expected = b => b.Invoke() && false;
             Func<Func<bool>, bool> compiled = b => b.Invoke() && false;
-            Test(expected, compiled);
+            Test(compiled, expected);
         }
 
         [Test]
@@ -126,7 +126,7 @@ namespace DelegateDecompiler.Tests
             Expression<Func<Func<bool>, bool>> expected = b => b.Invoke() && true;
             Expression<Func<Func<bool>, bool>> expected2 = b => b.Invoke();
             Func<Func<bool>, bool> compiled = b => b.Invoke() && true;
-            Test(expected, expected2, compiled);
+            Test(compiled, expected, expected2);
         }
 
         [Test]
@@ -135,7 +135,7 @@ namespace DelegateDecompiler.Tests
             Expression<Func<bool, bool>> expected = b => false && b;
             Expression<Func<bool, bool>> expected2 = b => false;
             Func<bool, bool> compiled = b => false && b;
-            Test(expected, expected2, compiled);
+            Test(compiled, expected, expected2);
         }
 
         [Test]
@@ -144,7 +144,7 @@ namespace DelegateDecompiler.Tests
             Expression<Func<bool, bool>> expected = b => true && b;
             Expression<Func<bool, bool>> expected2 = b => b;
             Func<bool, bool> compiled = b => true && b;
-            Test(expected, expected2, compiled);
+            Test(compiled, expected, expected2);
         }
 
         [Test]
@@ -153,7 +153,7 @@ namespace DelegateDecompiler.Tests
             Expression<Func<Func<bool>, bool>> expected = b => false && b.Invoke();
             Expression<Func<Func<bool>, bool>> expected2 = b => false;
             Func<Func<bool>, bool> compiled = b => false && b.Invoke();
-            Test(expected, expected2, compiled);
+            Test(compiled, expected, expected2);
         }
 
         [Test]
@@ -162,7 +162,7 @@ namespace DelegateDecompiler.Tests
             Expression<Func<Func<bool>, bool>> expected = b => true && b.Invoke();
             Expression<Func<Func<bool>, bool>> expected2 = b => b.Invoke();
             Func<Func<bool>, bool> compiled = b => true && b.Invoke();
-            Test(expected, expected2, compiled);
+            Test(compiled, expected, expected2);
         }
 
         [Test]
@@ -171,7 +171,7 @@ namespace DelegateDecompiler.Tests
             Expression<Func<bool, bool, bool>> expected = (x, y) => x && y;
             Expression<Func<bool, bool, bool>> expected2 = (x, y) => x & y;
             Func<bool, bool, bool> compiled = (x, y) => x && y;
-            Test(expected, expected2, compiled);
+            Test(compiled, expected, expected2);
         }
 
         [Test]
@@ -179,7 +179,7 @@ namespace DelegateDecompiler.Tests
         {
             Expression<Func<Func<bool>, Func<bool>, bool>> expected = (x, y) => x.Invoke() && y.Invoke();
             Func<Func<bool>, Func<bool>, bool> compiled = (x, y) => x.Invoke() && y.Invoke();
-            Test(expected, compiled);
+            Test(compiled, expected);
         }
 
         [Test]
@@ -188,7 +188,7 @@ namespace DelegateDecompiler.Tests
             Expression<Func<bool, bool>> expected = b => b | false;
             Expression<Func<bool, bool>> expected2 = b => b;
             Func<bool, bool> compiled = b => b | false;
-            Test(expected, expected2, compiled);
+            Test(compiled, expected, expected2);
         }
 
         [Test]
@@ -197,7 +197,7 @@ namespace DelegateDecompiler.Tests
             Expression<Func<bool, bool>> expected = b => b | true;
             Expression<Func<bool, bool>> expected2 = b => true;
             Func<bool, bool> compiled = b => b | true;
-            Test(expected, expected2, compiled);
+            Test(compiled, expected, expected2);
         }
 
         [Test]
@@ -206,7 +206,7 @@ namespace DelegateDecompiler.Tests
             Expression<Func<Func<bool>, bool>> expected = b => b.Invoke() | false;
             Expression<Func<Func<bool>, bool>> expected2 = b => b.Invoke();
             Func<Func<bool>, bool> compiled = b => b.Invoke() | false;
-            Test(expected, expected2, compiled);
+            Test(compiled, expected, expected2);
         }
 
         [Test]
@@ -215,7 +215,7 @@ namespace DelegateDecompiler.Tests
             Expression<Func<Func<bool>, bool>> expected = b => b.Invoke() | true;
             Expression<Func<Func<bool>, bool>> expected2 = b => true;
             Func<Func<bool>, bool> compiled = b => b.Invoke() | true;
-            Test(expected, expected2, compiled);
+            Test(compiled, expected, expected2);
         }
 
         [Test]
@@ -224,7 +224,7 @@ namespace DelegateDecompiler.Tests
             Expression<Func<bool, bool>> expected = b => false | b;
             Expression<Func<bool, bool>> expected2 = b => b;
             Func<bool, bool> compiled = b => false | b;
-            Test(expected, expected2, compiled);
+            Test(compiled, expected, expected2);
         }
 
         [Test]
@@ -233,7 +233,7 @@ namespace DelegateDecompiler.Tests
             Expression<Func<bool, bool>> expected = b => true | b;
             Expression<Func<bool, bool>> expected2 = b => true;
             Func<bool, bool> compiled = b => true | b;
-            Test(expected, expected2, compiled);
+            Test(compiled, expected, expected2);
         }
 
         [Test]
@@ -242,7 +242,7 @@ namespace DelegateDecompiler.Tests
             Expression<Func<Func<bool>, bool>> expected = b => false | b.Invoke();
             Expression<Func<Func<bool>, bool>> expected2 = b => b.Invoke();
             Func<Func<bool>, bool> compiled = b => false | b.Invoke();
-            Test(expected, expected2, compiled);
+            Test(compiled, expected, expected2);
         }
 
         [Test]
@@ -251,7 +251,7 @@ namespace DelegateDecompiler.Tests
             Expression<Func<Func<bool>, bool>> expected = b => true | b.Invoke();
             Expression<Func<Func<bool>, bool>> expected2 = b => true;
             Func<Func<bool>, bool> compiled = b => true | b.Invoke();
-            Test(expected, expected2, compiled);
+            Test(compiled, expected, expected2);
         }
 
         [Test]
@@ -259,7 +259,7 @@ namespace DelegateDecompiler.Tests
         {
             Expression<Func<bool, bool, bool>> expected = (x, y) => x | y;
             Func<bool, bool, bool> compiled = (x, y) => x | y;
-            Test(expected, compiled);
+            Test(compiled, expected);
         }
 
 
@@ -268,7 +268,7 @@ namespace DelegateDecompiler.Tests
         {
             Expression<Func<Func<bool>, Func<bool>, bool>> expected = (x, y) => x.Invoke() | y.Invoke();
             Func<Func<bool>, Func<bool>, bool> compiled = (x, y) => x.Invoke() | y.Invoke();
-            Test(expected, compiled);
+            Test(compiled, expected);
         }
 
         [Test]
@@ -277,7 +277,7 @@ namespace DelegateDecompiler.Tests
             Expression<Func<bool, bool>> expected = b => b || false;
             Expression<Func<bool, bool>> expected2 = b => b;
             Func<bool, bool> compiled = b => b || false;
-            Test(expected, expected2, compiled);
+            Test(compiled, expected, expected2);
         }
 
         [Test, Ignore("Needs optimization")]
@@ -286,7 +286,7 @@ namespace DelegateDecompiler.Tests
             Expression<Func<bool, bool>> expected = b => b || true;
             Expression<Func<bool, bool>> expected2 = b => true;
             Func<bool, bool> compiled = b => b || true;
-            Test(expected, expected2, compiled);
+            Test(compiled, expected, expected2);
         }
 
         [Test]
@@ -295,7 +295,7 @@ namespace DelegateDecompiler.Tests
             Expression<Func<Func<bool>, bool>> expected = b => b.Invoke() || false;
             Expression<Func<Func<bool>, bool>> expected2 = b => b.Invoke();
             Func<Func<bool>, bool> compiled = b => b.Invoke() || false;
-            Test(expected, expected2, compiled);
+            Test(compiled, expected, expected2);
         }
 
         [Test, Ignore("Needs optimization")]
@@ -303,7 +303,7 @@ namespace DelegateDecompiler.Tests
         {
             Expression<Func<Func<bool>, bool>> expected = b => b.Invoke() || true;
             Func<Func<bool>, bool> compiled = b => b.Invoke() || true;
-            Test(expected, compiled);
+            Test(compiled, expected);
         }
 
         [Test]
@@ -312,7 +312,7 @@ namespace DelegateDecompiler.Tests
             Expression<Func<bool, bool>> expected = b => false || b;
             Expression<Func<bool, bool>> expected2 = b => b;
             Func<bool, bool> compiled = b => false || b;
-            Test(expected, expected2, compiled);
+            Test(compiled, expected, expected2);
         }
 
         [Test]
@@ -321,7 +321,7 @@ namespace DelegateDecompiler.Tests
             Expression<Func<bool, bool>> expected = b => true || b;
             Expression<Func<bool, bool>> expected2 = b => true;
             Func<bool, bool> compiled = b => true || b;
-            Test(expected, expected2, compiled);
+            Test(compiled, expected, expected2);
         }
 
         [Test]
@@ -330,7 +330,7 @@ namespace DelegateDecompiler.Tests
             Expression<Func<Func<bool>, bool>> expected = b => false || b.Invoke();
             Expression<Func<Func<bool>, bool>> expected2 = b => b.Invoke();
             Func<Func<bool>, bool> compiled = b => false || b.Invoke();
-            Test(expected, expected2, compiled);
+            Test(compiled, expected, expected2);
         }
 
         [Test]
@@ -339,7 +339,7 @@ namespace DelegateDecompiler.Tests
             Expression<Func<Func<bool>, bool>> expected = b => true || b.Invoke();
             Expression<Func<Func<bool>, bool>> expected2 = b => true;
             Func<Func<bool>, bool> compiled = b => true || b.Invoke();
-            Test(expected, expected2, compiled);
+            Test(compiled, expected, expected2);
         }
 
         [Test]
@@ -348,7 +348,7 @@ namespace DelegateDecompiler.Tests
             Expression<Func<bool, bool, bool>> expected = (x, y) => x || y;
             Expression<Func<bool, bool, bool>> expected2 = (x, y) => x | y;
             Func<bool, bool, bool> compiled = (x, y) => x || y;
-            Test(expected, expected2, compiled);
+            Test(compiled, expected, expected2);
         }
 
         [Test]
@@ -356,7 +356,7 @@ namespace DelegateDecompiler.Tests
         {
             Expression<Func<Func<bool>, Func<bool>, bool>> expected = (x, y) => x.Invoke() || y.Invoke();
             Func<Func<bool>, Func<bool>, bool> compiled = (x, y) => x.Invoke() || y.Invoke();
-            Test(expected, compiled);
+            Test(compiled, expected);
         }
 
         [Test]
@@ -365,7 +365,7 @@ namespace DelegateDecompiler.Tests
             Expression<Func<bool, bool>> expected = b => b == false;
             Expression<Func<bool, bool>> expected2 = b => !b;
             Func<bool, bool> compiled = b => b == false;
-            Test(expected, expected2, compiled);
+            Test(compiled, expected, expected2);
         }
 
         [Test]
@@ -374,7 +374,7 @@ namespace DelegateDecompiler.Tests
             Expression<Func<bool, bool>> expected = b => b == true;
             Expression<Func<bool, bool>> expected2 = b => b;
             Func<bool, bool> compiled = b => b == true;
-            Test(expected, expected2, compiled);
+            Test(compiled, expected, expected2);
         }
 
         [Test]
@@ -383,7 +383,7 @@ namespace DelegateDecompiler.Tests
             Expression<Func<Func<bool>, bool>> expected = b => b.Invoke() == false;
             Expression<Func<Func<bool>, bool>> expected2 = b => !b.Invoke();
             Func<Func<bool>, bool> compiled = b => b.Invoke() == false;
-            Test(expected, expected2, compiled);
+            Test(compiled, expected, expected2);
         }
 
         [Test]
@@ -392,7 +392,7 @@ namespace DelegateDecompiler.Tests
             Expression<Func<Func<bool>, bool>> expected = b => b.Invoke() == true;
             Expression<Func<Func<bool>, bool>> expected2 = b => b.Invoke();
             Func<Func<bool>, bool> compiled = b => b.Invoke() == true;
-            Test(expected, expected2, compiled);
+            Test(compiled, expected, expected2);
         }
 
         [Test]
@@ -401,7 +401,7 @@ namespace DelegateDecompiler.Tests
             Expression<Func<bool, bool>> expected = b => false == b;
             Expression<Func<bool, bool>> expected2 = b => !b;
             Func<bool, bool> compiled = b => false == b;
-            Test(expected, expected2, compiled);
+            Test(compiled, expected, expected2);
         }
 
         [Test]
@@ -410,7 +410,7 @@ namespace DelegateDecompiler.Tests
             Expression<Func<bool, bool>> expected = b => true == b;
             Expression<Func<bool, bool>> expected2 = b => b;
             Func<bool, bool> compiled = b => true == b;
-            Test(expected, expected2, compiled);
+            Test(compiled, expected, expected2);
         }
 
         [Test]
@@ -419,7 +419,7 @@ namespace DelegateDecompiler.Tests
             Expression<Func<Func<bool>, bool>> expected = b => false == b.Invoke();
             Expression<Func<Func<bool>, bool>> expected2 = b => !b.Invoke();
             Func<Func<bool>, bool> compiled = b => false == b.Invoke();
-            Test(expected, expected2, compiled);
+            Test(compiled, expected, expected2);
         }
 
         [Test]
@@ -428,7 +428,7 @@ namespace DelegateDecompiler.Tests
             Expression<Func<Func<bool>, bool>> expected = b => true == b.Invoke();
             Expression<Func<Func<bool>, bool>> expected2 = b => b.Invoke();
             Func<Func<bool>, bool> compiled = b => true == b.Invoke();
-            Test(expected, expected2, compiled);
+            Test(compiled, expected, expected2);
         }
 
         [Test]
@@ -436,7 +436,7 @@ namespace DelegateDecompiler.Tests
         {
             Expression<Func<bool, bool, bool>> expected = (x, y) => x == y;
             Func<bool, bool, bool> compiled = (x, y) => x == y;
-            Test(expected, compiled);
+            Test(compiled, expected);
         }
 
         [Test]
@@ -444,7 +444,7 @@ namespace DelegateDecompiler.Tests
         {
             Expression<Func<Func<bool>, Func<bool>, bool>> expected = (x, y) => x.Invoke() == y.Invoke();
             Func<Func<bool>, Func<bool>, bool> compiled = (x, y) => x.Invoke() == y.Invoke();
-            Test(expected, compiled);
+            Test(compiled, expected);
         }
     }
 }

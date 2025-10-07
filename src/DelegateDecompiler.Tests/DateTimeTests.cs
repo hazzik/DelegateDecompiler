@@ -25,7 +25,7 @@ namespace DelegateDecompiler.Tests
             Func<DateTime, bool> actual = dt => dt < DbFunctions.AddYears(DateTime.Now, -10);
             Expression<Func<DateTime, bool>> expected = dt => dt < DbFunctions.AddYears(DateTime.Now, -10);
 
-            Test(expected, actual);
+            Test(actual, expected);
         }
 
         [Test]
@@ -34,7 +34,7 @@ namespace DelegateDecompiler.Tests
             Func<DateTime, bool?> actual = dt => dt < DbFunctions.AddYears(DateTime.Now, -10);
             Expression<Func<DateTime, bool?>> expected = dt => dt < DbFunctions.AddYears(DateTime.Now, -10);
 
-            Test(expected, actual);
+            Test(actual, expected);
         }
     }
 }
