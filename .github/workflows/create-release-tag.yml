@@ -23,7 +23,7 @@ jobs:
 
     - name: Create and Push Tag
       run: |
-        echo git tag ${{ steps.gitversion.outputs.semVer }}
-        echo git push origin ${{ steps.gitversion.outputs.semVer }}
+        echo git tag ${{ steps.gitversion.outputs.majorMinorPatch }}
+        echo git push origin ${{ steps.gitversion.outputs.majorMinorPatch }}
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
