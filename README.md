@@ -13,7 +13,7 @@ If you like the library please consider [supporting my work](https://github.com/
 
 ### Using computed properties in linq.
 
-Asume we have a class with a computed property
+Assume we have a class with a computed property
 
 ```csharp
 class Employee
