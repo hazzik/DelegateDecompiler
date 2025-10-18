@@ -1,0 +1,38 @@
+name: Publish NuGet Package
+
+on:
+  push:
+    tags:
+      - '*'
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: |
+          6.0.x
+          8.0.x
+          9.0.x
+
+    - name: Restore dependencies
+      run: dotnet restore
+
+    - name: Build
+      run: dotnet build --no-restore --configuration Release
+
+    - name: Pack
+      run: dotnet pack --no-build --configuration Release --output ./Release
+
+    - name: Publish to NuGet
+      run: dotnet nuget push ./Release/*.nupkg -s nuget.org -k ${NUGET_API_KEY}
+      env:
+        NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}

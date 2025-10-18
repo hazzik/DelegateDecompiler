@@ -1,8 +1,10 @@
 name: Create Release Tag
 
 on:
-  push:
   workflow_dispatch:
+
+permissions:
+  contents: write
 
 jobs:
   create-tag:
@@ -23,7 +25,5 @@ jobs:
 
     - name: Create and Push Tag
       run: |
-        echo git tag ${{ steps.gitversion.outputs.majorMinorPatch }}
-        echo git push origin ${{ steps.gitversion.outputs.majorMinorPatch }}
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        git tag ${{ steps.gitversion.outputs.majorMinorPatch }}
+        git push origin ${{ steps.gitversion.outputs.majorMinorPatch }}
