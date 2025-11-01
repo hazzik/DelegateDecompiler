@@ -28,7 +28,7 @@ namespace DelegateDecompiler.Tests
             Expression<Func<TestEnum, bool>> expected1 = x => x == TestEnum.Bar;
             Expression<Func<TestEnum, bool>> expected2 = x => (int) x == (int) TestEnum.Bar;
             Func<TestEnum, bool> compiled = x => x == TestEnum.Bar;
-            Test(expected1, expected2, compiled);
+            Test(compiled, expected1, expected2);
         }
 
         [Test]
@@ -37,7 +37,7 @@ namespace DelegateDecompiler.Tests
             Expression<Func<TestEnum, bool>> expected1 = x => TestEnum.Bar == x;
             Expression<Func<TestEnum, bool>> expected2 = x => (int) TestEnum.Bar == (int) x;
             Func<TestEnum, bool> compiled = x => TestEnum.Bar == x;
-            Test(expected1, expected2, compiled);
+            Test(compiled, expected1, expected2);
         }
 
         [Test]
@@ -46,7 +46,7 @@ namespace DelegateDecompiler.Tests
             Expression<Func<TestEnum, bool>> expected1 = x => (x != TestEnum.Bar) || (x == TestEnum.Foo);
             Expression<Func<TestEnum, bool>> expected2 = x => ((int)x != (int)TestEnum.Bar) || ((int)x == (int)TestEnum.Foo);
             Func<TestEnum, bool> compiled = x => (x != TestEnum.Bar) || (x == TestEnum.Foo);
-            Test(expected1, expected2, compiled);
+            Test(compiled, expected1, expected2);
         }
 
         [Test]
@@ -55,7 +55,7 @@ namespace DelegateDecompiler.Tests
             Expression<Func<TestEnum, bool>> expected1 = x => (x == TestEnum.Bar) || (x == TestEnum.Foo);
             Expression<Func<TestEnum, bool>> expected2 = x => ((int)x == (int)TestEnum.Bar) || ((int)x == (int)TestEnum.Foo);
             Func<TestEnum, bool> compiled = x => (x == TestEnum.Bar) || (x == TestEnum.Foo);
-            Test(expected1, expected2, compiled);
+            Test(compiled, expected1, expected2);
         }
 
         [Test]
@@ -63,7 +63,7 @@ namespace DelegateDecompiler.Tests
         {
             Expression<Func<TestEnum, TestEnum, bool>> expected = (x, y) => x == y;
             Func<TestEnum, TestEnum, bool> compiled = (x, y) => x == y;
-            Test(expected, compiled);
+            Test(compiled, expected);
         }
 
         [Test]
@@ -72,7 +72,7 @@ namespace DelegateDecompiler.Tests
             Expression<Func<TestEnum, bool>> expected1 = x => x != TestEnum.Bar;
             Expression<Func<TestEnum, bool>> expected2 = x => (int) x != (int) TestEnum.Bar;
             Func<TestEnum, bool> compiled = x => x != TestEnum.Bar;
-            Test(expected1, expected2, compiled);
+            Test(compiled, expected1, expected2);
         }
 
         [Test]
@@ -81,7 +81,7 @@ namespace DelegateDecompiler.Tests
             Expression<Func<TestEnum, bool>> expected1 = x => TestEnum.Bar != x;
             Expression<Func<TestEnum, bool>> expected2 = x => (int) TestEnum.Bar != (int) x;
             Func<TestEnum, bool> compiled = x => TestEnum.Bar != x;
-            Test(expected1, expected2, compiled);
+            Test(compiled, expected1, expected2);
         }
 
         [Test]
@@ -89,7 +89,7 @@ namespace DelegateDecompiler.Tests
         {
             Expression<Func<TestEnum, TestEnum, bool>> expected = (x, y) => x != y;
             Func<TestEnum, TestEnum, bool> compiled = (x, y) => x != y;
-            Test(expected, compiled);
+            Test(compiled, expected);
         }
 
         [Test]
@@ -97,7 +97,7 @@ namespace DelegateDecompiler.Tests
         {
             Expression<Func<TestFlagEnum, bool>> expected = x => TestFlagEnum.Bar.HasFlag(x);
             Func<TestFlagEnum, bool> compiled = x => TestFlagEnum.Bar.HasFlag(x);
-            Test(expected, compiled);
+            Test(compiled, expected);
         }
 
         [Test]
@@ -105,7 +105,7 @@ namespace DelegateDecompiler.Tests
         {
             Expression<Func<TestFlagEnum, bool>> expected = x => x.HasFlag(TestFlagEnum.Bar);
             Func<TestFlagEnum, bool> compiled = x => x.HasFlag(TestFlagEnum.Bar);
-            Test(expected, compiled);
+            Test(compiled, expected);
         }
 
         [Test]
@@ -113,7 +113,7 @@ namespace DelegateDecompiler.Tests
         {
             Expression<Func<TestFlagEnum, bool>> expected = x => x.HasFlag(x);
             Func<TestFlagEnum, bool> compiled = x => x.HasFlag(x);
-            Test(expected, compiled);
+            Test(compiled, expected);
         }
 
         [Test]
@@ -121,7 +121,7 @@ namespace DelegateDecompiler.Tests
         {
             Expression<Func<TestFlagEnum, TestFlagEnum>> expected = x => TestFlagEnum.Bar & x;
             Func<TestFlagEnum, TestFlagEnum> compiled = x => TestFlagEnum.Bar & x;
-            Test(expected, compiled);
+            Test(compiled, expected);
         }
 
         [Test]
@@ -129,7 +129,7 @@ namespace DelegateDecompiler.Tests
         {
             Expression<Func<TestFlagEnum, TestFlagEnum>> expected = x => x & TestFlagEnum.Bar ;
             Func<TestFlagEnum, TestFlagEnum> compiled = x => x & TestFlagEnum.Bar ;
-            Test(expected, compiled);
+            Test(compiled, expected);
         }
 
         [Test]
@@ -137,7 +137,7 @@ namespace DelegateDecompiler.Tests
         {
             Expression<Func<TestFlagEnum, TestFlagEnum>> expected = x => ~ x;
             Func<TestFlagEnum, TestFlagEnum> compiled = x => ~ x;
-            Test(expected, compiled);
+            Test(compiled, expected);
         }
 
         [Test]
@@ -145,7 +145,7 @@ namespace DelegateDecompiler.Tests
         {
             Expression<Func<TestFlagEnum, TestFlagEnum>> expected = x => x & x;
             Func<TestFlagEnum, TestFlagEnum> compiled = x => x & x ;
-            Test(expected, compiled);
+            Test(compiled, expected);
         }
 
         [Test]
@@ -153,7 +153,7 @@ namespace DelegateDecompiler.Tests
         {
             Expression<Func<TestFlagEnum, TestFlagEnum>> expected = x => TestFlagEnum.Bar | x;
             Func<TestFlagEnum, TestFlagEnum> compiled = x => TestFlagEnum.Bar | x;
-            Test(expected, compiled);
+            Test(compiled, expected);
         }
 
         [Test]
@@ -161,7 +161,7 @@ namespace DelegateDecompiler.Tests
         {
             Expression<Func<TestFlagEnum, TestFlagEnum>> expected = x => x | TestFlagEnum.Bar ;
             Func<TestFlagEnum, TestFlagEnum> compiled = x => x | TestFlagEnum.Bar ;
-            Test(expected, compiled);
+            Test(compiled, expected);
         }
 
         [Test]
@@ -169,7 +169,7 @@ namespace DelegateDecompiler.Tests
         {
             Expression<Func<TestFlagEnum, TestFlagEnum>> expected = x => x | x;
             Func<TestFlagEnum, TestFlagEnum> compiled = x => x | x ;
-            Test(expected, compiled);
+            Test(compiled, expected);
         }
 
         [Test]
@@ -177,7 +177,7 @@ namespace DelegateDecompiler.Tests
         {
             Expression<Func<TestEnum, bool>> expected = x => TestEnumMethod(x);
             Func<TestEnum, bool> compiled = x => TestEnumMethod(x);
-            Test(expected, compiled);
+            Test(compiled, expected);
         }
 
         [Test]
@@ -185,7 +185,7 @@ namespace DelegateDecompiler.Tests
         {
             Expression<Func<TestEnum, bool>> expected = x => EnumMethod(x);
             Func<TestEnum, bool> compiled = x => EnumMethod(x);
-            Test(expected, compiled);
+            Test(compiled, expected);
         }
 
         [Test]
@@ -193,7 +193,7 @@ namespace DelegateDecompiler.Tests
         {
             Expression<Func<TestEnum, bool>> expected = x => ObjectMethod(x);
             Func<TestEnum, bool> compiled = x => ObjectMethod(x);
-            Test(expected, compiled);
+            Test(compiled, expected);
         }
 
         [Test]
@@ -201,7 +201,7 @@ namespace DelegateDecompiler.Tests
         {
             Expression<Func<TestEnum, bool>> expected = x => Int8Method((byte) x);
             Func<TestEnum, bool> compiled = x => Int8Method((byte) x);
-            Test(expected, compiled);
+            Test(compiled, expected);
         }
 
         [Test]
@@ -209,7 +209,7 @@ namespace DelegateDecompiler.Tests
         {
             Expression<Func<TestEnum, bool>> expected = x => Int16Method((short) x);
             Func<TestEnum, bool> compiled = x => Int16Method((short) x);
-            Test(expected, compiled);
+            Test(compiled, expected);
         }
 
         [Test]
@@ -217,7 +217,7 @@ namespace DelegateDecompiler.Tests
         {
             Expression<Func<TestEnum, bool>> expected = x => Int32Method((int) x);
             Func<TestEnum, bool> compiled = x => Int32Method((int) x);
-            Test(expected, compiled);
+            Test(compiled, expected);
         }
 
         [Test]
@@ -225,7 +225,7 @@ namespace DelegateDecompiler.Tests
         {
             Expression<Func<TestEnum, bool>> expected = x => Int64Method((long) x);
             Func<TestEnum, bool> compiled = x => Int64Method((long) x);
-            Test(expected, compiled);
+            Test(compiled, expected);
         }
 
         [Test]
@@ -233,7 +233,7 @@ namespace DelegateDecompiler.Tests
         {
             Expression<Func<TestEnum, bool>> expected = x => GenericMethod(x);
             Func<TestEnum, bool> compiled = x => GenericMethod(x);
-            Test(expected, compiled);
+            Test(compiled, expected);
         }
 
         // The following tests check for the insertion of Expression.Convert in the expression tree for compatible types
@@ -243,7 +243,7 @@ namespace DelegateDecompiler.Tests
         {
             Expression<Func<TestEnum, int>> expected = x => (int)x - 10;
             Func<TestEnum, int> compiled = x => (int)x - 10;
-            Test(expected, compiled);
+            Test(compiled, expected);
         }
 
         [Test]
@@ -251,7 +251,7 @@ namespace DelegateDecompiler.Tests
         {
             Expression<Func<TestEnum, int>> expected = x => (int)x % 10;
             Func<TestEnum, int> compiled = x => (int)x % 10;
-            Test(expected, compiled);
+            Test(compiled, expected);
         }
 
         [Test]
@@ -259,7 +259,7 @@ namespace DelegateDecompiler.Tests
         {
             Expression<Func<TestEnum, bool>> expected = x => (int)x == 10;
             Func<TestEnum, bool> compiled = x => (int)x == 10;
-            Test(expected, compiled);
+            Test(compiled, expected);
         }
 
         [Test]
@@ -267,7 +267,7 @@ namespace DelegateDecompiler.Tests
         {
             Expression<Func<TestEnum, bool>> expected = x => (int)x > 10;
             Func<TestEnum, bool> compiled = x => (int)x > 10;
-            Test(expected, compiled);
+            Test(compiled, expected);
         }
 
         [Test]
@@ -275,7 +275,7 @@ namespace DelegateDecompiler.Tests
         {
             Expression<Func<decimal, decimal>> expected = x => Decimal.Round(x, 3, MidpointRounding.AwayFromZero);
             Func<decimal, decimal> compiled = x => Decimal.Round(x, 3, MidpointRounding.AwayFromZero);
-            Test(expected, compiled);
+            Test(compiled, expected);
         }
 
         [Test]
@@ -283,7 +283,7 @@ namespace DelegateDecompiler.Tests
         {
 	        Expression<Func<TestEnum?, TestEnum, bool>> expected = (x, y) => x == y;
 	        Func<TestEnum?, TestEnum, bool> compiled = (x, y) => x == y;
-			Test(expected, compiled);
+			Test(compiled, expected);
         }
 
         [Test]
@@ -291,7 +291,7 @@ namespace DelegateDecompiler.Tests
         {
 	        Expression<Func<TestEnum?, bool>> expected = x => x == TestEnum.Foo;
 	        Func<TestEnum?, bool> compiled = x => x == TestEnum.Foo;
-			Test(expected, compiled);
+			Test(compiled, expected);
         }
 
         [Test]
@@ -300,7 +300,7 @@ namespace DelegateDecompiler.Tests
             Expression<Func<int?, bool>> expected1 = x => (TestEnum?) x == TestEnum.Bar;
             Expression<Func<int?, bool>> expected2 = x => (x.HasValue ? (TestEnum?) (x ?? 0) : null) == TestEnum.Bar;
             Func<int?, bool> compiled = x => (TestEnum?) x == TestEnum.Bar;
-            Test(expected1, expected2, compiled);
+            Test(compiled, expected1, expected2);
         }
 
         [Test]
@@ -308,7 +308,7 @@ namespace DelegateDecompiler.Tests
         {
             Expression<Func<TestEnum, bool>> expected = x => new [] {TestEnum.Foo, TestEnum.Bar}.Contains(x);
             Func<TestEnum, bool> compiled = x => new[] {TestEnum.Foo, TestEnum.Bar}.Contains(x);
-			Test(expected, compiled);
+			Test(compiled, expected);
         }
 
         private static bool TestEnumMethod(TestEnum p0)

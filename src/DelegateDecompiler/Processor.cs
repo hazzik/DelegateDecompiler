@@ -228,10 +228,61 @@ namespace DelegateDecompiler
 
             left = AdjustBooleanConstant(left, rightType);
             right = AdjustBooleanConstant(right, leftType);
-            left = ConvertEnumExpressionToUnderlyingType(left);
-            right = ConvertEnumExpressionToUnderlyingType(right);
+            
+            // For comparison operations, convert enums directly to int to avoid type mismatches
+            // This handles cases where an enum with a non-int underlying type (e.g., byte, long) is compared
+            // with an int constant loaded from IL
+            if (IsComparisonOperation(expressionType))
+            {
+                left = ConvertEnumExpressionToInt(left);
+                right = ConvertEnumExpressionToInt(right);
+            }
+            else
+            {
+                left = ConvertEnumExpressionToUnderlyingType(left);
+                right = ConvertEnumExpressionToUnderlyingType(right);
+            }
 
             return Expression.MakeBinary(expressionType, left, right);
+        }
+
+        static bool IsComparisonOperation(ExpressionType expressionType)
+        {
+            return expressionType == ExpressionType.Equal ||
+                   expressionType == ExpressionType.NotEqual ||
+                   expressionType == ExpressionType.LessThan ||
+                   expressionType == ExpressionType.LessThanOrEqual ||
+                   expressionType == ExpressionType.GreaterThan ||
+                   expressionType == ExpressionType.GreaterThanOrEqual;
+        }
+
+        internal static Expression ConvertEnumExpressionToInt(Expression expression)
+        {
+            if (expression.Type.IsEnum)
+                return Expression.Convert(expression, typeof(int));
+
+            // If the expression is a Convert from an enum to its underlying type,
+            // replace it with a direct conversion to int to avoid double conversion
+            if (expression is UnaryExpression unary &&
+                unary.NodeType == ExpressionType.Convert &&
+                unary.Operand.Type.IsEnum)
+            {
+                return Expression.Convert(unary.Operand, typeof(int));
+            }
+
+            return expression;
+        }
+
+        static bool IsIntegralType(Type type)
+        {
+            return type == typeof(byte) ||
+                   type == typeof(sbyte) ||
+                   type == typeof(short) ||
+                   type == typeof(ushort) ||
+                   type == typeof(int) ||
+                   type == typeof(uint) ||
+                   type == typeof(long) ||
+                   type == typeof(ulong);
         }
 
         internal static Expression ConvertEnumExpressionToUnderlyingType(Expression expression)

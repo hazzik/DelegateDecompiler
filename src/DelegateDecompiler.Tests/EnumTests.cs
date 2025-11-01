@@ -226,7 +226,7 @@ namespace DelegateDecompiler.Tests
         {
             Expression<Func<TestEnum, bool>> expected = x => Int8Method((byte) x);
             Func<TestEnum, bool> compiled = x => Int8Method((byte) x);
-            Test(expected, compiled);
+            Test(compiled, expected);
         }
 
         [Test]
