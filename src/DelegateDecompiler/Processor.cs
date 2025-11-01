@@ -238,24 +238,15 @@ namespace DelegateDecompiler
                 var leftIsLongEnum = left.Type.IsEnum && (left.Type.GetEnumUnderlyingType() == typeof(long) || left.Type.GetEnumUnderlyingType() == typeof(ulong));
                 var rightIsLongEnum = right.Type.IsEnum && (right.Type.GetEnumUnderlyingType() == typeof(long) || right.Type.GetEnumUnderlyingType() == typeof(ulong));
                 
-                // For long enums with constants that have been pre-converted to long,
-                // unwrap them back to their int value for cleaner expression trees
                 var hasLongEnum = leftIsLongEnum || rightIsLongEnum;
-                if (hasLongEnum)
-                {
-                    // Unwrap Convert(intConstant, long) back to intConstant
-                    left = UnwrapConstantConversion(left);
-                    right = UnwrapConstantConversion(right);
-                }
                 
                 left = ConvertEnumExpressionToInt(left);
                 right = ConvertEnumExpressionToInt(right);
                 
-                // For long enums: enum is converted to long, constants can stay as long or int (Expression.MakeBinary handles it)
-                // For other enums: both should be converted to int for consistency
+                // Ensure type compatibility after conversions
                 if (!hasLongEnum)
                 {
-                    // Ensure both are int for consistency
+                    // For byte/short enums, ensure both are int
                     if (left.Type == typeof(byte) || left.Type == typeof(sbyte) || left.Type == typeof(short) || left.Type == typeof(ushort))
                         left = Expression.Convert(left, typeof(int));
                     if (right.Type == typeof(byte) || right.Type == typeof(sbyte) || right.Type == typeof(short) || right.Type == typeof(ushort))
@@ -338,6 +329,15 @@ namespace DelegateDecompiler
                         return Expression.Convert(operand, expression.Type);
                     // Replace Convert(enumValue, underlyingType) with Convert(enumValue, int)
                     return Expression.Convert(operand, typeof(int));
+                }
+                
+                // Optimize Convert(intConstant, long) to a direct long constant
+                if (operand is ConstantExpression constant &&
+                    constant.Type == typeof(int) &&
+                    (expression.Type == typeof(long) || expression.Type == typeof(ulong)))
+                {
+                    var longValue = Convert.ToInt64(constant.Value);
+                    return Expression.Constant(longValue, expression.Type);
                 }
             }
 
