@@ -15,8 +15,25 @@ namespace DelegateDecompiler.Processors
     
         public void Process(ProcessorState state, Instruction instruction)
         {
-            var expression = state.Stack.Pop();
-            state.Stack.Push(Expression.Convert(expression, (Type)instruction.Operand));
+            var address = state.Stack.Pop();
+            Expression expression = address;
+            var targetType = (Type)instruction.Operand;
+            
+            // Optimize Convert(Convert(int, byte/short), X) -> Convert(int, X)
+            // This happens when operations like NOT return int, IL converts to byte, then casts to enum
+            if (expression is UnaryExpression unary && unary.NodeType == ExpressionType.Convert)
+            {
+                var operand = unary.Operand;
+                // Skip intermediate conversions from int to byte/short
+                if (operand.Type == typeof(int) &&
+                    (unary.Type == typeof(byte) || unary.Type == typeof(sbyte) ||
+                     unary.Type == typeof(short) || unary.Type == typeof(ushort)))
+                {
+                    expression = operand;
+                }
+            }
+            
+            state.Stack.Push(Expression.Convert(expression, targetType));
         }
     }
 }

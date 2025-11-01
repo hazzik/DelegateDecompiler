@@ -229,75 +229,16 @@ namespace DelegateDecompiler
             left = AdjustBooleanConstant(left, rightType);
             right = AdjustBooleanConstant(right, leftType);
             
-            // For comparison, bitwise, and arithmetic operations, convert enums to handle type mismatches
-            // This handles cases where an enum with a non-int underlying type (e.g., byte, long) is used
-            // with an int constant loaded from IL
-            if (IsComparisonOperation(expressionType) || IsBitwiseOperation(expressionType) || IsArithmeticOperation(expressionType))
-            {
-                // Determine if we're dealing with long enums
-                var leftIsLongEnum = left.Type.IsEnum && (left.Type.GetEnumUnderlyingType() == typeof(long) || left.Type.GetEnumUnderlyingType() == typeof(ulong));
-                var rightIsLongEnum = right.Type.IsEnum && (right.Type.GetEnumUnderlyingType() == typeof(long) || right.Type.GetEnumUnderlyingType() == typeof(ulong));
-                
-                var hasLongEnum = leftIsLongEnum || rightIsLongEnum;
-                
-                left = ConvertEnumExpressionToInt(left);
-                right = ConvertEnumExpressionToInt(right);
-                
-                // Ensure type compatibility after conversions
-                if (!hasLongEnum)
-                {
-                    // For byte/short enums, ensure both are int
-                    if (left.Type == typeof(byte) || left.Type == typeof(sbyte) || left.Type == typeof(short) || left.Type == typeof(ushort))
-                        left = Expression.Convert(left, typeof(int));
-                    if (right.Type == typeof(byte) || right.Type == typeof(sbyte) || right.Type == typeof(short) || right.Type == typeof(ushort))
-                        right = Expression.Convert(right, typeof(int));
-                }
-            }
-            else
-            {
-                left = ConvertEnumExpressionToUnderlyingType(left);
-                right = ConvertEnumExpressionToUnderlyingType(right);
-            }
+            // Convert enums to their appropriate type for operations
+            // This uses ConvertEnumExpressionToInt which handles:
+            // - byte/short enums -> int
+            // - long/ulong enums -> long/ulong
+            // - Optimizes Convert(intConstant, long) -> longConstant
+            // - Handles Convert(Convert(enum, byte), int) -> Convert(enum, int)
+            left = ConvertEnumExpressionToInt(left);
+            right = ConvertEnumExpressionToInt(right);
 
             return Expression.MakeBinary(expressionType, left, right);
-        }
-
-        static bool IsComparisonOperation(ExpressionType expressionType)
-        {
-            return expressionType == ExpressionType.Equal ||
-                   expressionType == ExpressionType.NotEqual ||
-                   expressionType == ExpressionType.LessThan ||
-                   expressionType == ExpressionType.LessThanOrEqual ||
-                   expressionType == ExpressionType.GreaterThan ||
-                   expressionType == ExpressionType.GreaterThanOrEqual;
-        }
-
-        static bool IsBitwiseOperation(ExpressionType expressionType)
-        {
-            return expressionType == ExpressionType.And ||
-                   expressionType == ExpressionType.Or ||
-                   expressionType == ExpressionType.ExclusiveOr;
-        }
-
-        static bool IsArithmeticOperation(ExpressionType expressionType)
-        {
-            return expressionType == ExpressionType.Add ||
-                   expressionType == ExpressionType.Subtract ||
-                   expressionType == ExpressionType.Multiply ||
-                   expressionType == ExpressionType.Divide ||
-                   expressionType == ExpressionType.Modulo;
-        }
-
-        static Expression UnwrapConstantConversion(Expression expression)
-        {
-            // If this is Convert(constant, targetType), unwrap it back to the constant
-            if (expression is UnaryExpression unary &&
-                unary.NodeType == ExpressionType.Convert &&
-                unary.Operand is ConstantExpression)
-            {
-                return unary.Operand;
-            }
-            return expression;
         }
 
         internal static Expression ConvertEnumExpressionToInt(Expression expression)
@@ -331,6 +272,21 @@ namespace DelegateDecompiler
                     return Expression.Convert(operand, typeof(int));
                 }
                 
+                // Optimize Convert(Convert(X, byte/short), Y) when going through unnecessary intermediate conversions
+                // This happens with operations like NOT that return int but IL converts to byte before enum
+                if (operand is UnaryExpression innerUnary && innerUnary.NodeType == ExpressionType.Convert)
+                {
+                    var innerOperand = innerUnary.Operand;
+                    // If we're converting from int through byte/short, skip the intermediate conversion
+                    if (innerOperand.Type == typeof(int) &&
+                        (innerUnary.Type == typeof(byte) || innerUnary.Type == typeof(sbyte) ||
+                         innerUnary.Type == typeof(short) || innerUnary.Type == typeof(ushort)))
+                    {
+                        // Keep just the inner operand, let the outer conversion happen
+                        return Expression.Convert(innerOperand, expression.Type);
+                    }
+                }
+                
                 // Optimize Convert(intConstant, long) to a direct long constant
                 if (operand is ConstantExpression constant &&
                     constant.Type == typeof(int) &&
@@ -347,7 +303,14 @@ namespace DelegateDecompiler
         internal static Expression ConvertEnumExpressionToUnderlyingType(Expression expression)
         {
             if (expression.Type.IsEnum)
-                return Expression.Convert(expression, expression.Type.GetEnumUnderlyingType());
+            {
+                var underlyingType = expression.Type.GetEnumUnderlyingType();
+                // C# promotes byte/sbyte/short/ushort enums to int for operations
+                // Only long/ulong stay as their underlying type
+                if (underlyingType == typeof(long) || underlyingType == typeof(ulong))
+                    return Expression.Convert(expression, underlyingType);
+                return Expression.Convert(expression, typeof(int));
+            }
 
             return expression;
         }

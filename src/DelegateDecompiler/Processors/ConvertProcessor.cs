@@ -23,6 +23,23 @@ internal class ConvertProcessor(Type targetType) : IProcessor
     public void Process(ProcessorState state, Instruction instruction)
     {
         var val = state.Stack.Pop();
-        state.Stack.Push(Expression.Convert(val, targetType));
+        Expression expr = val;
+        
+        // Optimize Convert(Convert(int, byte/short), X) -> Convert(int, X)
+        // This happens when operations like NOT return int, IL converts to byte, then to enum
+        if (expr is UnaryExpression unary && unary.NodeType == ExpressionType.Convert)
+        {
+            var operand = unary.Operand;
+            // Skip intermediate conversions from int to byte/short when going to another type
+            if (operand.Type == typeof(int) &&
+                (unary.Type == typeof(byte) || unary.Type == typeof(sbyte) ||
+                 unary.Type == typeof(short) || unary.Type == typeof(ushort)))
+            {
+                // Use the int directly, skip the intermediate byte/short conversion
+                expr = operand;
+            }
+        }
+        
+        state.Stack.Push(Expression.Convert(expr, targetType));
     }
 }
