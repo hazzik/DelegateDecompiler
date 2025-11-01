@@ -434,6 +434,22 @@ namespace DelegateDecompiler
                     return Expression.Convert(expression, type);
                 }
                 
+                // Handle conversions to Nullable<Enum>
+                // When converting int to Nullable<TestEnum>, convert directly without intermediate TestEnum
+                if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>))
+                {
+                    var underlyingType = Nullable.GetUnderlyingType(type);
+                    if (underlyingType.IsEnum && !expression.Type.IsEnum)
+                    {
+                        var enumUnderlyingType = underlyingType.GetEnumUnderlyingType();
+                        // If expression type matches the enum's underlying type, convert directly to Nullable<Enum>
+                        if (expression.Type == enumUnderlyingType)
+                        {
+                            return Expression.Convert(expression, type);
+                        }
+                    }
+                }
+                
                 // Handle conversions from integral types to enum (non-constant case)
                 // This happens in array initialization where enum values are converted to underlying type
                 if (type.IsEnum && !expression.Type.IsEnum)
