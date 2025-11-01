@@ -399,6 +399,29 @@ namespace DelegateDecompiler
 
             if (!type.IsAssignableFrom(expression.Type))
             {
+                // Handle double conversions like Convert(Convert(enum, ulong), long) -> Convert(enum, long)
+                // This happens when byte enum is cast to long
+                if ((type == typeof(long) || type == typeof(int)) &&
+                    expression is UnaryExpression outerConv &&
+                    outerConv.NodeType == ExpressionType.Convert)
+                {
+                    // Check if there's an enum somewhere in the conversion chain
+                    var current = outerConv.Operand;
+                    while (current is UnaryExpression innerConv && innerConv.NodeType == ExpressionType.Convert)
+                    {
+                        if (innerConv.Operand.Type.IsEnum)
+                        {
+                            // Found an enum - convert it directly to the target type
+                            return Expression.Convert(innerConv.Operand, type);
+                        }
+                        current = innerConv.Operand;
+                    }
+                    if (current.Type.IsEnum)
+                    {
+                        return Expression.Convert(current, type);
+                    }
+                }
+                
                 if (expression.Type.IsEnum)
                 {
                     var underlyingType = expression.Type.GetEnumUnderlyingType();

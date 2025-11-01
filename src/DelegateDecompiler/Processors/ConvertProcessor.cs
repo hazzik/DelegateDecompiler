@@ -25,18 +25,15 @@ internal class ConvertProcessor(Type targetType) : IProcessor
         var val = state.Stack.Pop();
         Expression expr = val;
         
-        // Optimize Convert(Convert(X, intermediate), ulong/long) -> Convert(X, long)
-        // This happens when byte enum is cast to long: enum -> byte -> ulong -> long
-        // We want to skip all intermediate conversions and go straight from enum to long
-        if ((targetType == typeof(long) || targetType == typeof(ulong)) &&
-            expr is UnaryExpression outerUnary &&
-            outerUnary.NodeType == ExpressionType.Convert)
+        // Optimize conversions to long/ulong - skip intermediate conversions from enums
+        // This handles: enum -> byte -> ulong -> long, simplifying to: enum -> long
+        if (targetType == typeof(long) || targetType == typeof(ulong))
         {
-            // Traverse down the conversion chain to find the original expression
-            Expression current = outerUnary.Operand;
+            // Traverse down the conversion chain to find if there's an enum
+            Expression current = expr;
             while (current is UnaryExpression unaryChain && unaryChain.NodeType == ExpressionType.Convert)
             {
-                // If we find an enum at any level, use it
+                // If we find an enum, use it directly
                 if (unaryChain.Operand.Type.IsEnum)
                 {
                     expr = unaryChain.Operand;
@@ -44,7 +41,7 @@ internal class ConvertProcessor(Type targetType) : IProcessor
                 }
                 current = unaryChain.Operand;
             }
-            // Also check if the final expression is an enum
+            // Also check if current itself is an enum (in case no Convert wrapper)
             if (current.Type.IsEnum)
             {
                 expr = current;
