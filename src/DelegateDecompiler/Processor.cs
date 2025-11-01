@@ -402,6 +402,11 @@ namespace DelegateDecompiler
                 if (expression.Type.IsEnum)
                 {
                     var underlyingType = expression.Type.GetEnumUnderlyingType();
+                    // If target is System.Enum (e.g., for HasFlag), convert enum directly
+                    if (type == typeof(Enum))
+                    {
+                        return Expression.Convert(expression, type);
+                    }
                     // If enum's underlying type matches target, convert directly
                     if (underlyingType == type)
                     {
@@ -414,7 +419,8 @@ namespace DelegateDecompiler
                     {
                         return Expression.Convert(expression, type);
                     }
-                    // If target is long and enum has long underlying type
+                    // If target is long and enum has long/ulong underlying type, convert directly
+                    // This handles explicit casts like (long)longEnum
                     if (type == typeof(long) && (underlyingType == typeof(long) || underlyingType == typeof(ulong)))
                     {
                         return Expression.Convert(expression, type);
@@ -426,11 +432,53 @@ namespace DelegateDecompiler
                     }
                 }
                 
+                // Handle enum that has already been converted to underlying type
+                // e.g., Convert(Convert(byteEnum, byte), long) -> Convert(byteEnum, long)
+                // This typically happens when byte enum needs to be passed as long parameter
+                if (expression is UnaryExpression unaryConv &&
+                    unaryConv.NodeType == ExpressionType.Convert &&
+                    unaryConv.Operand.Type.IsEnum)
+                {
+                    var enumType = unaryConv.Operand.Type;
+                    var enumUnderlyingType = enumType.GetEnumUnderlyingType();
+                    
+                    // If we're converting from the enum's underlying type to another type,
+                    // convert directly from the enum instead to avoid double conversion
+                    if (unaryConv.Type == enumUnderlyingType)
+                    {
+                        // Check if target type is compatible with direct enum conversion
+                        if (type == typeof(long) && (enumUnderlyingType == typeof(byte) || enumUnderlyingType == typeof(sbyte) ||
+                                                     enumUnderlyingType == typeof(short) || enumUnderlyingType == typeof(ushort) ||
+                                                     enumUnderlyingType == typeof(int) || enumUnderlyingType == typeof(uint)))
+                        {
+                            // Convert enum directly to long
+                            return Expression.Convert(unaryConv.Operand, type);
+                        }
+                        if (type == typeof(int) && (enumUnderlyingType == typeof(byte) || enumUnderlyingType == typeof(sbyte) ||
+                                                    enumUnderlyingType == typeof(short) || enumUnderlyingType == typeof(ushort)))
+                        {
+                            // Convert enum directly to int
+                            return Expression.Convert(unaryConv.Operand, type);
+                        }
+                    }
+                }
+                
                 // Handle conversions between signed/unsigned long when expression is not enum
                 // This can happen after enum is converted to its underlying type
                 if ((type == typeof(long) && expression.Type == typeof(ulong)) ||
                     (type == typeof(ulong) && expression.Type == typeof(long)))
                 {
+                    // Check if this is Convert(Convert(enum, underlyingType), ulong) -> Convert(enum, long)
+                    if (expression is UnaryExpression ulongConv &&
+                        ulongConv.NodeType == ExpressionType.Convert &&
+                        ulongConv.Operand is UnaryExpression innerConv &&
+                        innerConv.NodeType == ExpressionType.Convert &&
+                        innerConv.Operand.Type.IsEnum)
+                    {
+                        // Convert enum directly to target type
+                        return Expression.Convert(innerConv.Operand, type);
+                    }
+                    
                     return Expression.Convert(expression, type);
                 }
                 
@@ -552,7 +600,18 @@ namespace DelegateDecompiler
                 var argument = state.Stack.Pop();
                 var parameter = parameterInfos[i];
                 var parameterType = parameter.ParameterType;
-                args[i] = AdjustType(argument, parameterType.IsByRef ? parameterType.GetElementType() : parameterType);
+                var targetType = parameterType.IsByRef ? parameterType.GetElementType() : parameterType;
+                
+                // Special case for Enum.HasFlag - don't convert to System.Enum here
+                // Let CallProcessor handle it after inferring the specific enum type
+                if (targetType == typeof(Enum) && m.Name == "HasFlag")
+                {
+                    args[i] = argument;
+                }
+                else
+                {
+                    args[i] = AdjustType(argument, targetType);
+                }
                 addresses[i] = argument;
             }
 
