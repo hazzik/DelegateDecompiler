@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Reflection.Emit;
@@ -10,31 +9,22 @@ namespace DelegateDecompiler.Processors;
 
 internal class StargProcessor : IProcessor
 {
-    static readonly Dictionary<OpCode, Func<ProcessorState, int>> Operations = new()
+    public static void Register(Dictionary<OpCode, IProcessor> processors)
     {
-        { OpCodes.Starg_S, GetParameterIndex },
-        { OpCodes.Starg, GetParameterIndex },
-    };
-
-    public bool Process(ProcessorState state)
-    {
-        if (!Operations.TryGetValue(state.Instruction.OpCode, out var value))
-            return false;
-
-        StArg(state, value(state));
-        return true;
+        processors.Register(new StargProcessor(), OpCodes.Starg_S, OpCodes.Starg);
     }
 
-    static void StArg(ProcessorState state, int index)
+    public void Process(ProcessorState state, Instruction instruction)
     {
+        var index = GetParameterIndex(state, instruction);
         var arg = state.Args[index];
         var expression = Processor.AdjustType(state.Stack.Pop(), arg.Type);
         arg.Expression = expression.Type == arg.Type ? expression : Expression.Convert(expression, arg.Type);
     }
 
-    static int GetParameterIndex(ProcessorState state)
+    static int GetParameterIndex(ProcessorState state, Instruction instruction)
     {
-        var operand = (ParameterInfo)state.Instruction.Operand;
+        var operand = (ParameterInfo)instruction.Operand;
         return state.IsStatic ? operand.Position : operand.Position + 1;
     }
 }

@@ -20,7 +20,7 @@ namespace DelegateDecompiler.Tests
                           where employee.FullNameWithoutAttribute.Computed() == "Test User"
                           select employee).Decompile();
 
-            AssertAreEqual(expected.Expression, actual.Expression);
+            AssertAreEqual(actual.Expression, expected.Expression);
         }
 
         [Test]
@@ -36,7 +36,7 @@ namespace DelegateDecompiler.Tests
                           where employee.FullName == "Test User"
                           select employee).Decompile();
 
-            AssertAreEqual(expected.Expression, actual.Expression);
+            AssertAreEqual(actual.Expression, expected.Expression);
         }
 
         [Test]
@@ -54,7 +54,7 @@ namespace DelegateDecompiler.Tests
                 where employee.FullName == "Test User"
                 select employee)).Decompile();
 
-            AssertAreEqual(expected.Expression, actual.Expression);
+            AssertAreEqual(actual.Expression, expected.Expression);
         }
 
         [Test]
@@ -74,7 +74,7 @@ namespace DelegateDecompiler.Tests
                           where employee.FromTo == "0-100"
                           select employee).Decompile();
 
-            AssertAreEqual(expected1.Expression, expected2.Expression, actual.Expression);
+            AssertAreEqual(actual.Expression, expected1.Expression, expected2.Expression);
         }
 
         [Test]
@@ -92,7 +92,7 @@ namespace DelegateDecompiler.Tests
                           orderby employee.FullName
                           select employee);
 
-            AssertAreEqual(expected.Expression, actual.Expression);
+            AssertAreEqual(actual.Expression, expected.Expression);
         }
 
         [Test]
@@ -110,7 +110,7 @@ namespace DelegateDecompiler.Tests
                           orderby employee.FullName
                           select employee).ThenBy(x => x.IsActive);
 
-            AssertAreEqual(expected.Expression, actual.Expression);
+            AssertAreEqual(actual.Expression, expected.Expression);
         }
 
         [Test]
@@ -126,7 +126,7 @@ namespace DelegateDecompiler.Tests
                           where employee.IsActive
                           select employee).Decompile();
 
-            AssertAreEqual(expected.Expression, actual.Expression);
+            AssertAreEqual(actual.Expression, expected.Expression);
         }
 
         [Test]
@@ -142,7 +142,7 @@ namespace DelegateDecompiler.Tests
                           where employee.Count == 0
                           select employee).Decompile();
 
-            AssertAreEqual(expected.Expression, actual.Expression);
+            AssertAreEqual(actual.Expression, expected.Expression);
         }
 
         [Test]
@@ -158,7 +158,7 @@ namespace DelegateDecompiler.Tests
                           where employee.TooDeepName == "Test User"
                           select employee).Decompile();
 
-            AssertAreEqual(expected.Expression, actual.Expression);
+            AssertAreEqual(actual.Expression, expected.Expression);
         }
 
         [Test]
@@ -176,7 +176,7 @@ namespace DelegateDecompiler.Tests
                           select employee).Decompile();
 
             Console.WriteLine(expected);
-            AssertAreEqual(expected.Expression, actual.Expression);
+            AssertAreEqual(actual.Expression, expected.Expression);
         }
 
         [Test]
@@ -192,7 +192,7 @@ namespace DelegateDecompiler.Tests
                           where employee.FullNameMethod() == "Test User"
                           select employee).Decompile();
 
-            AssertAreEqual(expected.Expression, actual.Expression);
+            AssertAreEqual(actual.Expression, expected.Expression);
         }
 
         [Test]
@@ -208,7 +208,7 @@ namespace DelegateDecompiler.Tests
                           where employee.FullNameMethod("Mr ") == "Mr Test User"
                           select employee).Decompile();
 
-            AssertAreEqual(expected.Expression, actual.Expression);
+            AssertAreEqual(actual.Expression, expected.Expression);
         }
 
         [Test]
@@ -224,7 +224,7 @@ namespace DelegateDecompiler.Tests
                           where employee.FullNameMethod("Mr ", " Jr.") == "Mr Test User Jr."
                           select employee).Decompile();
 
-            AssertAreEqual(expected.Expression, actual.Expression);
+            AssertAreEqual(actual.Expression, expected.Expression);
         }
 
         [Test, Ignore("Minor differences")]
@@ -240,7 +240,7 @@ namespace DelegateDecompiler.Tests
                           where employee.Test
                           select employee).Decompile();
 
-            AssertAreEqual(expected.Expression, actual.Expression);
+            AssertAreEqual(actual.Expression, expected.Expression);
         }
 
         [Test]
@@ -252,7 +252,7 @@ namespace DelegateDecompiler.Tests
 
             var actual = employees.AsQueryable().Where(_ => _.ComplexProperty == 1).Decompile();
 
-            AssertAreEqual(expected.Expression, actual.Expression);
+            AssertAreEqual(actual.Expression, expected.Expression);
         }
 
         [Test]
@@ -268,7 +268,7 @@ namespace DelegateDecompiler.Tests
                           where employee.FullName().Computed() == "Test User"
                           select employee).Decompile();
 
-            AssertAreEqual(expected.Expression, actual.Expression);
+            AssertAreEqual(actual.Expression, expected.Expression);
         }
 
         [Test]
@@ -286,7 +286,7 @@ namespace DelegateDecompiler.Tests
                           orderby employee.FullName().Computed()
                           select employee);
 
-            AssertAreEqual(expected.Expression, actual.Expression);
+            AssertAreEqual(actual.Expression, expected.Expression);
         }
 
         [Test]
@@ -304,7 +304,7 @@ namespace DelegateDecompiler.Tests
                           orderby employee.FullName().Computed()
                           select employee).ThenBy(x => x.IsActive);
 
-            AssertAreEqual(expected.Expression, actual.Expression);
+            AssertAreEqual(actual.Expression, expected.Expression);
         }
 
         [Test]
@@ -320,7 +320,7 @@ namespace DelegateDecompiler.Tests
                           where employee.TheBad > (short)0
                           select employee);
 
-            AssertAreEqual(expected.Expression, actual.Expression);
+            AssertAreEqual(actual.Expression, expected.Expression);
         }
 
         [Test]
@@ -336,7 +336,7 @@ namespace DelegateDecompiler.Tests
                           where (employee.MyField.HasValue ? (short)0 : (short)1) > 0
                           select employee);
 
-            AssertAreEqual(expected.Expression, actual.Expression);
+            AssertAreEqual(actual.Expression, expected.Expression);
         }
 
         [Test, Ignore("Minor differences")]
@@ -350,7 +350,7 @@ namespace DelegateDecompiler.Tests
 
             var actual = employees.AsQueryable().Select(e => e.TotalHoursDb).Decompile();
 
-            AssertAreEqual(expected.Expression, actual.Expression);
+            AssertAreEqual(actual.Expression, expected.Expression);
         }
 
         [Test]
@@ -366,7 +366,7 @@ namespace DelegateDecompiler.Tests
                 where employee.Status is Active
                 select employee).Decompile();
 
-            AssertAreEqual(expected.Expression, actual.Expression);
+            AssertAreEqual(actual.Expression, expected.Expression);
         }
     }
 }

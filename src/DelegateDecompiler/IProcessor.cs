@@ -1,7 +1,9 @@
+using Mono.Reflection;
+
 namespace DelegateDecompiler
 {
     internal interface IProcessor
     {
-        bool Process(ProcessorState state);
+        void Process(ProcessorState state, Instruction instruction);
     }
 }

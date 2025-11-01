@@ -1,38 +1,40 @@
 using System;
-using System.Linq;
+using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Reflection.Emit;
+using Mono.Reflection;
 
 namespace DelegateDecompiler.Processors;
 
-internal class LdfldProcessor : IProcessor
+internal class LdfldProcessor(bool isStatic) : IProcessor
 {
-    public bool Process(ProcessorState state)
+    public static void Register(Dictionary<OpCode, IProcessor> processors)
     {
-        var field = (FieldInfo)state.Instruction.Operand;
+        processors.Register(new LdfldProcessor(true), OpCodes.Ldsfld);
+        processors.Register(new LdfldProcessor(false), OpCodes.Ldfld, OpCodes.Ldflda);
+    }
+
+    public void Process(ProcessorState state, Instruction instruction)
+    {
+        var field = (FieldInfo)instruction.Operand;
         
-        if (state.Instruction.OpCode == OpCodes.Ldsfld)
+        if (isStatic)
         {
             // Static field
             state.Stack.Push(Expression.Field(null, field));
-            return true;
         }
-
-        if (state.Instruction.OpCode == OpCodes.Ldfld || state.Instruction.OpCode == OpCodes.Ldflda)
+        else
         {
             // Instance field
             var instance = state.Stack.Pop();
-            LdFld(state, instance);
-            return true;
+            LdFld(state, instruction, instance);
         }
-
-        return false;
     }
 
-    static void LdFld(ProcessorState state, Address instance)
+    static void LdFld(ProcessorState state, Instruction instruction, Address instance)
     {
-        var field = (FieldInfo)state.Instruction.Operand;
+        var field = (FieldInfo)instruction.Operand;
         if (Processor.IsCachedAnonymousMethodDelegate(field) &&
             state.Delegates.TryGetValue(Tuple.Create(instance, field), out var address))
         {

@@ -13,7 +13,7 @@ namespace DelegateDecompiler.Tests
         {
             Expression<Func<List<int>>> expression = () => new List<int> { 1 };
             Func<List<int>> compiled = () => new List<int> { 1 };
-            Test(expression, compiled);
+            Test(compiled, expression);
         }
 
         [Test]
@@ -21,7 +21,7 @@ namespace DelegateDecompiler.Tests
         {
             Expression<Func<List<int>>> expression = () => new List<int> { 1, 2 };
             Func<List<int>> compiled = () => new List<int> { 1, 2 };
-            Test(expression, compiled);
+            Test(compiled, expression);
         }
 
         [Test]
@@ -29,7 +29,7 @@ namespace DelegateDecompiler.Tests
         {
             Expression<Func<List<int>>> expression = () => new List<int> { 1, 2, 3 };
             Func<List<int>> compiled = () => new List<int> { 1, 2, 3 };
-            Test(expression, compiled);
+            Test(compiled, expression);
         }
 
         [Test]
@@ -37,7 +37,7 @@ namespace DelegateDecompiler.Tests
         {
             Expression<Func<Dictionary<int, int>>> expression = () => new Dictionary<int, int> { { 1, 2 }, { 3, 4 } };
             Func<Dictionary<int, int>> compiled = () => new Dictionary<int, int> { { 1, 2 }, { 3, 4 } };
-            Test(expression, compiled);
+            Test(compiled, expression);
         }
 
         [Test]
@@ -45,7 +45,7 @@ namespace DelegateDecompiler.Tests
         {
             Expression<Func<TestClass>> expression = () => new TestClass { { DateTime.Now, DateTime.Now } };
             Func<TestClass> compiled = () => new TestClass { { DateTime.Now, DateTime.Now } };
-            Test(expression, compiled);
+            Test(compiled, expression);
         }
     }
 }

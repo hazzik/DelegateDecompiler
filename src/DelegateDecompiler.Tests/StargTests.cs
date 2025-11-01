@@ -44,7 +44,7 @@ namespace DelegateDecompiler.Tests
         {
             Expression<Func<int, int>> expected = value => value + 1;
             Func<int, int> compiled = TestClass.ModifyParameter;
-            Test(expected, compiled);
+            Test(compiled, expected);
         }
 
         [Test]
@@ -52,7 +52,7 @@ namespace DelegateDecompiler.Tests
         {
             Expression<Func<int, int>> expected = value => value <= 0 ? -value : value * 2;
             Func<int, int> compiled = TestClass.ModifyParameterWithCondition;
-            Test(expected, compiled);
+            Test(compiled, expected);
         }
 
         [Test]
@@ -60,7 +60,7 @@ namespace DelegateDecompiler.Tests
         {
             Expression<Func<string, string>> expected = text => text == null ? text : text + " modified";
             Func<string, string> compiled = TestClass.ModifyStringParameter;
-            Test(expected, compiled);
+            Test(compiled, expected);
         }
 
         [Test]
