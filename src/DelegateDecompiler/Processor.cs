@@ -258,16 +258,25 @@ namespace DelegateDecompiler
 
         internal static Expression ConvertEnumExpressionToInt(Expression expression)
         {
+            // If the expression is already an int, return as-is
+            if (expression.Type == typeof(int))
+                return expression;
+            
             if (expression.Type.IsEnum)
                 return Expression.Convert(expression, typeof(int));
 
             // If the expression is a Convert from an enum to its underlying type,
             // replace it with a direct conversion to int to avoid double conversion
-            if (expression is UnaryExpression unary &&
-                unary.NodeType == ExpressionType.Convert &&
-                unary.Operand.Type.IsEnum)
+            if (expression is UnaryExpression unary && unary.NodeType == ExpressionType.Convert)
             {
-                return Expression.Convert(unary.Operand, typeof(int));
+                // Check if we're converting an enum to its underlying type
+                var operand = unary.Operand;
+                
+                if (operand.Type.IsEnum && operand.Type.GetEnumUnderlyingType() == expression.Type)
+                {
+                    // Replace Convert(enumValue, underlyingType) with Convert(enumValue, int)
+                    return Expression.Convert(operand, typeof(int));
+                }
             }
 
             return expression;
