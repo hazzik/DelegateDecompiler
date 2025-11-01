@@ -58,6 +58,15 @@ namespace DelegateDecompiler
                     return expression;
                 }
 
+                // Don't create Coalesce for nullable enum conversions to avoid breaking expected expressions
+                // For nullable enums, keep the conditional expression as-is
+                var innerType = expression.Type.IsNullableType() ? Nullable.GetUnderlyingType(expression.Type) : expression.Type;
+                if (innerType != null && innerType.IsEnum)
+                {
+                    // Keep as conditional for enum types
+                    return node.Update(test, ifTrue, ifFalse);
+                }
+
                 return Expression.Coalesce(expression, ifFalse);
             }
 
