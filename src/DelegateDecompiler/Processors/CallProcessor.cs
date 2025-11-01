@@ -165,7 +165,43 @@ internal class CallProcessor : IProcessor
         }
 
         if (instance.Expression != null)
-            return Expression.Call(instance, m, arguments);
+        {
+            // Ensure instance type matches the method's declaring type
+            // This handles cases where enum instances have been converted to their underlying type
+            var instanceExpr = instance.Expression;
+            if (m.DeclaringType != null && !m.DeclaringType.IsAssignableFrom(instanceExpr.Type))
+            {
+                // If the declaring type is an enum and instance is the underlying type, convert back
+                if (m.DeclaringType.IsEnum && instanceExpr.Type == m.DeclaringType.GetEnumUnderlyingType())
+                {
+                    instanceExpr = Expression.Convert(instanceExpr, m.DeclaringType);
+                }
+                // Special case for Enum.HasFlag - declaring type is Enum but instance should be specific enum type
+                else if (m.DeclaringType == typeof(Enum) && instanceExpr.Type.IsValueType && !instanceExpr.Type.IsEnum)
+                {
+                    // Try to infer the enum type from the instance expression
+                    // Check if it's a direct MemberExpression
+                    if (instanceExpr is MemberExpression memberExpr && 
+                        memberExpr.Member is FieldInfo field && 
+                        field.FieldType.IsEnum)
+                    {
+                        instanceExpr = Expression.Convert(instanceExpr, field.FieldType);
+                    }
+                    // Check if it's a Convert wrapping a MemberExpression
+                    else if (instanceExpr is UnaryExpression unary && 
+                             unary.NodeType == ExpressionType.Convert &&
+                             unary.Operand is MemberExpression innerMember &&
+                             innerMember.Member is FieldInfo innerField &&
+                             innerField.FieldType.IsEnum)
+                    {
+                        // Use the enum type directly, unwrap the Convert
+                        instanceExpr = innerMember;
+                    }
+                }
+            }
+            
+            return Expression.Call(instanceExpr, m, arguments);
+        }
 
         return Expression.Call(null, m, arguments);
     }
