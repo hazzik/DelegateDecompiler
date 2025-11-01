@@ -23,30 +23,18 @@ internal class BoxProcessor : IProcessor
         if (expression.Type == type)
             return expression;
 
+        // Required for correctness: convert constant to enum
         if (expression is ConstantExpression constantExpression)
         {
             if (type.IsEnum)
                 return Expression.Constant(Enum.ToObject(type, constantExpression.Value));
         }
 
+        // Required for correctness: convert enum to boxed type
         if (expression.Type.IsEnum)
             return Expression.Convert(expression, type);
 
-        // Optimize Convert(Convert(int, byte/short), enum) -> Convert(int, enum)
-        // This happens when operations like NOT return int, IL converts to byte, then boxes to enum
-        if (type.IsEnum && expression is UnaryExpression unary && unary.NodeType == ExpressionType.Convert)
-        {
-            var operand = unary.Operand;
-            // Skip intermediate conversions from int to byte/short when boxing to enum
-            if (operand.Type == typeof(int) &&
-                (unary.Type == typeof(byte) || unary.Type == typeof(sbyte) ||
-                 unary.Type == typeof(short) || unary.Type == typeof(ushort)))
-            {
-                // Box the int directly to the enum
-                return Expression.Convert(operand, type);
-            }
-        }
-
+        // No optimizations here - they're handled in OptimizeExpressionVisitor
         return expression;
     }
 }

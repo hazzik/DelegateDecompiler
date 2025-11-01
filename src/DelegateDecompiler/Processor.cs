@@ -35,20 +35,6 @@ namespace DelegateDecompiler
 
             if (!returnType.IsAssignableFrom(ex.Type) && returnType != typeof(void))
             {
-                // Optimize Convert(Convert(int, byte/short), enum) -> Convert(int, enum)
-                // This happens when operations like NOT return int, IL converts to byte, then to enum at return
-                if (returnType.IsEnum && ex is UnaryExpression unary && unary.NodeType == ExpressionType.Convert)
-                {
-                    var operand = unary.Operand;
-                    if (operand.Type == typeof(int) &&
-                        (unary.Type == typeof(byte) || unary.Type == typeof(sbyte) ||
-                         unary.Type == typeof(short) || unary.Type == typeof(ushort)))
-                    {
-                        // Skip the intermediate conversion, convert int directly to enum
-                        return Expression.Convert(operand, returnType);
-                    }
-                }
-                
                 return Expression.Convert(ex, returnType);
             }
 
@@ -259,9 +245,8 @@ namespace DelegateDecompiler
 
         internal static Expression ConvertEnumExpressionToInt(Expression expression)
         {
-            // If the expression is already an int, return as-is
-            if (expression.Type == typeof(int))
-                return expression;
+            // Required: Convert enums to int/long to prevent type mismatches in Expression.MakeBinary
+            // Optimizations are handled in OptimizeExpressionVisitor
             
             if (expression.Type.IsEnum)
             {
@@ -276,7 +261,6 @@ namespace DelegateDecompiler
             // replace it with a direct conversion to int (or underlying type for long enums) to avoid double conversion
             if (expression is UnaryExpression unary && unary.NodeType == ExpressionType.Convert)
             {
-                // Check if we're converting an enum to its underlying type
                 var operand = unary.Operand;
                 
                 if (operand.Type.IsEnum && operand.Type.GetEnumUnderlyingType() == expression.Type)
@@ -286,30 +270,6 @@ namespace DelegateDecompiler
                         return Expression.Convert(operand, expression.Type);
                     // Replace Convert(enumValue, underlyingType) with Convert(enumValue, int)
                     return Expression.Convert(operand, typeof(int));
-                }
-                
-                // Optimize Convert(Convert(X, byte/short), Y) when going through unnecessary intermediate conversions
-                // This happens with operations like NOT that return int but IL converts to byte before enum
-                if (operand is UnaryExpression innerUnary && innerUnary.NodeType == ExpressionType.Convert)
-                {
-                    var innerOperand = innerUnary.Operand;
-                    // If we're converting from int through byte/short, skip the intermediate conversion
-                    if (innerOperand.Type == typeof(int) &&
-                        (innerUnary.Type == typeof(byte) || innerUnary.Type == typeof(sbyte) ||
-                         innerUnary.Type == typeof(short) || innerUnary.Type == typeof(ushort)))
-                    {
-                        // Keep just the inner operand, let the outer conversion happen
-                        return Expression.Convert(innerOperand, expression.Type);
-                    }
-                }
-                
-                // Optimize Convert(intConstant, long) to a direct long constant
-                if (operand is ConstantExpression constant &&
-                    constant.Type == typeof(int) &&
-                    (expression.Type == typeof(long) || expression.Type == typeof(ulong)))
-                {
-                    var longValue = Convert.ToInt64(constant.Value);
-                    return Expression.Constant(longValue, expression.Type);
                 }
             }
 
