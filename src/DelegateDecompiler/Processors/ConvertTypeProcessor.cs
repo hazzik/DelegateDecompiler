@@ -18,7 +18,6 @@ namespace DelegateDecompiler.Processors
             var address = state.Stack.Pop();
             var targetType = (Type)instruction.Operand;
             
-            // No optimizations here - they're handled in OptimizeExpressionVisitor
             state.Stack.Push(Expression.Convert(address, targetType));
         }
     }

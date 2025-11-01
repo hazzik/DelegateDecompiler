@@ -50,81 +50,99 @@ internal class CallProcessor : IProcessor
     static Expression BuildMethodCallExpression(MethodInfo m, Address instance, Expression[] arguments,
         Address[] addresses)
     {
-        // Special handling for Enum.HasFlag before other processing
-        // HasFlag requires both instance and argument to be enum types, not underlying types
         if (m.Name == "HasFlag" && m.DeclaringType == typeof(Enum))
         {
             var instanceExpr = instance.Expression;
             var argument = arguments.Length > 0 ? arguments[0] : null;
             
-            // Try to determine the enum type from whichever one is already an enum
+            // Unwrap Convert expressions on instance to get to the actual enum
+            // Stop if we find an enum or if we've unwrapped to a constant (which needs to be converted to enum)
+            while (instanceExpr is UnaryExpression unaryInst && 
+                   unaryInst.NodeType == ExpressionType.Convert &&
+                   !(unaryInst.Operand is ConstantExpression))
+            {
+                if (unaryInst.Operand.Type.IsEnum)
+                {
+                    instanceExpr = unaryInst.Operand;
+                    break;
+                }
+                instanceExpr = unaryInst.Operand;
+            }
+            
+            // If instance is a constant wrapped in a convert, we need to figure out what enum type it should be
+            // Check the argument to infer the enum type
             Type enumType = null;
-            if (instanceExpr != null && instanceExpr.Type.IsEnum)
+            if (instanceExpr.Type.IsEnum)
             {
                 enumType = instanceExpr.Type;
             }
-            else if (argument != null && argument.Type.IsEnum)
+            else if (argument != null)
             {
-                enumType = argument.Type;
-            }
-            else
-            {
-                // Neither is typed as enum yet - try to infer from underlying expressions
-                enumType = TryInferEnumTypeFromExpression(instanceExpr) ?? TryInferEnumTypeFromExpression(argument);
+                // Try to infer from argument
+                var argCheck = argument;
+                while (argCheck is UnaryExpression unaryCheck && unaryCheck.NodeType == ExpressionType.Convert)
+                {
+                    if (unaryCheck.Operand.Type.IsEnum)
+                    {
+                        enumType = unaryCheck.Operand.Type;
+                        break;
+                    }
+                    argCheck = unaryCheck.Operand;
+                }
+                if (enumType == null && argCheck.Type.IsEnum)
+                {
+                    enumType = argCheck.Type;
+                }
             }
             
-            // If we found an enum type, ensure both instance and argument use it
-            if (enumType != null)
+            // Convert instance to enum type if needed
+            if (enumType != null && !instanceExpr.Type.IsEnum)
             {
-                if (instanceExpr != null && !instanceExpr.Type.IsEnum)
+                if (instanceExpr is UnaryExpression unaryInst && 
+                    unaryInst.NodeType == ExpressionType.Convert &&
+                    unaryInst.Operand is ConstantExpression constInst)
                 {
-                    // Check if it's a Convert(ConstantExpression, underlyingType) pattern
-                    if (instanceExpr is UnaryExpression unaryInst &&
-                        unaryInst.NodeType == ExpressionType.Convert &&
-                        unaryInst.Operand is ConstantExpression innerConst)
-                    {
-                        // Convert constant directly to enum
-                        instanceExpr = Expression.Constant(Enum.ToObject(enumType, innerConst.Value), enumType);
-                        instance.Expression = instanceExpr;
-                    }
-                    else if (instanceExpr is ConstantExpression constInst)
-                    {
-                        instanceExpr = Expression.Constant(Enum.ToObject(enumType, constInst.Value), enumType);
-                        instance.Expression = instanceExpr;
-                    }
-                    else if (instanceExpr.Type == enumType.GetEnumUnderlyingType())
-                    {
-                        instanceExpr = Expression.Convert(instanceExpr, enumType);
-                        instance.Expression = instanceExpr;
-                    }
+                    instanceExpr = Expression.Constant(Enum.ToObject(enumType, constInst.Value), enumType);
                 }
-                
-                if (argument != null && !argument.Type.IsEnum)
+                else if (instanceExpr is ConstantExpression constExpr)
                 {
-                    // Check if it's a Convert(ConstantExpression, underlyingType) pattern
-                    if (argument is UnaryExpression unaryArg &&
-                        unaryArg.NodeType == ExpressionType.Convert &&
-                        unaryArg.Operand is ConstantExpression innerConstArg)
-                    {
-                        // Convert to enum, then to System.Enum for the method parameter
-                        var enumConst = Expression.Constant(Enum.ToObject(enumType, innerConstArg.Value), enumType);
-                        arguments[0] = Expression.Convert(enumConst, typeof(Enum));
-                    }
-                    else if (argument is ConstantExpression constArg)
-                    {
-                        var enumConst = Expression.Constant(Enum.ToObject(enumType, constArg.Value), enumType);
-                        arguments[0] = Expression.Convert(enumConst, typeof(Enum));
-                    }
-                    else if (argument.Type == enumType.GetEnumUnderlyingType())
-                    {
-                        // Convert to specific enum type first, then to System.Enum
-                        arguments[0] = Expression.Convert(Expression.Convert(argument, enumType), typeof(Enum));
-                    }
+                    instanceExpr = Expression.Constant(Enum.ToObject(enumType, constExpr.Value), enumType);
                 }
-                else if (argument != null && argument.Type.IsEnum && argument.Type != typeof(Enum))
+            }
+            instance.Expression = instanceExpr;
+            
+            // Convert argument properly
+            if (argument != null)
+            {
+                // If argument is already an enum, convert to System.Enum
+                if (argument.Type.IsEnum)
                 {
-                    // Argument is already a specific enum type, convert to System.Enum
                     arguments[0] = Expression.Convert(argument, typeof(Enum));
+                }
+                // Otherwise, try to unwrap and convert
+                else if (enumType != null)
+                {
+                    var unwrappedArg = argument;
+                    while (unwrappedArg is UnaryExpression unaryArg &&
+                           unaryArg.NodeType == ExpressionType.Convert)
+                    {
+                        if (unaryArg.Operand.Type.IsEnum)
+                        {
+                            arguments[0] = Expression.Convert(unaryArg.Operand, typeof(Enum));
+                            unwrappedArg = null;
+                            break;
+                        }
+                        unwrappedArg = unaryArg.Operand;
+                    }
+                    
+                    if (unwrappedArg != null && !unwrappedArg.Type.IsEnum)
+                    {
+                        if (unwrappedArg is ConstantExpression constArg)
+                        {
+                            var enumConst = Expression.Constant(Enum.ToObject(enumType, constArg.Value), enumType);
+                            arguments[0] = Expression.Convert(enumConst, typeof(Enum));
+                        }
+                    }
                 }
             }
         }
@@ -245,95 +263,10 @@ internal class CallProcessor : IProcessor
 
         if (instance.Expression != null)
         {
-            // Ensure instance type matches the method's declaring type
-            // This handles cases where enum instances have been converted to their underlying type
-            var instanceExpr = instance.Expression;
-            if (m.DeclaringType != null && !m.DeclaringType.IsAssignableFrom(instanceExpr.Type))
-            {
-                // If the declaring type is an enum and instance is the underlying type, convert back
-                if (m.DeclaringType.IsEnum && instanceExpr.Type == m.DeclaringType.GetEnumUnderlyingType())
-                {
-                    instanceExpr = Expression.Convert(instanceExpr, m.DeclaringType);
-                }
-                // Special case for Enum.HasFlag - declaring type is Enum but instance should be specific enum type
-                else if (m.DeclaringType == typeof(Enum) && instanceExpr.Type.IsValueType && !instanceExpr.Type.IsEnum)
-                {
-                    // Try to infer the enum type from the instance expression
-                    // Check if it's a direct MemberExpression
-                    if (instanceExpr is MemberExpression memberExpr && 
-                        memberExpr.Member is FieldInfo field && 
-                        field.FieldType.IsEnum)
-                    {
-                        instanceExpr = Expression.Convert(instanceExpr, field.FieldType);
-                    }
-                    // Check if it's a Convert wrapping a MemberExpression
-                    else if (instanceExpr is UnaryExpression unary && 
-                             unary.NodeType == ExpressionType.Convert &&
-                             unary.Operand is MemberExpression innerMember &&
-                             innerMember.Member is FieldInfo innerField &&
-                             innerField.FieldType.IsEnum)
-                    {
-                        // Use the enum type directly, unwrap the Convert
-                        instanceExpr = innerMember;
-                    }
-                    // Check if it's a constant that should be an enum constant
-                    else if (instanceExpr is ConstantExpression constExpr)
-                    {
-                        // Try to infer enum type from the method context or arguments
-                        // For HasFlag, the argument should give us the enum type
-                        if (m.Name == "HasFlag" && arguments.Length > 0)
-                        {
-                            var argType = arguments[0].Type;
-                            if (argType.IsEnum)
-                            {
-                                // Convert constant to this enum type
-                                instanceExpr = Expression.Constant(Enum.ToObject(argType, constExpr.Value), argType);
-                            }
-                        }
-                    }
-                }
-            }
-            
-            return Expression.Call(instanceExpr, m, arguments);
+            return Expression.Call(instance.Expression, m, arguments);
         }
 
         return Expression.Call(null, m, arguments);
-    }
-
-    static Type TryInferEnumTypeFromExpression(Expression expr)
-    {
-        if (expr == null)
-            return null;
-            
-        // If it's already an enum, return its type
-        if (expr.Type.IsEnum)
-            return expr.Type;
-            
-        // If it's a Convert from enum to underlying type, get the enum type
-        if (expr is UnaryExpression unary && unary.NodeType == ExpressionType.Convert)
-        {
-            if (unary.Operand.Type.IsEnum)
-                return unary.Operand.Type;
-                
-            // Recursively check operand
-            return TryInferEnumTypeFromExpression(unary.Operand);
-        }
-        
-        // If it's a member access (field or property), check if it's enum typed
-        if (expr is MemberExpression memberExpr)
-        {
-            var fieldOrPropType = memberExpr.Member.FieldOrPropertyType();
-            if (fieldOrPropType.IsEnum)
-                return fieldOrPropType;
-        }
-        
-        // If it's a parameter, check if parameter type is enum
-        if (expr is ParameterExpression paramExpr && paramExpr.Type.IsEnum)
-        {
-            return paramExpr.Type;
-        }
-        
-        return null;
     }
     
     static bool TryParseOperator(MethodInfo m, out ExpressionType type)

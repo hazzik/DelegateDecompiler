@@ -298,6 +298,25 @@ namespace DelegateDecompiler
                 return expression;
             }
 
+            if (type == typeof(Enum))
+            {
+                if (expression.Type.IsEnum)
+                {
+                    return Expression.Convert(expression, typeof(Enum));
+                }
+                
+                // Unwrap Convert expressions to find enum
+                var unwrapped = expression;
+                while (unwrapped is UnaryExpression unary && unary.NodeType == ExpressionType.Convert)
+                {
+                    if (unary.Operand.Type.IsEnum)
+                    {
+                        return Expression.Convert(unary.Operand, typeof(Enum));
+                    }
+                    unwrapped = unary.Operand;
+                }
+            }
+
             if (expression is ConstantExpression constant)
             {
                 if (constant.Value == null)
@@ -585,9 +604,9 @@ namespace DelegateDecompiler
                 var parameterType = parameter.ParameterType;
                 var targetType = parameterType.IsByRef ? parameterType.GetElementType() : parameterType;
                 
-                // Special case for Enum.HasFlag - don't convert to System.Enum here
-                // Let CallProcessor handle it after inferring the specific enum type
-                if (targetType == typeof(Enum) && m.Name == "HasFlag")
+                // For HasFlag, skip type adjustment for System.Enum parameter
+                // CallProcessor will handle it with context from the instance
+                if (targetType == typeof(Enum) && m.Name == "HasFlag" && m.DeclaringType == typeof(Enum))
                 {
                     args[i] = argument;
                 }

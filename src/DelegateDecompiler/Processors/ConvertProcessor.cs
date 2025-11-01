@@ -23,7 +23,6 @@ internal class ConvertProcessor(Type targetType) : IProcessor
     public void Process(ProcessorState state, Instruction instruction)
     {
         var val = state.Stack.Pop();
-        // No optimizations here - they're handled in OptimizeExpressionVisitor
         state.Stack.Push(Expression.Convert(val, targetType));
     }
 }

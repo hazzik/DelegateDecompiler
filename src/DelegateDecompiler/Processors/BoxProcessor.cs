@@ -30,11 +30,9 @@ internal class BoxProcessor : IProcessor
                 return Expression.Constant(Enum.ToObject(type, constantExpression.Value));
         }
 
-        // Required for correctness: convert enum to boxed type
         if (expression.Type.IsEnum)
             return Expression.Convert(expression, type);
 
-        // No optimizations here - they're handled in OptimizeExpressionVisitor
         return expression;
     }
 }
