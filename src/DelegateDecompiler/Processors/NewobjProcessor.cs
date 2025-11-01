@@ -35,38 +35,12 @@ internal class NewobjProcessor : IProcessor
                 // Use AdjustType but intercept if it tries to create intermediate conversions
                 var adjusted = Processor.AdjustType(argument, parameters[0].ParameterType);
                 
-                // Check if AdjustType created Convert(x, Enum) where x is int/byte/long
-                if (adjusted is UnaryExpression unary &&
-                    unary.NodeType == ExpressionType.Convert &&
-                    unary.Type == innerType)
+                // Try to unwrap unnecessary conversions for nullable enum creation
+                var simplified = TrySimplifyForNullableEnum(adjusted, innerType, enumUnderlyingType, nullableType);
+                if (simplified != null)
                 {
-                    var operand = unary.Operand;
-                    
-                    // Case 1: operand is the enum's underlying type - convert directly to nullable
-                    if (operand.Type == enumUnderlyingType)
-                    {
-                        state.Stack.Push(Expression.Convert(operand, nullableType));
-                        return;
-                    }
-                    
-                    // Case 2: operand is Convert(x, underlyingType) where x is int
-                    // Skip the intermediate conversion
-                    if (operand is UnaryExpression innerUnary &&
-                        innerUnary.NodeType == ExpressionType.Convert &&
-                        innerUnary.Type == enumUnderlyingType &&
-                        innerUnary.Operand.Type == typeof(int))
-                    {
-                        state.Stack.Push(Expression.Convert(innerUnary.Operand, nullableType));
-                        return;
-                    }
-                    
-                    // Case 3: operand is int and enum underlying is long - convert int directly
-                    if (operand.Type == typeof(int) &&
-                        (enumUnderlyingType == typeof(long) || enumUnderlyingType == typeof(ulong)))
-                    {
-                        state.Stack.Push(Expression.Convert(operand, nullableType));
-                        return;
-                    }
+                    state.Stack.Push(simplified);
+                    return;
                 }
                 
                 // Use the adjusted argument
@@ -85,5 +59,73 @@ internal class NewobjProcessor : IProcessor
             var arguments = Processor.GetArguments(state, constructor);
             state.Stack.Push(Expression.New(constructor, arguments));
         }
+    }
+    
+    static Expression TrySimplifyForNullableEnum(Expression expr, Type enumType, Type enumUnderlyingType, Type nullableEnumType)
+    {
+        // Check if expr is Convert(x, Enum) 
+        if (expr is UnaryExpression unary && unary.NodeType == ExpressionType.Convert && unary.Type == enumType)
+        {
+            var operand = unary.Operand;
+            
+            // Case 1: operand is the enum's underlying type
+            if (operand.Type == enumUnderlyingType)
+            {
+                // Check if we can simplify further - unwrap Convert(int, long) for long enums
+                if (operand is UnaryExpression underlyingUnary &&
+                    underlyingUnary.NodeType == ExpressionType.Convert &&
+                    underlyingUnary.Operand.Type == typeof(int) &&
+                    (enumUnderlyingType == typeof(long) || enumUnderlyingType == typeof(ulong)))
+                {
+                    // Convert int directly to Nullable<Enum>
+                    return Expression.Convert(underlyingUnary.Operand, nullableEnumType);
+                }
+                
+                // Otherwise convert the underlying type value directly to nullable
+                return Expression.Convert(operand, nullableEnumType);
+            }
+            
+            // Case 2: operand is Convert(x, underlyingType) where x is int
+            // This happens for byte/short enums: Convert(Convert(int, byte), Enum)
+            // Skip to: Convert(int, Nullable<Enum>)
+            if (operand is UnaryExpression innerUnary &&
+                innerUnary.NodeType == ExpressionType.Convert &&
+                innerUnary.Type == enumUnderlyingType &&
+                innerUnary.Operand.Type == typeof(int))
+            {
+                return Expression.Convert(innerUnary.Operand, nullableEnumType);
+            }
+            
+            // Case 3: operand is int and enum underlying is long/ulong - convert int directly
+            if (operand.Type == typeof(int) &&
+                (enumUnderlyingType == typeof(long) || enumUnderlyingType == typeof(ulong)))
+            {
+                return Expression.Convert(operand, nullableEnumType);
+            }
+            
+            // Case 3b: operand is Convert(int, long) and enum underlying is long
+            // This happens when int is explicitly converted to long before enum
+            if (operand is UnaryExpression longUnary &&
+                longUnary.NodeType == ExpressionType.Convert &&
+                (longUnary.Type == typeof(long) || longUnary.Type == typeof(ulong)) &&
+                longUnary.Operand.Type == typeof(int) &&
+                (enumUnderlyingType == typeof(long) || enumUnderlyingType == typeof(ulong)))
+            {
+                // Convert int directly to Nullable<Enum>, skip the long intermediate
+                return Expression.Convert(longUnary.Operand, nullableEnumType);
+            }
+            
+            // Case 4: operand is int and enum underlying is byte/short - convert int directly
+            // Expression.Convert(int, ByteEnum) is valid and handles the intermediate conversion
+            // But when creating Nullable<ByteEnum>, we want Convert(int, Nullable<ByteEnum>) directly
+            if (operand.Type == typeof(int) &&
+                (enumUnderlyingType == typeof(byte) || enumUnderlyingType == typeof(sbyte) ||
+                 enumUnderlyingType == typeof(short) || enumUnderlyingType == typeof(ushort)))
+            {
+                return Expression.Convert(operand, nullableEnumType);
+            }
+        }
+        
+        return null;
     }
 }
