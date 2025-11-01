@@ -282,18 +282,6 @@ namespace DelegateDecompiler
             return expression;
         }
 
-        static bool IsIntegralType(Type type)
-        {
-            return type == typeof(byte) ||
-                   type == typeof(sbyte) ||
-                   type == typeof(short) ||
-                   type == typeof(ushort) ||
-                   type == typeof(int) ||
-                   type == typeof(uint) ||
-                   type == typeof(long) ||
-                   type == typeof(ulong);
-        }
-
         internal static Expression ConvertEnumExpressionToUnderlyingType(Expression expression)
         {
             if (expression.Type.IsEnum)
