@@ -21,7 +21,16 @@ internal class UnaryExpressionProcessor(ExpressionType expressionType) : IProces
 
     static UnaryExpression MakeUnaryExpression(Expression operand, ExpressionType expressionType)
     {
-        operand = Processor.ConvertEnumExpressionToUnderlyingType(operand);
+        // For bitwise NOT on enums, convert to int (for byte/short) or underlying type (for long)
+        // to match the behavior of binary operations
+        if (expressionType == ExpressionType.Not && operand.Type.IsEnum)
+        {
+            operand = Processor.ConvertEnumExpressionToInt(operand);
+        }
+        else
+        {
+            operand = Processor.ConvertEnumExpressionToUnderlyingType(operand);
+        }
 
         return Expression.MakeUnary(expressionType, operand, operand.Type);
     }

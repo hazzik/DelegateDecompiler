@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -17,13 +18,9 @@ internal class NewobjProcessor : IProcessor
     {
         var constructor = (ConstructorInfo)instruction.Operand;
         var arguments = Processor.GetArguments(state, constructor);
-        if (constructor.DeclaringType.IsNullableType() && constructor.GetParameters().Length == 1)
-        {
-            state.Stack.Push(Expression.Convert(arguments[0], constructor.DeclaringType));
-        }
-        else
-        {
-            state.Stack.Push(Expression.New(constructor, arguments));
-        }
+        
+        // No special handling needed here - OptimizeExpressionVisitor converts
+        // new Nullable<T>(value) to Convert(value, Nullable<T>)
+        state.Stack.Push(Expression.New(constructor, arguments));
     }
 }

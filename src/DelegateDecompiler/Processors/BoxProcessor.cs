@@ -23,6 +23,7 @@ internal class BoxProcessor : IProcessor
         if (expression.Type == type)
             return expression;
 
+        // Required for correctness: convert constant to enum
         if (expression is ConstantExpression constantExpression)
         {
             if (type.IsEnum)
