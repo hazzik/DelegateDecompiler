@@ -229,22 +229,31 @@ namespace DelegateDecompiler
             left = AdjustBooleanConstant(left, rightType);
             right = AdjustBooleanConstant(right, leftType);
             
-            // For comparison and bitwise operations, convert enums to handle type mismatches
+            // For comparison, bitwise, and arithmetic operations, convert enums to handle type mismatches
             // This handles cases where an enum with a non-int underlying type (e.g., byte, long) is used
             // with an int constant loaded from IL
-            if (IsComparisonOperation(expressionType) || IsBitwiseOperation(expressionType))
+            if (IsComparisonOperation(expressionType) || IsBitwiseOperation(expressionType) || IsArithmeticOperation(expressionType))
             {
                 // Determine if we're dealing with long enums
                 var leftIsLongEnum = left.Type.IsEnum && (left.Type.GetEnumUnderlyingType() == typeof(long) || left.Type.GetEnumUnderlyingType() == typeof(ulong));
                 var rightIsLongEnum = right.Type.IsEnum && (right.Type.GetEnumUnderlyingType() == typeof(long) || right.Type.GetEnumUnderlyingType() == typeof(ulong));
                 
+                // For long enums with constants that have been pre-converted to long,
+                // unwrap them back to their int value for cleaner expression trees
+                var hasLongEnum = leftIsLongEnum || rightIsLongEnum;
+                if (hasLongEnum)
+                {
+                    // Unwrap Convert(intConstant, long) back to intConstant
+                    left = UnwrapConstantConversion(left);
+                    right = UnwrapConstantConversion(right);
+                }
+                
                 left = ConvertEnumExpressionToInt(left);
                 right = ConvertEnumExpressionToInt(right);
                 
-                // For long enums: enum is converted to long, but constants stay as int (Expression.MakeBinary handles promotion)
-                // For other enums: both are converted to int
-                // So we only need to explicitly convert int constants to the target type for non-long enums
-                if (!leftIsLongEnum && !rightIsLongEnum)
+                // For long enums: enum is converted to long, constants can stay as long or int (Expression.MakeBinary handles it)
+                // For other enums: both should be converted to int for consistency
+                if (!hasLongEnum)
                 {
                     // Ensure both are int for consistency
                     if (left.Type == typeof(byte) || left.Type == typeof(sbyte) || left.Type == typeof(short) || left.Type == typeof(ushort))
@@ -277,6 +286,27 @@ namespace DelegateDecompiler
             return expressionType == ExpressionType.And ||
                    expressionType == ExpressionType.Or ||
                    expressionType == ExpressionType.ExclusiveOr;
+        }
+
+        static bool IsArithmeticOperation(ExpressionType expressionType)
+        {
+            return expressionType == ExpressionType.Add ||
+                   expressionType == ExpressionType.Subtract ||
+                   expressionType == ExpressionType.Multiply ||
+                   expressionType == ExpressionType.Divide ||
+                   expressionType == ExpressionType.Modulo;
+        }
+
+        static Expression UnwrapConstantConversion(Expression expression)
+        {
+            // If this is Convert(constant, targetType), unwrap it back to the constant
+            if (expression is UnaryExpression unary &&
+                unary.NodeType == ExpressionType.Convert &&
+                unary.Operand is ConstantExpression)
+            {
+                return unary.Operand;
+            }
+            return expression;
         }
 
         internal static Expression ConvertEnumExpressionToInt(Expression expression)
