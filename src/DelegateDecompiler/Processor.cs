@@ -34,7 +34,23 @@ namespace DelegateDecompiler
             ex = AdjustType(ex, returnType);
 
             if (!returnType.IsAssignableFrom(ex.Type) && returnType != typeof(void))
+            {
+                // Optimize Convert(Convert(int, byte/short), enum) -> Convert(int, enum)
+                // This happens when operations like NOT return int, IL converts to byte, then to enum at return
+                if (returnType.IsEnum && ex is UnaryExpression unary && unary.NodeType == ExpressionType.Convert)
+                {
+                    var operand = unary.Operand;
+                    if (operand.Type == typeof(int) &&
+                        (unary.Type == typeof(byte) || unary.Type == typeof(sbyte) ||
+                         unary.Type == typeof(short) || unary.Type == typeof(ushort)))
+                    {
+                        // Skip the intermediate conversion, convert int directly to enum
+                        return Expression.Convert(operand, returnType);
+                    }
+                }
+                
                 return Expression.Convert(ex, returnType);
+            }
 
             return ex;
         }
@@ -375,9 +391,42 @@ namespace DelegateDecompiler
                 }
             }
 
-            if (!type.IsAssignableFrom(expression.Type) && expression.Type.IsEnum && expression.Type.GetEnumUnderlyingType() == type)
+            if (!type.IsAssignableFrom(expression.Type))
             {
-                return Expression.Convert(expression, type);
+                if (expression.Type.IsEnum)
+                {
+                    var underlyingType = expression.Type.GetEnumUnderlyingType();
+                    // If enum's underlying type matches target, convert directly
+                    if (underlyingType == type)
+                    {
+                        return Expression.Convert(expression, type);
+                    }
+                    // If target is int and enum has smaller underlying type (byte, short), convert to int
+                    // This handles explicit casts like (int)byteEnum
+                    if (type == typeof(int) && (underlyingType == typeof(byte) || underlyingType == typeof(sbyte) ||
+                                               underlyingType == typeof(short) || underlyingType == typeof(ushort)))
+                    {
+                        return Expression.Convert(expression, type);
+                    }
+                    // If target is long and enum has long underlying type
+                    if (type == typeof(long) && (underlyingType == typeof(long) || underlyingType == typeof(ulong)))
+                    {
+                        return Expression.Convert(expression, type);
+                    }
+                    // If target is short and enum has byte underlying type
+                    if (type == typeof(short) && (underlyingType == typeof(byte) || underlyingType == typeof(sbyte)))
+                    {
+                        return Expression.Convert(expression, type);
+                    }
+                }
+                
+                // Handle conversions between signed/unsigned long when expression is not enum
+                // This can happen after enum is converted to its underlying type
+                if ((type == typeof(long) && expression.Type == typeof(ulong)) ||
+                    (type == typeof(ulong) && expression.Type == typeof(long)))
+                {
+                    return Expression.Convert(expression, type);
+                }
             }
 
             if (type.IsValueType != expression.Type.IsValueType)
