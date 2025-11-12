@@ -41,6 +41,7 @@ jobs:
 
       - name: Restore
         run: dotnet restore
+
       - name: Patch App.config
         run: |
           $configPath = 'src/DelegateDecompiler.EntityFramework.Tests/App.config'
