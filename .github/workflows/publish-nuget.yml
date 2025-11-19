@@ -29,5 +29,10 @@ jobs:
     - name: Pack
       run: dotnet pack --no-build --configuration Release --output ./Release
 
-    - name: Publish to NuGet
-      run: dotnet nuget push ./Release/*.nupkg -s nuget.org
+    - name: NuGet Login
+      uses: NuGet/login@v1
+      with:
+        user: hazzik
+
+    - name: NuGet Publish
+      run: dotnet nuget push ./Release/*.nupkg -s nuget.org -k ${{ steps.login.outputs.NUGET_API_KEY }}
