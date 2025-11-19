@@ -35,6 +35,7 @@ jobs:
 
     - name: NuGet Login
       uses: NuGet/login@v1
+      id: login
       with:
         user: hazzik
 

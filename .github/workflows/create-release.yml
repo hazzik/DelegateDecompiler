@@ -23,3 +23,5 @@ jobs:
 
     - name: Create Release
       run: gh release create ${{ steps.gitversion.outputs.majorMinorPatch }} --generate-notes
+      env:
+        GH_TOKEN: ${{ secrets.GH_TOKEN }}
