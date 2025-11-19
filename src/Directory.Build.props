@@ -27,7 +27,7 @@
     
     <NuGetAudit>true</NuGetAudit>
     <NuGetAuditLevel>low</NuGetAuditLevel>
-    <NuGetAuditMode>direct</NuGetAuditMode>
+    <NuGetAuditMode>all</NuGetAuditMode>
 
     <ContinuousIntegrationBuild Condition="'$(CI)' != ''">$(CI)</ContinuousIntegrationBuild>
   </PropertyGroup>
