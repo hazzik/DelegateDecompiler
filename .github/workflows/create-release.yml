@@ -22,6 +22,6 @@ jobs:
       uses: gittools/actions/gitversion/execute@v4
 
     - name: Create Release
-      run: gh release create ${{ steps.gitversion.outputs.majorMinorPatch }} --generate-notes
+      run: gh release create ${{ steps.gitversion.outputs.majorMinorPatch }} --generate-notes --target $GITHUB_SHA
       env:
         GH_TOKEN: ${{ secrets.GH_TOKEN }}
