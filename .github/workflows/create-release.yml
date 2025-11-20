@@ -1,4 +1,4 @@
-name: Create Release Tag
+name: Create Release
 
 on:
   workflow_dispatch:
@@ -21,7 +21,7 @@ jobs:
       id: gitversion
       uses: gittools/actions/gitversion/execute@v4
 
-    - name: Create and Push Tag
-      run: |
-        git tag ${{ steps.gitversion.outputs.majorMinorPatch }}
-        git push origin ${{ steps.gitversion.outputs.majorMinorPatch }}
+    - name: Create Release
+      run: gh release create ${{ steps.gitversion.outputs.majorMinorPatch }} --generate-notes --target $GITHUB_SHA
+      env:
+        GH_TOKEN: ${{ secrets.GH_TOKEN }}

@@ -5,6 +5,10 @@ on:
     tags:
       - '*'
 
+permissions:
+  id-token: write
+  contents: read
+
 jobs:
   publish:
     runs-on: ubuntu-latest
@@ -29,7 +33,11 @@ jobs:
     - name: Pack
       run: dotnet pack --no-build --configuration Release --output ./Release
 
-    - name: Publish to NuGet
-      run: dotnet nuget push ./Release/*.nupkg -s nuget.org -k ${NUGET_API_KEY}
-      env:
-        NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
+    - name: NuGet Login
+      uses: NuGet/login@v1
+      id: login
+      with:
+        user: hazzik
+
+    - name: NuGet Publish
+      run: dotnet nuget push ./Release/*.nupkg -s nuget.org -k ${{ steps.login.outputs.NUGET_API_KEY }}

@@ -27,6 +27,7 @@ dotnet test -c Debug -f net8.0 src/DelegateDecompiler.EntityFramework.Tests
 dotnet test -c Debug -f net8.0 src/DelegateDecompiler.EntityFrameworkCore6.Tests
 dotnet test -c Debug -f net8.0 src/DelegateDecompiler.EntityFrameworkCore8.Tests
 dotnet test -c Debug -f net9.0 src/DelegateDecompiler.EntityFrameworkCore9.Tests
+dotnet test -c Debug -f net10.0 src\DelegateDecompiler.EntityFrameworkCore10.Tests
 ```
 
 Use `-p:DisableGitVersionTask=true` flag to avoid build issues if GitVersion is not set up.
