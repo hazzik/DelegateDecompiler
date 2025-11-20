@@ -48,9 +48,12 @@ jobs:
 
       - name: Run tests
         run: |
-          dotnet test --no-build -c Release -f net8.0 src/DelegateDecompiler.Tests
-          dotnet test --no-build -c Release -f net8.0 src/DelegateDecompiler.Tests.VB
-          dotnet test --no-build -c Release -f net8.0 src/DelegateDecompiler.EntityFramework.Tests
-          dotnet test --no-build -c Release -f net8.0 src/DelegateDecompiler.EntityFrameworkCore8.Tests
-          dotnet test --no-build -c Release -f net9.0 src/DelegateDecompiler.EntityFrameworkCore9.Tests
-          dotnet test --no-build -c Release -f net10.0 src\DelegateDecompiler.EntityFrameworkCore10.Tests
+          $failed = $false
+          function Fail { $script:failed = $true }
+          dotnet test --no-build -c Release -f net8.0 src/DelegateDecompiler.Tests || Fail
+          dotnet test --no-build -c Release -f net8.0 src/DelegateDecompiler.Tests.VB || Fail
+          dotnet test --no-build -c Release -f net8.0 src/DelegateDecompiler.EntityFramework.Tests || Fail
+          dotnet test --no-build -c Release -f net8.0 src/DelegateDecompiler.EntityFrameworkCore8.Tests || Fail
+          dotnet test --no-build -c Release -f net9.0 src/DelegateDecompiler.EntityFrameworkCore9.Tests || Fail
+          dotnet test --no-build -c Release -f net10.0 src/DelegateDecompiler.EntityFrameworkCore10.Tests || Fail
+          if ($failed) { exit 1 }

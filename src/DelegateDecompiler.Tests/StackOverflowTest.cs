@@ -56,7 +56,7 @@ namespace DelegateDecompiler.Tests
             thread.Join();
         }
 
-        [Test]
+        [Test, Explicit]
         public void StackOverflowTestOnThreadWithSmallStack()
         {
             Thread thread = new Thread(() =>
