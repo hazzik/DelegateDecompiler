@@ -18,8 +18,10 @@ namespace DelegateDecompiler.Processors
 
         public void Process(ProcessorState state, Instruction instruction)
         {
-            var expression = state.Stack.Pop();
-            state.Stack.Push(Expression.Convert(expression, (Type)instruction.Operand));
+            var address = state.Stack.Pop();
+            var targetType = (Type)instruction.Operand;
+            
+            state.Stack.Push(Expression.Convert(address, targetType));
         }
     }
 }

@@ -58,6 +58,15 @@ namespace DelegateDecompiler
                     return expression;
                 }
 
+                // Don't create Coalesce for nullable enum conversions to avoid breaking expected expressions
+                // For nullable enums, keep the conditional expression as-is
+                var innerType = expression.Type.IsNullableType() ? Nullable.GetUnderlyingType(expression.Type) : expression.Type;
+                if (innerType != null && innerType.IsEnum)
+                {
+                    // Keep as conditional for enum types
+                    return node.Update(test, ifTrue, ifFalse);
+                }
+
                 return Expression.Coalesce(expression, ifFalse);
             }
 
@@ -370,6 +379,112 @@ namespace DelegateDecompiler
                 Invert(ref binary))
             {
                 return Visit(binary);
+            }
+
+            // Optimize enum conversion chains BEFORE visiting operand
+            // This ensures we can optimize Convert(Convert(x, Enum), Nullable<Enum>) patterns
+            if (node.NodeType == ExpressionType.Convert)
+            {
+                var targetType = node.Type;
+                
+                // Check for nullable enum optimization before visiting operand
+                if (targetType.IsGenericType && targetType.GetGenericTypeDefinition() == typeof(Nullable<>))
+                {
+                    var underlyingType = Nullable.GetUnderlyingType(targetType);
+                    if (underlyingType != null && underlyingType.IsEnum &&
+                        node.Operand is UnaryExpression enumConv &&
+                        enumConv.NodeType == ExpressionType.Convert &&
+                        enumConv.Type == underlyingType)
+                    {
+                        var innerOperand = enumConv.Operand;
+                        var enumUnderlyingType = underlyingType.GetEnumUnderlyingType();
+                        
+                        // Unwrap multiple layers of conversions to find the source
+                        Expression sourceOperand = innerOperand;
+                        while (sourceOperand is UnaryExpression deepConv && deepConv.NodeType == ExpressionType.Convert)
+                        {
+                            sourceOperand = deepConv.Operand;
+                        }
+                        
+                        // If we found something that returns the right type, convert it directly
+                        if (sourceOperand.Type == typeof(int) ||
+                            sourceOperand.Type == enumUnderlyingType ||
+                            (sourceOperand.Type == typeof(int) &&
+                             (enumUnderlyingType == typeof(byte) || enumUnderlyingType == typeof(sbyte) ||
+                              enumUnderlyingType == typeof(short) || enumUnderlyingType == typeof(ushort) ||
+                              enumUnderlyingType == typeof(long) || enumUnderlyingType == typeof(ulong))))
+                        {
+                            // Visit the source operand and convert to nullable enum directly
+                            return Expression.Convert(Visit(sourceOperand), targetType);
+                        }
+                    }
+                }
+                
+                // Now visit operand for other cases
+                var operand = Visit(node.Operand);
+                
+                // Optimize Convert(Convert(enum, byte/short/long), int/long) -> Convert(enum, int/long)
+                // This happens when enums are converted to underlying type then to int for operations
+                if (operand is UnaryExpression innerConv && innerConv.NodeType == ExpressionType.Convert)
+                {
+                    var innerOperand = innerConv.Operand;
+                    
+                    // Case 1: Convert(Convert(enum, underlyingType), int/long) -> Convert(enum, int/long)
+                    if (innerOperand.Type.IsEnum)
+                    {
+                        var underlyingType = innerOperand.Type.GetEnumUnderlyingType();
+                        if (innerConv.Type == underlyingType &&
+                            (targetType == typeof(int) || targetType == typeof(long) || targetType == typeof(ulong)))
+                        {
+                            return Expression.Convert(innerOperand, targetType);
+                        }
+                    }
+                    
+                    // Case 2: Convert(Convert(int, byte/short), X) -> Convert(int, X)
+                    // This happens with operations like NOT that return int, IL converts to byte, then to target
+                    if (innerOperand.Type == typeof(int) &&
+                        (innerConv.Type == typeof(byte) || innerConv.Type == typeof(sbyte) ||
+                         innerConv.Type == typeof(short) || innerConv.Type == typeof(ushort)))
+                    {
+                        return Expression.Convert(innerOperand, targetType);
+                    }
+                    
+                    // Case 3: Convert(Convert(Convert(enum, byte), long), enum) -> Convert(enum, enum) (for long-based enums in arrays)
+                    // Traverse deeper to find the original enum
+                    if (targetType.IsEnum && innerOperand is UnaryExpression deeperConv && deeperConv.NodeType == ExpressionType.Convert)
+                    {
+                        if (deeperConv.Operand.Type.IsEnum)
+                        {
+                            // Found the original enum - convert directly
+                            return Expression.Convert(deeperConv.Operand, targetType);
+                        }
+                    }
+                }
+                
+                // Optimize Convert(intConstant, long/ulong) -> longConstant
+                if (operand is ConstantExpression constant &&
+                    constant.Type == typeof(int) &&
+                    (targetType == typeof(long) || targetType == typeof(ulong)))
+                {
+                    var longValue = Convert.ToInt64(constant.Value);
+                    return Expression.Constant(longValue, targetType);
+                }
+                
+                // Optimize Convert(Convert(intConstant, long), enum) -> enum constant
+                if (targetType.IsEnum &&
+                    operand is UnaryExpression constConv &&
+                    constConv.NodeType == ExpressionType.Convert &&
+                    constConv.Operand is ConstantExpression innerConst)
+                {
+                    return Expression.Constant(Enum.ToObject(targetType, innerConst.Value));
+                }
+                
+                // The nullable enum optimization was moved before Visit(operand) above
+                
+                if (operand != node.Operand)
+                {
+                    return Expression.Convert(operand, targetType);
+                }
             }
 
             return base.VisitUnary(node);
