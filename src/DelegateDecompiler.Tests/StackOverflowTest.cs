@@ -76,7 +76,7 @@ namespace DelegateDecompiler.Tests
                     (e.FirstName != null ? e.FirstName :
                     (e.FirstName != null ? e.FirstName : e.LastName))))));
                 Test(compiled, expected);
-            }, 128);
+            }, 256);
             thread.Start();
             thread.Join();
         }
